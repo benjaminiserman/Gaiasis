@@ -308,6 +308,7 @@ class Gui() : Node() {
 
         showSettingsButton.addToggle("Show Stats", listOf("debug", "default")) { statsGraph.visible = it }
         showSettingsButton.addToggle("Track Stats", listOf("debug", "default")) { statsGraph.trackStats = it }
+        showSettingsButton.addToggle("Stars", listOf("feature", "default")) { Main.instance.setStarsEnabled(it) }
         showSettingsButton.addToggle("Show Map Preview", listOf("debug", "default")) {
             mapPreviewContainer.visible = it
             if (it) updateMapPreview()

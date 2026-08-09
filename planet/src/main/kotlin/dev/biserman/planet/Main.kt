@@ -12,6 +12,7 @@ import godot.annotation.RegisterFunction
 import godot.api.Input
 import godot.api.InputEvent
 import godot.api.Node
+import godot.api.ShaderMaterial
 import godot.global.GD
 import kotlin.random.Random
 
@@ -19,6 +20,12 @@ import kotlin.random.Random
 class Main : Node() {
     lateinit var planet: Planet private set
     lateinit var planetRenderer: PlanetRenderer
+
+    fun setStarsEnabled(enabled: Boolean) {
+        val worldEnvironment = findChild("WorldEnvironment") as? godot.api.WorldEnvironment ?: return
+        val skyMaterial = worldEnvironment.environment?.sky?.skyMaterial as? ShaderMaterial ?: return
+        skyMaterial.setShaderParameter("star_density", if (enabled) 400.0 else 0.0)
+    }
 
     var copyElevation: Double? = 0.0
 
