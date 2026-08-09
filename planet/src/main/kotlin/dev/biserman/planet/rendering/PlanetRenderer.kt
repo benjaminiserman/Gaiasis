@@ -332,7 +332,8 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
     }
 
     val planetColorModes = listOf(
-        BiomeColorMode(this, categories = listOf("default", "biome", "terrain", "base_layer")),
+        BiomeColorMode(this, "biome", useKoppen = true, categories = listOf("default", "biome", "terrain", "base_layer")),
+        BiomeColorMode(this, "terrain", useKoppen = false, categories = listOf("biome", "terrain", "base_layer")),
         SimpleColorMode(
             this,
             "fast_biome",

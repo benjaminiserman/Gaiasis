@@ -12,9 +12,8 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.math.min
 import kotlin.math.pow
 
-class BiomeColorMode(planetRenderer: PlanetRenderer, override val categories: List<String>) :
+class BiomeColorMode(planetRenderer: PlanetRenderer, override val name: String, val useKoppen: Boolean, override val categories: List<String>) :
     PlanetColorMode(planetRenderer) {
-    override val name = "biome"
 
     enum class RenderMode {
         BIOME,
@@ -28,7 +27,7 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val categories: Li
     fun getMode(tile: PlanetTile) = when {
 //        tile.elevation >= snowLine(tile) -> RenderMode.SNOW
 //        warpNoise.warp(tile.tile.position, 0.075).y.absoluteValue >= 0.95 -> RenderMode.SNOW
-        tile.hersfeldt.getOrNull()?.id in iceClimates -> RenderMode.SNOW
+        useKoppen && tile.hersfeldt.getOrNull()?.id in iceClimates -> RenderMode.SNOW
         tile.elevation <= planetRenderer.planet.seaLevel -> RenderMode.WATER
         else -> RenderMode.BIOME
     }
@@ -65,6 +64,7 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val categories: Li
                 ).pow(2)
             },
         )
+
         RenderMode.SNOW -> 1.0
         RenderMode.WATER ->
             tile.elevation
@@ -89,13 +89,18 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val categories: Li
         val hue = hue(planetTile)
 
 //        val color = Color.fromHsv(hue, saturation(planetTile), value(planetTile), 1.0)
-        val biomeColor = planetTile.koppen.getOrNull()?.terrainColor
-            ?.run { Color.fromHsv(h, min(1.0, s * 1.2), v, a) } ?: Color.fromHsv(0.25, 0.9, 0.15, 1.0)
+        val biomeColor = if (useKoppen) {
+            planetTile.koppen.getOrNull()?.terrainColor
+                ?.run { Color.fromHsv(h, min(1.0, s * 1.2), v, a) }
+        } else {
+            null
+        } ?: Color.fromHsv(0.25, 0.9, 0.15, 1.0)
         val color = when (getMode(planetTile)) {
             RenderMode.BIOME -> biomeColor.lerp(
                 Color.fromHsv(0.06, min(biomeColor.s, 0.33), 0.5, 1.0),
                 min(0.75, slopeScale(planetTile))
             )
+
             RenderMode.SNOW -> Color.fromHsv(0.0, 0.0, 1.0, 1.0)
             RenderMode.WATER -> Color.fromHsv(
                 0.65,

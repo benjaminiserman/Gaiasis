@@ -19,6 +19,7 @@ import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositLoss
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositMultiplier
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositionStartHeight
+import dev.biserman.planet.planet.tectonics.TectonicGlobals.desiredLandScalePow
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.divergenceContinuityStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.edgeInteractionStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.elevationErosion
@@ -693,6 +694,7 @@ object Tectonics {
             planet.planetTiles.values.count { it.isAboveWater }.toDouble() / planet.planetTiles.size
         val landPercentDepositScale =
             (TectonicRuntimeConfig.desiredLandPercent.coerceIn(0.0, 1.0) / currentLandPercent.coerceIn(0.01, 1.0))
+                .pow(desiredLandScalePow)
                 .coerceIn(0.25, 4.0)
         val effectiveDepositMultiplier = depositMultiplier * landPercentDepositScale
 

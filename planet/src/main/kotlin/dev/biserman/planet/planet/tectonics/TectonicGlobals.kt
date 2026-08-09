@@ -13,7 +13,7 @@ import kotlin.math.sqrt
 
 @Suppress("MayBeConstant")
 object TectonicGlobals {
-    var slabPullStrength = 0.03
+    var slabPullStrength = 0.04
     var convergencePushStrength = 0.5
     var collisionStiffness = 0.5
     var continentalCollisionStiffnessMultiplier = 3.0
@@ -23,7 +23,7 @@ object TectonicGlobals {
     var minCollisionResistance = 0.2
     var plateOverrideElevationAdvantage = 500.0
     var ridgePushStrength = 0.003
-    var mantleConvectionStrength = 0.0005
+    var mantleConvectionStrength = 0.0004
     var springPlateContributionStrength = 0.007
     var edgeInteractionStrength = 0.08
     var tileInertia = 0.25
@@ -74,8 +74,9 @@ object TectonicGlobals {
 
     var depositStrength = 0.6
     var depositLoss = 0.01
-    var depositMultiplier = 1.1
+    var depositMultiplier = 1.2
     var desiredLandPercent = 0.3
+    var desiredLandScalePow = 2.0
     var prominenceErosion = 0.15
     var elevationErosion = 1e-06
     var waterErosion = 2.0

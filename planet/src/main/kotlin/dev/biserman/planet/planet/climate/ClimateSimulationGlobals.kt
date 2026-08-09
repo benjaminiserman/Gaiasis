@@ -4,7 +4,7 @@ package dev.biserman.planet.planet.climate
 object ClimateSimulationGlobals {
 
     // do not sync this value, it should always be 4 here and 1 in climate_config.json
-    var climateSimulationSamplesPerMonth = 4
+    var climateSimulationSamplesPerMonth = 1
 
     // INSOLATION
 
