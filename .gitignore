@@ -9,6 +9,7 @@ planet/addons/
 planet/examples/
 planet/hs_err_pid*.log
 planet/earth_hersfeldt_reference.*
+exports/
 
 # save folder and ignored contents
 planet/save/*
