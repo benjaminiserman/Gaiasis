@@ -14,7 +14,7 @@ uniform float max_star_size : hint_range(0.05, 0.5) = 0.3;
 float hash(vec3 p) {
     p = fract(p * 0.3183099 + 0.1);
     p *= 17.0;
-    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+    return fract(p.x * p.y * (p.z + 0.5) * (p.x + p.y + p.z));
 }
 
 void sky() {
