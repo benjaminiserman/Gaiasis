@@ -1,3 +1,5 @@
+import godot.gradle.tasks.GenerateEmbeddedJreTask
+
 plugins {
     id("com.utopia-rise.godot-kotlin-jvm") version "0.13.1-4.4.1"
 
@@ -33,6 +35,20 @@ kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
     }
+}
+
+tasks.withType<GenerateEmbeddedJreTask> {
+    this.javaHome = System.getenv("JAVA_HOME")
+    this.arguments = arrayOf(
+        "--strip-debug",
+        "--no-header-files",
+        "--no-man-pages",
+    ) // arguments to pass to the jlink command
+    this.modules = arrayOf(
+        "java.base",
+        "java.logging",
+        "java.desktop",
+    ) // java module to include in the jre
 }
 
 tasks.test {
