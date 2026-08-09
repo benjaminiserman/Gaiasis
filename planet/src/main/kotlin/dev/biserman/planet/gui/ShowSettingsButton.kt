@@ -41,7 +41,11 @@ class ShowSettingsButton : OptionButton() {
     }
 
     private val toggles = mutableMapOf<String, Boolean>()
-    fun addToggle(toggle: String, categories: List<String>, onClick: (Boolean) -> Any): MapLayerCheckButton {
+    fun addToggle(
+        toggle: String,
+        categories: List<String>,
+        onClick: (Boolean) -> Any,
+    ): MapLayerCheckButton {
         val defaultValue = "default" in categories
         toggles[toggle] = defaultValue
         val entry = MapLayerCheckButton(
