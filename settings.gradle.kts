@@ -4,4 +4,4 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0" // https://plugins.gradle.org/plugin/org.gradle.toolchains.foojay-resolver-convention
 }
 
-rootProject.name = "Planet"
+rootProject.name = "Gaiasis"
