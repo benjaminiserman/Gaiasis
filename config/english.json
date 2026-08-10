@@ -1,0 +1,142 @@
+{
+  "romanization": {
+    "consonants": {
+      "m": "m",
+      "n": "n",
+      "ɲ": "ñ,nj,ny,gn,ń,nh",
+      "ŋ": "n,ng,ŋ",
+      "ɴ": "n,ng,nq",
+
+      "p": "p",
+      "t": "t",
+      "k": "k",
+      "q": "k,q,kh,kk",
+
+      "b": "b",
+      "d": "d",
+      "ɡ": "g",
+      "ɢ": "g, q, gh, gg",
+
+      "pʰ": "p,ph",
+      "tʰ": "t,th",
+      "kʰ": "k,kh",
+      "qʰ": "q,qh",
+
+      "p'": "p,b,ph,bh",
+      "t'": "t,d,th,dh",
+      "k'": "k,g,kh,gh",
+      "q'": "q,qh",
+
+      "ɸ": "f,ph,hw,fh",
+      "f": "f",
+      "θ": "th,þ,θ",
+      "s": "s",
+      "ʃ": "s,sh",
+      "x": "h,x,kh,ch",
+      "χ": "h,x,q,kh",
+
+      "β": "v,bh,hw,vh",
+      "v": "v",
+      "ð": "th,dh,ð",
+      "z": "z",
+      "ʒ": "j,z,zh",
+      "ɣ": "g,gh",
+      "ʁ": "r,rh",
+      "ɸ'": "f,ph,hw,fh,bh,vh",
+      "f'": "f,v,fh,vh",
+      "θ'": "th,þ,θ,þh,θh",
+      "s'": "s,z,sh,zh",
+      "ʃ'": "s,sh,z,zh",
+      "x'": "h,x,kh,ch",
+      "χ'": "h,x,q,kh",
+
+      "ʔ": "',q,ʔ",
+      "h": "h",
+
+      "j": "j,y",
+      "w": "w",
+      "ɰ": "w,wh,ɰ",
+
+      "ɹ": "r",
+      "l": "l",
+
+      "r": "r,rr",
+      "ʀ": "r,rh,rr",
+      "ʜ": "h,hh",
+
+      "ɾ": "r,t,d",
+
+      "ɓ": "b,bh,b'",
+      "ɗ": "d,dh,d'",
+      "ɠ": "g,gh,g'",
+      "ʛ": "q,qh,q'",
+
+      "ʘ": "ʘ",
+      "ǀ": "ǀ",
+      "!": "!",
+      "ǂ": "ǂ"
+    }
+  },
+  "complexity_tiers": [
+    {
+      "allowedConsonants": "m,n,ŋ,p,t,k,b,d,ɡ,ʔ,f,θ,s,ʃ,v,z,ʒ,h,j,w,ɹ,l",
+      "allowedVowels": "ɪ,ɛ,i,e,æ,a,o,ʌ,u",
+      "affricates": "tʃ,ks,dʒ,ts",
+      "rewrite_rules": {
+        "(?<=[ptkbdg])y": "i",
+        "(?<=[ptkbdg])r\b": "er",
+        "(?<=[ptkbdg])n\b": "en",
+        "(?<=[ptkbdg])m\b": "em",
+        "(?<=[ptkbdg])l\b": "el",
+        "(?<=[aeiouy])s\b": "ss"
+      },
+      "forbidden_cluster_rules": [
+        "p[jw]",
+        "b[jw]",
+        "t[ljw]",
+        "d[ljw]",
+
+        "f[jw]",
+        "v[ɹljw]",
+        "θ[ljw]",
+        "s[ɹj]",
+        "z[ɹljw]",
+        "ʃ[ɹljw]",
+        "ʒ[ɹljw]",
+        "h[ɹljw]",
+
+        "n[pb]",
+        "m[tdkg]",
+        "ŋ.*[ɪɛieæaoʌu]",
+
+        "uw",
+        "i[yw]",
+        "[ɪɛæʌ][yw]"
+      ],
+      "syllables": {
+        "CV": 1000000,
+        "V": 100000,
+        "CVC": 500,
+        "[kg]WV": 250,
+        "[nm]jV": 250,
+        "PLV": 200,
+        "sPLV": 150,
+        "FLV": 150,
+        "FWV": 150,
+        "[kg]WVC": 100,
+        "[nm]jVC": 100,
+        "PLVC": 75,
+        "FLVC": 50,
+        "FWVC": 50,
+        "sPLVC": 25,
+        "CV(N)P": 100,
+        "CV(N)s": 50,
+        "CV(N)Ps": 10,
+        "PLV(N)Ps": 10,
+        "FLV(N)Ps": 10,
+        "sPLV(N)Ps": 1,
+        "(P)ɹ": 10
+      }
+    }
+  ]
+}

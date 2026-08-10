@@ -1,0 +1,4 @@
+interface:
+  display_name: "Climate Tuner"
+  short_description: "Tune Planet climate against Earth"
+  default_prompt: "Use $climate-tuner to run a focused Earth climate tuning batch and report the result."

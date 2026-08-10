@@ -1,0 +1,677 @@
+package dev.biserman.planet.rendering
+
+import dev.biserman.planet.geometry.*
+import dev.biserman.planet.gui.Gui
+import dev.biserman.planet.planet.Planet
+import dev.biserman.planet.planet.PlanetTile
+import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
+import dev.biserman.planet.planet.ecology.TileEcosystem
+import dev.biserman.planet.planet.tectonics.TectonicGlobals.oceanOceanArcElevationStrength
+import dev.biserman.planet.rendering.colormodes.BiomeColorMode
+import dev.biserman.planet.rendering.colormodes.SimpleColorMode
+import dev.biserman.planet.rendering.colormodes.SimpleDoubleColorMode
+import dev.biserman.planet.rendering.colormodes.SimpleDoubleColorMode.Companion.redOutsideRange
+import dev.biserman.planet.rendering.colormodes.SimpleDoubleColorMode.Companion.redWhenNull
+import dev.biserman.planet.rendering.renderers.CellWireframeRenderer
+import dev.biserman.planet.rendering.renderers.ImpassableEdgeRenderer
+import dev.biserman.planet.rendering.renderers.TectonicPlateBoundaryRenderer
+import dev.biserman.planet.rendering.renderers.TileMovementRenderer
+import dev.biserman.planet.rendering.renderers.TileVectorRenderer
+import dev.biserman.planet.utils.UtilityExtensions.degToRad
+import dev.biserman.planet.utils.alphaAverage
+import dev.biserman.planet.utils.randomHsv
+import dev.biserman.planet.utils.sum
+import dev.biserman.planet.utils.transparent
+import godot.api.MeshInstance3D
+import godot.api.Node
+import godot.api.StandardMaterial3D
+import godot.core.Color
+import godot.core.Vector3
+import godot.global.GD
+import kotlin.jvm.optionals.getOrNull
+import kotlin.math.PI
+import kotlin.math.absoluteValue
+import kotlin.math.cos
+import kotlin.math.ln1p
+import kotlin.math.log10
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.time.measureTime
+
+private const val MAJOR_RIVER_MIN_UPSTREAM_SEGMENTS = 20
+
+class PlanetRenderer(parent: Node, var planet: Planet) {
+    fun colorTemperature(temperature: Double): Color = when {
+        temperature >= 30 -> Color.html("D31FB4")
+        temperature >= 27.5 -> Color.html("93197E")
+        temperature >= 25 -> Color.html("DA171D")
+        temperature >= 22.5 -> Color.html("EF6943")
+        temperature >= 20 -> Color.html("F0894F")
+        temperature >= 17.5 -> Color.html("FFB669")
+        temperature >= 15 -> Color.html("FDC878")
+        temperature >= 12.5 -> Color.html("FFD28E")
+        temperature >= 10 -> Color.html("FFE19E")
+        temperature >= 7.5 -> Color.html("FFF2AE")
+        temperature >= 5 -> Color.html("FFFFBF")
+        temperature >= 2.50 -> Color.html("F2FBBC")
+        temperature >= 0 -> Color.html("E0F4B9")
+        temperature >= -2.5 -> Color.html("D1EDB0")
+        temperature >= -5 -> Color.html("C5E6AF")
+        temperature >= -7.5 -> Color.html("B6E2A7")
+        temperature >= -10 -> Color.html("A1D5A5")
+        temperature >= -20 -> Color.html("87C5AC")
+        else -> Color.html("2D82BB")
+    }
+
+    fun colorAirPressure(airPressure: Double): Color = when {
+        airPressure >= 1030 -> Color.html("954814")
+        airPressure >= 1025 -> Color.html("CB6F18")
+        airPressure >= 1020 -> Color.html("FDB863")
+        airPressure >= 1015 -> Color.html("FDDAAA")
+        airPressure >= 1010 -> Color.html("F7F7F7")
+        airPressure >= 1005 -> Color.html("E7E8F1")
+        airPressure >= 1000 -> Color.html("C5C2DE")
+        airPressure >= 995 -> Color.html("998FBF")
+        airPressure >= 990 -> Color.html("6B5A9A")
+        airPressure >= 985 -> Color.html("4C307B")
+        else -> Color.html("321954")
+    }
+
+    // colors from: https://www.reddit.com/r/MapPorn/comments/140nta/world_average_yearly_rainfall_1007x432/
+    fun colorAnnualRainfall(precipitation: Double): Color = when (precipitation) {
+        in 0.0..24.5 -> Color.html("E6E6E6")
+        in 24.5..74.5 -> Color.html("BEBEBE")
+        in 74.5..124.5 -> Color.html("969696")
+        in 124.5..224.5 -> Color.html("C4706E")
+        in 224.5..274.5 -> Color.html("C8B396")
+        in 274.5..374.5 -> Color.html("FFC775")
+        in 374.5..474.5 -> Color.html("FFFF54")
+        in 474.5..724.5 -> Color.html("91FF99")
+        in 724.5..974.5 -> Color.html("00FF00")
+        in 974.5..1474.5 -> Color.html("40C738")
+        in 1474.5..2474.5 -> Color.html("0D9605")
+        in 2474.5..4974.5 -> Color.html("05705E")
+        in 4974.5..7474.5 -> Color.html("FF00FF")
+        in 7474.5..10004.5 -> Color.html("800080")
+        else -> Color.html("008AFF")
+    }
+
+    val planetDebugRenders = listOf(
+        CellWireframeRenderer(parent, lift = 1.005, categories = listOf("debug", "feature")),
+        ImpassableEdgeRenderer(parent, lift = 1.006, categories = listOf("terrain", "feature")),
+        SimpleDebugRenderer(
+            parent,
+            "tectonic_boundary_movement",
+            categories = listOf("tectonics", "feature")
+        ) { planet ->
+            planet.tectonicPlates.flatMap { plate ->
+                val edgeVectors = plate.tiles.filter { it.isTectonicBoundary }
+                    .filter { it.movement.length() > 0.00005 }
+                    .map { DebugVector(it.tile.position * 1.005, it.movement) }
+                vectorMesh(edgeVectors, plate.debugColor)
+            }
+        },
+        TectonicPlateBoundaryRenderer(parent, lift = 1.005, categories = listOf("tectonics", "feature")),
+        TileMovementRenderer(parent, lift = 1.005, categories = listOf("tectonics", "feature")),
+        TileVectorRenderer(
+            parent,
+            "mantle_convection",
+            lift = 1.005,
+            getFn = { planet.noise.mantleConvection.sample4d(it.tile.position, planet.tectonicAge.toDouble()) },
+            color = Color(1.0, 0.5, 0.0, 1.0),
+            categories = listOf("tectonics", "feature")
+        ),
+        TileVectorRenderer(
+            parent,
+            "spring_displacement",
+            lift = 1.005,
+            getFn = { it.springDisplacement },
+            categories = listOf("tectonics", "feature")
+        ),
+        TileVectorRenderer(
+            parent,
+            "edge_interaction",
+            lift = 1.005,
+            getFn = { it.getEdgeForces().sum() * 10 },
+            categories = listOf("tectonics", "feature")
+        ),
+        SimpleDebugRenderer(parent, "rivers", categories = listOf("terrain", "feature")) { planet ->
+            val riverSegments = planet.riverBasinMap.values.flatten()
+
+            val verts = mutableListOf<MutVertex>()
+            val edges = mutableListOf<MutEdge>()
+
+            val lift = 1.001
+            for (segment in riverSegments) {
+                val length = verts.size
+                verts.add(MutVertex(segment.first.position * lift))
+                verts.add(MutVertex(segment.second.position * lift))
+                edges.add(MutEdge(mutableListOf(length, length + 1)))
+            }
+
+            listOf(
+                MeshData(
+                    MutMesh(verts, edges).toWireframe(),
+                    StandardMaterial3D().apply { this.albedoColor = Color.blue }
+                )
+            )
+        },
+        SimpleDebugRenderer(parent, "major_rivers", categories = listOf("terrain", "feature")) { planet ->
+            val riverSegments = planet.riverUpstreamSegmentCounts
+                .filterValues { it >= MAJOR_RIVER_MIN_UPSTREAM_SEGMENTS }
+                .keys
+
+            val verts = mutableListOf<MutVertex>()
+            val edges = mutableListOf<MutEdge>()
+
+            val lift = 1.002
+            for (segment in riverSegments) {
+                val length = verts.size
+                verts.add(MutVertex(segment.first.position * lift))
+                verts.add(MutVertex(segment.second.position * lift))
+                edges.add(MutEdge(mutableListOf(length, length + 1)))
+            }
+
+            listOf(
+                MeshData(
+                    MutMesh(verts, edges).toWireframe(),
+                    StandardMaterial3D().apply { albedoColor = Color.cyan }
+                )
+            )
+        },
+        SimpleDebugRenderer(parent, "river_basins", categories = listOf("terrain", "feature")) { planet ->
+            planet.riverBasinMap.flatMap { (mouth, riverSegments) ->
+                val verts = mutableListOf<MutVertex>()
+                val edges = mutableListOf<MutEdge>()
+
+                val lift = 1.001
+                for (segment in riverSegments) {
+                    val length = verts.size
+                    verts.add(MutVertex(segment.first.position * lift))
+                    verts.add(MutVertex(segment.second.position * lift))
+                    edges.add(MutEdge(mutableListOf(length, length + 1)))
+                }
+
+                val color =
+                    if (mouth.tiles.any { !planet.planetTiles[it.id]!!.isAboveWater }) Color.randomHsv() else Color.white
+                listOf(
+                    MeshData(
+                        MutMesh(verts, edges).toWireframe(),
+                        StandardMaterial3D().apply { this.albedoColor = color }
+                    )
+                )
+            }
+        },
+        SimpleDebugRenderer(parent, "climate_cells", categories = listOf("climate", "feature")) { planet ->
+            val bands = listOf(-60, -30, 0, +30, +60).map { it.toDouble() }
+            val verts = mutableListOf<MutVertex>()
+            val edges = mutableListOf<MutEdge>()
+            val lift = 1.001
+
+            bands.forEach { band ->
+                val y = sin(band.degToRad())
+                val radius = cos(band.degToRad()) * lift
+                val circumference = 2 * radius * PI
+                val lineSegments = (circumference / planet.topology.averageRadius).toInt()
+                val firstVert = verts.size
+
+                for (i in 0..<lineSegments) {
+                    val angle = i * 2 * PI / lineSegments
+                    val x = radius * cos(angle)
+                    val z = radius * sin(angle)
+                    if (i != 0) {
+                        edges.add(MutEdge(mutableListOf(verts.size - 1, verts.size)))
+                    }
+                    verts.add(MutVertex(Vector3(x, y, z)))
+                }
+                edges.add(MutEdge(mutableListOf(verts.size - 1, firstVert)))
+            }
+
+            listOf(
+                MeshData(
+                    MutMesh(verts, edges).toWireframe(),
+                    StandardMaterial3D().apply { this.albedoColor = Color.white }
+                )
+            )
+        },
+        TileVectorRenderer(
+            parent,
+            "wind",
+            lift = 1.005,
+            getFn = { it.prevailingWind * 2.5 },
+            categories = listOf("climate", "feature")
+        ),
+    )
+
+    private val animalRangeModes = mutableMapOf<String, PlanetColorMode>()
+    private val sessileRangeModes = mutableMapOf<String, PlanetColorMode>()
+
+    private val ecologyColorModes = buildList {
+        add(
+            SimpleDoubleColorMode(
+                this@PlanetRenderer,
+                "number_of_species_in_ecosystem",
+                categories = listOf("ecology", "overlay"),
+            ) { tile -> tile.ecosystem.speciesCount.toDouble() / TileEcosystem.MAXIMUM_POPULATIONS }
+        )
+        add(
+            SimpleDoubleColorMode(
+                this@PlanetRenderer,
+                "total_biomass",
+                categories = listOf("ecology", "overlay"),
+                colorFn = redWhenNull { value -> Color.black.transparent.lerp(Color.green, value) },
+            ) { tile ->
+                val biomass = tile.ecosystem.totalBiomassKg
+                if (biomass <= 0.0) null else log10(biomass + 1.0) / 15.0
+            }
+        )
+        add(
+            SimpleDoubleColorMode(
+                this@PlanetRenderer,
+                "reef_cover",
+                categories = listOf("ecology", "overlay"),
+                colorFn = redWhenNull { value -> Color.black.transparent.lerp(Color.cyan, value) },
+            ) { tile ->
+                tile.ecosystem.reefCover.coerceIn(0.0, 1.0)
+            }
+        )
+
+        listOf(
+            "carrion" to { tile: PlanetTile -> tile.ecosystem.resources.carrion },
+            "detritus" to { tile: PlanetTile -> tile.ecosystem.resources.detritus },
+            "waste" to { tile: PlanetTile -> tile.ecosystem.resources.waste },
+            "marine_snow" to { tile: PlanetTile -> tile.ecosystem.resources.marineSnow },
+            "fruit" to { tile: PlanetTile -> tile.ecosystem.resources.fruit },
+        ).forEach { (resourceName, resourceValue) ->
+            add(
+                SimpleDoubleColorMode(
+                    this@PlanetRenderer,
+                    "${resourceName}_resource",
+                    categories = listOf("ecology", "overlay"),
+                    colorFn = redWhenNull { value -> Color.black.transparent.lerp(Color.green, value) },
+                ) { tile ->
+                    val resource = resourceValue(tile)
+                    if (resource <= 0.0) null else resource.coerceIn(0.0, 1.0)
+                }
+            )
+        }
+
+        EarthSpeciesCatalog.ALL.filter { it.motile }.sortedBy { it.id }.forEach { species ->
+            val mode = SimpleDoubleColorMode(
+                this@PlanetRenderer,
+                "${species.id}_animal_range",
+                categories = listOf("animal_ranges"),
+                colorFn = redWhenNull { value -> Color.black.transparent.lerp(Color.green, value) },
+            ) { tile ->
+                val biomass = tile.ecosystem.populations
+                    .filter { it.speciesId == species.id }
+                    .sumOf { it.activeBiomassKg + it.dormantBiomassKg }
+                if (biomass <= 0.0) null else ln1p(biomass) / 12.0
+            }
+            animalRangeModes[species.id] = mode
+            add(mode)
+        }
+
+        EarthSpeciesCatalog.ALL.filterNot { it.motile }.sortedBy { it.id }.forEach { species ->
+            val mode = SimpleDoubleColorMode(
+                this@PlanetRenderer,
+                "${species.id}_sessile_range",
+                categories = listOf("sessile_ranges"),
+                colorFn = redWhenNull { value -> Color.black.transparent.lerp(Color.green, value) },
+            ) { tile ->
+                val biomass = tile.ecosystem.populations
+                    .filter { it.speciesId == species.id }
+                    .sumOf { it.activeBiomassKg + it.dormantBiomassKg }
+                if (biomass <= 0.0) null else ln1p(biomass) / 12.0
+            }
+            sessileRangeModes[species.id] = mode
+            add(mode)
+        }
+    }
+
+    val planetColorModes = listOf(
+        BiomeColorMode(this, "biome", useKoppen = true, categories = listOf("default", "biome", "terrain", "base_layer")),
+        BiomeColorMode(this, "terrain", useKoppen = false, categories = listOf("biome", "terrain", "base_layer")),
+        SimpleColorMode(
+            this,
+            "fast_biome",
+            categories = listOf("biome", "debug", "base_layer")
+        ) { if (it.isAboveWater) Color.darkGreen else Color.darkBlue },
+        SimpleColorMode(
+            this,
+            "koppen",
+            categories = listOf("biome", "base_layer")
+        ) { it.koppen.getOrNull()?.color },
+        SimpleColorMode(
+            this,
+            "hersfeldt",
+            categories = listOf("biome", "base_layer")
+        ) { it.hersfeldt.getOrNull()?.color },
+        SimpleColorMode(
+            this,
+            "koppen_terrain",
+            categories = listOf("biome", "base_layer")
+        ) { it.koppen.getOrNull()?.terrainColor },
+        SimpleDoubleColorMode(
+            this,
+            "elevation",
+            categories = listOf("terrain", "overlay"),
+        ) {
+            it.elevation.scaleAndCoerceIn(-10000.0..10000.0, 0.0..1.0)
+        },
+        SimpleDoubleColorMode(
+            this,
+            "density",
+            categories = listOf("terrain", "overlay"),
+            colorFn = redOutsideRange(-1.0..1.0)
+        ) { it.density.adjustRange(-1.0..1.0, 0.0..1.0) },
+        SimpleDoubleColorMode(
+            this,
+            "mountain_elevation",
+            categories = listOf("terrain", "overlay"),
+            colorFn = redOutsideRange(-1.0..1.0)
+        ) { it.elevation.scaleAndCoerceIn(2000.0..12000.0, 0.0..1.0) },
+        SimpleDoubleColorMode(
+            this,
+            "plate_density",
+            categories = listOf("tectonics", "overlay"),
+            colorFn = redOutsideRange(-1.0..1.0)
+        ) { it.tectonicPlate?.density?.adjustRange(-1.0..1.0, 0.0..1.0) },
+        SimpleDoubleColorMode(
+            this,
+            "temperature",
+            categories = listOf("climate", "base_layer"),
+            colorFn = redWhenNull { colorTemperature(it) }
+        ) { it.temperature },
+        SimpleDoubleColorMode(
+            this,
+            "average_temperature",
+            categories = listOf("climate", "base_layer"),
+            colorFn = redWhenNull { colorTemperature(it) }
+        ) { planet.climateMap[it.tileId]?.averageTemperature },
+        SimpleDoubleColorMode(
+            this,
+            "moisture",
+            categories = listOf("climate", "base_layer"),
+            colorFn = redWhenNull {
+                if (it == 0.0) {
+                    Color.yellow
+                } else {
+                    Color(
+                        0.0,
+                        0.0,
+                        min(1.0, it),
+                        1.0
+                    )
+                }
+            }
+        ) { it.moisture },
+        SimpleColorMode(this, "annual_precipitation", categories = listOf("climate", "base_layer")) {
+            colorAnnualRainfall(
+                it.planet.climateMap[it.tileId]?.annualPrecipitation ?: return@SimpleColorMode Color.red
+            )
+        },
+        SimpleDoubleColorMode(
+            this,
+            "hotspots",
+            categories = listOf("tectonics", "overlay"),
+            colorFn = redWhenNull { Color(it, it / 2.0, 0.0, 1.0) }
+        ) {
+            planet.noise.hotspots.sample4d(
+                it.tile.position,
+                planet.tectonicAge.toDouble()
+            )
+        },
+        SimpleColorMode(
+            this,
+            "convergence_zones",
+            categories = listOf("tectonics", "overlay"),
+        ) {
+            val convergenceZone = planet.convergenceZones[it.tile.id] ?: return@SimpleColorMode null
+            val subductionStrength = convergenceZone.subductionStrength
+            val strengthFactor = (convergenceZone.speed * subductionStrength.absoluteValue).pow(0.5)
+            (if (convergenceZone.isSubduction) Color.blue * 3.0 else Color.green * 2.0) * strengthFactor
+        },
+        SimpleColorMode(
+            this,
+            "ocean_arcs",
+            categories = listOf("tectonics", "overlay"),
+        ) {
+            val sourceZone = planet.convergenceZones[it.tile.id]
+            if ((sourceZone?.oceanOceanArcStrength ?: 0.0) > 0.0) {
+                return@SimpleColorMode Color.yellow
+            }
+
+            val adjustment = it.oceanArcUplift
+            if (adjustment <= 0.0) return@SimpleColorMode null
+
+            val intensity = (adjustment / oceanOceanArcElevationStrength)
+                .coerceIn(0.0, 1.0)
+                .pow(0.5)
+            Color(1.0, 0.0, 1.0, 1.0) * max(0.2, intensity)
+        },
+        SimpleColorMode(
+            this,
+            "divergence_zones",
+            categories = listOf("tectonics", "overlay"),
+        ) { if (it.tile.id in planet.divergenceZones) Color.red * planet.divergenceZones[it.tile.id]!!.strength else null },
+        SimpleColorMode(
+            this,
+            "tectonic_plates",
+            categories = listOf("tectonics", "base_layer"),
+        ) { it.tectonicPlate?.debugColor ?: Color.black },
+        SimpleColorMode(
+            this,
+            "slope",
+            categories = listOf("terrain", "overlay"),
+        ) { Color.white * it.slope.scaleAndCoerceIn(0.0..2000.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "contiguous_slope",
+            categories = listOf("terrain", "overlay")
+        ) { Color.white * it.contiguousSlope.scaleAndCoerceIn(0.0..2000.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "non_contiguous_slope",
+            categories = listOf("terrain", "overlay"),
+        ) { Color.white * it.nonContiguousSlope.scaleAndCoerceIn(0.0..2000.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "prominence",
+            categories = listOf("terrain", "overlay"),
+        ) { Color.white * it.prominence.scaleAndCoerceIn(0.0..2000.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "erosion",
+            categories = listOf("erosion", "overlay"),
+        ) {
+            val scaled = it.erosionDelta.scaleAndCoerceIn(-50.0..50.0, -1.0..1.0).absoluteValue
+            when {
+                it.erosionDelta < 0 -> Color.red * scaled
+                it.erosionDelta > 0 -> Color.blue * scaled
+                else -> Color.gray
+            }
+        },
+        SimpleColorMode(
+            this,
+            "deposit_flow",
+            categories = listOf("erosion", "overlay"),
+        ) { Color.green * it.depositFlow.scaleAndCoerceIn(0.0..250.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "water_flow",
+            categories = listOf("erosion", "overlay"),
+        ) { Color.blue * it.waterFlow.scaleAndCoerceIn(0.0..50.0, 0.0..1.0) },
+        SimpleColorMode(
+            this,
+            "crust_age",
+            categories = listOf("tectonics", "overlay"),
+        ) {
+            Color.white * it.formationTime.toDouble()
+                .scaleAndCoerceIn(planet.oldestCrust.toDouble()..planet.youngestCrust.toDouble(), 0.0..1.0)
+        },
+        SimpleColorMode(
+            this,
+            "insolation",
+            categories = listOf("climate", "overlay"),
+        ) { planetTile ->
+            Color.black.transparent.lerp(Color.orange, planetTile.lightLevel)
+        },
+        SimpleColorMode(
+            this,
+            "annual_insolation",
+            categories = listOf("climate", "overlay"),
+        ) { planetTile ->
+            Color.black.transparent.lerp(Color.orange, planetTile.averageAnnualLight)
+        },
+        SimpleColorMode(
+            this,
+            "edge_depth",
+            categories = listOf("terrain", "overlay"),
+        ) { planetTile ->
+            Color.white * (planetTile.edgeDepth / 40.0)
+        },
+        SimpleColorMode(
+            this,
+            "continentiality",
+            categories = listOf("terrain", "overlay"),
+        ) { planetTile ->
+            if (planetTile.continentiality >= 0) {
+                Color.red * (planetTile.continentiality / 40.0)
+            } else {
+                Color.blue * (-planetTile.continentiality / 40.0)
+            }
+        },
+        SimpleColorMode(
+            this,
+            "itcz",
+            categories = listOf("climate", "overlay"),
+        ) { planetTile ->
+            val distance = planet.itczDistanceMap[planetTile.tile.id] ?: return@SimpleColorMode null
+            if (distance == -1) Color.red else Color.blue * max(0.0, 1 - distance / 5.0)
+        },
+        SimpleColorMode(
+            this,
+            "date_line",
+            categories = listOf("debug", "overlay"),
+        ) { planetTile ->
+            if (
+                longitudeDistanceDegrees(
+                    planetTile.tile.position.toGeoPoint().longitudeDegrees,
+                    planet.internationalDateLine * 180 / PI
+                ) <= 2.5
+            ) {
+                Color.white
+            } else {
+                Color.black
+            }
+        },
+        SimpleColorMode(this, "air_pressure", categories = listOf("climate", "base_layer")) { planetTile ->
+            colorAirPressure(planetTile.airPressure)
+//            if (airPressure <= ClimateSimulation.basePressure) {
+//                Color.black.lerp(Color.blue, ((airPressure - ClimateSimulation.basePressure) / 25).pow(2))
+//            } else {
+//                Color.black.lerp(
+//                    Color.darkorange,
+//                    ((ClimateSimulation.basePressure - airPressure) / 25).pow(2)
+//                )
+//            }
+        },
+        SimpleColorMode(this, "ocean_currents", categories = listOf("climate", "overlay")) {
+            val current = planet.oceanCurrents[it.tile.id] ?: return@SimpleColorMode null
+            if (current.temperature > 0) {
+                Color.red * current.temperature
+            } else {
+                Color.blue * current.temperature
+            }
+        },
+        SimpleColorMode(
+            this,
+            "surface_stone",
+            categories = listOf("tectonics", "base_layer")
+        ) { it.stoneColumn.surface.colors[0] },
+        SimpleColorMode(
+            this,
+            "middle_stone",
+            categories = listOf("tectonics", "base_layer")
+        ) { it.stoneColumn.middle.colors[0] },
+        SimpleColorMode(
+            this,
+            "deep_stone",
+            categories = listOf("tectonics", "base_layer")
+        ) { it.stoneColumn.deep.colors[0] },
+        SimpleColorMode(
+            this,
+            "grey_land",
+            categories = listOf("debug", "base_layer")
+        ) { if (it.isAboveWater) Color.dimGray else Color.black },
+        SimpleColorMode(this, "debug_color", categories = listOf("debug")) { it.debugColor },
+    ) + ecologyColorModes
+
+    val meshInstance = MeshInstance3D().also { it.setName("Planet") }
+
+    init {
+        parent.addChild(meshInstance, forceReadableName = true)
+        planetDebugRenders.forEach { it.init() }
+        planetColorModes.forEach { it.init() }
+        updateEcologyModeAvailability()
+    }
+
+    fun update(planet: Planet) {
+        this.planet = planet
+        updateEcologyModeAvailability()
+        updateMesh()
+
+        val timeTaken = measureTime {
+            planetDebugRenders.forEach {
+                it.update(planet)
+            }
+        }
+
+        GD.print("Updating renderers took ${timeTaken.inWholeMilliseconds}ms")
+    }
+
+    private fun updateEcologyModeAvailability() {
+        val extantSpecies = planet.planetTiles.values
+            .flatMap { tile -> tile.ecosystem.populations.map { it.speciesId } }
+            .toSet()
+        animalRangeModes.forEach { (speciesId, mode) -> mode.setAvailable(speciesId in extantSpecies) }
+        sessileRangeModes.forEach { (speciesId, mode) -> mode.setAvailable(speciesId in extantSpecies) }
+    }
+
+    fun getColor(planetTile: PlanetTile): Color {
+        val colors = planetColorModes.filter { it.visible }
+            .mapNotNull { mode -> mode.colorsFor(planetTile).first() }
+        return colors.alphaAverage()
+    }
+
+    fun updateMesh() {
+        val colorModeResults = planetColorModes.filter { it.visible }.map { mode ->
+            planet.topology.tiles.flatMap { tile -> mode.colorsFor(planet.getTile(tile)) }
+        }
+
+        val colors = if (colorModeResults.isNotEmpty()) {
+            val resultsSize = colorModeResults.first().size
+            if (colorModeResults.any { it.size != resultsSize }) {
+                throw IllegalStateException("Color mode results don't match")
+            }
+
+            (0..<resultsSize).map { i ->
+                colorModeResults.mapNotNull { it[i] }.alphaAverage()
+            }
+        } else {
+            listOf()
+        }
+
+        meshInstance.setMesh(
+            planet.topology.makeMesh().apply {
+                this.recalculateNormals()
+                this.colors.addAll(colors)
+            }.toArrayMesh()
+        )
+        meshInstance.setSurfaceOverrideMaterial(0, GD.load<StandardMaterial3D>("res://resources/planet_mat.tres"))
+        Gui.instance.updateMapPreview()
+    }
+}

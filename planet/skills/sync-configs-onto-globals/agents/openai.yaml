@@ -1,4 +1,0 @@
-interface:
-  display_name: "Sync Configs onto Globals"
-  short_description: "Align JSON config values with Kotlin globals"
-  default_prompt: "Use $sync-configs-onto-globals to manually synchronize JSON config values into their Kotlin global objects."
