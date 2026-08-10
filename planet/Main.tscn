@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmkocv3nkrkyu" path="res://src/main/kotlin/dev/biserman/planet/Main.kt" id="1_fos0i"]
 [ext_resource type="Script" uid="uid://dmx2lv8h3dueu" path="res://src/main/kotlin/dev/biserman/planet/CameraGimbal.kt" id="2_3dxm6"]
-[ext_resource type="Shader" uid="uid://btkv6gpr8s625" path="res://environment/BackgroundStars.gdshader" id="3_3dxm6"]
+[ext_resource type="Shader" uid="uid://btkv6gpr8s625" path="res://shaders/background_stars.gdshader" id="3_3dxm6"]
 [ext_resource type="Script" uid="uid://b7nsjxx3youtc" path="res://src/main/kotlin/dev/biserman/planet/gui/Gui.kt" id="3_lgr22"]
 [ext_resource type="Script" uid="uid://wubsouopi724" path="res://src/main/kotlin/dev/biserman/planet/gui/StatsGraphPlot.kt" id="4_trn2v"]
 [ext_resource type="Script" uid="uid://bes5fsy1wcg2t" path="res://src/main/kotlin/dev/biserman/planet/gui/ShowSettingsButton.kt" id="5_03owx"]

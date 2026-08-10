@@ -186,8 +186,8 @@ class Language(
 }
 
 object SyllableConstructor {
-    var languageFile = "english.json"
-    var phonemeFile = "phonemes.json"
+    var languageFile = "config/english.json"
+    var phonemeFile = "config/phonemes.json"
 
     val languageSettings: LanguageSettingsJson by lazy {
         val mapper = jacksonObjectMapper()

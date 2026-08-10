@@ -11,8 +11,8 @@ class ClimateTunerConfigurationTest {
     @Test
     fun `checked-in climate config fits the tuning space`() {
         val mapper = Serialization.configMapper
-        val config = mapper.readTree(File("climate_config.json")) as ObjectNode
-        val space = mapper.readValue(File("climate_tuning.json"), ClimateTuningSpace::class.java)
+        val config = mapper.readTree(File("config/climate_config.json")) as ObjectNode
+        val space = mapper.readValue(File("config/climate_tuning.json"), ClimateTuningSpace::class.java)
 
         space.parameters.forEach { parameter ->
             val value = config.get(parameter.name)?.doubleValue()

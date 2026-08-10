@@ -386,7 +386,7 @@ class Gui() : Node() {
         saveButton.pressed.connect { saveDialog.popup() }
         loadButton.pressed.connect { loadDialog.popup() }
         fun reloadConfigFiles() {
-            val tectonicsConfig = File("tectonics_config.json")
+            val tectonicsConfig = File("config/tectonics_config.json")
             if (tectonicsConfig.exists()) {
                 Serialization.configMapper.readValue<TectonicGlobals>(tectonicsConfig)
                 GD.print("Config refreshed!")
@@ -395,7 +395,7 @@ class Gui() : Node() {
                 GD.print("No tectonics_config.json file found, created one with default values.")
             }
 
-            val climateConfig = File("climate_config.json")
+            val climateConfig = File("config/climate_config.json")
             if (climateConfig.exists()) {
                 Serialization.configMapper.readValue<ClimateSimulationGlobals>(climateConfig)
                 GD.print("Config refreshed!")
@@ -404,7 +404,7 @@ class Gui() : Node() {
                 GD.print("No climate_config.json file found, created one with default values.")
             }
 
-            val ecologyConfig = File("ecology_config.json")
+            val ecologyConfig = File("config/ecology_config.json")
             if (ecologyConfig.exists()) {
                 Serialization.configMapper.readValue<EcologyGlobals>(ecologyConfig)
                 PlanetEcology.refreshRuntimeConfig()

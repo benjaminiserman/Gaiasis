@@ -671,7 +671,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
                 this.colors.addAll(colors)
             }.toArrayMesh()
         )
-        meshInstance.setSurfaceOverrideMaterial(0, GD.load<StandardMaterial3D>("res://planet_mat.tres"))
+        meshInstance.setSurfaceOverrideMaterial(0, GD.load<StandardMaterial3D>("res://resources/planet_mat.tres"))
         Gui.instance.updateMapPreview()
     }
 }

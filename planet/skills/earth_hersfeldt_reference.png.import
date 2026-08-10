@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://exe4mdnpahpx"
-path="res://.godot/imported/import_elevation.png-556ee0dc8e35fbc88af1670d7045774d.ctex"
+uid="uid://vky7qdvh10wk"
+path="res://.godot/imported/earth_hersfeldt_reference.png-c16a6a38f7f4b391a7ae1027ca44637a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://import_elevation.png"
-dest_files=["res://.godot/imported/import_elevation.png-556ee0dc8e35fbc88af1670d7045774d.ctex"]
+source_file="res://skills/earth_hersfeldt_reference.png"
+dest_files=["res://.godot/imported/earth_hersfeldt_reference.png-c16a6a38f7f4b391a7ae1027ca44637a.ctex"]
 
 [params]
 

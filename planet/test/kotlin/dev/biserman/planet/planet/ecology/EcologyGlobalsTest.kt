@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 class EcologyGlobalsTest {
     @Test
     fun `checked in ecology config matches the reloadable globals`() {
-        val configFile = File("ecology_config.json")
+        val configFile = File("config/ecology_config.json")
         val checkedIn = Serialization.configMapper.readTree(configFile)
         val currentGlobals = Serialization.configMapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(
             EcologyGlobals,

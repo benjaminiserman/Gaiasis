@@ -387,8 +387,8 @@ private fun parseClimateTunerOptions(args: Array<String>): ClimateTunerOptions {
     return ClimateTunerOptions(
         planetFile = File(values["planet"] ?: "save/earth.json"),
         referenceFile = File(values["reference"] ?: HersfeldtReference.defaultFilename),
-        configFile = File(values["config"] ?: "climate_config.json"),
-        tuningSpaceFile = File(values["space"] ?: "climate_tuning.json"),
+        configFile = File(values["config"] ?: "config/climate_config.json"),
+        tuningSpaceFile = File(values["space"] ?: "config/climate_tuning.json"),
         outputFile = output,
         reportFile = File(values["report"] ?: File(output.parentFile ?: File("."), "report.json").path),
         maxEvaluations = values["max-evaluations"]?.toInt()
@@ -423,7 +423,7 @@ private fun printClimateTunerHelp() {
         Tune ClimateSimulationGlobals against the Hersfeldt Earth reference.
 
         Usage:
-          .\tune_climate.ps1 [options]
+          .\skills\tune_climate.ps1 [options]
 
         Options:
           --planet FILE          Imported Earth planet save (default: save/earth.json)

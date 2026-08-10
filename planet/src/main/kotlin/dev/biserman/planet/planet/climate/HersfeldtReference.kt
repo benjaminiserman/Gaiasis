@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 
 /** Scores simulated land climates against the painted equirectangular reference. */
 object HersfeldtReference {
-    const val defaultFilename = "earth_hersfeldt_reference.png"
+    const val defaultFilename = "skills/earth_hersfeldt_reference.png"
 
     data class ClimateLabel(val id: String, val name: String, val color: String)
 

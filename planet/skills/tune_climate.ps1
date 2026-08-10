@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$projectRoot = $PSScriptRoot
+$projectRoot = Split-Path -Parent $PSScriptRoot
 $gradle = Join-Path $projectRoot "gradlew.bat"
 $skipBuild = $false
 $godotProjectRoot = $projectRoot
@@ -72,7 +72,7 @@ if (-not $skipBuild) {
     }
 }
 
-$tunerScene = Join-Path $godotProjectRoot "tune_climate.tscn"
+$tunerScene = Join-Path $godotProjectRoot "skills/tune_climate.tscn"
 $godotArguments = @("--headless", "--path", $godotProjectRoot, $tunerScene, "--") + $tunerArguments
 # Some sandboxed shells inject both Path and PATH. Windows PowerShell's
 # Start-Process rejects that duplicate even though Windows normally treats the
