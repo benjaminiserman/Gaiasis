@@ -18,9 +18,6 @@ jobs:
   lint-build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: ./planet
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,4 +43,3 @@ jobs:
           name: gradle-reports
           path: planet/build/reports
           retention-days: 7
-
