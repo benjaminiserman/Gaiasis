@@ -5,16 +5,16 @@
 .idea
 build
 jvm
-planet/addons/
-planet/examples/
-planet/hs_err_pid*.log
-planet/earth_hersfeldt_reference.*
+addons/
+examples/
+hs_err_pid*.log
+earth_hersfeldt_reference.*
 exports/
 
 # save folder and ignored contents
-planet/save/*
-!planet/save/complex.json
-!planet/save/nice_continents.json
-!planet/save/noodle_pangea.json
-!planet/save/planet_supercontinent.json
-!planet/save/pretty_world.json
+save/*
+!save/complex.json
+!save/nice_continents.json
+!save/noodle_pangea.json
+!save/planet_supercontinent.json
+!save/pretty_world.json

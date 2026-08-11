@@ -6,8 +6,8 @@
 *.bat           text eol=crlf
 
 # Planet saves are large binary-like snapshots and should not inflate Git history.
-planet/save/*.json filter=lfs diff=lfs merge=lfs -text
-planet/save/*.json.gz filter=lfs diff=lfs merge=lfs -text
+save/*.json filter=lfs diff=lfs merge=lfs -text
+save/*.json.gz filter=lfs diff=lfs merge=lfs -text
 
 # Jupyter notebooks are large generated/documentation artifacts.
 **/*.ipynb filter=lfs diff=lfs merge=lfs -text
