@@ -36,15 +36,15 @@ Use `./gradlew ktlintCheck` to check the code or use `./gradlew ktlintFormat` to
 
 ## Configuration
 
-- `planet/tectonics_config.json` contains reloadable tectonic and erosion parameters.
-- `planet/climate_config.json` contains reloadable climate simulation parameters.
+- `planet/config/tectonics_config.json` contains reloadable tectonic and erosion parameters.
+- `planet/config/climate_config.json` contains reloadable climate simulation parameters.
 - The climate menu also exposes runtime-only modifiers that are intentionally not written to either file.
 
 Use the in-game refresh button after editing a configuration file.
 
 To calibrate `climate_config.json` against the bundled Earth Hersfeldt reference,
-use the headless, resumable tuner described in
-[`planet/CLIMATE_TUNING.md`](planet/CLIMATE_TUNING.md).
+run `planet/skills/tune_climate.ps1` using the workflow in
+[`planet/skills/climate-tuner/SKILL.md`](planet/skills/climate-tuner/SKILL.md).
 
 ## Project Layout
 
