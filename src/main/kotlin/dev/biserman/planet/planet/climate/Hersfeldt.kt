@@ -680,16 +680,25 @@ object Hersfeldt : ClimateClassifier {
         return longest
     }
 
-    // Hargreaves method for calculating potential evapotranspiration
+    /**
+     * Monthly potential evapotranspiration using the radiation-based Hargreaves method.
+     *
+     * [averageDailyInsolation] must be the 24-hour mean surface solar flux in W/m². The result is
+     * expressed in mm per 30-day classifier month.
+     */
     fun hargreavesPet(
         averageTemperature: Double, // °C
-        insolation: Double // W/m²
+        averageDailyInsolation: Double, // W/m²
     ): Double {
-        val insolationMegajoules = insolation * 0.0864
-        return 0.0135 *
-            (averageTemperature + 17.8) *
-            insolationMegajoules *
-            (238.8 / (595.5 - 0.55 * averageTemperature))
+        val solarRadiation = max(averageDailyInsolation, 0.0) * 0.0864 // MJ/m²/day
+        val latentHeatOfVaporization = (595.5 - 0.55 * averageTemperature) / 238.8 // MJ/kg
+        if (solarRadiation == 0.0 || latentHeatOfVaporization <= 0.0) return 0.0
+
+        val dailyPet = max(
+            0.0,
+            0.0135 * (averageTemperature + 17.8) * solarRadiation / latentHeatOfVaporization,
+        )
+        return dailyPet * monthLength
     }
 
     fun koppenlikePet(averageTemperature: Double) = max(0.0, 7 * averageTemperature)
@@ -794,7 +803,7 @@ object Hersfeldt : ClimateClassifier {
     )
 
     fun diagnostics(datum: ClimateDatum): Diagnostics {
-        val pet = datum.months.map { koppenlikePet(it.averageTemperature) }
+        val pet = datum.months.map { hargreavesPet(it.averageTemperature, it.insolation) }
         val aet = estimateAet(datum, pet)
         val gddResults = gdd(datum)
         val winterTemperature = datum.months.minOf { it.averageTemperature }

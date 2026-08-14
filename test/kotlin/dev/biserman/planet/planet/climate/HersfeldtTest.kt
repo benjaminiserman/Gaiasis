@@ -6,6 +6,23 @@ import org.junit.jupiter.api.Test
 
 class HersfeldtTest {
     @Test
+    fun `Hargreaves PET converts mean irradiance to monthly water depth`() {
+        val temperature = 20.0
+        val irradiance = 200.0
+        val dailySolarRadiation = irradiance * 0.0864
+        val latentHeatOfVaporization = (595.5 - 0.55 * temperature) / 238.8
+        val expectedDailyPet = 0.0135 * (temperature + 17.8) * dailySolarRadiation / latentHeatOfVaporization
+
+        assertEquals(expectedDailyPet * Hersfeldt.monthLength, Hersfeldt.hargreavesPet(temperature, irradiance), 1e-9)
+    }
+
+    @Test
+    fun `Hargreaves PET cannot be negative`() {
+        assertEquals(0.0, Hersfeldt.hargreavesPet(20.0, -100.0))
+        assertEquals(0.0, Hersfeldt.hargreavesPet(-20.0, 200.0))
+    }
+
+    @Test
     fun `AET cannot evaporate more water than precipitation and stored soil moisture`() {
         val datum = ClimateDatum(
             tileId = 0,
