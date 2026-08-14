@@ -624,46 +624,60 @@ object Hersfeldt : ClimateClassifier {
             datum.months.map { minOf(gddzGraph(it.averageTemperature), gddizGraph(it.insolation)) * monthLength }
         val monthlyGint = monthlyGddz.map { max(0.0, 15 * monthLength - it) }
 
-        var totalGdd = 0.0
-        var totalGddl = 0.0
-        var totalGddz = 0.0
-        var totalGint = 0.0
-
-        var accumulatedGdd = 0.0
-        var accumulatedGddl = 0.0
-        var accumulatedGddz = 0.0
-        var accumulatedGint = 0.0
-        for (i in 0..<(datum.months.size * 3)) {
-            accumulatedGdd += monthlyGdd[i % datum.months.size]
-            accumulatedGddl += monthlyGddl[i % datum.months.size]
-            accumulatedGddz += monthlyGddz[i % datum.months.size]
-            accumulatedGint += monthlyGint[i % datum.months.size]
-
-            if (monthlyGdd[i % datum.months.size] <= 0.0 && accumulatedGint >= gintThreshold) {
-                accumulatedGdd = 0.0
-            }
-
-            if (monthlyGddl[i % datum.months.size] <= 0.0) {
-                accumulatedGddl = 0.0
-            }
-
-            if (monthlyGddz[i % datum.months.size] <= 0.0) {
-                accumulatedGddz = 0.0
-            }
-
-            if (monthlyGint[i % datum.months.size] <= 0.0) {
-                accumulatedGint = 0.0
-            }
-
-            if (i >= datum.months.size * 2) {
-                totalGdd = max(totalGdd, accumulatedGdd)
-                totalGddl = max(totalGddl, accumulatedGddl)
-                totalGddz = max(totalGddz, accumulatedGddz)
-                totalGint = max(totalGint, accumulatedGint)
-            }
-        }
+        val gddResetIndices = gddResetIndices(monthlyGdd, monthlyGint)
+        val totalGdd = longestCyclicAccumulation(monthlyGdd, gddResetIndices)
+        val totalGddl = longestCyclicAccumulation(
+            monthlyGddl,
+            monthlyGddl.indices.filterTo(mutableSetOf()) { monthlyGddl[it] <= 0.0 },
+        )
+        val totalGddz = longestCyclicAccumulation(
+            monthlyGddz,
+            monthlyGddz.indices.filterTo(mutableSetOf()) { monthlyGddz[it] <= 0.0 },
+        )
+        val totalGint = longestCyclicAccumulation(
+            monthlyGint,
+            monthlyGint.indices.filterTo(mutableSetOf()) { monthlyGint[it] <= 0.0 },
+        )
 
         return GddResults(monthlyGdd, monthlyGddl, monthlyGddz, monthlyGint, totalGdd, totalGddl, totalGddz, totalGint)
+    }
+
+    private fun gddResetIndices(
+        monthlyGdd: List<Double>,
+        monthlyGint: List<Double>,
+    ): Set<Int> {
+        if (monthlyGint.all { it > 0.0 }) {
+            return monthlyGdd.indices.filterTo(mutableSetOf()) { monthlyGdd[it] <= 0.0 }
+        }
+
+        val resetIndices = mutableSetOf<Int>()
+        var accumulatedGint = 0.0
+        for (i in 0..<(monthlyGint.size * 2)) {
+            val index = i % monthlyGint.size
+            accumulatedGint += monthlyGint[index]
+            if (i >= monthlyGint.size && monthlyGdd[index] <= 0.0 && accumulatedGint >= gintThreshold) {
+                resetIndices += index
+            }
+            if (monthlyGint[index] <= 0.0) accumulatedGint = 0.0
+        }
+        return resetIndices
+    }
+
+    private fun longestCyclicAccumulation(
+        values: List<Double>,
+        resetIndices: Set<Int>,
+    ): Double {
+        if (resetIndices.isEmpty()) return Double.POSITIVE_INFINITY
+
+        var accumulated = 0.0
+        var longest = 0.0
+        for (i in 0..<(values.size * 2)) {
+            val index = i % values.size
+            accumulated += values[index]
+            if (index in resetIndices) accumulated = 0.0
+            if (i >= values.size) longest = max(longest, accumulated)
+        }
+        return longest
     }
 
     // Hargreaves method for calculating potential evapotranspiration
@@ -814,52 +828,61 @@ object Hersfeldt : ClimateClassifier {
         planet: Planet,
         datum: ClimateDatum
     ): ClimateClassification {
-        // climate parameters
         val diagnostics = diagnostics(datum)
-        val pet = diagnostics.pet
-        val aet = diagnostics.aet
-        val aridityFactor = diagnostics.aridityFactor
-        val evaporationRatio = diagnostics.evaporationRatio
-        val minIce = minIce(planet, datum)
-        val maxIce = maxIce(planet, datum)
+        val tile = planet.planetTiles[datum.tileId]!!
 
+        if (!tile.isAboveWater) {
+            return classifyOcean(diagnostics, minIce(planet, datum), maxIce(planet, datum))
+        }
+
+        return classifyLand(diagnostics, minIce(planet, datum))
+    }
+
+    internal fun classifyOcean(
+        diagnostics: Diagnostics,
+        minIce: Double,
+        maxIce: Double,
+    ): ClimateClassification {
+        val minTemp = diagnostics.winterTemperature
+        val maxTemp = diagnostics.summerTemperature
         val gddResults = diagnostics.gddResults
 
+        return when {
+            minIce >= 0.8 -> PERMANENT_FROZEN_OCEAN
+            maxIce >= 0.2 && gddResults.totalGddl >= 50 -> SEASONAL_FROZEN_OCEAN
+            maxIce >= 0.2 && gddResults.totalGddl < 50 -> DARK_SEASONAL_FROZEN_OCEAN
+            gddResults.totalGddl < 50 -> DARK_OCEAN
+            maxTemp >= 60 -> TORRID_OCEAN
+            minTemp < 18 && maxTemp >= 40 -> EXTRASEASONAL_OCEAN
+            maxTemp >= 40 -> HOT_OCEAN
+            minTemp >= 18 -> TROPICAL_OCEAN
+            else -> COOL_OCEAN
+        }
+    }
+
+    internal fun classifyLand(
+        diagnostics: Diagnostics,
+        minIce: Double,
+    ): ClimateClassification {
+        val aridityFactor = diagnostics.aridityFactor
+        val evaporationRatio = diagnostics.evaporationRatio
+        val gddResults = diagnostics.gddResults
         val growthSupply = diagnostics.growthSupply
         val growthAridityFactor = diagnostics.growthAridityFactor
-
-        // tuned thresholds
         val winterType = diagnostics.winterType
         val summerType = diagnostics.summerType
 
-        // classification
-        val tile = planet.planetTiles[datum.tileId]!!
-
-        // Ocean classification
-        if (!tile.isAboveWater) {
-            val minTemp = datum.months.minOf { it.averageTemperature }
-            val maxTemp = datum.months.maxOf { it.averageTemperature }
-
-            return when {
-                // Permanent ice
-                minIce >= 0.8 -> PERMANENT_FROZEN_OCEAN
-                // Seasonal ice with sufficient light
-                maxIce >= 0.2 && gddResults.totalGddl >= 50 -> SEASONAL_FROZEN_OCEAN
-                // Dark seasonal frozen (low light)
-                maxIce >= 0.2 && gddResults.totalGddl < 50 -> DARK_SEASONAL_FROZEN_OCEAN
-                // Dark ocean (warm but low light)
-                gddResults.totalGddl < 50 -> DARK_OCEAN
-                // Temperature-based ocean types
-                minTemp < 18 && maxTemp >= 40 -> EXTRASEASONAL_OCEAN
-                maxTemp >= 60 -> TORRID_OCEAN
-                maxTemp >= 40 -> HOT_OCEAN
-                minTemp >= 18 -> TROPICAL_OCEAN
-                else -> COOL_OCEAN
-            }
-        }
-
         if (minIce >= 0.8) {
             return ICE
+        }
+
+        if (gddResults.totalGddz < 50) {
+            return when {
+                winterType == WinterType.MILD && summerType == SummerType.WARM -> TROPICAL_BARREN
+                winterType == WinterType.MILD -> HOT_BARREN
+                summerType == SummerType.WARM -> COLD_BARREN
+                else -> EXTRASEASONAL_BARREN
+            }
         }
 
         // Arid climates (very low aridity factor)
@@ -895,11 +918,26 @@ object Hersfeldt : ClimateClassifier {
         // Tropical climates (warm summers, mild winters)
         if (winterType == WinterType.MILD && summerType == SummerType.WARM) {
             // Check for marginal tropical
-            if (gddResults.totalGddz < 50) return TROPICAL_BARREN
             if (gddResults.totalGdd < 350) return TROPICAL_TWILIGHT
 
             // Eutropical vs Quasitropical
             val isEutropical = gddResults.totalGint < gintThreshold
+
+            if (growthAridityFactor < 0.5) {
+                return if (isEutropical) {
+                    if (evaporationRatio < 0.45) {
+                        TROPICAL_DRY_MONSOON_SAVANNA
+                    } else {
+                        TROPICAL_DRY_SAVANNA
+                    }
+                } else {
+                    if (evaporationRatio < 0.45) {
+                        QUASITROPICAL_DRY_MONSOON_SAVANNA
+                    } else {
+                        QUASITROPICAL_DRY_SAVANNA
+                    }
+                }
+            }
 
             return when {
                 // Rainforest
@@ -935,7 +973,7 @@ object Hersfeldt : ClimateClassifier {
                     }
                 }
                 // Moist savanna
-                growthAridityFactor >= 0.5 -> {
+                else -> {
                     if (isEutropical) {
                         if (evaporationRatio < 0.45) {
                             TROPICAL_MOIST_MONSOON_SAVANNA
@@ -950,28 +988,11 @@ object Hersfeldt : ClimateClassifier {
                         }
                     }
                 }
-                // Dry savanna
-                else -> {
-                    if (isEutropical) {
-                        if (evaporationRatio < 0.45) {
-                            TROPICAL_DRY_MONSOON_SAVANNA
-                        } else {
-                            TROPICAL_DRY_SAVANNA
-                        }
-                    } else {
-                        if (evaporationRatio < 0.45) {
-                            QUASITROPICAL_DRY_MONSOON_SAVANNA
-                        } else {
-                            QUASITROPICAL_DRY_SAVANNA
-                        }
-                    }
-                }
             }
         }
 
         // Hot climates (hot/torrid/boiling summers, mild winters)
         if (winterType == WinterType.MILD && summerType != SummerType.WARM) {
-            if (gddResults.totalGddz < 50) return HOT_BARREN
             // Check for marginal hot
             if (gddResults.totalGdd < 350) {
                 return when (summerType) {
@@ -1029,21 +1050,20 @@ object Hersfeldt : ClimateClassifier {
             }
 
             // Supertropical
-            if (gddResults.totalGint <= 1250 && growthSupply >= 0.8) {
+            if (summerType == SummerType.HOT && gddResults.totalGint <= 1250 && growthSupply >= 0.8) {
                 return when {
-                    summerType == SummerType.HOT && aridityFactor >= 0.75 ->
+                    aridityFactor >= 0.75 ->
                         if (evaporationRatio < 0.45) {
                             SUPERTROPICAL_MONSOON_FOREST
                         } else {
                             SUPERTROPICAL_FOREST
                         }
-                    aridityFactor <= 0.75 ->
+                    else ->
                         if (evaporationRatio < 0.45) {
                             SUPERTROPICAL_MOIST_MONSOON_SAVANNA
                         } else {
                             SUPERTROPICAL_MOIST_SAVANNA
                         }
-                    else -> throw Error("Invalid summer type")
                 }
             }
 
@@ -1075,8 +1095,6 @@ object Hersfeldt : ClimateClassifier {
         if ((winterType == WinterType.COOL || winterType == WinterType.COLD || winterType == WinterType.FRIGID) &&
             (summerType == SummerType.HOT || summerType == SummerType.TORRID || summerType == SummerType.BOILING)
         ) {
-            if (gddResults.totalGddz < 50) return EXTRASEASONAL_BARREN
-
             val isHyperseasonal = (
                 summerType == SummerType.TORRID ||
                     summerType == SummerType.BOILING ||
@@ -1163,9 +1181,6 @@ object Hersfeldt : ClimateClassifier {
         if ((winterType == WinterType.COOL || winterType == WinterType.COLD || winterType == WinterType.FRIGID) &&
             summerType == SummerType.WARM
         ) {
-            if (gddResults.totalGddz < 50) {
-                return COLD_BARREN
-            }
             // Check for marginal cold
             if (gddResults.totalGdd < 350) {
                 val isOceanic = winterType == WinterType.COOL
@@ -1212,7 +1227,7 @@ object Hersfeldt : ClimateClassifier {
             }
 
             // Temperate
-            if (gddResults.totalGint >= gintThreshold && gddResults.totalGdd >= 1300) {
+            if (gddResults.totalGdd >= 1300) {
                 return if (isOceanic) {
                     if (evaporationRatio < 0.45) {
                         OCEANIC_TEMPERATE_RAINFOREST
