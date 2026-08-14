@@ -1,7 +1,6 @@
 package dev.biserman.planet.planet
 
 import dev.biserman.planet.planet.tectonics.StonePlacement
-import dev.biserman.planet.things.MutableComponentSet.Companion.mutableComponentSetOf
 import dev.biserman.planet.things.Resource
 import dev.biserman.planet.things.Stone
 import dev.biserman.planet.things.StoneComponent
@@ -48,21 +47,19 @@ class WorldKinds {
         )
     }
 
-    fun generateStone(planet: Planet, placementType: StonePlacementType, ordinal: Int): Stone = Stone(
-        mutableComponentSetOf(
-            StoneComponent(
-                placementType.name + " $ordinal",
-                planet.random.nextDouble(-1.0, 1.0),
-                planet.random.nextDouble(
-                    -1.0,
-                    1.0
-                ) + if (placementType.stoneType == StoneType.Igneous) 0.5 else 0.0,
-                planet.random.nextDouble(
-                    0.8,
-                    1.2
-                ) + if (placementType.stoneType == StoneType.Sedimentary) 0.2 else 0.0,
-                placementType
-            )
+    fun generateStone(planet: Planet, placementType: StonePlacementType, ordinal: Int) = Stone(
+        StoneComponent(
+            placementType.name + " $ordinal",
+            planet.random.nextDouble(-1.0, 1.0),
+            planet.random.nextDouble(
+                -1.0,
+                1.0
+            ) + if (placementType.stoneType == StoneType.Igneous) 0.5 else 0.0,
+            planet.random.nextDouble(
+                0.8,
+                1.2
+            ) + if (placementType.stoneType == StoneType.Sedimentary) 0.2 else 0.0,
+            placementType
         ),
         listOf(
             Color.fromHsv(
