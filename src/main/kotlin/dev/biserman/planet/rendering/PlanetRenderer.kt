@@ -4,6 +4,7 @@ import dev.biserman.planet.geometry.*
 import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.Planet
 import dev.biserman.planet.planet.PlanetTile
+import dev.biserman.planet.planet.climate.Hersfeldt
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.TileEcosystem
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.oceanOceanArcElevationStrength
@@ -43,6 +44,15 @@ import kotlin.time.measureTime
 private const val MAJOR_RIVER_MIN_UPSTREAM_SEGMENTS = 20
 
 class PlanetRenderer(parent: Node, var planet: Planet) {
+    private fun diagnosticValue(tile: PlanetTile, valueFn: (Hersfeldt.Diagnostics) -> Double): Double? =
+        planet.climateMap[tile.tileId]?.let {
+            val value = valueFn(Hersfeldt.diagnostics(it))
+            if (value.isNaN()) null else value
+        }
+
+    private val maximumAnnualDegreeDays = 20.0 * Hersfeldt.monthLength * 12.0
+    private val maximumAnnualPotentialEvapotranspiration = 7.0 * 90.0 * 12.0
+
     fun colorTemperature(temperature: Double): Color = when {
         temperature >= 30 -> Color.html("D31FB4")
         temperature >= 27.5 -> Color.html("93197E")
@@ -356,10 +366,81 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
         ) { it.koppen.getOrNull()?.terrainColor },
         SimpleDoubleColorMode(
             this,
+            "aridity_factor",
+            categories = listOf("climate", "overlay"),
+        ) { diagnosticValue(it) { value -> value.aridityFactor.coerceIn(0.0, 1.0) } },
+        SimpleDoubleColorMode(
+            this,
+            "growth_aridity_factor",
+            categories = listOf("climate", "overlay"),
+        ) { diagnosticValue(it) { value -> value.growthAridityFactor.coerceIn(0.0, 1.0) } },
+        SimpleDoubleColorMode(
+            this,
+            "growth_supply",
+            categories = listOf("climate", "overlay"),
+        ) { diagnosticValue(it) { value -> value.growthSupply.scaleAndCoerce01(0.0..3.0) } },
+        SimpleDoubleColorMode(
+            this,
+            "evaporation_ratio",
+            categories = listOf("climate", "overlay"),
+        ) { diagnosticValue(it) { value -> value.evaporationRatio.coerceIn(0.0, 1.0) } },
+        SimpleDoubleColorMode(
+            this,
+            "potential_evapotranspiration",
+            categories = listOf("climate", "overlay"),
+        ) {
+            diagnosticValue(it) { value ->
+                value.potentialEvapotranspiration.scaleAndCoerceIn(
+                    0.0..maximumAnnualPotentialEvapotranspiration,
+                    0.0..1.0,
+                )
+            }
+        },
+        SimpleDoubleColorMode(
+            this,
+            "actual_evapotranspiration",
+            categories = listOf("climate", "overlay"),
+        ) {
+            diagnosticValue(it) { value ->
+                value.actualEvapotranspiration.scaleAndCoerceIn(
+                    0.0..maximumAnnualPotentialEvapotranspiration,
+                    0.0..1.0,
+                )
+            }
+        },
+        SimpleDoubleColorMode(
+            this,
+            "total_gdd",
+            categories = listOf("climate", "overlay"),
+        ) {
+            diagnosticValue(it) { value ->
+                value.totalGdd.scaleAndCoerce01(0.0..maximumAnnualDegreeDays)
+            }
+        },
+        SimpleDoubleColorMode(
+            this,
+            "total_gddz",
+            categories = listOf("climate", "overlay"),
+        ) {
+            diagnosticValue(it) { value ->
+                value.totalGddz.scaleAndCoerce01(0.0..maximumAnnualDegreeDays)
+            }
+        },
+        SimpleDoubleColorMode(
+            this,
+            "total_gint",
+            categories = listOf("climate", "overlay"),
+        ) {
+            diagnosticValue(it) { value ->
+                value.totalGint.scaleAndCoerce01(0.0..Hersfeldt.gintThreshold.toDouble())
+            }
+        },
+        SimpleDoubleColorMode(
+            this,
             "elevation",
             categories = listOf("terrain", "overlay"),
         ) {
-            it.elevation.scaleAndCoerceIn(-10000.0..10000.0, 0.0..1.0)
+            it.elevation.scaleAndCoerce01(-10000.0..10000.0)
         },
         SimpleDoubleColorMode(
             this,

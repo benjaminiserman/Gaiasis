@@ -373,11 +373,21 @@ class PlanetTile(
             itcz distance: ${planet.itczDistanceMap[tileId] ?: "null"}
         """.trimIndent() + if (tileId in planet.climateMap) {
             val climateDatum = planet.climateMap[tileId]!!
+            val hersfeldtDiagnostics = Hersfeldt.diagnostics(climateDatum)
             "\n" + """
             koppen climate: ${koppen.getOrNull()?.name ?: "unclassified"}(${koppen.getOrNull()?.id ?: "null"})
             hersfeldt climate: ${hersfeldt.getOrNull()?.name ?: "unclassified"}(${hersfeldt.getOrNull()?.id ?: "null"})
             average temperature: ${climateDatum.averageTemperature.formatDigits()}°C
             annual precipitation: ${climateDatum.annualPrecipitation.formatDigits()}mm
+            potential evapotranspiration: ${hersfeldtDiagnostics.potentialEvapotranspiration.formatDigits()}mm
+            actual evapotranspiration: ${hersfeldtDiagnostics.actualEvapotranspiration.formatDigits()}mm
+            aridity factor: ${hersfeldtDiagnostics.aridityFactor.formatDigits()}
+            growth aridity factor: ${hersfeldtDiagnostics.growthAridityFactor.formatDigits()}
+            growth supply: ${hersfeldtDiagnostics.growthSupply.formatDigits()}
+            evaporation ratio: ${hersfeldtDiagnostics.evaporationRatio.formatDigits()}
+            total GDD: ${hersfeldtDiagnostics.totalGdd.formatDigits()}
+            total GDDz: ${hersfeldtDiagnostics.totalGddz.formatDigits()}
+            total Gint: ${hersfeldtDiagnostics.totalGint.formatDigits()}
             insolation: ${insolation.formatDigits()} (avg: ${
                 annualInsolation.average()
                     .formatDigits()
@@ -479,6 +489,7 @@ class PlanetTile(
                 ""
             }
             )
+
         else -> ""
     }
 }
