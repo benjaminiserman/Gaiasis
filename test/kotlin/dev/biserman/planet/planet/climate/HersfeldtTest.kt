@@ -6,6 +6,26 @@ import org.junit.jupiter.api.Test
 
 class HersfeldtTest {
     @Test
+    fun `AET cannot evaporate more water than precipitation and stored soil moisture`() {
+        val datum = ClimateDatum(
+            tileId = 0,
+            months = List(12) { month ->
+                ClimateDatumSample(
+                    averageTemperature = 20.0,
+                    insolation = 200.0,
+                    precipitation = if (month == 0) 300.0 else 0.0,
+                )
+            },
+        )
+        val pet = List(12) { month -> if (month == 1) 600.0 else 0.0 }
+
+        val aet = Hersfeldt.estimateAet(datum, pet)
+
+        assertEquals(300.0, aet[1])
+        assertEquals(300.0, aet.sum())
+    }
+
+    @Test
     fun `barren land takes priority over aridity`() {
         val diagnostics = diagnostics(
             winterTemperature = 20.0,

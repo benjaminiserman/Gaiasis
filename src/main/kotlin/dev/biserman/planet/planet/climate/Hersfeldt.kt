@@ -711,12 +711,11 @@ object Hersfeldt : ClimateClassifier {
                     soilMoisture = min(soilMoisture, 500.0)
                     aet[i] = pet[i]
                 } else {
-                    val soilEvaporation =
-                        if (soilMoisture < 250) {
-                            min(soilMoisture, (pet[i] - precipitation) * soilMoisture / 250.0)
-                        } else {
-                            pet[i] - precipitation
-                        }
+                    val moistureScalar = min(1.0, soilMoisture / 250.0)
+                    val soilEvaporation = min(
+                        soilMoisture,
+                        (pet[i] - precipitation) * moistureScalar,
+                    )
                     soilMoisture = max(soilMoisture - soilEvaporation, 0.0)
                     aet[i] = precipitation + soilEvaporation
                 }
