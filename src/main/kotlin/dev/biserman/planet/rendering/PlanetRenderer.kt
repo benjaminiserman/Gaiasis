@@ -50,7 +50,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
             if (value.isNaN()) null else value
         }
 
-    private val maximumAnnualDegreeDays = 20.0 * Hersfeldt.monthLength * 12.0
+    private val maximumAnnualDegreeDays = 70.0 * Hersfeldt.monthLength * 12.0
     private val maximumAnnualPotentialEvapotranspiration = 7.0 * 90.0 * 12.0
 
     fun colorTemperature(temperature: Double): Color = when {
@@ -432,7 +432,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
             categories = listOf("climate", "overlay"),
         ) {
             diagnosticValue(it) { value ->
-                value.totalGint.scaleAndCoerce01(0.0..Hersfeldt.gintThreshold.toDouble())
+                value.totalGint.scaleAndCoerce01(0.0..maximumAnnualDegreeDays)
             }
         },
         SimpleDoubleColorMode(
