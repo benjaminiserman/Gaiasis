@@ -89,6 +89,32 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `traits in the same biological group are mutually exclusive`() {
+        val invalid = predator("conflicting-coverings").copy(
+            traits = predator("conflicting-coverings").traits +
+                listOf(CommonTrait.DENSE_FUR, CommonTrait.THIN_FUR),
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("DOMINANT_BODY_COVERING"))
+        assertTrue(failure.message.orEmpty().contains(CommonTrait.DENSE_FUR.displayName))
+        assertTrue(failure.message.orEmpty().contains(CommonTrait.THIN_FUR.displayName))
+    }
+
+    @Test
+    fun `every declared trait group has multiple authored alternatives`() {
+        val groupedTraits = CommonTrait.entries.filter { it.group != null }.groupBy { it.group }
+
+        assertEquals(TraitGroup.entries.toSet(), groupedTraits.keys.filterNotNull().toSet())
+        groupedTraits.forEach { (group, traits) ->
+            assertTrue(traits.size >= 2, "$group has fewer than two alternatives")
+        }
+    }
+
+    @Test
     fun `thermal foundation compiles to an explicit runtime strategy`() {
         val compiled = EcologyCompiler.compile(
             listOf(predator("explicit-thermal-strategy")),

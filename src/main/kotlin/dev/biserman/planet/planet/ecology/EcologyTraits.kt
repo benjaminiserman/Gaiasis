@@ -15,6 +15,22 @@ enum class SizeClass(
     COLOSSAL(100_000.0, 0.040, 0.06, 0.04),
 }
 
+/**
+ * A biological slot for which a species may select at most one implementation.
+ * Groups describe genuine alternatives, not every collection of related traits.
+ */
+enum class TraitGroup {
+    BIOCHEMISTRY,
+    THERMOREGULATION,
+    DORMANCY_MODE,
+    DISPERSAL_RANGE,
+    SALINITY_STRATEGY,
+    FILTERING_APPARATUS,
+    GUT_FERMENTATION,
+    SPECIALIZED_TONGUE,
+    DOMINANT_BODY_COVERING,
+}
+
 sealed interface SpeciesTrait {
     val displayName: String
     val description: String
@@ -25,6 +41,8 @@ sealed interface SpeciesTrait {
         get() = false
     val invariantOnly: Boolean
         get() = false
+    val group: TraitGroup?
+        get() = null
 }
 
 data class TargetedRelationshipTrait(
@@ -32,6 +50,7 @@ data class TargetedRelationshipTrait(
     override val description: String,
     override val relationships: List<RelationshipEffect>,
     val maintenanceCost: Double,
+    override val group: TraitGroup? = null,
 ) : SpeciesTrait {
     init {
         require(displayName.isNotBlank())
@@ -54,12 +73,14 @@ enum class CommonTrait(
     override val effects: List<TraitEffect>,
     override val isFoundation: Boolean = false,
     override val invariantOnly: Boolean = false,
+    override val group: TraitGroup? = null,
 ) : SpeciesTrait {
     TEMPERATE_BIOCHEMISTRY(
         "temperate biochemistry",
         "Cellular chemistry that functions best at moderate temperatures.",
         listOf(TraitEffect.MaintenanceCost(0.0)),
-        true,
+        isFoundation = true,
+        group = TraitGroup.BIOCHEMISTRY,
     ),
     FRIGID_BIOCHEMISTRY(
         "frigid biochemistry",
@@ -69,7 +90,8 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.88),
             TraitEffect.MaintenanceCost(0.04),
         ),
-        true,
+        isFoundation = true,
+        group = TraitGroup.BIOCHEMISTRY,
     ),
     HOT_BIOCHEMISTRY(
         "hot biochemistry",
@@ -79,7 +101,8 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.05),
         ),
-        true,
+        isFoundation = true,
+        group = TraitGroup.BIOCHEMISTRY,
     ),
     INVARIANT_RESISTANCE(
         "invariant guild resilience",
@@ -96,6 +119,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         invariantOnly = true,
+        group = TraitGroup.DORMANCY_MODE,
     ),
     MICROSCOPIC_RESTING_STAGES(
         "microscopic resting stages",
@@ -127,7 +151,8 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(-0.22),
             TraitEffect.TemperatureTolerance(colderC = -2.0, hotterC = -2.0),
         ),
-        true,
+        isFoundation = true,
+        group = TraitGroup.THERMOREGULATION,
     ),
     ENDOTHERMY(
         "endothermy",
@@ -137,7 +162,8 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = 2.0),
             TraitEffect.MaintenanceCost(0.25),
         ),
-        true,
+        isFoundation = true,
+        group = TraitGroup.THERMOREGULATION,
     ),
     HETEROTHERMY(
         "heterothermy",
@@ -148,7 +174,8 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.20),
             TraitEffect.MaintenanceCost(0.08),
         ),
-        true,
+        isFoundation = true,
+        group = TraitGroup.THERMOREGULATION,
     ),
     SLOW_METABOLISM(
         "extremely slow metabolism",
@@ -385,6 +412,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.SALINITY_STRATEGY,
     ),
     EURYHALINE_OSMOREGULATION(
         "euryhaline osmoregulation",
@@ -395,6 +423,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        group = TraitGroup.SALINITY_STRATEGY,
     ),
     COASTAL_CLINGING_FEET(
         "coastal clinging feet",
@@ -484,6 +513,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.06),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.FILTERING_APPARATUS,
     ),
     KRILL_SIEVING_TEETH(
         "krill-sieving teeth",
@@ -493,6 +523,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.05),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.FILTERING_APPARATUS,
     ),
     GILL_PADS(
         "gill pads",
@@ -503,6 +534,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.SUNLIT_WATER, 0.30),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        group = TraitGroup.FILTERING_APPARATUS,
     ),
     SIEVE_TEETH(
         "sieve-like teeth",
@@ -512,6 +544,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.06),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.FILTERING_APPARATUS,
     ),
     BENTHIC_SUCTION_FEEDING(
         "benthic suction-feeding mouth",
@@ -677,6 +710,7 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(-0.04),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
     WOOLLY_UNDERCOAT(
         "woolly undercoat",
@@ -694,6 +728,7 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(-0.03),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
     THIN_FUR(
         "thin fur",
@@ -702,6 +737,7 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = -3.0, hotterC = 7.0),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
     BARE_HEAT_DISSIPATING_SKIN(
         "bare heat-dissipating skin",
@@ -711,6 +747,7 @@ enum class CommonTrait(
             TraitEffect.Defense(-0.03),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
     CONCENTRATED_URINE(
         "concentrated urine",
@@ -827,6 +864,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     SEASONAL_LEAF_DORMANCY(
         "seasonal leaf dormancy",
@@ -836,6 +874,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.94),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     FROST_HARDENED_TISSUES(
         "frost-hardened tissues",
@@ -938,6 +977,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.90),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     BURROWING_EGGS(
         "burrowing eggs",
@@ -947,6 +987,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.88),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     SEASONAL_TORPOR(
         "seasonal torpor",
@@ -956,6 +997,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.05),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     WHOLE_BODY_ANHYDROBIOSIS(
         "whole-body anhydrobiosis",
@@ -965,6 +1007,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.78),
             TraitEffect.MaintenanceCost(0.10),
         ),
+        group = TraitGroup.DORMANCY_MODE,
     ),
     REEF_BUILDING(
         "mineral reef skeleton",
@@ -1181,6 +1224,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        group = TraitGroup.GUT_FERMENTATION,
     ),
     FERMENTING_HINDGUT(
         "fermenting hindgut",
@@ -1190,6 +1234,7 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.07),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.GUT_FERMENTATION,
     ),
     SEED_CRACKING_MOUTHPARTS(
         "seed-cracking mouthparts",
@@ -1210,6 +1255,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.04),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
     ),
     POLLEN_CARRYING_SURFACES(
         "pollen-carrying surfaces",
@@ -1243,6 +1289,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.28),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
     ),
     PROJECTILE_TONGUE(
         "projectile tongue",
@@ -1252,6 +1299,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.22),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
     ),
     SAP_SUCKING_PROBOSCIS(
         "sap-sucking proboscis",
@@ -1419,6 +1467,7 @@ enum class CommonTrait(
             TraitEffect.Dispersal(DispersalKind.NEIGHBOR),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        group = TraitGroup.DISPERSAL_RANGE,
     ),
     SHORT_MIGRATION(
         "short seasonal migration",
@@ -1428,6 +1477,7 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.10),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        group = TraitGroup.DISPERSAL_RANGE,
     ),
     REGIONAL_MIGRATION(
         "regional seasonal migration",
@@ -1437,6 +1487,7 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.18),
             TraitEffect.MaintenanceCost(0.13),
         ),
+        group = TraitGroup.DISPERSAL_RANGE,
     ),
     LONG_MIGRATION(
         "long-distance seasonal migration",
@@ -1446,5 +1497,6 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.28),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.DISPERSAL_RANGE,
     ),
 }

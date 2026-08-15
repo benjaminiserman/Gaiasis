@@ -12,11 +12,6 @@ data class CompiledEcology(
 }
 
 object EcologyCompiler {
-    private val biochemistryTraits = setOf(
-        CommonTrait.TEMPERATE_BIOCHEMISTRY,
-        CommonTrait.FRIGID_BIOCHEMISTRY,
-        CommonTrait.HOT_BIOCHEMISTRY,
-    )
     fun compile(
         definitions: List<SpeciesDefinition>,
         niches: List<NicheDefinition> = EcologyNiches.defaults,
@@ -45,8 +40,15 @@ object EcologyCompiler {
         niches: List<NicheDefinition>,
     ): CompiledSpecies {
         val commonTraits = definition.traits.filterIsInstance<CommonTrait>().toSet()
-        val allEffects = definition.traits.flatMap { it.effects }
-        val thermalStrategies = allEffects.filterIsInstance<TraitEffect.ThermalRegulation>()
+        val traitsByGroup = definition.traits
+            .mapNotNull { trait -> trait.group?.let { group -> group to trait } }
+            .groupBy({ it.first }, { it.second })
+        traitsByGroup.forEach { (group, traits) ->
+            require(traits.size <= 1) {
+                "${definition.displayName} has conflicting $group traits: " +
+                    traits.joinToString { it.displayName }
+            }
+        }
         require(
             definition.kind == SpeciesKind.INVARIANT ||
                 definition.traits.none { it.invariantOnly },
@@ -59,13 +61,13 @@ object EcologyCompiler {
         ) {
             "${definition.displayName} is invariant and must have invariant guild resilience"
         }
-        require(commonTraits.count { it in biochemistryTraits } == 1) {
+        require(traitsByGroup[TraitGroup.BIOCHEMISTRY]?.size == 1) {
             "${definition.displayName} must have exactly one biochemistry foundation"
         }
-        require(!definition.motile || thermalStrategies.size == 1) {
+        require(!definition.motile || traitsByGroup[TraitGroup.THERMOREGULATION]?.size == 1) {
             "${definition.displayName} is motile and must have exactly one thermal strategy"
         }
-        require(definition.motile || thermalStrategies.isEmpty()) {
+        require(definition.motile || TraitGroup.THERMOREGULATION !in traitsByGroup) {
             "${definition.displayName} is not motile but has a motile thermal strategy"
         }
         require(!definition.motile || CommonTrait.ROOTED_BODY !in commonTraits) {
