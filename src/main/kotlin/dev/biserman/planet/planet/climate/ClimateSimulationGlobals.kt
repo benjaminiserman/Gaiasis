@@ -102,7 +102,7 @@ object ClimateSimulationGlobals {
     var inlandWaterVsLandTemperatureContinentialityBase = 0.625
 
     var dryLapseRate = -0.0098 // °C/meter
-    var dryLapseRateScalar = 0.55 // linear scalar on dry lapse rate
+    var dryLapseRateScalar = 0.6 // linear scalar on dry lapse rate
 
     // the furthest away in tiles from the shore that ocean currents can affect temperature
     var maxOceanCurrentTemperatureContinentiality = 5.0
@@ -125,8 +125,8 @@ object ClimateSimulationGlobals {
     var maxMoistureSteps = 50 // the maximum amount of steps the moisture simulator can run
     var moistureToMm = 120.0 // scalar to convert moisture to mm
     var startingMoistureMultiplier = 10.0 // multiply all starting moisture by this value
-    var minStartingMoisture = 0.05 // minimum starting moisture
-    var maxStartingMoisture = 4.0 // maximum starting moisture
+    var minStartingMoisture = 0.025 // minimum starting moisture
+    var maxStartingMoisture = 5.0 // maximum starting moisture
     var oceanMoistureInsolationExp = 1.625 // higher exp -> less ocean moisture & most seasonality
     var oceanMoistureInsolationNowVsAnnualLerp = 1.0
     var averageInsolationMoistureCutoff = 0.6
@@ -136,12 +136,12 @@ object ClimateSimulationGlobals {
     var moisturePropagationMultiplier = 1.02 // VERY sensitive. can cause exponential turbo-rain
 
     // ITCZ = inter-tropical convergence zone
-    var itczMoistureMaxDistance = 2.0 // max distance (in tiles) at which the ITCZ effects moisture
+    var itczMoistureMaxDistance = 1.0 // max distance (in tiles) at which the ITCZ effects moisture
     var itczMoistureExp = 0.5 // higher exp -> less ITCZ effect & faster effect decay with distance
-    var itczMoistureScalar = 1.3 // how much is moisture multiplied by directly under the ITCZ
+    var itczMoistureScalar = 1.5 // how much is moisture multiplied by directly under the ITCZ
 
     var equatorMoistureEffectMaxContinentiality = 9.0 // maximum continentiality for equator moisture effect
-    var equatorMoistureEffectScalar = 10.0 // maximum amount that equator can effect moisture
+    var equatorMoistureEffectScalar = 1.5 // maximum amount that equator can effect moisture
     var equatorMoistureEffectInsolationExp = 2.0 // higher exp -> lower moisture effect at equator & faster drop-off
     var equatorMoistureEffectMaxDistance = 2.5 // max distance that equatorial updraft effects moisture, in °latitude
 
