@@ -280,6 +280,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.TERRESTRIAL_LOCOMOTION,
                 CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.THIN_FUR,
                 CommonTrait.SEASONAL_WINTER_COAT,
             ),
         )

@@ -359,6 +359,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SWIFT_LIMBS,
             CommonTrait.BROWSING_MOUTHPARTS,
             CommonTrait.RUMINANT_STOMACH,
+            CommonTrait.THIN_FUR,
             CommonTrait.SEASONAL_WINTER_COAT,
             camouflage = BiologicalColor.BROWN
         ),
@@ -633,6 +634,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_LOCOMOTION,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.RUMINANT_STOMACH,
+            CommonTrait.THIN_FUR,
             CommonTrait.SEASONAL_WINTER_COAT,
             CommonTrait.OPEN_COUNTRY_HERDING,
             CommonTrait.SHORT_MIGRATION,

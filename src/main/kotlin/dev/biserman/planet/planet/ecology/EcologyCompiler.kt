@@ -49,6 +49,7 @@ object EcologyCompiler {
                     traits.joinToString { it.displayName }
             }
         }
+        TraitDependencies.requireSatisfied(definition)
         require(
             definition.kind == SpeciesKind.INVARIANT ||
                 definition.traits.none { it.invariantOnly },

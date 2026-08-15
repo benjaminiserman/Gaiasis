@@ -115,12 +115,120 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `authored species satisfy every trait dependency`() {
+        val failures =
+            (EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES + InvariantSpecies.ALL)
+                .flatMap { definition ->
+                    TraitDependencies.unmetRequirements(definition).map { failure ->
+                        "${definition.displayName}: ${failure.trait.displayName} " +
+                            failure.requirement.describe()
+                    }
+                }
+
+        assertTrue(failures.isEmpty(), failures.joinToString(separator = "\n"))
+    }
+
+    @Test
     fun `thermal foundation compiles to an explicit runtime strategy`() {
         val compiled = EcologyCompiler.compile(
             listOf(predator("explicit-thermal-strategy")),
         ).species.single()
 
         assertEquals(ThermalStrategy.ENDOTHERMY, compiled.physiology.thermal.regulation)
+    }
+
+    @Test
+    fun `floating body provides aerial habitat independently of photosynthesis`() {
+        val floating = SpeciesDefinition(
+            id = "floating-body",
+            displayName = "Floating body",
+            sizeClass = SizeClass.MINUSCULE,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.FLOATING_BODY,
+            ),
+        )
+        val photosynthetic = floating.copy(
+            id = "photosynthetic-floating-body",
+            displayName = "Photosynthetic floating body",
+            traits = floating.traits + CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            photosyntheticColor = BiologicalColor.GREEN,
+        )
+
+        val ecology = EcologyCompiler.compile(listOf(floating, photosynthetic))
+        val floatingProfile = ecology.species[0].niche
+        val photosyntheticProfile = ecology.species[1].niche
+
+        assertTrue(floatingProfile.supportFor(Habitat.AERIAL) > 0.0)
+        assertEquals(0.0, floatingProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS))
+        assertTrue(photosyntheticProfile.supportFor(Habitat.AERIAL) > 0.0)
+        assertTrue(photosyntheticProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0)
+    }
+
+    @Test
+    fun `floating body requires minuscule size`() {
+        val invalid = SpeciesDefinition(
+            id = "oversized-floater",
+            displayName = "Oversized floater",
+            sizeClass = SizeClass.TINY,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.FLOATING_BODY,
+            ),
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("requires MINUSCULE size"))
+    }
+
+    @Test
+    fun `deep diving accepts either underwater respiration or breath holding`() {
+        val base = SpeciesDefinition(
+            id = "deep-diver",
+            displayName = "Deep diver",
+            sizeClass = SizeClass.SMALL,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.AQUATIC_FLIPPERS,
+                CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+            ),
+        )
+
+        val missingRespiration = TraitDependencies.unmetRequirements(base)
+        assertEquals(1, missingRespiration.size)
+        assertTrue(missingRespiration.single().requirement is TraitRequirement.AnyOf)
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + CommonTrait.GILLS),
+            ).isEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + CommonTrait.PROLONGED_BREATH_HOLDING),
+            ).isEmpty(),
+        )
+    }
+
+    @Test
+    fun `pelagic soaring wings require powered flight`() {
+        val invalid = predator("flightless-soarer").copy(
+            traits = predator("flightless-soarer").traits + CommonTrait.PELAGIC_SOARING_WINGS,
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("requires POWERED_FLIGHT"))
     }
 
     @Test

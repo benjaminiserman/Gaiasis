@@ -31,6 +31,66 @@ enum class TraitGroup {
     DOMINANT_BODY_COVERING,
 }
 
+/** Anatomical or behavioral capability that can satisfy another trait's prerequisites. */
+enum class TraitCapability {
+    PHOTOSYNTHESIS,
+    SUBSTRATE_ANCHORING,
+    FUR,
+    POWERED_FLIGHT,
+    SOCIAL_COLONY,
+    NECTAR_FEEDING,
+    AQUATIC_LOCOMOTION,
+    UNDERWATER_RESPIRATION,
+    BREATH_HOLDING,
+    WATER_STORAGE,
+}
+
+sealed interface TraitRequirement {
+    fun isSatisfiedBy(
+        definition: SpeciesDefinition,
+        capabilities: Set<TraitCapability>,
+    ): Boolean
+
+    fun describe(): String
+
+    data class AllOf(val capabilities: Set<TraitCapability>) : TraitRequirement {
+        init {
+            require(capabilities.isNotEmpty())
+        }
+
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = capabilities.containsAll(this.capabilities)
+
+        override fun describe(): String =
+            "requires ${capabilities.joinToString()}"
+    }
+
+    data class AnyOf(val capabilities: Set<TraitCapability>) : TraitRequirement {
+        init {
+            require(capabilities.isNotEmpty())
+        }
+
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = this.capabilities.any { it in capabilities }
+
+        override fun describe(): String =
+            "requires one of ${capabilities.joinToString()}"
+    }
+
+    data class SizeClassIs(val sizeClass: SizeClass) : TraitRequirement {
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = definition.sizeClass == sizeClass
+
+        override fun describe(): String = "requires $sizeClass size"
+    }
+}
+
 sealed interface SpeciesTrait {
     val displayName: String
     val description: String
@@ -43,6 +103,10 @@ sealed interface SpeciesTrait {
         get() = false
     val group: TraitGroup?
         get() = null
+    val capabilities: Set<TraitCapability>
+        get() = emptySet()
+    val requirements: List<TraitRequirement>
+        get() = emptyList()
 }
 
 data class TargetedRelationshipTrait(
@@ -51,6 +115,8 @@ data class TargetedRelationshipTrait(
     override val relationships: List<RelationshipEffect>,
     val maintenanceCost: Double,
     override val group: TraitGroup? = null,
+    override val capabilities: Set<TraitCapability> = emptySet(),
+    override val requirements: List<TraitRequirement> = emptyList(),
 ) : SpeciesTrait {
     init {
         require(displayName.isNotBlank())
@@ -74,6 +140,8 @@ enum class CommonTrait(
     override val isFoundation: Boolean = false,
     override val invariantOnly: Boolean = false,
     override val group: TraitGroup? = null,
+    override val capabilities: Set<TraitCapability> = emptySet(),
+    override val requirements: List<TraitRequirement> = emptyList(),
 ) : SpeciesTrait {
     TEMPERATE_BIOCHEMISTRY(
         "temperate biochemistry",
@@ -142,6 +210,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.02),
         ),
         invariantOnly = true,
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+        ),
     ),
     ECTOTHERMY(
         "ectothermy",
@@ -203,18 +274,19 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.0),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        capabilities = setOf(TraitCapability.PHOTOSYNTHESIS),
     ),
-    AIRBORNE_PHOTOSYNTHETIC_SURFACE(
-        "airborne photosynthetic surface",
-        "A minute drifting body whose exposed pigments harvest light while suspended in the atmosphere.",
+    FLOATING_BODY(
+        "floating body",
+        "A minuscule, low-density body with drag-producing surfaces or buoyant chambers that remains suspended in atmospheric currents.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.0),
             TraitEffect.HabitatSupport(Habitat.AERIAL, 0.78),
             TraitEffect.PelagicAerialResidency,
             TraitEffect.WaterRequirement(-0.15),
-            TraitEffect.MaintenanceCost(0.08),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.MaintenanceCost(0.04),
         ),
-        invariantOnly = true,
+        requirements = listOf(TraitRequirement.SizeClassIs(SizeClass.MINUSCULE)),
     ),
     ROOTED_BODY(
         "rooted body",
@@ -224,6 +296,7 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.ABSORPTION, 0.25),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
     ),
     TERRESTRIAL_LOCOMOTION(
         "terrestrial locomotion",
@@ -275,6 +348,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.52),
             TraitEffect.MaintenanceCost(0.10),
         ),
+        capabilities = setOf(TraitCapability.AQUATIC_LOCOMOTION),
     ),
     GILLS(
         "gills",
@@ -283,6 +357,7 @@ enum class CommonTrait(
             TraitEffect.AquaticRespiration(AquaticRespirationMode.UNDERWATER),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        capabilities = setOf(TraitCapability.UNDERWATER_RESPIRATION),
     ),
     DIFFUSIVE_AQUATIC_GAS_EXCHANGE(
         "diffusive aquatic gas exchange",
@@ -292,6 +367,7 @@ enum class CommonTrait(
             TraitEffect.Defense(-0.04),
             TraitEffect.MaintenanceCost(0.02),
         ),
+        capabilities = setOf(TraitCapability.UNDERWATER_RESPIRATION),
     ),
     PROLONGED_BREATH_HOLDING(
         "prolonged breath-holding",
@@ -302,6 +378,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.97),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        capabilities = setOf(TraitCapability.BREATH_HOLDING),
     ),
     SEA_ICE_ROOKERY(
         "sea-ice rookery",
@@ -326,6 +403,15 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(hotterC = 8.0, colderC = 8.0),
             TraitEffect.ReserveCapacity(0.08),
             TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
+            TraitRequirement.AnyOf(
+                setOf(
+                    TraitCapability.UNDERWATER_RESPIRATION,
+                    TraitCapability.BREATH_HOLDING,
+                ),
+            ),
         ),
     ),
     AMPHIBIOUS_LIMBS(
@@ -392,6 +478,9 @@ enum class CommonTrait(
             TraitEffect.InsolationOptimum(-0.22),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+        ),
     ),
     BUOYANCY_BLADDER(
         "buoyancy bladder",
@@ -402,6 +491,7 @@ enum class CommonTrait(
             TraitEffect.Defense(-0.05),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        capabilities = setOf(TraitCapability.AQUATIC_LOCOMOTION),
     ),
     FRESHWATER_OSMOREGULATION(
         "freshwater osmoregulation",
@@ -443,6 +533,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.SUNLIT_WATER, 0.56),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
     ),
     FLOATING_FRONDS(
         "floating fronds",
@@ -452,6 +543,9 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.28),
             TraitEffect.InsolationOptimum(-0.06),
             TraitEffect.MaintenanceCost(0.07),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
         ),
     ),
     POWERED_FLIGHT(
@@ -464,6 +558,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.24),
         ),
+        capabilities = setOf(TraitCapability.POWERED_FLIGHT),
     ),
     PELAGIC_SOARING_WINGS(
         "pelagic soaring wings",
@@ -473,6 +568,9 @@ enum class CommonTrait(
             TraitEffect.PelagicAerialResidency,
             TraitEffect.ReserveCapacity(0.08),
             TraitEffect.MaintenanceCost(0.08),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.POWERED_FLIGHT)),
         ),
     ),
     SUBTERRANEAN_BURROWING(
@@ -535,6 +633,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.FILTERING_APPARATUS,
+        capabilities = setOf(TraitCapability.UNDERWATER_RESPIRATION),
     ),
     SIEVE_TEETH(
         "sieve-like teeth",
@@ -674,6 +773,9 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.97),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+        ),
     ),
     MARINE_SNOW_PALPS(
         "marine-snow collecting palps",
@@ -711,6 +813,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
+        capabilities = setOf(TraitCapability.FUR),
     ),
     WOOLLY_UNDERCOAT(
         "woolly undercoat",
@@ -718,6 +821,9 @@ enum class CommonTrait(
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 5.0, hotterC = -2.0),
             TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.FUR)),
         ),
     ),
     INSULATING_PLUMAGE(
@@ -738,6 +844,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.03),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
+        capabilities = setOf(TraitCapability.FUR),
     ),
     BARE_HEAT_DISSIPATING_SKIN(
         "bare heat-dissipating skin",
@@ -783,6 +890,9 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(hotterC = -1.5),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.FUR)),
+        ),
     ),
     WATER_STORAGE_TISSUE(
         "water-storage tissue",
@@ -792,6 +902,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.04),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        capabilities = setOf(TraitCapability.WATER_STORAGE),
     ),
     SNOW_AND_ICE_LICKING(
         "snow and ice licking",
@@ -827,6 +938,9 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(-0.18),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+        ),
     ),
     SUCCULENT_STEM(
         "succulent stem",
@@ -835,6 +949,10 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(-0.28),
             TraitEffect.ReproductionMultiplier(0.88),
             TraitEffect.MaintenanceCost(0.07),
+        ),
+        capabilities = setOf(TraitCapability.WATER_STORAGE),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
         ),
     ),
     WAXY_CUTICLE(
@@ -854,6 +972,9 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 2.0),
             TraitEffect.MaintenanceCost(0.02),
         ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.WATER_STORAGE)),
+        ),
     ),
     DROUGHT_DECIDUOUS_LEAVES(
         "drought-deciduous leaves",
@@ -865,6 +986,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.DORMANCY_MODE,
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+        ),
     ),
     SEASONAL_LEAF_DORMANCY(
         "seasonal leaf dormancy",
@@ -875,6 +999,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.DORMANCY_MODE,
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+        ),
     ),
     FROST_HARDENED_TISSUES(
         "frost-hardened tissues",
@@ -893,6 +1020,9 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, -0.5),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
         ),
     ),
     BLUBBER(
@@ -1193,6 +1323,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.12),
         ),
+        capabilities = setOf(TraitCapability.AQUATIC_LOCOMOTION),
     ),
     GRASPING_TENTACLES(
         "grasping tentacles",
@@ -1256,6 +1387,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.SPECIALIZED_TONGUE,
+        capabilities = setOf(TraitCapability.NECTAR_FEEDING),
     ),
     POLLEN_CARRYING_SURFACES(
         "pollen-carrying surfaces",
@@ -1350,6 +1482,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(1.08),
             TraitEffect.MaintenanceCost(0.09),
         ),
+        capabilities = setOf(TraitCapability.SOCIAL_COLONY),
     ),
     COLONY_THERMOREGULATION(
         "colony thermoregulation",
@@ -1360,6 +1493,9 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(0.04),
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.14),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.SOCIAL_COLONY)),
         ),
     ),
     VENOMOUS_STINGER(
@@ -1378,6 +1514,14 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.90),
             TraitEffect.ReproductionMultiplier(0.93),
             TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.SOCIAL_COLONY,
+                    TraitCapability.NECTAR_FEEDING,
+                ),
+            ),
         ),
     ),
     OPEN_COUNTRY_HERDING(
