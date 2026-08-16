@@ -1478,7 +1478,6 @@ object EarthSpeciesCatalog {
             CommonTrait.GRASPING_TENTACLES,
             CommonTrait.SUCTION_CUPS,
             CommonTrait.INK_CLOUD,
-            CommonTrait.TOOL_MANIPULATION,
             ColorTrait.ADAPTIVE_CAMOUFLAGE
         ),
         animal(

@@ -40,6 +40,7 @@ object EarthlikeClades {
         "fish",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
+        CommonTrait.GILLS,
         CommonTrait.AQUATIC_FLIPPERS,
         CommonTrait.AQUATIC_OVOSPORE,
         ColorTrait.COUNTERSHADE_CAMOUFLAGE,
@@ -92,6 +93,7 @@ object EarthlikeClades {
         CommonTrait.AMPHIBIOUS_LIMBS,
         CommonTrait.AQUATIC_OVOSPORE,
         CommonTrait.ARMORED_HIDE,
+        CommonTrait.CRUSHING_CLAWS,
         ColorTrait.RED_CAMOUFLAGE
     )
 
@@ -113,10 +115,16 @@ object EarthlikeClades {
         CommonTrait.JET_PROPULSION,
         CommonTrait.GRASPING_TENTACLES,
         CommonTrait.AQUATIC_OVOSPORE,
-        ColorTrait.ADAPTIVE_CAMOUFLAGE
+        CommonTrait.INK_CLOUD,
+        ColorTrait.ADAPTIVE_CAMOUFLAGE,
     )
 
-    fun SpeciesDefinition.extend(name: String, sizeClass: SizeClass? = null, vararg adaptations: SpeciesTrait) = copy(
+    fun SpeciesDefinition.extend(
+        name: String,
+        sizeClass: SizeClass? = null,
+        minus: List<SpeciesTrait> = listOf(),
+        vararg adaptations: SpeciesTrait
+    ) = copy(
         id = "...",
         displayName = name,
         sizeClass = sizeClass ?: this.sizeClass,
@@ -125,7 +133,7 @@ object EarthlikeClades {
                 .toSet()
                 .intersect(adaptations.mapNotNull { it.group }.toSet())
 
-            traits.filter { it.group !in categorySet } + adaptations
+            traits.filter { it.group !in categorySet && it !in minus } + adaptations
         },
     )
 }
