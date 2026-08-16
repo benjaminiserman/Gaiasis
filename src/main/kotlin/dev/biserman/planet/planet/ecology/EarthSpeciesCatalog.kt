@@ -1092,6 +1092,83 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             ColorTrait.BLACK_CAMOUFLAGE
         ),
+        animal(
+            "snowy owl",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.HOOKED_TALONS,
+            CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.INSULATING_PLUMAGE,
+            CommonTrait.FAT_RESERVES,
+            ColorTrait.WHITE_CAMOUFLAGE
+        ),
+        animal(
+            "great blue heron",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.WADING_LIMBS,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.WATERPROOF_PLUMAGE,
+            ColorTrait.BLUE_CAMOUFLAGE
+        ),
+        animal(
+            "atlantic puffin",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.PROLONGED_BREATH_HOLDING,
+            CommonTrait.COASTAL_BREEDING_SITE,
+            CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.INSULATING_PLUMAGE,
+            CommonTrait.WATERPROOF_PLUMAGE,
+            ColorTrait.COUNTERSHADE_CAMOUFLAGE
+        ),
+        animal(
+            "kakapo",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.WALKING_LIMBS,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.FRUIT_EATING_MOUTHPARTS,
+            CommonTrait.FAT_RESERVES,
+            ColorTrait.GREEN_CAMOUFLAGE
+        ),
+        animal(
+            "willow ptarmigan",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.WALKING_LIMBS,
+            CommonTrait.GRAZING_MOUTHPARTS,
+            CommonTrait.INSULATING_PLUMAGE,
+            CommonTrait.FAT_RESERVES,
+            ColorTrait.ADAPTIVE_CAMOUFLAGE
+        ),
+        animal(
+            "keel-billed toucan",
+            SizeClass.SMALL,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.FRUIT_EATING_MOUTHPARTS,
+            CommonTrait.EXTENDED_PARENTAL_CARE,
+            ColorTrait.BLACK_CAMOUFLAGE
+        ),
+        animal(
+            "secretary bird",
+            SizeClass.MEDIUM,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.FEATHERED_WINGS,
+            CommonTrait.WALKING_LIMBS,
+            CommonTrait.SWIFT_LEGS,
+            CommonTrait.HOOKED_TALONS,
+            CommonTrait.MOTION_TRACKING_SENSES,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
     ).map { definition ->
         definition.copy(traits = definition.traits + CommonTrait.FEATHERS)
     }
@@ -1253,6 +1330,73 @@ object EarthSpeciesCatalog {
             CommonTrait.SEASONAL_TORPOR,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
+        animal(
+            "desert horned lizard",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.WALKING_LIMBS,
+            CommonTrait.BEHAVIORAL_THERMOREGULATION,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.SUBTERRANEAN_BURROWING,
+            CommonTrait.DRY_BURROW_NEST,
+            CommonTrait.CONCENTRATED_URINE,
+            CommonTrait.WATER_RETENTIVE_SCALES,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
+            "common snapping turtle",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AMPHIBIOUS_LIMBS,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.BEHAVIORAL_THERMOREGULATION,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.PROTECTIVE_SHELL,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "leatherback sea turtle",
+            SizeClass.LARGE,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.PROLONGED_BREATH_HOLDING,
+            CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+            CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.STREAMLINED_BODY,
+            CommonTrait.COASTAL_BREEDING_SITE,
+            CommonTrait.FAT_RESERVES,
+            CommonTrait.LONG_MIGRATION,
+            ColorTrait.COUNTERSHADE_CAMOUFLAGE
+        ),
+        animal(
+            "marine iguana",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AMPHIBIOUS_LIMBS,
+            CommonTrait.BEHAVIORAL_THERMOREGULATION,
+            CommonTrait.GRAZING_MOUTHPARTS,
+            CommonTrait.WATER_RETENTIVE_SCALES,
+            ColorTrait.BLACK_CAMOUFLAGE
+        ),
+        animal(
+            "japanese giant salamander",
+            SizeClass.MEDIUM,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AMPHIBIOUS_LIMBS,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "ringed caecilian",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.UNDULATING_BODY,
+            CommonTrait.SUBTERRANEAN_BURROWING,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
     )
 
     val FISH: List<SpeciesDefinition> = listOf(
@@ -1339,6 +1483,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.ELECTRORECEPTION,
+            CommonTrait.ELECTRIC_ORGAN,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -1400,6 +1545,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_FLIPPERS,
             CommonTrait.GILL_PADS,
+            CommonTrait.SCHOOLING,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -1455,6 +1601,80 @@ object EarthSpeciesCatalog {
             CommonTrait.COLD_ACTIVE_ENZYMES,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
+        animal(
+            "mediterranean moray",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.WARM_WATER_ENZYMES,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.REEF_CAMOUFLAGE,
+            CommonTrait.REEF_SHELTER_DEPENDENCE,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "european plaice",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.BENTHIC_BODY,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.CAMOUFLAGE_PATTERN,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "pacific herring",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.GILL_PADS,
+            CommonTrait.SCHOOLING,
+            ColorTrait.COUNTERSHADE_CAMOUFLAGE
+        ),
+        animal(
+            "alligator gar",
+            SizeClass.MEDIUM,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.BUOYANCY_BLADDER,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.ARMORED_HIDE,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "atlantic flyingfish",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.WARM_WATER_ENZYMES,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.GILL_PADS,
+            CommonTrait.STREAMLINED_BODY,
+            CommonTrait.GLIDING_MEMBRANE,
+            CommonTrait.SCHOOLING,
+            ColorTrait.COUNTERSHADE_CAMOUFLAGE
+        ),
+        animal(
+            "glacier lanternfish",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.BUOYANCY_BLADDER,
+            CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+            CommonTrait.BIOLUMINESCENT_LURE,
+            CommonTrait.SCHOOLING,
+            ColorTrait.BLACK_CAMOUFLAGE
+        ),
+        animal(
+            "reef stonefish",
+            SizeClass.SMALL,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.WARM_WATER_ENZYMES,
+            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.BENTHIC_BODY,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.VENOM_DELIVERY,
+            CommonTrait.REEF_CAMOUFLAGE,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
     ).map { definition ->
         val aquaticDefinition = definition.copy(
             traits = definition.traits.filterNot(::isCoreOvosporeTrait) +
@@ -1497,7 +1717,8 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
-            CommonTrait.BUOYANCY_BLADDER,
+            CommonTrait.PULSING_BELL,
+            CommonTrait.GELATINOUS_BODY,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
             ColorTrait.PALE_CAMOUFLAGE
@@ -1524,7 +1745,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COASTAL_CLINGING_FEET,
             CommonTrait.CRUSHING_CLAWS,
             CommonTrait.GRAZING_MOUTHPARTS,
-            CommonTrait.ARMORED_HIDE,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.BLUE_CAMOUFLAGE
         ),
         animal(
@@ -1535,7 +1756,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COASTAL_CLINGING_FEET,
             CommonTrait.CRUSHING_CLAWS,
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.ARMORED_HIDE,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -1547,6 +1768,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COASTAL_CLINGING_FEET,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.REEF_NESTING,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.RED_CAMOUFLAGE
         ),
         sessile(
@@ -1555,7 +1777,9 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
-            CommonTrait.SUBSTRATE_HOLDFAST,
+            CommonTrait.POLYP_BODY,
+            CommonTrait.VENOM_DELIVERY,
+            CommonTrait.RIGID_COLONY_FRAMEWORK,
             CommonTrait.REEF_BUILDING,
             CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
@@ -1609,6 +1833,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.NECTAR_SIPPING_TONGUE,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.POLLEN_CARRYING_SURFACES,
             CommonTrait.TOXIC_SKIN,
             CommonTrait.LONG_MIGRATION,
@@ -1621,6 +1846,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.NECTAR_SIPPING_TONGUE,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.POLLEN_CARRYING_SURFACES,
             CommonTrait.COLONY_LIVING,
             CommonTrait.COLONY_THERMOREGULATION,
@@ -1637,6 +1863,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.CRAWLING_APPENDAGES,
             CommonTrait.GRAZING_MOUTHPARTS,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.COLONY_LIVING,
             CommonTrait.CLIMBING_LIMBS,
             ColorTrait.BROWN_CAMOUFLAGE
@@ -1647,6 +1874,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.CRAWLING_APPENDAGES,
             CommonTrait.DECOMPOSING_ENZYMES,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.COLONY_LIVING,
             CommonTrait.SUBTERRANEAN_BURROWING,
             ColorTrait.PALE_CAMOUFLAGE
@@ -1657,6 +1885,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.GRAZING_MOUTHPARTS,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.HEAT_STABLE_ENZYMES,
             CommonTrait.REGIONAL_MIGRATION,
             CommonTrait.DRY_BURROW_NEST,
@@ -1668,6 +1897,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -1677,6 +1907,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CLIMBING_LIMBS,
             CommonTrait.WEB_SILK,
             CommonTrait.VENOM_DELIVERY,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -1686,7 +1917,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CRAWLING_APPENDAGES,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
-            CommonTrait.ARMORED_HIDE,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.HEAT_STABLE_ENZYMES,
             ColorTrait.BLACK_CAMOUFLAGE
         ),
@@ -1696,6 +1927,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.REGIONAL_MIGRATION,
             ColorTrait.GREEN_CAMOUFLAGE
         ),
@@ -1705,6 +1937,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.SUCKING_PROBOSCIS,
+            CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.BURROWING_EGGS,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
@@ -1715,6 +1948,123 @@ object EarthSpeciesCatalog {
             CommonTrait.CRAWLING_APPENDAGES,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        sessile(
+            "brain coral",
+            SizeClass.MEDIUM,
+            ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.POLYP_BODY,
+            CommonTrait.VENOM_DELIVERY,
+            CommonTrait.RIGID_COLONY_FRAMEWORK,
+            CommonTrait.REEF_BUILDING,
+            CommonTrait.CLONAL_PROPAGATION,
+            CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
+            CommonTrait.WARM_WATER_ENZYMES
+        ),
+        sessile(
+            "common sea fan",
+            SizeClass.SMALL,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.POLYP_BODY,
+            CommonTrait.SUSPENSION_FEEDING_TENTACLES,
+            CommonTrait.CLONAL_PROPAGATION,
+            ColorTrait.RED_CAMOUFLAGE
+        ),
+        sessile(
+            "giant green anemone",
+            SizeClass.SMALL,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.POLYP_BODY,
+            CommonTrait.VENOM_DELIVERY,
+            CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS
+        ),
+        sessile(
+            "slender sea pen",
+            SizeClass.SMALL,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.POLYP_BODY,
+            CommonTrait.SUSPENSION_FEEDING_TENTACLES,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
+            "sea wasp",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.WARM_WATER_ENZYMES,
+            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.PULSING_BELL,
+            CommonTrait.GELATINOUS_BODY,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.VENOM_DELIVERY,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
+            "european mantis",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.INSECTOID_WINGS,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.CAMOUFLAGE_PATTERN,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.GREEN_CAMOUFLAGE
+        ),
+        animal(
+            "scarab dung beetle",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CRAWLING_APPENDAGES,
+            CommonTrait.INSECTOID_WINGS,
+            CommonTrait.WASTE_FEEDING_MOUTHPARTS,
+            CommonTrait.DIGGING_CLAWS,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.BLACK_CAMOUFLAGE
+        ),
+        animal(
+            "pea aphid",
+            SizeClass.MINUSCULE,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.SUCKING_PROBOSCIS,
+            CommonTrait.VIVIPARITY,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.GREEN_CAMOUFLAGE
+        ),
+        animal(
+            "spotted antlion",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CRAWLING_APPENDAGES,
+            CommonTrait.SUBTERRANEAN_BURROWING,
+            CommonTrait.DRY_BURROW_NEST,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
+            "common walkingstick",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.GRAZING_MOUTHPARTS,
+            CommonTrait.CAMOUFLAGE_PATTERN,
+            CommonTrait.MOLTING_EXOSKELETON,
+            ColorTrait.BROWN_CAMOUFLAGE
+        ),
+        animal(
+            "periodical cicada",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.INSECTOID_WINGS,
+            CommonTrait.SUCKING_PROBOSCIS,
+            CommonTrait.PROLONGED_JUVENILE_DORMANCY,
+            CommonTrait.MOLTING_EXOSKELETON,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
     )
@@ -2024,6 +2374,113 @@ object EarthSpeciesCatalog {
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.PERENNIAL_STORAGE_TISSUE
+        ),
+        sessile(
+            "common duckweed",
+            SizeClass.TINY,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.FLOATING_FRONDS,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.RAPID_GROWTH
+        ),
+        sessile(
+            "common reed",
+            SizeClass.MEDIUM,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.SUBSTRATE_HOLDFAST,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.FLOWERS,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE
+        ),
+        sessile(
+            "kudzu vine",
+            SizeClass.MEDIUM,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.CANOPY_GROWTH,
+            CommonTrait.SHADE_FRONDS,
+            CommonTrait.FLOWERS,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.RAPID_GROWTH
+        ),
+        sessile(
+            "epiphytic orchid",
+            SizeClass.SMALL,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.EPIPHYTIC_ROOTS,
+            CommonTrait.FLOWERS,
+            CommonTrait.NECTARIES,
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL
+        ),
+        sessile(
+            "moss campion",
+            SizeClass.TINY,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.CUSHION_GROWTH,
+            CommonTrait.FROST_HARDENED_TISSUES,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE
+        ),
+        sessile(
+            "prickly pear cactus",
+            SizeClass.MEDIUM,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.FLOWERS,
+            CommonTrait.NECTARIES,
+            CommonTrait.SUCCULENT_STEM,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.FROST_SENSITIVE_SUCCULENT_TISSUES,
+            CommonTrait.DESICCATION_RESISTANT_PROPAGULES
+        ),
+        sessile(
+            "common bladderwort",
+            SizeClass.TINY,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.SUBSTRATE_HOLDFAST,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.FLOWERS
+        ),
+        sessile(
+            "field horsetail",
+            SizeClass.SMALL,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL
+        ),
+        sessile(
+            "honey fungus",
+            SizeClass.SMALL,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.ABSORPTIVE_FILAMENTS,
+            CommonTrait.DECOMPOSING_ENZYMES,
+            CommonTrait.HOST_PENETRATING_FILAMENTS,
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE
+        ),
+        sessile(
+            "shelf fungus",
+            SizeClass.SMALL,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.ABSORPTIVE_FILAMENTS,
+            CommonTrait.DECOMPOSING_ENZYMES,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL
         ),
     ).map { definition ->
         if (definition.id in setOf("white-water-lily", "eelgrass", "giant-kelp")) {

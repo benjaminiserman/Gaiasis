@@ -399,7 +399,12 @@ class EcologyRuntimeTest {
 
     @Test
     fun `reef builders emit cover only from aquatic habitat`() {
-        val species = aquaticProducer(extraTraits = listOf(CommonTrait.REEF_BUILDING))
+        val species = aquaticProducer(
+            extraTraits = listOf(
+                CommonTrait.RIGID_COLONY_FRAMEWORK,
+                CommonTrait.REEF_BUILDING,
+            ),
+        )
         val ecology = EcologyCompiler.compile(listOf(species))
         val niche = nicheFor(ecology, 0, Habitat.SUNLIT_WATER, EcoStrategy.PHOTOSYNTHESIS)
         val community = TileCommunity().also { it.add(0, niche, activeBiomass = 250_000.0) }

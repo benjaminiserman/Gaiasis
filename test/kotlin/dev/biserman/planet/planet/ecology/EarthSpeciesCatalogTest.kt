@@ -35,6 +35,60 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `cnidarian body plans compile into distinct ecological roles`() {
+        val definitions = EarthSpeciesCatalog.INVERTEBRATES.associateBy { it.id }
+        val ecology = EcologyCompiler.compile(EarthSpeciesCatalog.ALL + InvariantSpecies.ALL)
+        val brainCoral = ecology.species.single { it.id == "brain-coral" }
+        val seaFan = ecology.species.single { it.id == "common-sea-fan" }
+        val anemone = ecology.species.single { it.id == "giant-green-anemone" }
+        val seaWasp = ecology.species.single { it.id == "sea-wasp" }
+
+        assertTrue(brainCoral.interactions.reefBuilding > 0.0)
+        assertTrue(seaFan.niche.supportFor(EcoStrategy.FILTER_FEEDING) > 0.0)
+        assertEquals(0.0, seaFan.interactions.reefBuilding)
+        assertTrue(anemone.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0)
+        assertTrue(seaWasp.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0)
+        assertTrue(CommonTrait.PULSING_BELL in definitions.getValue("sea-wasp").traits)
+        assertTrue(CommonTrait.GELATINOUS_BODY in definitions.getValue("moon-jellyfish").traits)
+        assertTrue(CommonTrait.BUOYANCY_BLADDER !in definitions.getValue("moon-jellyfish").traits)
+    }
+
+    @Test
+    fun `catalog includes distinct underrepresented functional archetypes`() {
+        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
+
+        assertTrue(CommonTrait.WADING_LIMBS in species.getValue("great-blue-heron").traits)
+        assertTrue(CommonTrait.COASTAL_BREEDING_SITE in species.getValue("atlantic-puffin").traits)
+        assertTrue(CommonTrait.BEHAVIORAL_THERMOREGULATION in species.getValue("desert-horned-lizard").traits)
+        assertTrue(CommonTrait.BENTHIC_BODY in species.getValue("european-plaice").traits)
+        assertTrue(CommonTrait.SCHOOLING in species.getValue("pacific-herring").traits)
+        assertTrue(CommonTrait.MOLTING_EXOSKELETON in species.getValue("pea-aphid").traits)
+        assertTrue(CommonTrait.HOST_PENETRATING_FILAMENTS in species.getValue("wheat-stem-rust").traits)
+        assertTrue(CommonTrait.EPIPHYTIC_ROOTS in species.getValue("epiphytic-orchid").traits)
+        assertTrue(CommonTrait.CUSHION_GROWTH in species.getValue("moss-campion").traits)
+    }
+
+    @Test
+    fun `periodical cicadas spend most of their lifecycle as dormant juveniles`() {
+        val cicada = EarthSpeciesCatalog.INVERTEBRATES.single { it.id == "periodical-cicada" }
+        val ordinaryBurrowedEggLifecycle = cicada.copy(
+            id = "seasonal-cicada",
+            traits = cicada.traits
+                .filterNot { it == CommonTrait.PROLONGED_JUVENILE_DORMANCY } +
+                CommonTrait.BURROWING_EGGS,
+        )
+        val ecology = EcologyCompiler.compile(listOf(cicada, ordinaryBurrowedEggLifecycle))
+        val periodical = ecology.species[ecology.speciesIndex(cicada.id)].lifeHistory
+        val seasonal = ecology.species[ecology.speciesIndex(ordinaryBurrowedEggLifecycle.id)].lifeHistory
+
+        assertEquals(TraitGroup.DORMANCY_MODE, CommonTrait.PROLONGED_JUVENILE_DORMANCY.group)
+        assertEquals(DormancyKind.PROLONGED_JUVENILE, periodical.dormancyKind)
+        assertTrue(periodical.dormantSurvival > seasonal.dormantSurvival)
+        assertTrue(periodical.seasonalReproduction < seasonal.seasonalReproduction)
+        assertTrue(periodical.dormantReactivationMultiplier > seasonal.dormantReactivationMultiplier)
+    }
+
+    @Test
     fun `catalog assigns explicit reproductive strategies`() {
         val catalog = EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES + InvariantSpecies.ALL
         assertTrue(
@@ -51,8 +105,8 @@ class EarthSpeciesCatalogTest {
             EarthSpeciesCatalog.MAMMALS
                 .filterNot { it.id == "duck-billed-platypus" }
                 .none { definition ->
-                definition.traits.any { TraitCapability.OVOSPORE_REPRODUCTION in it.capabilities }
-            },
+                    definition.traits.any { TraitCapability.OVOSPORE_REPRODUCTION in it.capabilities }
+                },
         )
         val platypus = EarthSpeciesCatalog.MAMMALS.single { it.id == "duck-billed-platypus" }
         assertTrue(CommonTrait.TERRESTRIAL_OVOSPORE in platypus.traits)

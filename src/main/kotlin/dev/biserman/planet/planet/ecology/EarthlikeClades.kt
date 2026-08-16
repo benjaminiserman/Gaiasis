@@ -63,6 +63,7 @@ object EarthlikeClades {
         CommonTrait.CLIMBING_LIMBS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.INSECTOID_WINGS,
+        CommonTrait.MOLTING_EXOSKELETON,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 
@@ -73,6 +74,7 @@ object EarthlikeClades {
         CommonTrait.CLIMBING_LIMBS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.VENOM_DELIVERY,
+        CommonTrait.MOLTING_EXOSKELETON,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 

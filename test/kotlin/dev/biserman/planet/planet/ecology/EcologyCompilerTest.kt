@@ -341,6 +341,35 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `expanded archetype traits require their underlying physiology`() {
+        val terrestrial = predator("archetype-dependencies")
+        fun unmet(vararg traits: SpeciesTrait): List<UnmetTraitRequirement> =
+            TraitDependencies.unmetRequirements(
+                terrestrial.copy(traits = terrestrial.traits + traits),
+            )
+
+        assertTrue(unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty())
+        assertTrue(unmet(CommonTrait.SCHOOLING).isNotEmpty())
+        assertTrue(unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty())
+        assertTrue(unmet(CommonTrait.REEF_BUILDING).isNotEmpty())
+
+        val ectotherm = terrestrial.copy(
+            traits = terrestrial.traits
+                .filterNot { it == CommonTrait.ENDOTHERMY } +
+                CommonTrait.ECTOTHERMY +
+                CommonTrait.BEHAVIORAL_THERMOREGULATION,
+        )
+        assertTrue(TraitDependencies.unmetRequirements(ectotherm).isEmpty())
+        assertTrue(unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty())
+        assertTrue(unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty())
+
+        val aquatic = terrestrial.copy(
+            traits = terrestrial.traits + CommonTrait.AQUATIC_FLIPPERS + CommonTrait.SCHOOLING,
+        )
+        assertTrue(TraitDependencies.unmetRequirements(aquatic).isEmpty())
+    }
+
+    @Test
     fun `motile species cannot use rooted body as a land habitat shortcut`() {
         val invalid = predator("rooted-predator").copy(
             traits = predator("rooted-predator").traits

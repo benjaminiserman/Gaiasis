@@ -284,7 +284,15 @@ class EcologyProductionTest {
                 isLand = !preset.ocean,
                 adjacentToOcean = if (coastal) 1.0 else 0.0,
                 adjacentToLand =
-                if (preset == HersfeldtClimatePresets.PERMANENT_SEA_ICE) 1.0 else 0.0,
+                if (
+                    preset == HersfeldtClimatePresets.TROPICAL_REEF ||
+                    preset == HersfeldtClimatePresets.TEMPERATE_SHELF ||
+                    preset == HersfeldtClimatePresets.PERMANENT_SEA_ICE
+                ) {
+                    1.0
+                } else {
+                    0.0
+                },
                 adjacentToMajorRiver = if (majorRiver) 1.0 else 0.0,
                 elevationM = elevationM,
                 waterDepthM = waterDepth,
