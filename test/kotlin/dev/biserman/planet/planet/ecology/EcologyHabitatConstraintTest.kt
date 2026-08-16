@@ -115,7 +115,7 @@ class EcologyHabitatConstraintTest {
         val panda = catalogEcology.speciesIndex("giant-panda")
         val bamboo = catalogEcology.speciesIndex("giant-bamboo")
         val koala = catalogEcology.speciesIndex("koala")
-        val eucalyptus = catalogEcology.speciesIndex("eucalyptus")
+        val eucalyptus = catalogEcology.speciesIndex("eucalyptus-tree")
         val oak = catalogEcology.speciesIndex("english-oak")
 
         assertEquals(InteractionKind.GRAZING, catalogEcology.interactions.get(panda, bamboo).kind)

@@ -103,10 +103,13 @@ private class BenchmarkScenario(
                         motile = false,
                         traits = listOf(
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                            CommonTrait.TERRESTRIAL_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
                             CommonTrait.ROOTED_BODY,
+                            ColorTrait.photosynthetic(
+                                BiologicalColor.entries[index % BiologicalColor.entries.size],
+                            ),
                         ),
-                        photosyntheticColor = BiologicalColor.entries[index % BiologicalColor.entries.size],
                     ),
                 )
             }
@@ -129,11 +132,14 @@ private class BenchmarkScenario(
                         motile = false,
                         traits = listOf(
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                            CommonTrait.AQUATIC_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
                             CommonTrait.BUOYANCY_BLADDER,
                             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+                            ColorTrait.photosynthetic(
+                                BiologicalColor.entries[index % BiologicalColor.entries.size],
+                            ),
                         ),
-                        photosyntheticColor = BiologicalColor.entries[index % BiologicalColor.entries.size],
                     ),
                 )
             }
@@ -156,7 +162,7 @@ private class BenchmarkScenario(
                 EcoStrategy.AMBUSH_PREDATION -> CommonTrait.AMBUSH_MUSCULATURE
                 EcoStrategy.SCAVENGING -> CommonTrait.SCAVENGING_SENSES
                 EcoStrategy.DECOMPOSITION -> CommonTrait.DETRITUS_DIGESTIVE_TRACT
-                EcoStrategy.COPROPHAGY -> CommonTrait.DUNG_FEEDING_MOUTHPARTS
+                EcoStrategy.COPROPHAGY -> CommonTrait.WASTE_FEEDING_MOUTHPARTS
                 else -> error("Unsupported land benchmark strategy")
             }
             return SpeciesDefinition(
@@ -167,10 +173,11 @@ private class BenchmarkScenario(
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     if (index % 2 == 0) CommonTrait.ECTOTHERMY else CommonTrait.ENDOTHERMY,
+                    CommonTrait.TERRESTRIAL_OVOSPORE,
                     CommonTrait.WALKING_LIMBS,
                     strategyTrait,
+                    ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
                 ),
-                camouflageColor = BiologicalColor.entries[index % BiologicalColor.entries.size],
             )
         }
 
@@ -179,7 +186,7 @@ private class BenchmarkScenario(
                 EcoStrategy.FILTER_FEEDING -> CommonTrait.GILL_PADS
                 EcoStrategy.GRAZING -> CommonTrait.GRAZING_MOUTHPARTS
                 EcoStrategy.AMBUSH_PREDATION -> CommonTrait.AMBUSH_MUSCULATURE
-                EcoStrategy.DEPOSIT_FEEDING -> CommonTrait.MARINE_SNOW_PALPS
+                EcoStrategy.DEPOSIT_FEEDING -> CommonTrait.MARINE_SNOW_COLLECTORS
                 EcoStrategy.DECOMPOSITION -> CommonTrait.DETRITUS_DIGESTIVE_TRACT
                 else -> error("Unsupported ocean benchmark strategy")
             }
@@ -191,11 +198,12 @@ private class BenchmarkScenario(
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     CommonTrait.ECTOTHERMY,
+                    CommonTrait.AQUATIC_OVOSPORE,
                     CommonTrait.BUOYANCY_BLADDER,
                     CommonTrait.GILLS,
                     strategyTrait,
+                    ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
                 ),
-                camouflageColor = BiologicalColor.entries[index % BiologicalColor.entries.size],
             )
         }
 

@@ -76,7 +76,7 @@ object AuthoredEcosystems {
         "Amazon rainforest",
         climate(3, q(27, 27, 26, 27.5), q(220, 235, 210, 230), q(260, 240, 150, 210)),
         AuthoredEcosystemTile(isLand = true, canopyCover = 0.92, fertilityModifier = 0.15),
-        "giant-bamboo", "eucalyptus", "bracken-fern", "three-toed-sloth",
+        "giant-bamboo", "eucalyptus-tree", "bracken-fern", "three-toed-sloth",
         "scarlet-macaw", "bengal-tiger", "field-mushroom", "termite",
     )
 
@@ -105,7 +105,7 @@ object AuthoredEcosystems {
         "Sonoran Desert",
         climate(6, q(13, 27, 35, 24), q(180, 310, 315, 235), q(25, 5, 45, 18)),
         AuthoredEcosystemTile(isLand = true, fertilityModifier = -0.30),
-        "saguaro",
+        "saguaro-cactus",
     )
 
     val BOREAL_FOREST = scenario(
@@ -225,7 +225,7 @@ object AuthoredEcosystems {
             fertilityModifier = 0.10,
             includeAeroplankton = true,
         ),
-        "common-green-darner",
+        "common-green-darner-dragonfly",
     )
 
     val CLIMATE_MALADAPTATION = scenario(
@@ -250,7 +250,7 @@ object AuthoredEcosystems {
         climate(201, q(18, 24, 27, 20), q(180, 270, 300, 210), q(85, 105, 75, 95)),
         AuthoredEcosystemTile(isLand = true, fertilityModifier = 0.10),
         "common-sunflower",
-        "saguaro",
+        "saguaro-cactus",
         climateShifts = listOf(
             AuthoredClimateShift(
                 35,
@@ -274,11 +274,11 @@ object AuthoredEcosystems {
         "EXTINCTION - host-specialist coextinction",
         climate(203, q(16, 22, 26, 19), q(175, 255, 290, 205), q(70, 95, 65, 85)),
         AuthoredEcosystemTile(isLand = true, canopyCover = 0.60, fertilityModifier = 0.08),
-        "eucalyptus",
+        "eucalyptus-tree",
         "giant-bamboo",
         "koala",
-        populationRemovals = listOf(AuthoredPopulationRemoval("eucalyptus", 40)),
-        expectedExtinctions = setOf("eucalyptus", "koala"),
+        populationRemovals = listOf(AuthoredPopulationRemoval("eucalyptus-tree", 40)),
+        expectedExtinctions = setOf("eucalyptus-tree", "koala"),
     )
 
     val CANOPY_COLLAPSE = scenario(

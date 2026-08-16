@@ -69,6 +69,7 @@ data class LifeHistoryProfile(
     val dormantEntryBiomassRetention: Double,
     val dormantReactivationMultiplier: Double,
     val dispersalKind: DispersalKind,
+    val radiationRange: Int,
 )
 
 data class InteractionProfile(

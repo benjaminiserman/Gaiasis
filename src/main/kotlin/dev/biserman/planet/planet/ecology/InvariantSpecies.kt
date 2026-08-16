@@ -8,30 +8,32 @@ package dev.biserman.planet.planet.ecology
 object InvariantSpecies {
     val CARPET_PLANTS = SpeciesDefinition(
         id = "invariant-carpet-plants",
-        displayName = "Carpet plants",
+        displayName = "carpet plants",
         sizeClass = SizeClass.TINY,
         motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
+            CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.THAW_DEPENDENT_GROWTH,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ),
-        photosyntheticColor = BiologicalColor.GREEN,
         kind = SpeciesKind.INVARIANT,
     )
 
     val BUGS = SpeciesDefinition(
         id = "invariant-bugs",
-        displayName = "Bugs",
+        displayName = "bugs",
         sizeClass = SizeClass.TINY,
         motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.ECTOTHERMY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -41,12 +43,13 @@ object InvariantSpecies {
 
     val SMALL_AQUATIC_LIFE = SpeciesDefinition(
         id = "invariant-small-aquatic-life",
-        displayName = "Small aquatic life",
+        displayName = "small aquatic life",
         sizeClass = SizeClass.TINY,
         motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.ECTOTHERMY,
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
@@ -58,36 +61,38 @@ object InvariantSpecies {
 
     val PLANKTON = SpeciesDefinition(
         id = "invariant-plankton",
-        displayName = "Plankton",
+        displayName = "plankton",
         sizeClass = SizeClass.MINUSCULE,
         motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
+            CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.MICROSCOPIC_RESTING_STAGES,
             CommonTrait.ECTOTHERMY,
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ),
-        photosyntheticColor = BiologicalColor.GREEN,
         kind = SpeciesKind.INVARIANT,
     )
 
     val AEROPLANKTON = SpeciesDefinition(
         id = "invariant-aeroplankton",
-        displayName = "Aeroplankton",
+        displayName = "aeroplankton",
         sizeClass = SizeClass.MINUSCULE,
         motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
+            CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.ECTOTHERMY,
             CommonTrait.FLOATING_BODY,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ),
-        photosyntheticColor = BiologicalColor.GREEN,
         kind = SpeciesKind.INVARIANT,
     )
 

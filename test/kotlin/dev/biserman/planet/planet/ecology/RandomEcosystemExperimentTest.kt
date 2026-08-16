@@ -35,7 +35,7 @@ class RandomEcosystemExperimentTest {
             results.mapTo(hashSetOf()) { it.climate.presetId },
         )
         val birdNames = EarthSpeciesCatalog.BIRDS.mapTo(hashSetOf()) { it.displayName }
-        val openOceanBirds = setOf("Emperor penguin", "Wandering albatross")
+        val openOceanBirds = setOf("emperor penguin", "wandering albatross")
         results.forEach { result ->
             println(
                 "RANDOM_ECOSYSTEM seed=${result.seed} climate=${result.climate.presetId} land=${result.tile.isLand} " +
@@ -54,7 +54,7 @@ class RandomEcosystemExperimentTest {
                     "Seed ${result.seed} selected non-pelagic birds over open ocean: " +
                         result.selectedSpecies.filter { it in birdNames && it !in openOceanBirds },
                 )
-                result.chosenNiches["Wandering albatross"]?.let { niche ->
+                result.chosenNiches["wandering albatross"]?.let { niche ->
                     assertTrue(
                         niche.startsWith("aerial "),
                         "Seed ${result.seed} placed an albatross in $niche",

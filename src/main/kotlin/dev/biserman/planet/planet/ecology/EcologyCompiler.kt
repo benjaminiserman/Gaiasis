@@ -50,6 +50,10 @@ object EcologyCompiler {
             }
         }
         TraitDependencies.requireSatisfied(definition)
+        val capabilities = definition.traits.flatMapTo(mutableSetOf()) { it.capabilities }
+        require(TraitCapability.REPRODUCTION in capabilities) {
+            "${definition.displayName} must have at least one reproductive strategy"
+        }
         require(
             definition.kind == SpeciesKind.INVARIANT ||
                 definition.traits.none { it.invariantOnly },
@@ -79,8 +83,8 @@ object EcologyCompiler {
         }
         definition.traits.filterNot { it.isFoundation }.forEach { trait ->
             val cost = trait.effects.filterIsInstance<TraitEffect.MaintenanceCost>().sumOf { it.fraction }
-            require(cost > 0.0) {
-                "Non-foundation trait '${trait.displayName}' must have an explicit maintenance/opportunity cost"
+            require(cost != 0.0) {
+                "Non-foundation trait '${trait.displayName}' must have an explicit non-zero maintenance adjustment"
             }
             require(trait.effects.any { it !is TraitEffect.MaintenanceCost } || trait.relationships.isNotEmpty()) {
                 "Non-foundation trait '${trait.displayName}' must provide an effect"

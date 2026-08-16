@@ -64,8 +64,8 @@ class EcologyProductionTest {
 
     @Test
     fun `climate specialists are accepted and rejected in expected places`() {
-        assertSuitable("saguaro", HersfeldtClimatePresets.DESERT)
-        assertUnsuitable("saguaro", HersfeldtClimatePresets.TUNDRA)
+        assertSuitable("saguaro-cactus", HersfeldtClimatePresets.DESERT)
+        assertUnsuitable("saguaro-cactus", HersfeldtClimatePresets.TUNDRA)
         assertSuitable("dromedary-camel", HersfeldtClimatePresets.DESERT)
         assertUnsuitable("dromedary-camel", HersfeldtClimatePresets.ICE_CAP)
         assertSuitable("poison-dart-frog", HersfeldtClimatePresets.JUNGLE)
@@ -155,7 +155,7 @@ class EcologyProductionTest {
 
     @Test
     fun `suitability can target one habitat compartment`() {
-        val species = ecology.species.single { it.id == "saguaro" }
+        val species = ecology.species.single { it.id == "saguaro-cactus" }
         val desert = environment(HersfeldtClimatePresets.DESERT, majorRiver = true)
 
         assertTrue(

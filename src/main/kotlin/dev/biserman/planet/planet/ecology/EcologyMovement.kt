@@ -120,11 +120,23 @@ object EcologyMovement {
 
                 val adjacent = neighbors[originTile]
                 if (adjacent.isEmpty()) continue
+                val candidateCount = if (species.lifeHistory.radiationRange == 1) adjacent.size else 8
                 val start = Math.floorMod(hash, adjacent.size)
                 var destination = -1
                 var nicheIndex = -1
-                for (offset in adjacent.indices) {
-                    val candidate = adjacent[(start + offset) % adjacent.size]
+                for (offset in 0 until candidateCount) {
+                    val candidate = if (species.lifeHistory.radiationRange == 1) {
+                        adjacent[(start + offset) % adjacent.size]
+                    } else {
+                        distantRadiationCandidate(
+                            neighbors = neighbors,
+                            originTile = originTile,
+                            hash = hash,
+                            attempt = offset,
+                            range = species.lifeHistory.radiationRange,
+                        )
+                    }
+                    if (candidate < 0 || candidate == originTile) continue
                     val target = communities[candidate]
                     if (target.find(speciesIndex) < 0 && target.size >= target.capacity) continue
                     val candidateNiche = NicheSelection.choose(
@@ -314,6 +326,29 @@ object EcologyMovement {
         value = (value xor (value ushr 16)) * 0x45D9F3B
         value = (value xor (value ushr 16)) * 0x45D9F3B
         return value xor (value ushr 16)
+    }
+
+    private fun distantRadiationCandidate(
+        neighbors: Array<IntArray>,
+        originTile: Int,
+        hash: Int,
+        attempt: Int,
+        range: Int,
+    ): Int {
+        var previous = -1
+        var current = originTile
+        repeat(range) { step ->
+            val adjacent = neighbors[current]
+            if (adjacent.isEmpty()) return -1
+            val start = Math.floorMod(hash + attempt * 1_009 + step * 9_173, adjacent.size)
+            var next = adjacent[start]
+            if (next == previous && adjacent.size > 1) {
+                next = adjacent[(start + 1) % adjacent.size]
+            }
+            previous = current
+            current = next
+        }
+        return current
     }
 
     private fun hashToUnit(hash: Int): Double =

@@ -6,13 +6,24 @@ import kotlin.test.assertTrue
 
 class EarthSpeciesCatalogTest {
     @Test
+    fun `catalog IDs are inferred from common names`() {
+        val catalog = EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES
+        assertTrue(catalog.all { it.id == EarthSpeciesCatalog.idFromName(it.displayName) })
+        assertTrue((catalog + InvariantSpecies.ALL).all { it.displayName.first().isLowerCase() })
+        assertEquals("thomsons-gazelle", EarthSpeciesCatalog.idFromName("thomson's gazelle"))
+        assertEquals("vicuna", EarthSpeciesCatalog.idFromName("vicuña"))
+        assertEquals("saguaro-cactus", EarthSpeciesCatalog.idFromName("saguaro cactus"))
+    }
+
+    @Test
     fun `catalog assigns structural anatomy rather than generic locomotion outcomes`() {
         val species = (EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES).associateBy { it.id }
 
+        assertTrue(EarthSpeciesCatalog.MAMMALS.all { CommonTrait.MAMMARY_GLANDS in it.traits })
         assertTrue(EarthSpeciesCatalog.BIRDS.all { CommonTrait.FEATHERS in it.traits })
         assertTrue(CommonTrait.FEATHERED_WINGS in species.getValue("bald-eagle").traits)
         assertTrue(CommonTrait.MEMBRANOUS_WINGS in species.getValue("little-brown-bat").traits)
-        assertTrue(CommonTrait.INSECT_WINGS in species.getValue("western-honey-bee").traits)
+        assertTrue(CommonTrait.INSECTOID_WINGS in species.getValue("western-honey-bee").traits)
         assertTrue(CommonTrait.UNDULATING_BODY in species.getValue("king-cobra").traits)
         assertTrue(CommonTrait.MUSCULAR_FOOT in species.getValue("garden-snail").traits)
         assertTrue(CommonTrait.CRAWLING_APPENDAGES in species.getValue("leafcutter-ant").traits)
@@ -21,6 +32,81 @@ class EarthSpeciesCatalogTest {
         assertTrue(CommonTrait.STREAMLINED_BODY in species.getValue("atlantic-bluefin-tuna").traits)
         assertTrue(CommonTrait.FUR in species.getValue("cheetah").traits)
         assertTrue(CommonTrait.FUR !in species.getValue("blue-whale").traits)
+    }
+
+    @Test
+    fun `catalog assigns explicit reproductive strategies`() {
+        val catalog = EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES + InvariantSpecies.ALL
+        assertTrue(
+            catalog.all { definition ->
+                definition.traits.any { TraitCapability.REPRODUCTION in it.capabilities }
+            },
+        )
+        assertTrue(
+            EarthSpeciesCatalog.MAMMALS
+                .filterNot { it.id == "duck-billed-platypus" }
+                .all { CommonTrait.VIVIPARITY in it.traits },
+        )
+        assertTrue(
+            EarthSpeciesCatalog.MAMMALS
+                .filterNot { it.id == "duck-billed-platypus" }
+                .none { definition ->
+                definition.traits.any { TraitCapability.OVOSPORE_REPRODUCTION in it.capabilities }
+            },
+        )
+        val platypus = EarthSpeciesCatalog.MAMMALS.single { it.id == "duck-billed-platypus" }
+        assertTrue(CommonTrait.TERRESTRIAL_OVOSPORE in platypus.traits)
+        assertTrue(CommonTrait.VIVIPARITY !in platypus.traits)
+        assertTrue(EarthSpeciesCatalog.BIRDS.all { CommonTrait.TERRESTRIAL_OVOSPORE in it.traits })
+        assertTrue(EarthSpeciesCatalog.FISH.all { CommonTrait.AQUATIC_OVOSPORE in it.traits })
+        assertTrue(CommonTrait.CLONAL_PROPAGATION in catalog.single { it.id == "staghorn-coral" }.traits)
+        listOf("bracken-fern", "field-mushroom", "bread-mold").forEach { speciesId ->
+            assertTrue(
+                CommonTrait.AERIAL_OVOSPORE_DISPERSAL in catalog.single { it.id == speciesId }.traits,
+            )
+        }
+    }
+
+    @Test
+    fun `mammary glands trade metabolic upkeep for effective offspring recruitment`() {
+        val mammal = EarthSpeciesCatalog.MAMMALS.first()
+        val withoutMammaryGlands = mammal.copy(
+            id = "${mammal.id}-without-mammary-glands",
+            traits = mammal.traits - CommonTrait.MAMMARY_GLANDS,
+        )
+        val compiled = EcologyCompiler.compile(listOf(mammal, withoutMammaryGlands)).species
+
+        assertTrue(TraitCapability.LACTATION in CommonTrait.MAMMARY_GLANDS.capabilities)
+        assertTrue(compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction)
+        assertTrue(compiled[0].physiology.maintenanceDemand > compiled[1].physiology.maintenanceDemand)
+    }
+
+    @Test
+    fun `long interbirth intervals reduce reproduction and its average maintenance`() {
+        val orca = EarthSpeciesCatalog.MAMMALS.single { it.id == "orca" }
+        val withoutLongInterbirth = orca.copy(
+            id = "orca-without-long-interbirth-interval",
+            traits = orca.traits - CommonTrait.LONG_INTERBIRTH_INTERVAL,
+        )
+        val compiled = EcologyCompiler.compile(listOf(orca, withoutLongInterbirth)).species
+
+        assertTrue(compiled[0].lifeHistory.seasonalReproduction < compiled[1].lifeHistory.seasonalReproduction)
+        assertTrue(compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand)
+    }
+
+    @Test
+    fun `true seals reduce dive costs with stroke and glide swimming`() {
+        val definitions = EarthSpeciesCatalog.MAMMALS.associateBy { it.id }
+        listOf("harbor-seal", "weddell-seal", "crabeater-seal").forEach { sealId ->
+            val seal = definitions.getValue(sealId)
+            val continuousSwimming = seal.copy(
+                id = "$sealId-without-stroke-and-glide-swimming",
+                traits = seal.traits - CommonTrait.STROKE_AND_GLIDE_SWIMMING,
+            )
+            val compiled = EcologyCompiler.compile(listOf(seal, continuousSwimming)).species
+
+            assertTrue(compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand)
+        }
     }
 
     @Test
@@ -91,11 +177,17 @@ class EarthSpeciesCatalogTest {
         }
 
         val compiledOrca = ecology.species[ecology.speciesIndex(orca.id)]
+        val ordinaryOrcaTraits =
+            orca.traits -
+                setOf(
+                    CommonTrait.EXTENDED_PARENTAL_CARE,
+                    CommonTrait.LONG_INTERBIRTH_INTERVAL,
+                )
         val ordinaryOrca = EcologyCompiler.compile(
             listOf(
                 orca.copy(
                     id = "orca-without-extended-parental-care",
-                    traits = orca.traits - CommonTrait.EXTENDED_PARENTAL_CARE,
+                    traits = ordinaryOrcaTraits,
                 ),
             ),
         ).species.single()
@@ -158,11 +250,11 @@ class EarthSpeciesCatalogTest {
             traits = ant.traits - CommonTrait.COLONY_LIVING,
         )
 
-        assertTrue(CommonTrait.NEST_PROBING_TONGUE in anteater.traits)
+        assertTrue(CommonTrait.COLONY_PROBING_TONGUE in anteater.traits)
         assertTrue(CommonTrait.PROJECTILE_TONGUE !in anteater.traits)
         assertTrue(CommonTrait.PROJECTILE_TONGUE in chameleon.traits)
         assertTrue(CommonTrait.AMBUSH_MUSCULATURE !in anteater.traits)
-        assertTrue(CommonTrait.VENOMOUS_STINGER in bee.traits)
+        assertTrue(CommonTrait.VENOM_DELIVERY in bee.traits)
         assertTrue(CommonTrait.HONEY_STORES in bee.traits)
         assertTrue(CommonTrait.COLONY_THERMOREGULATION in bee.traits)
         assertTrue(CommonTrait.APOSEMATIC_COLORATION in bee.traits)
@@ -198,7 +290,7 @@ class EarthSpeciesCatalogTest {
 
         val undefendedBee = bee.copy(
             id = "undefended-bee",
-            traits = bee.traits - CommonTrait.VENOMOUS_STINGER - CommonTrait.HONEY_STORES,
+            traits = bee.traits - CommonTrait.VENOM_DELIVERY - CommonTrait.HONEY_STORES,
         )
         val beeComparison = EcologyCompiler.compile(listOf(bee, undefendedBee)).species
         assertTrue(beeComparison[0].interactions.defense > beeComparison[1].interactions.defense)
@@ -351,7 +443,7 @@ class EarthSpeciesCatalogTest {
         val manatee = requireNotNull(definitions["west-indian-manatee"])
 
         assertTrue(CommonTrait.BENTHIC_SUCTION_FEEDING in walrus.traits)
-        assertTrue(CommonTrait.SIEVE_TEETH !in walrus.traits)
+        assertTrue(CommonTrait.SIEVING_TEETH !in walrus.traits)
         assertTrue(CommonTrait.BLUBBER !in manatee.traits)
         assertTrue("tardigrade" !in definitions)
 
@@ -454,11 +546,11 @@ class EarthSpeciesCatalogTest {
     fun `saguaro is frost sensitive and emperor penguin is heat limited`() {
         val ecology = EcologyCompiler.compile(
             listOf(
-                EarthSpeciesCatalog.PRODUCERS_AND_FUNGI.single { it.id == "saguaro" },
+                EarthSpeciesCatalog.PRODUCERS_AND_FUNGI.single { it.id == "saguaro-cactus" },
                 EarthSpeciesCatalog.BIRDS.single { it.id == "emperor-penguin" },
             ),
         )
-        val saguaro = ecology.species.single { it.id == "saguaro" }
+        val saguaro = ecology.species.single { it.id == "saguaro-cactus" }
         val penguin = ecology.species.single { it.id == "emperor-penguin" }
         val tropicalReef = SeasonalCellEnvironment.create(
             areaKm2 = 40_000.0,

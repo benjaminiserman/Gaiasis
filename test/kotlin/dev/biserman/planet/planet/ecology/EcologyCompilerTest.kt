@@ -79,6 +79,7 @@ class EcologyCompilerTest {
             motile = true,
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.BUOYANCY_BLADDER,
                 CommonTrait.GILL_PADS,
             ),
@@ -107,12 +108,42 @@ class EcologyCompilerTest {
 
     @Test
     fun `every declared trait group has multiple authored alternatives`() {
-        val groupedTraits = CommonTrait.entries.filter { it.group != null }.groupBy { it.group }
+        val groupedTraits =
+            (CommonTrait.entries + ColorTrait.entries)
+                .filter { it.group != null }
+                .groupBy { it.group }
 
         assertEquals(TraitGroup.entries.toSet(), groupedTraits.keys.filterNotNull().toSet())
         groupedTraits.forEach { (group, traits) ->
             assertTrue(traits.size >= 2, "$group has fewer than two alternatives")
         }
+    }
+
+    @Test
+    fun `biological color is compiled from mutually exclusive traits`() {
+        val brownPredator = predator("brown-predator")
+        val compiled = EcologyCompiler.compile(listOf(brownPredator)).species.single()
+        assertEquals(BiologicalColor.BROWN, compiled.niche.camouflageColor)
+
+        val adaptivePredator =
+            brownPredator.copy(
+                id = "adaptive-predator",
+                traits =
+                brownPredator.traits - ColorTrait.BROWN_CAMOUFLAGE +
+                    ColorTrait.ADAPTIVE_CAMOUFLAGE,
+            )
+        val adaptiveCompiled = EcologyCompiler.compile(listOf(adaptivePredator)).species.single()
+        assertTrue(
+            adaptiveCompiled.physiology.maintenanceDemand > compiled.physiology.maintenanceDemand,
+        )
+
+        val conflicting = brownPredator.copy(
+            traits = brownPredator.traits + ColorTrait.WHITE_CAMOUFLAGE,
+        )
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(conflicting))
+        }
+        assertTrue(failure.message.orEmpty().contains("BIOLOGICAL_COLOR"))
     }
 
     @Test
@@ -127,6 +158,53 @@ class EcologyCompilerTest {
                 }
 
         assertTrue(failures.isEmpty(), failures.joinToString(separator = "\n"))
+    }
+
+    @Test
+    fun `every compiled species requires at least one reproductive strategy`() {
+        val invalid = SpeciesDefinition(
+            id = "reproduction-missing",
+            displayName = "Reproduction missing",
+            sizeClass = SizeClass.SMALL,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.WALKING_LIMBS,
+            ),
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("reproductive strategy"))
+    }
+
+    @Test
+    fun `reproductive strategies compose and aerial dispersal requires ovospores`() {
+        val mixedStrategy = predator("mixed-reproduction").copy(
+            traits = predator("mixed-reproduction").traits + CommonTrait.CLONAL_PROPAGATION,
+        )
+        EcologyCompiler.compile(listOf(mixedStrategy))
+
+        listOf(CommonTrait.TERRESTRIAL_OVOSPORE, CommonTrait.AQUATIC_OVOSPORE).forEach { ovospore ->
+            assertTrue(TraitCapability.REPRODUCTION in ovospore.capabilities)
+            assertTrue(TraitCapability.OVOSPORE_REPRODUCTION in ovospore.capabilities)
+            assertTrue(TraitCapability.OVOSPORE_BROODING in ovospore.capabilities)
+        }
+        assertTrue(TraitCapability.REPRODUCTION in CommonTrait.VIVIPARITY.capabilities)
+        assertTrue(TraitCapability.REPRODUCTION in CommonTrait.CLONAL_PROPAGATION.capabilities)
+
+        val invalidAerialDisperser = predator("invalid-aerial-disperser").copy(
+            traits = predator("invalid-aerial-disperser").traits
+                .filterNot { TraitCapability.REPRODUCTION in it.capabilities } +
+                CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
+        )
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalidAerialDisperser))
+        }
+        assertTrue(failure.message.orEmpty().contains("OVOSPORE_REPRODUCTION"))
     }
 
     @Test
@@ -148,14 +226,17 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.FLOATING_BODY,
             ),
         )
         val photosynthetic = floating.copy(
             id = "photosynthetic-floating-body",
             displayName = "Photosynthetic floating body",
-            traits = floating.traits + CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            photosyntheticColor = BiologicalColor.GREEN,
+            traits =
+            floating.traits +
+                CommonTrait.PHOTOSYNTHETIC_SURFACE +
+                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         )
 
         val ecology = EcologyCompiler.compile(listOf(floating, photosynthetic))
@@ -178,6 +259,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.FLOATING_BODY,
             ),
         )
@@ -199,6 +281,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.AQUATIC_FLIPPERS,
                 CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             ),
@@ -280,6 +363,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.MEMBRANOUS_WINGS,
                 CommonTrait.GILL_PADS,
             ),
@@ -303,6 +387,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -329,6 +414,97 @@ class EcologyCompilerTest {
             0.0,
             ecology.species[ecology.speciesIndex("herbivore")]
                 .niche.supportFor(EcoStrategy.GENERALIST_FORAGING),
+        )
+    }
+
+    @Test
+    fun `brooding traits require external ovospores and provisioning requires a brood site`() {
+        val ovospore = predator("ovospore-brooder")
+        val viviparous = ovospore.copy(
+            id = "viviparous-brooder",
+            displayName = "viviparous brooder",
+            traits = ovospore.traits
+                .filterNot { it == CommonTrait.TERRESTRIAL_OVOSPORE } +
+                CommonTrait.VIVIPARITY,
+        )
+        val namedOvospore = ovospore.copy(
+            id = "ovospore-brooder",
+            displayName = "ovospore brooder",
+        )
+
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                viviparous.copy(traits = viviparous.traits + CommonTrait.OVOSPORE_NEST),
+            ).isNotEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                namedOvospore.copy(
+                    traits = namedOvospore.traits + CommonTrait.BROOD_PROVISIONING,
+                ),
+            ).isNotEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                namedOvospore.copy(
+                    traits = namedOvospore.traits +
+                        CommonTrait.OVOSPORE_NEST +
+                        CommonTrait.BROOD_PROVISIONING,
+                ),
+            ).isEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                namedOvospore.copy(
+                    traits = namedOvospore.traits + CommonTrait.BODY_CARRIED_OVOSPORES,
+                ),
+            ).isEmpty(),
+        )
+    }
+
+    @Test
+    fun `brood parasitism requires its authored host relationship`() {
+        val host = producer("brood-host")
+        val parasiteBase = SpeciesDefinition(
+            id = "brood-parasite",
+            displayName = "brood parasite",
+            sizeClass = SizeClass.SMALL,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ENDOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.WALKING_LIMBS,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.BROOD_PARASITISM,
+            ),
+        )
+
+        assertTrue(TraitDependencies.unmetRequirements(parasiteBase).isNotEmpty())
+
+        val parasite = parasiteBase.copy(
+            traits = parasiteBase.traits + broodParasitismOf(host.id, host.displayName),
+        )
+        val ecology = EcologyCompiler.compile(listOf(host, parasite))
+        val parasiteIndex = ecology.speciesIndex(parasite.id)
+        val hostIndex = ecology.speciesIndex(host.id)
+
+        assertTrue(TraitDependencies.unmetRequirements(parasite).isEmpty())
+        assertTrue(ecology.interactions.get(parasiteIndex, hostIndex).targetRequired)
+        assertEquals(
+            listOf(parasite, host).map { it.id }.toSet(),
+            EcologyAssembly.completeRequiredTargets(
+                ecology = ecology,
+                selected = listOf(ecology.species[parasiteIndex]),
+                availableTargets = ecology.species,
+            ).map { it.id }.toSet(),
+        )
+        assertTrue(
+            EcologyAssembly.completeRequiredTargets(
+                ecology = ecology,
+                selected = listOf(ecology.species[parasiteIndex]),
+                availableTargets = emptyList(),
+            ).isEmpty(),
         )
     }
 
@@ -467,6 +643,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -511,6 +688,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -611,21 +789,22 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `all common non-foundation traits declare a benefit and a cost`() {
-        CommonTrait.entries.forEach { trait ->
+    fun `all authored non-foundation traits declare an effect and a maintenance adjustment`() {
+        val authoredTraits: List<SpeciesTrait> = CommonTrait.entries + ColorTrait.entries
+        authoredTraits.forEach { trait ->
             assertTrue(
                 trait.description.isNotBlank(),
                 "${trait.displayName} has no player-facing description",
             )
         }
-        CommonTrait.entries.filterNot { it.isFoundation }.forEach { trait ->
+        authoredTraits.filterNot { it.isFoundation }.forEach { trait ->
             assertTrue(
-                trait.effects.any { it is TraitEffect.MaintenanceCost && it.fraction > 0.0 },
-                "${trait.displayName} has no explicit cost",
+                trait.effects.any { it is TraitEffect.MaintenanceCost && it.fraction != 0.0 },
+                "${trait.displayName} has no explicit non-zero maintenance adjustment",
             )
             assertTrue(
                 trait.effects.any { it !is TraitEffect.MaintenanceCost },
-                "${trait.displayName} has no benefit",
+                "${trait.displayName} has no non-maintenance effect",
             )
         }
     }
@@ -642,8 +821,8 @@ class EcologyCompilerTest {
         displayName = id,
         sizeClass = SizeClass.SMALL,
         motile = false,
-        traits = traits,
-        photosyntheticColor = BiologicalColor.GREEN,
+        traits = withReproduction(traits, CommonTrait.TERRESTRIAL_OVOSPORE) +
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
     )
 
     private fun predator(
@@ -657,10 +836,11 @@ class EcologyCompilerTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
+            ColorTrait.BROWN_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BROWN,
     )
 
     private fun aquaticFilter(
@@ -674,6 +854,7 @@ class EcologyCompilerTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.AQUATIC_FLIPPERS,
             CommonTrait.BALEEN,
         ),
@@ -690,6 +871,7 @@ class EcologyCompilerTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.BUOYANCY_BLADDER,
         ),
     )
@@ -705,8 +887,18 @@ class EcologyCompilerTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.AQUATIC_FLIPPERS,
             CommonTrait.AMBUSH_MUSCULATURE,
         ),
     )
+
+    private fun withReproduction(
+        traits: List<SpeciesTrait>,
+        default: CommonTrait,
+    ): List<SpeciesTrait> = if (traits.any { TraitCapability.REPRODUCTION in it.capabilities }) {
+        traits
+    } else {
+        traits + default
+    }
 }

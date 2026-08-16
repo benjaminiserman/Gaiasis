@@ -17,6 +17,7 @@ class EcologyRuntimeTest {
             traits = buildList {
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
+                add(CommonTrait.TERRESTRIAL_OVOSPORE)
                 add(CommonTrait.MEMBRANOUS_WINGS)
                 add(CommonTrait.NECTAR_SIPPING_TONGUE)
                 if (pollinator) add(CommonTrait.POLLEN_CARRYING_SURFACES)
@@ -118,12 +119,13 @@ class EcologyRuntimeTest {
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.APOSEMATIC_COLORATION,
                 CommonTrait.TOXIC_SKIN.takeIf { dangerous },
+                ColorTrait.camouflage(color),
             ),
-            camouflageColor = color,
         )
         val predator = SpeciesDefinition(
             id = "warning-test-predator",
@@ -133,10 +135,11 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
+                ColorTrait.BROWN_CAMOUFLAGE,
             ),
-            camouflageColor = BiologicalColor.BROWN,
         )
         val dangerousRedModel = prey("dangerous-red-model", BiologicalColor.RED, dangerous = true)
         val redMimic = prey("red-mimic", BiologicalColor.RED)
@@ -484,6 +487,7 @@ class EcologyRuntimeTest {
             motile = false,
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.ROOTED_BODY,
                 CommonTrait.DECOMPOSING_ENZYMES,
             ),
@@ -496,8 +500,9 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
-                CommonTrait.DUNG_FEEDING_MOUTHPARTS,
+                CommonTrait.WASTE_FEEDING_MOUTHPARTS,
             ),
         )
         val ecology = EcologyCompiler.compile(listOf(decomposer, coprophage))
@@ -702,10 +707,11 @@ class EcologyRuntimeTest {
         motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ) + extraTraits,
-        photosyntheticColor = BiologicalColor.GREEN,
     )
 
     private fun aquaticProducer(
@@ -717,11 +723,12 @@ class EcologyRuntimeTest {
         motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            ColorTrait.BLUE_PHOTOSYNTHETIC_PIGMENTS,
         ) + extraTraits,
-        photosyntheticColor = BiologicalColor.BLUE,
     )
 
     private fun grazer() = SpeciesDefinition(
@@ -732,11 +739,12 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
+            ColorTrait.BROWN_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BROWN,
     )
 
     private fun predator() = SpeciesDefinition(
@@ -747,11 +755,12 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CAMOUFLAGE_PATTERN,
+            ColorTrait.BROWN_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BROWN,
     )
 
     private fun scavenger() = SpeciesDefinition(
@@ -762,10 +771,11 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
+            ColorTrait.BLACK_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BLACK,
     )
 
     private fun landEnvironment(

@@ -196,10 +196,11 @@ class EcologyExperimentsTest {
         motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ) + extraTraits,
-        photosyntheticColor = BiologicalColor.GREEN,
     )
 
     private fun grazer(
@@ -213,11 +214,12 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.HETEROTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
+            ColorTrait.BROWN_CAMOUFLAGE,
         ) + extraTraits,
-        camouflageColor = BiologicalColor.BROWN,
     )
 
     private fun predator(id: String) = SpeciesDefinition(
@@ -228,11 +230,12 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CAMOUFLAGE_PATTERN,
+            ColorTrait.BROWN_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BROWN,
     )
 
     private fun scavenger(id: String) = SpeciesDefinition(
@@ -243,10 +246,11 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
+            ColorTrait.BLACK_CAMOUFLAGE,
         ),
-        camouflageColor = BiologicalColor.BLACK,
     )
 
     private fun environment(

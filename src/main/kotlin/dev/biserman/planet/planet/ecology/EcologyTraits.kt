@@ -31,6 +31,7 @@ enum class TraitGroup {
     DOMINANT_BODY_COVERING,
     TERRESTRIAL_MOVEMENT_STRUCTURE,
     FLIGHT_STRUCTURE,
+    BIOLOGICAL_COLOR,
 }
 
 /** Anatomical or behavioral capability that can satisfy another trait's prerequisites. */
@@ -47,6 +48,12 @@ enum class TraitCapability {
     UNDERWATER_RESPIRATION,
     BREATH_HOLDING,
     WATER_STORAGE,
+    LACTATION,
+    REPRODUCTION,
+    OVOSPORE_REPRODUCTION,
+    OVOSPORE_BROODING,
+    OVOSPORE_BROOD_SITE,
+    BROOD_HOST_RELATIONSHIP,
 }
 
 sealed interface TraitRequirement {
@@ -133,6 +140,72 @@ data class TargetedRelationshipTrait(
         listOf(TraitEffect.MaintenanceCost(maintenanceCost))
 }
 
+/** Authored host dependency paired with [CommonTrait.BROOD_PARASITISM]. */
+fun broodParasitismOf(
+    hostSpeciesId: String,
+    hostDisplayName: String,
+): TargetedRelationshipTrait =
+    TargetedRelationshipTrait(
+        displayName = "$hostDisplayName brood host",
+        description =
+        "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+        relationships = listOf(
+            RelationshipEffect.RequiresTarget(
+                SpeciesSelector.ExactSpecies(hostSpeciesId),
+            ),
+        ),
+        maintenanceCost = 0.02,
+        capabilities = setOf(TraitCapability.BROOD_HOST_RELATIONSHIP),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+        ),
+    )
+
+enum class ColorTrait(
+    override val displayName: String,
+    override val description: String,
+    colorEffect: TraitEffect,
+    maintenanceCost: Double = 0.0,
+) : SpeciesTrait {
+    BLACK_CAMOUFLAGE("black coloration", "Dark pigments conceal the body against very dim backgrounds.", TraitEffect.CamouflageColor(BiologicalColor.BLACK)),
+    BROWN_CAMOUFLAGE("brown coloration", "Earth-toned pigments conceal the body against soil, bark, and dry vegetation.", TraitEffect.CamouflageColor(BiologicalColor.BROWN)),
+    GREEN_CAMOUFLAGE("green coloration", "Green pigments conceal the body among photosynthetic growth.", TraitEffect.CamouflageColor(BiologicalColor.GREEN)),
+    BLUE_CAMOUFLAGE("blue coloration", "Blue pigments conceal the body in blue-lit environments.", TraitEffect.CamouflageColor(BiologicalColor.BLUE)),
+    RED_CAMOUFLAGE("red coloration", "Red pigments conceal or signal where longer wavelengths dominate.", TraitEffect.CamouflageColor(BiologicalColor.RED)),
+    PURPLE_CAMOUFLAGE("purple coloration", "Purple pigments conceal or signal against similarly colored surroundings.", TraitEffect.CamouflageColor(BiologicalColor.PURPLE)),
+    PALE_CAMOUFLAGE("pale coloration", "Low-saturation pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.PALE)),
+    WHITE_CAMOUFLAGE("white coloration", "White tissues, hairs, or feathers conceal the body against snow and ice.", TraitEffect.CamouflageColor(BiologicalColor.WHITE)),
+    COUNTERSHADE_CAMOUFLAGE("countershading", "A dark upper surface and light underside reduce contrast in sunlit water.", TraitEffect.CamouflageColor(BiologicalColor.COUNTERSHADE)),
+    ADAPTIVE_CAMOUFLAGE("adaptive coloration", "Pigment cells actively change the body's color and pattern to match its surroundings.", TraitEffect.CamouflageColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.08),
+
+    BLACK_PHOTOSYNTHETIC_PIGMENTS("black photosynthetic pigments", "Broad-spectrum pigments absorb most visible wavelengths.", TraitEffect.PhotosyntheticColor(BiologicalColor.BLACK)),
+    BROWN_PHOTOSYNTHETIC_PIGMENTS("brown photosynthetic pigments", "Brown photosynthetic pigments balance absorption across a broad spectrum.", TraitEffect.PhotosyntheticColor(BiologicalColor.BROWN)),
+    GREEN_PHOTOSYNTHETIC_PIGMENTS("green photosynthetic pigments", "Green photosynthetic tissues absorb red and blue wavelengths efficiently.", TraitEffect.PhotosyntheticColor(BiologicalColor.GREEN)),
+    BLUE_PHOTOSYNTHETIC_PIGMENTS("blue photosynthetic pigments", "Blue photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.BLUE)),
+    RED_PHOTOSYNTHETIC_PIGMENTS("red photosynthetic pigments", "Red photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.RED)),
+    PURPLE_PHOTOSYNTHETIC_PIGMENTS("purple photosynthetic pigments", "Purple photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PURPLE)),
+    PALE_PHOTOSYNTHETIC_PIGMENTS("pale photosynthetic pigments", "Sparse photosynthetic pigments trade light capture for lower tissue investment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PALE)),
+    WHITE_PHOTOSYNTHETIC_PIGMENTS("white photosynthetic pigments", "Reflective photosynthetic tissues limit excess light absorption.", TraitEffect.PhotosyntheticColor(BiologicalColor.WHITE)),
+    ADAPTIVE_PHOTOSYNTHETIC_PIGMENTS("adaptive photosynthetic pigments", "Pigment concentrations shift to match changing light spectra.", TraitEffect.PhotosyntheticColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.08),
+    ;
+
+    override val effects: List<TraitEffect> =
+        listOfNotNull(
+            colorEffect,
+            TraitEffect.MaintenanceCost(maintenanceCost).takeIf { maintenanceCost > 0.0 },
+        )
+    override val isFoundation: Boolean = true
+    override val group: TraitGroup = TraitGroup.BIOLOGICAL_COLOR
+
+    companion object {
+        fun camouflage(color: BiologicalColor): ColorTrait =
+            entries.single { TraitEffect.CamouflageColor(color) in it.effects }
+
+        fun photosynthetic(color: BiologicalColor): ColorTrait =
+            entries.single { TraitEffect.PhotosyntheticColor(color) in it.effects }
+    }
+}
+
 /**
  * A deliberately small starter library. Adding content means adding a readable
  * entry here (or another SpeciesTrait implementation), not changing the turn loop.
@@ -200,7 +273,7 @@ enum class CommonTrait(
             TraitEffect.DormantEntryBiomassRetention(0.10),
             TraitEffect.DormantReactivationMultiplier(10.00),
             TraitEffect.ReproductionMultiplier(1.03),
-            TraitEffect.MaintenanceCost(0.02),
+            TraitEffect.MaintenanceCost(0.001),
         ),
         invariantOnly = true,
     ),
@@ -264,11 +337,141 @@ enum class CommonTrait(
     ),
     EXTENDED_PARENTAL_CARE(
         "extended parental care",
-        "Young remain with experienced adults for years, gaining protection and learned foraging skills at the cost of producing offspring slowly.",
+        "Parents protect, feed, teach, or transport offspring through a prolonged vulnerable period, improving juvenile survival at a substantial energetic cost.",
         listOf(
-            TraitEffect.ReproductionMultiplier(0.074),
-            TraitEffect.Defense(0.08),
-            TraitEffect.MaintenanceCost(0.05),
+            TraitEffect.Defense(0.05),
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.MaintenanceCost(0.11),
+        ),
+    ),
+    MAMMARY_GLANDS(
+        "mammary glands",
+        "Specialized glands produce nutrient-rich milk, allowing parents to nourish dependent young independently of the food those young can consume directly.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.08),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        capabilities = setOf(TraitCapability.LACTATION),
+    ),
+    LONG_INTERBIRTH_INTERVAL(
+        "long interbirth interval",
+        "Parents invest for years in each offspring before reproducing again, sharply limiting population growth even when food is abundant.",
+        listOf(
+            TraitEffect.Defense(0.01),
+            TraitEffect.ReproductionMultiplier(0.066),
+            TraitEffect.MaintenanceCost(-0.06),
+        ),
+    ),
+    TERRESTRIAL_OVOSPORE(
+        "terrestrial ovospore",
+        "A seed, spore, or egg develops outside its parent in a terrestrial environment and can be guarded or carried before hatching or germination.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+        isFoundation = true,
+        capabilities = setOf(
+            TraitCapability.REPRODUCTION,
+            TraitCapability.OVOSPORE_REPRODUCTION,
+            TraitCapability.OVOSPORE_BROODING,
+        ),
+    ),
+    AQUATIC_OVOSPORE(
+        "aquatic ovospore",
+        "A seed, spore, or egg develops outside its parent while immersed in water and can be guarded or carried before hatching or germination.",
+        listOf(
+            TraitEffect.WaterRequirement(0.08),
+            TraitEffect.MaintenanceCost(0.0),
+        ),
+        isFoundation = true,
+        capabilities = setOf(
+            TraitCapability.REPRODUCTION,
+            TraitCapability.OVOSPORE_REPRODUCTION,
+            TraitCapability.OVOSPORE_BROODING,
+        ),
+    ),
+    VIVIPARITY(
+        "viviparity",
+        "Offspring develop within a parent's body until they can survive outside it, protecting early development at a substantial metabolic cost.",
+        listOf(
+            TraitEffect.Defense(0.10),
+            TraitEffect.MaintenanceCost(0.10),
+        ),
+        isFoundation = true,
+        capabilities = setOf(TraitCapability.REPRODUCTION),
+    ),
+    CLONAL_PROPAGATION(
+        "clonal propagation",
+        "New organisms separate through budding, fission, fragmentation, runners, or analogous growth without a distinct seed, spore, or egg.",
+        listOf(TraitEffect.MaintenanceCost(0.0)),
+        isFoundation = true,
+        capabilities = setOf(TraitCapability.REPRODUCTION),
+    ),
+    AERIAL_OVOSPORE_DISPERSAL(
+        "aerial ovospore dispersal",
+        "Extremely light or aerodynamically shaped ovospores travel long distances through atmospheric currents before settling.",
+        listOf(
+            TraitEffect.RadiationRange(8),
+            TraitEffect.MaintenanceCost(0.08),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_REPRODUCTION)),
+        ),
+    ),
+    OVOSPORE_NEST(
+        "ovospore nest",
+        "A purpose-built or prepared site shelters externally developing eggs, seeds, spores, or analogous propagules from weather and predators.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.15),
+            TraitEffect.MaintenanceCost(0.07),
+        ),
+        capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+        ),
+    ),
+    BODY_CARRIED_OVOSPORES(
+        "body-carried ovospores",
+        "Externally developing eggs, seeds, spores, or analogous propagules remain attached to, enclosed by, or balanced on a parent's body.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.18),
+            TraitEffect.MaintenanceCost(0.08),
+        ),
+        capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+        ),
+    ),
+    BROOD_PROVISIONING(
+        "brood provisioning",
+        "Parents stock a brood site or repeatedly deliver food to dependent young that cannot yet forage effectively for themselves.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.22),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.OVOSPORE_BROODING,
+                    TraitCapability.OVOSPORE_BROOD_SITE,
+                ),
+            ),
+        ),
+    ),
+    BROOD_PARASITISM(
+        "brood parasitism",
+        "Ovospores are placed with a particular host species, transferring incubation or juvenile care to that host while making reproduction dependent on finding it.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.10),
+            TraitEffect.MaintenanceCost(-0.06),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.OVOSPORE_BROODING,
+                    TraitCapability.BROOD_HOST_RELATIONSHIP,
+                ),
+            ),
         ),
     ),
     PHOTOSYNTHETIC_SURFACE(
@@ -317,6 +520,7 @@ enum class CommonTrait(
         "Alternating muscular waves push an elongated body across the ground without weight-bearing limbs.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.4),
             TraitEffect.CaptureAbility(0.02),
             TraitEffect.MaintenanceCost(0.06),
         ),
@@ -351,9 +555,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.09),
         ),
     ),
-    HIGH_AFFINITY_HEMOGLOBIN(
-        "high-affinity hemoglobin",
-        "Respiratory pigments bind oxygen effectively at the low partial pressures found at high elevation.",
+    HIGH_AFFINITY_BLOOD(
+        "high-affinity blood",
+        "Circulating respiratory pigments bind oxygen effectively at the low partial pressures found at high elevation.",
         listOf(
             TraitEffect.ElevationToleranceShift(2_500.0),
             TraitEffect.CaptureAbility(-0.03),
@@ -416,6 +620,22 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         capabilities = setOf(TraitCapability.BREATH_HOLDING),
+    ),
+    STROKE_AND_GLIDE_SWIMMING(
+        "stroke-and-glide swimming",
+        "Alternating propulsive strokes with passive glides reduces the energy and oxygen spent traveling during repeated breath-hold dives.",
+        listOf(
+            TraitEffect.MetabolicDemandMultiplier(0.75),
+            TraitEffect.MaintenanceCost(0.03),
+            TraitEffect.Defense(-0.05)
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.AQUATIC_LOCOMOTION,
+                ),
+            ),
+        ),
     ),
     SEA_ICE_ROOKERY(
         "sea-ice rookery",
@@ -612,8 +832,8 @@ enum class CommonTrait(
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
     ),
-    INSECT_WINGS(
-        "jointed external wings",
+    INSECTOID_WINGS(
+        "insectoid wings",
         "Thin wings articulated to an external body wall generate lift and thrust without replacing the walking appendages.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
@@ -678,12 +898,12 @@ enum class CommonTrait(
         ),
         group = TraitGroup.FILTERING_APPARATUS,
     ),
-    KRILL_SIEVING_TEETH(
-        "krill-sieving teeth",
-        "Interlocking, multi-cusped teeth form a sieve that retains small swimming prey as water is expelled from the mouth.",
+    SIEVING_TEETH(
+        "sieving teeth",
+        "Interlocking teeth form a sieve that retains minuscule swimming prey as water is expelled from the mouth.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.84),
-            TraitEffect.CaptureAbility(0.05),
+            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.82),
+            TraitEffect.CaptureAbility(0.0),
             TraitEffect.MaintenanceCost(0.05),
         ),
         group = TraitGroup.FILTERING_APPARATUS,
@@ -699,16 +919,6 @@ enum class CommonTrait(
         ),
         group = TraitGroup.FILTERING_APPARATUS,
         capabilities = setOf(TraitCapability.UNDERWATER_RESPIRATION),
-    ),
-    SIEVE_TEETH(
-        "sieve-like teeth",
-        "Interlocking teeth that strain minuscule suspended prey while water escapes between them.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.80),
-            TraitEffect.CaptureAbility(-0.06),
-            TraitEffect.MaintenanceCost(0.05),
-        ),
-        group = TraitGroup.FILTERING_APPARATUS,
     ),
     BENTHIC_SUCTION_FEEDING(
         "benthic suction-feeding mouth",
@@ -834,8 +1044,8 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
     ),
-    DUNG_FEEDING_MOUTHPARTS(
-        "dung-feeding mouthparts",
+    WASTE_FEEDING_MOUTHPARTS(
+        "waste-feeding mouthparts",
         "Mouthparts and chemical senses are specialized for locating and consuming nutrient-rich animal waste.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.COPROPHAGY, 0.84),
@@ -855,9 +1065,9 @@ enum class CommonTrait(
             TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
         ),
     ),
-    MARINE_SNOW_PALPS(
-        "marine-snow collecting palps",
-        "Fine appendages that gather sinking organic particles from dark or deep water.",
+    MARINE_SNOW_COLLECTORS(
+        "marine-snow collectors",
+        "Fine collecting surfaces or appendages gather sinking organic particles from dark or deep water.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.DEPOSIT_FEEDING, 0.84),
             TraitEffect.HabitatSupport(Habitat.DARK_WATER, 0.30),
@@ -935,7 +1145,7 @@ enum class CommonTrait(
     ),
     BARE_HEAT_DISSIPATING_SKIN(
         "bare heat-dissipating skin",
-        "Exposed, well-supplied skin sheds heat efficiently but sacrifices insulation and physical protection.",
+        "Exposed, well-supplied regions of skin shed heat efficiently but sacrifice insulation and physical protection.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
             TraitEffect.Defense(-0.03),
@@ -996,16 +1206,6 @@ enum class CommonTrait(
         listOf(
             TraitEffect.SnowHydration,
             TraitEffect.MaintenanceCost(0.04),
-        ),
-    ),
-    PREY_DERIVED_WATER(
-        "prey-derived water",
-        "Concentrated kidneys and digestive physiology recover most required water from prey rather than free-standing sources.",
-        listOf(
-            TraitEffect.WaterRequirement(-0.12),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.08),
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.08),
-            TraitEffect.MaintenanceCost(0.05),
         ),
     ),
     FOOD_DERIVED_WATER(
@@ -1308,11 +1508,10 @@ enum class CommonTrait(
         "venom delivery",
         "Fangs, stingers, spines, or saliva introduce toxins that rapidly disable prey.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.16),
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.08),
             TraitEffect.CaptureAbility(0.24),
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.Defense(0.45)
         ),
     ),
     CONSTRICTING_BODY(
@@ -1356,11 +1555,13 @@ enum class CommonTrait(
         "armored hide",
         "Thick skin reinforced with plates or embedded bone resists bites, claws, and impacts.",
         listOf(
+            TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
             TraitEffect.Defense(0.34),
             TraitEffect.CaptureAbility(-0.07),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        group = TraitGroup.DOMINANT_BODY_COVERING
     ),
     PROTECTIVE_SHELL(
         "protective shell",
@@ -1500,9 +1701,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.35),
         ),
     ),
-    NEST_PROBING_TONGUE(
-        "nest-probing tongue",
-        "An extremely elongated adhesive tongue reaches ants and termites through narrow passages in opened colony nests.",
+    COLONY_PROBING_TONGUE(
+        "colony-probing tongue",
+        "An extremely elongated adhesive tongue reaches minuscule colonial prey through narrow passages in opened nests.",
         listOf(
             TraitEffect.CaptureAbility(0.28),
             TraitEffect.MaintenanceCost(0.06),
@@ -1519,8 +1720,8 @@ enum class CommonTrait(
         ),
         group = TraitGroup.SPECIALIZED_TONGUE,
     ),
-    SAP_SUCKING_PROBOSCIS(
-        "sap-sucking proboscis",
+    SUCKING_PROBOSCIS(
+        "sucking proboscis",
         "A narrow piercing mouthpart taps fluids from the living tissues of a host organism.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.PARASITISM, 0.58),
@@ -1584,15 +1785,6 @@ enum class CommonTrait(
             TraitRequirement.AllOf(setOf(TraitCapability.SOCIAL_COLONY)),
         ),
     ),
-    VENOMOUS_STINGER(
-        "defensive venomous stinger",
-        "A barbed or reusable ovipositor-derived weapon injects venom into attackers, strongly deterring predation on the colony.",
-        listOf(
-            TraitEffect.Defense(0.45),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.06),
-        ),
-    ),
     HONEY_STORES(
         "communal honey stores",
         "Workers concentrate floral sugars into stable comb stores that feed the colony through winter or other seasonal shortages.",
@@ -1614,15 +1806,6 @@ enum class CommonTrait(
             TraitEffect.DenseCanopyForagingPenalty(0.82),
             TraitEffect.Defense(0.08),
             TraitEffect.MaintenanceCost(0.05),
-        ),
-    ),
-    EXTENDED_BROOD_CARE(
-        "extended brood care",
-        "Parents protect, feed, teach, or transport offspring through a prolonged vulnerable period.",
-        listOf(
-            TraitEffect.Defense(0.05),
-            TraitEffect.ReproductionMultiplier(1.12),
-            TraitEffect.MaintenanceCost(0.11),
         ),
     ),
     WATERPROOF_PLUMAGE(
@@ -1656,9 +1839,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
     ),
-    TOOL_USING_FORELIMBS(
-        "tool-using forelimbs",
-        "Dexterous grasping limbs manipulate stones, sticks, containers, or other objects to obtain defended food.",
+    TOOL_MANIPULATION(
+        "tool manipulation",
+        "Dexterous appendages manipulate stones, sticks, containers, or other objects to obtain defended food.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.08),
             TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.08),

@@ -17,6 +17,8 @@ class SpeciesCompilationContext internal constructor(
     private val habitatSupport = DoubleArray(Habitat.entries.size)
     private val strategySupport = DoubleArray(EcoStrategy.entries.size)
     private val camouflage = DoubleArray(Habitat.entries.size)
+    private var camouflageColor: BiologicalColor? = null
+    private var photosyntheticColor: BiologicalColor? = null
     private var temperatureShift = 0.0
     private var colderTolerance = sizeTemperatureTolerance
     private var hotterTolerance = sizeTemperatureTolerance
@@ -44,6 +46,7 @@ class SpeciesCompilationContext internal constructor(
     private var dormantEntryBiomassRetention = 1.0
     private var dormantReactivationMultiplier = 1.0
     private var dispersalKind = DispersalKind.NONE
+    private var radiationRange = 1
     private var reproductionMultiplier = 1.0
     private var metabolicDemandMultiplier = 1.0
     private var maintenanceCost = 0.0
@@ -119,7 +122,7 @@ class SpeciesCompilationContext internal constructor(
                     .coerceAtMost(1.0)
         }
         if (
-            CommonTrait.NEST_PROBING_TONGUE in commonTraits &&
+            CommonTrait.COLONY_PROBING_TONGUE in commonTraits &&
             CommonTrait.DIGGING_CLAWS in commonTraits
         ) {
             strategySupport[EcoStrategy.COLONY_RAIDING.ordinal] = 0.86
@@ -222,6 +225,7 @@ class SpeciesCompilationContext internal constructor(
                 dormantEntryBiomassRetention.coerceIn(0.0, 1.0),
                 dormantReactivationMultiplier = dormantReactivationMultiplier,
                 dispersalKind = dispersalKind,
+                radiationRange = radiationRange,
             ),
             interactions = InteractionProfile(
                 captureAbility = captureAbility.coerceIn(0.05, 1.5),
@@ -229,7 +233,7 @@ class SpeciesCompilationContext internal constructor(
                 defense = defense.coerceIn(0.0, 1.5),
                 aposematicColoration = aposematicColoration,
                 dangerousWarningModel =
-                CommonTrait.VENOMOUS_STINGER in commonTraits ||
+                CommonTrait.VENOM_DELIVERY in commonTraits ||
                     CommonTrait.TOXIC_SKIN in commonTraits,
                 reefUse = reefUse.coerceIn(0.0, 1.0),
                 reefBuilding = reefBuilding.coerceIn(0.0, 0.25),
@@ -248,8 +252,8 @@ class SpeciesCompilationContext internal constructor(
                         ProducerCompetitionLayer.ATTACHED
                     else -> ProducerCompetitionLayer.SUSPENDED
                 },
-                photosyntheticColor = definition.photosyntheticColor,
-                camouflageColor = definition.camouflageColor,
+                photosyntheticColor = photosyntheticColor,
+                camouflageColor = camouflageColor,
                 habitatSupport = habitatSupport,
                 strategySupport = strategySupport,
                 camouflage = camouflage,
@@ -334,6 +338,12 @@ class SpeciesCompilationContext internal constructor(
     fun addCamouflage(habitat: Habitat, change: Double) {
         camouflage[habitat.ordinal] += change
     }
+    fun setCamouflageColor(color: BiologicalColor) {
+        camouflageColor = color
+    }
+    fun setPhotosyntheticColor(color: BiologicalColor) {
+        photosyntheticColor = color
+    }
     fun enableAposematicColoration() {
         aposematicColoration = true
     }
@@ -379,6 +389,9 @@ class SpeciesCompilationContext internal constructor(
     }
     fun enableDispersal(kind: DispersalKind) {
         if (kind.rangeClass > dispersalKind.rangeClass) dispersalKind = kind
+    }
+    fun expandRadiationRange(tileSteps: Int) {
+        radiationRange = max(radiationRange, tileSteps)
     }
     fun multiplyReproduction(multiplier: Double) {
         reproductionMultiplier *= multiplier

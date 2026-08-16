@@ -72,8 +72,6 @@ data class SpeciesDefinition(
     val sizeClass: SizeClass,
     val motile: Boolean,
     val traits: List<SpeciesTrait>,
-    val photosyntheticColor: BiologicalColor? = null,
-    val camouflageColor: BiologicalColor? = null,
     val ancestorSpeciesId: String? = null,
     val kind: SpeciesKind = SpeciesKind.EVOLVING,
 ) {
@@ -187,6 +185,12 @@ sealed interface TraitEffect {
     data class Camouflage(val habitat: Habitat, val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.addCamouflage(habitat, change)
     }
+    data class CamouflageColor(val color: BiologicalColor) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.setCamouflageColor(color)
+    }
+    data class PhotosyntheticColor(val color: BiologicalColor) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.setPhotosyntheticColor(color)
+    }
     data object AposematicColoration : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableAposematicColoration()
     }
@@ -249,6 +253,12 @@ sealed interface TraitEffect {
     }
     data class Dispersal(val kind: DispersalKind) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableDispersal(kind)
+    }
+    data class RadiationRange(val tileSteps: Int) : TraitEffect {
+        init {
+            require(tileSteps >= 1)
+        }
+        override fun applyTo(context: SpeciesCompilationContext) = context.expandRadiationRange(tileSteps)
     }
     data class ReproductionMultiplier(val multiplier: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyReproduction(multiplier)

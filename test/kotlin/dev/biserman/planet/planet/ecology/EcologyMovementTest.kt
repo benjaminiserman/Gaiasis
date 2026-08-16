@@ -163,6 +163,41 @@ class EcologyMovementTest {
         assertEquals(1_000.0, communities[0].reserves[0])
     }
 
+    @Test
+    fun `aerial ovospores radiate beyond neighboring tiles`() {
+        val definition = landDisperser().copy(
+            id = "aerial-ovospore-disperser",
+            traits = landDisperser().traits - CommonTrait.NEIGHBOR_DISPERSAL +
+                CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
+        )
+        val ecology = EcologyCompiler.compile(listOf(definition))
+        val environments = Array(10) { land() }
+        val communities = emptyCommunities(10)
+        val niche = NicheSelection.choose(ecology.species.single(), ecology, environments[0])
+        communities[0].add(0, niche, activeBiomass = 10_000.0)
+        val neighbors = Array(10) { tile ->
+            when (tile) {
+                0 -> intArrayOf(1)
+                9 -> intArrayOf(8)
+                else -> intArrayOf(tile - 1, tile + 1)
+            }
+        }
+
+        EcologyMovement.applyRadiation(
+            ecology = ecology,
+            communities = communities,
+            environments = environments,
+            neighbors = neighbors,
+            seasonIndex = 0,
+            planetSeed = 42,
+            scratch = MovementScratch(maximumTransfers = 10, nicheCount = ecology.niches.size),
+            config = EcologyRuntimeConfig(unassistedRadiationChancePerSeason = 1.0),
+        )
+
+        assertEquals(8, ecology.species.single().lifeHistory.radiationRange)
+        assertTrue((2 until communities.size).any { communities[it].find(0) >= 0 })
+    }
+
     private fun emptyCommunities(count: Int) = Array(count) { TileCommunity() }
 
     private fun land(majorRiver: Boolean = false) = SeasonalCellEnvironment.create(
@@ -182,11 +217,12 @@ class EcologyMovementTest {
         motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.NEIGHBOR_DISPERSAL,
+            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ),
-        photosyntheticColor = BiologicalColor.GREEN,
     )
 
     private fun migrant() = SpeciesDefinition(
@@ -197,6 +233,7 @@ class EcologyMovementTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SHORT_MIGRATION,
@@ -211,6 +248,7 @@ class EcologyMovementTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
+            CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.GILL_PADS,
             CommonTrait.NEIGHBOR_DISPERSAL,

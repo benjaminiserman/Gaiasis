@@ -212,6 +212,7 @@ class EcologyEnvironmentTest {
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.SUBTERRANEAN_BURROWING,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.DRY_BURROW_NEST.takeIf { dryNest },
@@ -244,6 +245,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 thermalTrait,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -278,6 +280,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.FUR,
@@ -328,13 +331,14 @@ class EcologyEnvironmentTest {
             motile = motile,
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.ENDOTHERMY.takeIf { motile },
                 locomotion,
                 CommonTrait.GRAZING_MOUTHPARTS.takeIf { motile },
                 CommonTrait.PHOTOSYNTHETIC_SURFACE.takeIf { !motile },
+                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS.takeIf { !motile },
                 altitudeTrait,
             ),
-            photosyntheticColor = BiologicalColor.GREEN.takeIf { !motile },
         )
         val ecology = EcologyCompiler.compile(
             listOf(
@@ -343,7 +347,7 @@ class EcologyEnvironmentTest {
                     "highland-grazer",
                     true,
                     CommonTrait.WALKING_LIMBS,
-                    CommonTrait.HIGH_AFFINITY_HEMOGLOBIN,
+                    CommonTrait.HIGH_AFFINITY_BLOOD,
                 ),
                 organism("flying-grazer", true, CommonTrait.MEMBRANOUS_WINGS),
                 organism("rooted-producer", false, CommonTrait.ROOTED_BODY),
@@ -405,11 +409,12 @@ class EcologyEnvironmentTest {
             motile = false,
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
                 CommonTrait.CANOPY_GROWTH,
+                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             ),
-            photosyntheticColor = BiologicalColor.GREEN,
         )
         val ecology = EcologyCompiler.compile(listOf(definition))
         val species = ecology.species.single()
@@ -433,11 +438,12 @@ class EcologyEnvironmentTest {
             motile = false,
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
                 CommonTrait.CANOPY_GROWTH,
+                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             ),
-            photosyntheticColor = BiologicalColor.GREEN,
         )
         val ecology = EcologyCompiler.compile(listOf(definition))
         val species = ecology.species.single()
@@ -468,6 +474,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.MEMBRANOUS_WINGS,
                 CommonTrait.SCAVENGING_SENSES,
             ),
