@@ -33,7 +33,7 @@ object InvariantSpecies {
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
             CommonTrait.ECTOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
         ),
         kind = SpeciesKind.INVARIANT,

@@ -74,8 +74,8 @@ object EcologyCompiler {
         require(!definition.motile || CommonTrait.ROOTED_BODY !in commonTraits) {
             "${definition.displayName} is motile and cannot have a rooted body; use a locomotion trait"
         }
-        require(definition.motile || CommonTrait.TERRESTRIAL_LOCOMOTION !in commonTraits) {
-            "${definition.displayName} is not motile and cannot have terrestrial locomotion"
+        require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
+            "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
         }
         definition.traits.filterNot { it.isFoundation }.forEach { trait ->
             val cost = trait.effects.filterIsInstance<TraitEffect.MaintenanceCost>().sumOf { it.fraction }

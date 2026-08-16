@@ -46,7 +46,8 @@ class EcologyCompilerTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
-                CommonTrait.DENSE_FUR,
+                CommonTrait.FUR,
+                CommonTrait.DENSE_UNDERCOAT,
             ),
         )
 
@@ -92,7 +93,7 @@ class EcologyCompilerTest {
     fun `traits in the same biological group are mutually exclusive`() {
         val invalid = predator("conflicting-coverings").copy(
             traits = predator("conflicting-coverings").traits +
-                listOf(CommonTrait.DENSE_FUR, CommonTrait.THIN_FUR),
+                listOf(CommonTrait.FUR, CommonTrait.FEATHERS),
         )
 
         val failure = assertFailsWith<IllegalArgumentException> {
@@ -100,8 +101,8 @@ class EcologyCompilerTest {
         }
 
         assertTrue(failure.message.orEmpty().contains("DOMINANT_BODY_COVERING"))
-        assertTrue(failure.message.orEmpty().contains(CommonTrait.DENSE_FUR.displayName))
-        assertTrue(failure.message.orEmpty().contains(CommonTrait.THIN_FUR.displayName))
+        assertTrue(failure.message.orEmpty().contains(CommonTrait.FUR.displayName))
+        assertTrue(failure.message.orEmpty().contains(CommonTrait.FEATHERS.displayName))
     }
 
     @Test
@@ -219,7 +220,7 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `pelagic soaring wings require powered flight`() {
+    fun `pelagic soaring wings require a flight structure`() {
         val invalid = predator("flightless-soarer").copy(
             traits = predator("flightless-soarer").traits + CommonTrait.PELAGIC_SOARING_WINGS,
         )
@@ -228,14 +229,39 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires POWERED_FLIGHT"))
+        assertTrue(failure.message.orEmpty().contains("requires ACTIVE_FLIGHT"))
+    }
+
+    @Test
+    fun `specialized anatomy requires its underlying structure`() {
+        val base = predator("anatomy")
+
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + CommonTrait.DENSE_UNDERCOAT),
+            ).single().requirement is TraitRequirement.AllOf,
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + CommonTrait.SWIFT_LEGS),
+            ).isEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(
+                    traits = base.traits
+                        .filterNot { it == CommonTrait.WALKING_LIMBS } +
+                        CommonTrait.SWIFT_LEGS,
+                ),
+            ).isNotEmpty(),
+        )
     }
 
     @Test
     fun `motile species cannot use rooted body as a land habitat shortcut`() {
         val invalid = predator("rooted-predator").copy(
             traits = predator("rooted-predator").traits
-                .filterNot { it == CommonTrait.TERRESTRIAL_LOCOMOTION } +
+                .filterNot { it == CommonTrait.WALKING_LIMBS } +
                 CommonTrait.ROOTED_BODY,
         )
 
@@ -254,7 +280,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
-                CommonTrait.POWERED_FLIGHT,
+                CommonTrait.MEMBRANOUS_WINGS,
                 CommonTrait.GILL_PADS,
             ),
         )
@@ -277,7 +303,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
         )
@@ -441,7 +467,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
         )
@@ -485,7 +511,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
         )
@@ -631,7 +657,7 @@ class EcologyCompilerTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
         ),
         camouflageColor = BiologicalColor.BROWN,

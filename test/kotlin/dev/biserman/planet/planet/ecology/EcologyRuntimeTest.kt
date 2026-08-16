@@ -17,7 +17,7 @@ class EcologyRuntimeTest {
             traits = buildList {
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
-                add(CommonTrait.POWERED_FLIGHT)
+                add(CommonTrait.MEMBRANOUS_WINGS)
                 add(CommonTrait.NECTAR_SIPPING_TONGUE)
                 if (pollinator) add(CommonTrait.POLLEN_CARRYING_SURFACES)
             },
@@ -118,7 +118,7 @@ class EcologyRuntimeTest {
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.APOSEMATIC_COLORATION,
                 CommonTrait.TOXIC_SKIN.takeIf { dangerous },
@@ -133,7 +133,7 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
             ),
             camouflageColor = BiologicalColor.BROWN,
@@ -496,7 +496,7 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.DUNG_FEEDING_MOUTHPARTS,
             ),
         )
@@ -732,7 +732,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
         ),
@@ -747,7 +747,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CAMOUFLAGE_PATTERN,
         ),
@@ -762,7 +762,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
         ),
         camouflageColor = BiologicalColor.BLACK,

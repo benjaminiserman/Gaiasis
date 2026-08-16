@@ -213,7 +213,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.HETEROTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
         ) + extraTraits,
@@ -228,7 +228,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CAMOUFLAGE_PATTERN,
         ),
@@ -243,7 +243,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
-            CommonTrait.TERRESTRIAL_LOCOMOTION,
+            CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
         ),
         camouflageColor = BiologicalColor.BLACK,

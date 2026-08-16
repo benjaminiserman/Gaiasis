@@ -29,16 +29,20 @@ enum class TraitGroup {
     GUT_FERMENTATION,
     SPECIALIZED_TONGUE,
     DOMINANT_BODY_COVERING,
+    TERRESTRIAL_MOVEMENT_STRUCTURE,
+    FLIGHT_STRUCTURE,
 }
 
 /** Anatomical or behavioral capability that can satisfy another trait's prerequisites. */
 enum class TraitCapability {
-    PHOTOSYNTHESIS,
-    SUBSTRATE_ANCHORING,
-    FUR,
-    POWERED_FLIGHT,
+    PHOTOSYNTHETIC_TISSUE,
+    HAIR_COVERING,
+    FEATHER_COVERING,
+    GROUND_WALKING,
+    ACTIVE_FLIGHT,
     SOCIAL_COLONY,
     NECTAR_FEEDING,
+    SUBSTRATE_ANCHORING,
     AQUATIC_LOCOMOTION,
     UNDERWATER_RESPIRATION,
     BREATH_HOLDING,
@@ -211,7 +215,7 @@ enum class CommonTrait(
         ),
         invariantOnly = true,
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
         ),
     ),
     ECTOTHERMY(
@@ -274,7 +278,7 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.0),
             TraitEffect.MaintenanceCost(0.08),
         ),
-        capabilities = setOf(TraitCapability.PHOTOSYNTHESIS),
+        capabilities = setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE),
     ),
     FLOATING_BODY(
         "floating body",
@@ -298,13 +302,46 @@ enum class CommonTrait(
         ),
         capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
     ),
-    TERRESTRIAL_LOCOMOTION(
-        "terrestrial locomotion",
-        "Load-bearing limbs, muscular pads, or equivalent structures that support deliberate movement across solid ground.",
+    WALKING_LIMBS(
+        "walking limbs",
+        "Jointed, load-bearing limbs support deliberate walking, running, or hopping across solid ground.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(TraitCapability.GROUND_WALKING),
+    ),
+    UNDULATING_BODY(
+        "undulating body",
+        "Alternating muscular waves push an elongated body across the ground without weight-bearing limbs.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.CaptureAbility(0.02),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+    ),
+    MUSCULAR_FOOT(
+        "muscular foot",
+        "A broad contractile foot produces slow, stable movement across soil, rock, plants, or other firm surfaces.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.Defense(0.02),
+            TraitEffect.CaptureAbility(-0.02),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+    ),
+    CRAWLING_APPENDAGES(
+        "crawling appendages",
+        "Several small jointed appendages distribute weight and provide precise movement over irregular solid surfaces.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.CaptureAbility(0.01),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
     ),
     ENLARGED_CARDIOPULMONARY_SYSTEM(
         "enlarged heart and lungs",
@@ -479,7 +516,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
         ),
     ),
     BUOYANCY_BLADDER(
@@ -545,12 +582,12 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
         ),
     ),
-    POWERED_FLIGHT(
-        "powered flight",
-        "Actively driven wings or analogous structures capable of sustained movement through the air.",
+    FEATHERED_WINGS(
+        "feathered wings",
+        "Forelimbs bearing asymmetric flight feathers generate lift and thrust through active wingbeats.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
             TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
@@ -558,7 +595,35 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.24),
         ),
-        capabilities = setOf(TraitCapability.POWERED_FLIGHT),
+        group = TraitGroup.FLIGHT_STRUCTURE,
+        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
+        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
+    ),
+    MEMBRANOUS_WINGS(
+        "membranous wings",
+        "Thin living membranes stretched between elongated supports generate lift and thrust through active wingbeats.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.12),
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        group = TraitGroup.FLIGHT_STRUCTURE,
+        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
+    ),
+    INSECT_WINGS(
+        "jointed external wings",
+        "Thin wings articulated to an external body wall generate lift and thrust without replacing the walking appendages.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.12),
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        group = TraitGroup.FLIGHT_STRUCTURE,
+        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
     ),
     PELAGIC_SOARING_WINGS(
         "pelagic soaring wings",
@@ -570,7 +635,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.POWERED_FLIGHT)),
+            TraitRequirement.AllOf(setOf(TraitCapability.ACTIVE_FLIGHT)),
         ),
     ),
     SUBTERRANEAN_BURROWING(
@@ -692,13 +757,26 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.13),
         ),
     ),
-    SWIFT_LIMBS(
-        "swift limbs",
-        "Long, powerful, or rapidly cycling legs or fins increase running or swimming speed, helping hunters close distance and prey escape pursuit.",
+    SWIFT_LEGS(
+        "swift legs",
+        "Long, powerful, or rapidly cycling walking limbs increase running speed, helping hunters close distance and prey escape pursuit.",
         listOf(
             TraitEffect.PursuitSpeed(0.18),
             TraitEffect.WaterRequirement(0.03),
             TraitEffect.MaintenanceCost(0.10),
+        ),
+        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.GROUND_WALKING))),
+    ),
+    STREAMLINED_BODY(
+        "streamlined body",
+        "A smooth tapered profile reduces drag during sustained swimming, helping hunters close distance and prey escape pursuit.",
+        listOf(
+            TraitEffect.PursuitSpeed(0.18),
+            TraitEffect.WaterRequirement(0.03),
+            TraitEffect.MaintenanceCost(0.10),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
         ),
     ),
     MOTION_TRACKING_SENSES(
@@ -804,16 +882,25 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
     ),
-    DENSE_FUR(
-        "dense fur",
-        "A thick layer of hairlike insulation that traps still air close to the body.",
+    FUR(
+        "fur",
+        "A coat of hairlike filaments protects the skin and provides light insulation while still releasing excess heat.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 9.0, hotterC = -3.0),
-            TraitEffect.WaterRequirement(-0.04),
-            TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.TemperatureTolerance(colderC = 1.0, hotterC = -1.0),
+            TraitEffect.MaintenanceCost(0.03),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
-        capabilities = setOf(TraitCapability.FUR),
+        capabilities = setOf(TraitCapability.HAIR_COVERING),
+    ),
+    DENSE_UNDERCOAT(
+        "dense undercoat",
+        "A thick layer of fine hair beneath the outer fur traps still air close to the body.",
+        listOf(
+            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -2.0),
+            TraitEffect.WaterRequirement(-0.04),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING))),
     ),
     WOOLLY_UNDERCOAT(
         "woolly undercoat",
@@ -823,8 +910,18 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.FUR)),
+            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
         ),
+    ),
+    FEATHERS(
+        "feathers",
+        "Branching keratinous filaments form a light protective body covering that can support specialized insulation, display, waterproofing, or flight.",
+        listOf(
+            TraitEffect.Defense(0.02),
+            TraitEffect.MaintenanceCost(0.02),
+        ),
+        group = TraitGroup.DOMINANT_BODY_COVERING,
+        capabilities = setOf(TraitCapability.FEATHER_COVERING),
     ),
     INSULATING_PLUMAGE(
         "insulating plumage",
@@ -832,19 +929,9 @@ enum class CommonTrait(
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -2.0),
             TraitEffect.WaterRequirement(-0.03),
-            TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.MaintenanceCost(0.05),
         ),
-        group = TraitGroup.DOMINANT_BODY_COVERING,
-    ),
-    THIN_FUR(
-        "thin fur",
-        "A sparse protective coat that provides some covering while readily releasing body heat.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = -3.0, hotterC = 7.0),
-            TraitEffect.MaintenanceCost(0.03),
-        ),
-        group = TraitGroup.DOMINANT_BODY_COVERING,
-        capabilities = setOf(TraitCapability.FUR),
+        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
     ),
     BARE_HEAT_DISSIPATING_SKIN(
         "bare heat-dissipating skin",
@@ -854,7 +941,6 @@ enum class CommonTrait(
             TraitEffect.Defense(-0.03),
             TraitEffect.MaintenanceCost(0.03),
         ),
-        group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
     CONCENTRATED_URINE(
         "concentrated urine",
@@ -891,7 +977,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.FUR)),
+            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
         ),
     ),
     WATER_STORAGE_TISSUE(
@@ -987,7 +1073,7 @@ enum class CommonTrait(
         ),
         group = TraitGroup.DORMANCY_MODE,
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
         ),
     ),
     SEASONAL_LEAF_DORMANCY(
@@ -1000,7 +1086,7 @@ enum class CommonTrait(
         ),
         group = TraitGroup.DORMANCY_MODE,
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHESIS)),
+            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
         ),
     ),
     FROST_HARDENED_TISSUES(
@@ -1517,10 +1603,7 @@ enum class CommonTrait(
         ),
         requirements = listOf(
             TraitRequirement.AllOf(
-                setOf(
-                    TraitCapability.SOCIAL_COLONY,
-                    TraitCapability.NECTAR_FEEDING,
-                ),
+                setOf(TraitCapability.SOCIAL_COLONY, TraitCapability.NECTAR_FEEDING),
             ),
         ),
     ),
@@ -1551,6 +1634,7 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = 2.0),
             TraitEffect.MaintenanceCost(0.07),
         ),
+        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
     ),
     DIGGING_CLAWS(
         "digging claws",

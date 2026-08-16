@@ -244,7 +244,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 thermalTrait,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
         )
@@ -278,9 +278,9 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.TERRESTRIAL_LOCOMOTION,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.THIN_FUR,
+                CommonTrait.FUR,
                 CommonTrait.SEASONAL_WINTER_COAT,
             ),
         )
@@ -338,14 +338,14 @@ class EcologyEnvironmentTest {
         )
         val ecology = EcologyCompiler.compile(
             listOf(
-                organism("lowland-grazer", true, CommonTrait.TERRESTRIAL_LOCOMOTION),
+                organism("lowland-grazer", true, CommonTrait.WALKING_LIMBS),
                 organism(
                     "highland-grazer",
                     true,
-                    CommonTrait.TERRESTRIAL_LOCOMOTION,
+                    CommonTrait.WALKING_LIMBS,
                     CommonTrait.HIGH_AFFINITY_HEMOGLOBIN,
                 ),
-                organism("flying-grazer", true, CommonTrait.POWERED_FLIGHT),
+                organism("flying-grazer", true, CommonTrait.MEMBRANOUS_WINGS),
                 organism("rooted-producer", false, CommonTrait.ROOTED_BODY),
             ),
         )
@@ -468,7 +468,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
-                CommonTrait.POWERED_FLIGHT,
+                CommonTrait.MEMBRANOUS_WINGS,
                 CommonTrait.SCAVENGING_SENSES,
             ),
         )

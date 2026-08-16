@@ -167,7 +167,7 @@ private class BenchmarkScenario(
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     if (index % 2 == 0) CommonTrait.ECTOTHERMY else CommonTrait.ENDOTHERMY,
-                    CommonTrait.TERRESTRIAL_LOCOMOTION,
+                    CommonTrait.WALKING_LIMBS,
                     strategyTrait,
                 ),
                 camouflageColor = BiologicalColor.entries[index % BiologicalColor.entries.size],

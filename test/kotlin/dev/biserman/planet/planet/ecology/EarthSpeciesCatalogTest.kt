@@ -6,6 +6,24 @@ import kotlin.test.assertTrue
 
 class EarthSpeciesCatalogTest {
     @Test
+    fun `catalog assigns structural anatomy rather than generic locomotion outcomes`() {
+        val species = (EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES).associateBy { it.id }
+
+        assertTrue(EarthSpeciesCatalog.BIRDS.all { CommonTrait.FEATHERS in it.traits })
+        assertTrue(CommonTrait.FEATHERED_WINGS in species.getValue("bald-eagle").traits)
+        assertTrue(CommonTrait.MEMBRANOUS_WINGS in species.getValue("little-brown-bat").traits)
+        assertTrue(CommonTrait.INSECT_WINGS in species.getValue("western-honey-bee").traits)
+        assertTrue(CommonTrait.UNDULATING_BODY in species.getValue("king-cobra").traits)
+        assertTrue(CommonTrait.MUSCULAR_FOOT in species.getValue("garden-snail").traits)
+        assertTrue(CommonTrait.CRAWLING_APPENDAGES in species.getValue("leafcutter-ant").traits)
+        assertTrue(CommonTrait.WALKING_LIMBS in species.getValue("cheetah").traits)
+        assertTrue(CommonTrait.SWIFT_LEGS in species.getValue("cheetah").traits)
+        assertTrue(CommonTrait.STREAMLINED_BODY in species.getValue("atlantic-bluefin-tuna").traits)
+        assertTrue(CommonTrait.FUR in species.getValue("cheetah").traits)
+        assertTrue(CommonTrait.FUR !in species.getValue("blue-whale").traits)
+    }
+
+    @Test
     fun `coral grouper depends on living reef cover`() {
         val grouperDefinition = EarthSpeciesCatalog.ALL.single { it.id == "coral-grouper" }
         val grouper = EcologyCompiler.compile(listOf(grouperDefinition)).species.single()
@@ -229,9 +247,9 @@ class EarthSpeciesCatalogTest {
         val cheetah = EarthSpeciesCatalog.ALL.single { it.id == "cheetah" }
         val gazelle = EarthSpeciesCatalog.ALL.single { it.id == "thomsons-gazelle" }
 
-        assertTrue(CommonTrait.SWIFT_LIMBS in cheetah.traits)
+        assertTrue(CommonTrait.SWIFT_LEGS in cheetah.traits)
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES in cheetah.traits)
-        assertTrue(CommonTrait.SWIFT_LIMBS in gazelle.traits)
+        assertTrue(CommonTrait.SWIFT_LEGS in gazelle.traits)
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES !in gazelle.traits)
 
         val compiledGazelle = EcologyCompiler.compile(listOf(gazelle)).species.single()
@@ -242,11 +260,11 @@ class EarthSpeciesCatalogTest {
 
         val slowCheetah = cheetah.copy(
             id = "slow-cheetah",
-            traits = cheetah.traits - CommonTrait.SWIFT_LIMBS,
+            traits = cheetah.traits - CommonTrait.SWIFT_LEGS,
         )
         val slowGazelle = gazelle.copy(
             id = "slow-gazelle",
-            traits = gazelle.traits - CommonTrait.SWIFT_LIMBS,
+            traits = gazelle.traits - CommonTrait.SWIFT_LEGS,
         )
         val swiftHunterAgainstSlowPrey = predationRate(cheetah, slowGazelle)
         val slowHunterAgainstSlowPrey = predationRate(slowCheetah, slowGazelle)
@@ -282,7 +300,7 @@ class EarthSpeciesCatalogTest {
             val traits = definitions.getValue(speciesId).traits
             assertTrue(
                 traits.any {
-                    it == CommonTrait.DENSE_FUR ||
+                    it == CommonTrait.DENSE_UNDERCOAT ||
                         it == CommonTrait.INSULATING_PLUMAGE ||
                         it == CommonTrait.FROST_HARDENED_TISSUES ||
                         it == CommonTrait.SEASONAL_WINTER_COAT
