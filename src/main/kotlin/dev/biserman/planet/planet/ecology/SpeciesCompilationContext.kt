@@ -58,6 +58,7 @@ class SpeciesCompilationContext internal constructor(
     private var acousticSignalMask = 0L
     private var soundLureCaptureBonus = 0.0
     private var pursuitSpeed = 0.0
+    private var pursuitTracking = 0.0
     private var defense = 0.25
     private var aposematicColoration = false
     private var reefUse = 0.0
@@ -245,6 +246,7 @@ class SpeciesCompilationContext internal constructor(
                 acousticSignalMask = acousticSignalMask,
                 soundLureCaptureBonus = soundLureCaptureBonus.coerceIn(0.0, 1.0),
                 pursuitSpeed = pursuitSpeed.coerceIn(0.0, 1.0),
+                pursuitTracking = pursuitTracking.coerceIn(0.0, 1.0),
                 defense = defense.coerceIn(0.0, 1.5),
                 aposematicColoration = aposematicColoration,
                 dangerousWarningModel =
@@ -362,6 +364,11 @@ class SpeciesCompilationContext internal constructor(
     fun changePursuitSpeed(change: Double) {
         pursuitSpeed += change
     }
+
+    fun changePursuitTracking(change: Double) {
+        pursuitTracking += change
+    }
+
     fun changeDefense(change: Double) {
         defense += change
     }

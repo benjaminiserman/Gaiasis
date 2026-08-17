@@ -93,6 +93,63 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `specialized senses compile distinct hunting and reproductive benefits`() {
+        val ordinary = predator("ordinary-senses").copy(
+            traits = predator("ordinary-senses").traits + CommonTrait.MOTION_TRACKING_SENSES,
+        )
+        val scent = predator("scent-specialist").copy(
+            traits = predator("scent-specialist").traits +
+                listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.KEEN_SCENT_SENSE),
+        )
+        val sight = predator("sight-specialist").copy(
+            traits = predator("sight-specialist").traits +
+                listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.KEEN_EYESIGHT),
+        )
+        val prey = predator("sensory-prey", SizeClass.SMALL)
+        val ecology = EcologyCompiler.compile(listOf(ordinary, scent, sight, prey))
+
+        fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
+        fun predationRate(predator: SpeciesDefinition) =
+            ecology.interactions.get(ecology.speciesIndex(predator.id), ecology.speciesIndex(prey.id)).targetLossRate
+
+        assertTrue(compiled(scent.id).interactions.pursuitTracking > compiled(ordinary.id).interactions.pursuitTracking)
+        assertEquals(compiled(ordinary.id).interactions.pursuitSpeed, compiled(scent.id).interactions.pursuitSpeed)
+        assertTrue(compiled(scent.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction)
+        assertTrue(compiled(sight.id).interactions.captureAbility > compiled(ordinary.id).interactions.captureAbility)
+        assertTrue(predationRate(scent) > predationRate(ordinary))
+        assertTrue(predationRate(sight) > predationRate(ordinary))
+    }
+
+    @Test
+    fun `fast metabolism raises activity reproduction and food demand`() {
+        val ordinary = predator("ordinary-metabolism")
+        val fast = predator("fast-metabolism").copy(
+            traits = predator("fast-metabolism").traits + CommonTrait.FAST_METABOLISM,
+        )
+        val ecology = EcologyCompiler.compile(listOf(ordinary, fast))
+
+        fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
+
+        assertTrue(compiled(fast.id).physiology.maintenanceDemand > compiled(ordinary.id).physiology.maintenanceDemand)
+        assertTrue(compiled(fast.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction)
+        assertTrue(compiled(fast.id).interactions.pursuitSpeed > compiled(ordinary.id).interactions.pursuitSpeed)
+    }
+
+    @Test
+    fun `fast and slow metabolisms are mutually exclusive`() {
+        val invalid = predator("conflicting-metabolism").copy(
+            traits = predator("conflicting-metabolism").traits +
+                listOf(CommonTrait.FAST_METABOLISM, CommonTrait.SLOW_METABOLISM),
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("METABOLIC_PACE"))
+    }
+
+    @Test
     fun `motile species require exactly one thermal strategy`() {
         val invalid = SpeciesDefinition(
             id = "invalid",
@@ -373,6 +430,20 @@ class EcologyCompilerTest {
                         CommonTrait.SWIFT_LEGS,
                 ),
             ).isNotEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + CommonTrait.STICKY_FEET),
+            ).isNotEmpty(),
+        )
+        assertTrue(
+            TraitDependencies.unmetRequirements(
+                base.copy(
+                    traits = base.traits
+                        .filterNot { it == CommonTrait.WALKING_LIMBS } +
+                        listOf(CommonTrait.CLIMBING_LIMBS, CommonTrait.STICKY_FEET),
+                ),
+            ).isEmpty(),
         )
     }
 

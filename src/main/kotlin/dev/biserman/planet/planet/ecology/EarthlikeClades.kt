@@ -25,6 +25,7 @@ object EarthlikeClades {
         CommonTrait.ECTOTHERMY,
         CommonTrait.WALKING_LIMBS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
+        CommonTrait.BEHAVIORAL_THERMOREGULATION,
         ColorTrait.GREEN_CAMOUFLAGE,
     )
 
@@ -359,12 +360,6 @@ object EarthlikeClades {
                 CommonTrait.TRUMPETING_CALL
             ),
             mammal.extend(
-                "anteater",
-                SizeClass.SMALL,
-                CommonTrait.COLONY_PROBING_TONGUE,
-                CommonTrait.DIGGING_CLAWS
-            ),
-            mammal.extend(
                 "panther",
                 SizeClass.LARGE,
                 CommonTrait.AMBUSH_MUSCULATURE,
@@ -423,6 +418,15 @@ object EarthlikeClades {
                 CommonTrait.BULKY_BODY
             ),
             mammal.extend(
+                "badger",
+                SizeClass.SMALL,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.DIGGING_CLAWS,
+                CommonTrait.DENSE_UNDERCOAT,
+                ColorTrait.PALE_CAMOUFLAGE
+            ),
+            mammal.extend(
                 "seal",
                 SizeClass.MEDIUM,
                 CommonTrait.AQUATIC_FLIPPERS,
@@ -458,6 +462,86 @@ object EarthlikeClades {
                 CommonTrait.COOPERATIVE_HUNTING,
                 CommonTrait.ECHOLOCATION,
                 ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            )
+        ),
+        reptile to listOf(
+            reptile.extend(
+                "gecko",
+                SizeClass.TINY,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.STICKY_FEET,
+                CommonTrait.SLENDER_BODY,
+                CommonTrait.CHIRPING_CALL,
+            ),
+            reptile.extend(
+                "monitor lizard",
+                SizeClass.MEDIUM,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.ARMORED_HIDE,
+                CommonTrait.VENOM_DELIVERY,
+                CommonTrait.KEEN_SCENT_SENSE,
+                ColorTrait.BROWN_CAMOUFLAGE
+            ),
+            reptile.extend(
+                "worm lizard",
+                SizeClass.TINY,
+                CommonTrait.SUBTERRANEAN_BURROWING,
+                CommonTrait.SLENDER_BODY,
+                CommonTrait.UNDULATING_BODY,
+                ColorTrait.PALE_CAMOUFLAGE
+            ),
+            reptile.extend(
+                "snake",
+                SizeClass.SMALL,
+                CommonTrait.UNDULATING_BODY,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.HISSING_WARNING,
+                CommonTrait.VENOM_DELIVERY,
+                CommonTrait.KEEN_SCENT_SENSE,
+                ColorTrait.BROWN_CAMOUFLAGE
+            ),
+            reptile.extend(
+                "chameleon",
+                SizeClass.SMALL,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.PROJECTILE_TONGUE,
+                CommonTrait.CAMOUFLAGE_PATTERN,
+                CommonTrait.SLOW_METABOLISM,
+                ColorTrait.ADAPTIVE_CAMOUFLAGE
+            ),
+            reptile.extend(
+                "iguana",
+                SizeClass.SMALL,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.FRUIT_EATING_MOUTHPARTS,
+                CommonTrait.BROWSING_MOUTHPARTS,
+            ),
+            reptile.extend(
+                "crocodile",
+                SizeClass.LARGE,
+                CommonTrait.AMPHIBIOUS_LIMBS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.STRONG_JAWS,
+                CommonTrait.OVOSPORE_NEST,
+                CommonTrait.ARMORED_HIDE,
+                CommonTrait.KEEN_SCENT_SENSE,
+                CommonTrait.SEASONAL_TORPOR,
+                CommonTrait.BELLOWING_CALL
+            ),
+            reptile.extend(
+                "turtle",
+                SizeClass.SMALL,
+                CommonTrait.AMPHIBIOUS_LIMBS,
+                CommonTrait.PROTECTIVE_SHELL,
+            ),
+            reptile.extend(
+                "tortoise",
+                SizeClass.MEDIUM,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.SLOW_METABOLISM,
+                CommonTrait.PROTECTIVE_SHELL
             )
         )
     )

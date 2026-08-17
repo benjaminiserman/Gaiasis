@@ -203,6 +203,9 @@ sealed interface TraitEffect {
     data class PursuitSpeed(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitSpeed(change)
     }
+    data class PursuitTracking(val change: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitTracking(change)
+    }
     data class Defense(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeDefense(change)
     }
@@ -289,7 +292,7 @@ sealed interface TraitEffect {
     }
     data class MetabolicDemandMultiplier(val multiplier: Double) : TraitEffect {
         init {
-            require(multiplier in 0.0..1.0)
+            require(multiplier > 0.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyMetabolicDemand(multiplier)
     }

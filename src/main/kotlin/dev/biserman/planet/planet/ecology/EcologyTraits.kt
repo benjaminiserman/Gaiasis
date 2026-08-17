@@ -22,6 +22,7 @@ enum class SizeClass(
 enum class TraitGroup {
     BIOCHEMISTRY,
     THERMOREGULATION,
+    METABOLIC_PACE,
     DORMANCY_MODE,
     DISPERSAL_RANGE,
     SALINITY_STRATEGY,
@@ -53,6 +54,7 @@ enum class TraitCapability {
     BREATH_HOLDING,
     WATER_STORAGE,
     LACTATION,
+    VIVIPAROUS_REPRODUCTION,
     REPRODUCTION,
     OVOSPORE_REPRODUCTION,
     OVOSPORE_BROODING,
@@ -228,7 +230,7 @@ enum class ColorTrait(
     BLUE_CAMOUFLAGE("blue coloration", "Blue pigments conceal the body in blue-lit environments.", TraitEffect.CamouflageColor(BiologicalColor.BLUE)),
     RED_CAMOUFLAGE("red coloration", "Red pigments conceal or signal where longer wavelengths dominate.", TraitEffect.CamouflageColor(BiologicalColor.RED)),
     PURPLE_CAMOUFLAGE("purple coloration", "Purple pigments conceal or signal against similarly colored surroundings.", TraitEffect.CamouflageColor(BiologicalColor.PURPLE)),
-    PALE_CAMOUFLAGE("pale coloration", "Low-saturation pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.PALE)),
+    PALE_CAMOUFLAGE("pale coloration", "Low-saturation pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.PALE), maintenanceCost = -0.02),
     WHITE_CAMOUFLAGE("white coloration", "White tissues, hairs, or feathers conceal the body against snow and ice.", TraitEffect.CamouflageColor(BiologicalColor.WHITE)),
     COUNTERSHADE_CAMOUFLAGE("countershading", "A dark upper surface and light underside reduce contrast in sunlit water.", TraitEffect.CamouflageColor(BiologicalColor.COUNTERSHADE)),
     ADAPTIVE_CAMOUFLAGE("adaptive coloration", "Pigment cells actively change the body's color and pattern to match its surroundings.", TraitEffect.CamouflageColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.08),
@@ -392,6 +394,18 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.03),
             TraitEffect.PursuitSpeed(-0.5)
         ),
+        group = TraitGroup.METABOLIC_PACE,
+    ),
+    FAST_METABOLISM(
+        "fast metabolism",
+        "A high-throughput metabolism rapidly supplies active tissues with energy, but requires a large and reliable food intake.",
+        listOf(
+            TraitEffect.MetabolicDemandMultiplier(1.35),
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.PursuitSpeed(0.08),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+        group = TraitGroup.METABOLIC_PACE,
     ),
     BEHAVIORAL_THERMOREGULATION(
         "behavioral thermoregulation",
@@ -422,6 +436,19 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         capabilities = setOf(TraitCapability.LACTATION),
+    ),
+    BROOD_POUCH(
+        "brood pouch",
+        "A protected external body chamber encloses highly underdeveloped live-born young while they complete early development.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(TraitCapability.VIVIPAROUS_REPRODUCTION),
+            ),
+        ),
     ),
     LONG_INTERBIRTH_INTERVAL(
         "long interbirth interval",
@@ -468,7 +495,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.10),
         ),
         isFoundation = true,
-        capabilities = setOf(TraitCapability.REPRODUCTION),
+        capabilities = setOf(
+            TraitCapability.REPRODUCTION,
+            TraitCapability.VIVIPAROUS_REPRODUCTION,
+        ),
     ),
     CLONAL_PROPAGATION(
         "clonal propagation",
@@ -851,6 +881,17 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         capabilities = setOf(TraitCapability.ARBOREAL_LOCOMOTION),
+    ),
+    STICKY_FEET(
+        "sticky feet",
+        "Specialized toe pads use microscopic dry-adhesive structures, soft wet-contact surfaces, or analogous mechanisms to grip smooth and steep surfaces.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.18),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.ARBOREAL_LOCOMOTION)),
+        ),
     ),
     CANOPY_GROWTH(
         "canopy growth",
@@ -1357,6 +1398,23 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.70),
             TraitEffect.CaptureAbility(0.18),
             TraitEffect.MaintenanceCost(0.13),
+        ),
+    ),
+    KEEN_SCENT_SENSE(
+        "keen sense of smell",
+        "A large, sensitive chemical-sensing system follows faint trails and helps individuals locate distant mates.",
+        listOf(
+            TraitEffect.PursuitTracking(0.12),
+            TraitEffect.ReproductionMultiplier(1.05),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+    ),
+    KEEN_EYESIGHT(
+        "keen eyesight",
+        "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
+        listOf(
+            TraitEffect.CaptureAbility(0.14),
+            TraitEffect.MaintenanceCost(0.05),
         ),
     ),
     CAMOUFLAGE_PATTERN(

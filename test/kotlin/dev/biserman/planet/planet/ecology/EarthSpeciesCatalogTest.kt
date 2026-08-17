@@ -30,6 +30,16 @@ class EarthSpeciesCatalogTest {
         assertTrue(CommonTrait.WALKING_LIMBS in species.getValue("cheetah").traits)
         assertTrue(CommonTrait.SWIFT_LEGS in species.getValue("cheetah").traits)
         assertTrue(CommonTrait.STREAMLINED_BODY in species.getValue("atlantic-bluefin-tuna").traits)
+        listOf("tokay-gecko", "common-house-gecko", "red-eyed-tree-frog").forEach { speciesId ->
+            val traits = species.getValue(speciesId).traits
+            assertTrue(CommonTrait.CLIMBING_LIMBS in traits, speciesId)
+            assertTrue(CommonTrait.STICKY_FEET in traits, speciesId)
+        }
+        assertTrue(
+            CommonTrait.STICKY_FEET in
+                EarthlikeClades.minorCreatureGroups.getValue(EarthlikeClades.reptile)
+                    .single { it.displayName == "gecko" }.traits,
+        )
         assertTrue(CommonTrait.FUR in species.getValue("cheetah").traits)
         assertTrue(CommonTrait.FUR !in species.getValue("blue-whale").traits)
     }
@@ -237,6 +247,36 @@ class EarthSpeciesCatalogTest {
         assertTrue(TraitCapability.LACTATION in CommonTrait.MAMMARY_GLANDS.capabilities)
         assertTrue(compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction)
         assertTrue(compiled[0].physiology.maintenanceDemand > compiled[1].physiology.maintenanceDemand)
+    }
+
+    @Test
+    fun `marsupials protect developing young in a brood pouch`() {
+        val definitions = EarthSpeciesCatalog.MAMMALS.associateBy { it.id }
+        val marsupialIds = listOf("red-kangaroo", "koala", "sugar-glider")
+
+        marsupialIds.forEach { speciesId ->
+            assertTrue(CommonTrait.BROOD_POUCH in definitions.getValue(speciesId).traits, speciesId)
+        }
+
+        val kangaroo = definitions.getValue("red-kangaroo")
+        val withoutPouch = kangaroo.copy(
+            id = "red-kangaroo-without-pouch",
+            traits = kangaroo.traits - CommonTrait.BROOD_POUCH,
+        )
+        val compiled = EcologyCompiler.compile(listOf(kangaroo, withoutPouch)).species
+
+        assertTrue(compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction)
+        assertTrue(compiled[0].physiology.maintenanceDemand > compiled[1].physiology.maintenanceDemand)
+        val requirements = CommonTrait.BROOD_POUCH.requirements.single() as TraitRequirement.AllOf
+        assertEquals(
+            setOf(TraitCapability.VIVIPAROUS_REPRODUCTION),
+            requirements.capabilities,
+        )
+        val nonLactatingBrooder = kangaroo.copy(
+            id = "non-lactating-brood-pouch",
+            traits = kangaroo.traits - CommonTrait.MAMMARY_GLANDS,
+        )
+        EcologyCompiler.compile(listOf(nonLactatingBrooder))
     }
 
     @Test

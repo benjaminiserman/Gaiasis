@@ -334,7 +334,13 @@ internal object FoodWebCompiler {
             }
         val effectiveCapture =
             pair.consumer.interactions.captureAbility +
-                (if (pursuitInteraction) pair.consumer.interactions.pursuitSpeed else 0.0) +
+                (
+                    if (pursuitInteraction) {
+                        pair.consumer.interactions.pursuitSpeed + pair.consumer.interactions.pursuitTracking
+                    } else {
+                        0.0
+                    }
+                ) +
                 burrowerCaptureBonus +
                 soundLureCaptureBonus
         val effectiveDefense =

@@ -121,6 +121,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SWIFT_LEGS,
             CommonTrait.SLENDER_BODY,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
             CommonTrait.RETRACTABLE_CLAWS,
@@ -137,6 +138,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SWIFT_LEGS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.COOPERATIVE_HUNTING,
             CommonTrait.SCAVENGING_SENSES,
             CommonTrait.FOOD_DERIVED_WATER,
@@ -216,6 +218,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BLUBBER,
             CommonTrait.FAT_RESERVES,
             CommonTrait.BULKY_BODY,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
             ColorTrait.WHITE_CAMOUFLAGE
         ),
@@ -230,6 +233,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.SEASONAL_TORPOR,
             CommonTrait.BULKY_BODY,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
@@ -240,6 +244,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SWIFT_LEGS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.COOPERATIVE_HUNTING,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SEASONAL_WINTER_COAT,
@@ -258,6 +263,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CACHED_FOOD,
             CommonTrait.SLENDER_BODY,
             CommonTrait.HIGH_POUNCING,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.BARKING_CALL,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
@@ -328,6 +334,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CONCENTRATED_URINE,
             CommonTrait.OPEN_COUNTRY_PREFERENCE,
             CommonTrait.HERDING_BEHAVIOR,
+            CommonTrait.BROOD_POUCH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -338,6 +345,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BROWSING_MOUTHPARTS,
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.EXTENDED_PARENTAL_CARE,
+            CommonTrait.BROOD_POUCH,
             obligateBrowser(
                 foodSpeciesId = "eucalyptus-tree",
                 displayName = "eucalyptus leaf specialization",
@@ -619,6 +627,7 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.HETEROTHERMY,
             CommonTrait.MEMBRANOUS_WINGS,
+            CommonTrait.FAST_METABOLISM,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.ECHOLOCATION,
             CommonTrait.SEASONAL_TORPOR,
@@ -675,6 +684,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NECTAR_SIPPING_TONGUE,
             CommonTrait.SLENDER_BODY,
             CommonTrait.EXTENDED_PARENTAL_CARE,
+            CommonTrait.BROOD_POUCH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         // Procyonids
@@ -899,6 +909,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.MASSIVE_EARS,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.CONCENTRATED_URINE,
             CommonTrait.DRY_BURROW_NEST,
@@ -1143,6 +1154,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ENDOTHERMY,
             CommonTrait.FEATHERED_WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             ColorTrait.BROWN_CAMOUFLAGE
@@ -1153,6 +1165,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ENDOTHERMY,
             CommonTrait.FEATHERED_WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.HOOTING_CALL,
@@ -1164,6 +1177,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ENDOTHERMY,
             CommonTrait.FEATHERED_WINGS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             ColorTrait.PALE_CAMOUFLAGE
@@ -1173,6 +1187,7 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.FEATHERED_WINGS,
+            CommonTrait.FAST_METABOLISM,
             CommonTrait.NECTAR_SIPPING_TONGUE,
             CommonTrait.POLLEN_CARRYING_SURFACES,
             CommonTrait.LONG_MIGRATION,
@@ -1384,6 +1399,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FEATHERED_WINGS,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.FAT_RESERVES,
             CommonTrait.HOOTING_CALL,
@@ -1557,6 +1573,28 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
+            "tokay gecko",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.STICKY_FEET,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.STRONG_JAWS,
+            CommonTrait.CAMOUFLAGE_PATTERN,
+            CommonTrait.CHIRPING_CALL,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
+            "common house gecko",
+            SizeClass.TINY,
+            CommonTrait.ECTOTHERMY,
+            CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.STICKY_FEET,
+            CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.CHIRPING_CALL,
+            ColorTrait.PALE_CAMOUFLAGE
+        ),
+        animal(
             "green iguana",
             SizeClass.SMALL,
             CommonTrait.ECTOTHERMY,
@@ -1570,17 +1608,16 @@ object EarthSpeciesCatalog {
             SizeClass.SMALL,
             CommonTrait.ECTOTHERMY,
             CommonTrait.CLIMBING_LIMBS,
-            CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CAMOUFLAGE_PATTERN,
             CommonTrait.PROJECTILE_TONGUE,
-            ColorTrait.GREEN_CAMOUFLAGE
+            CommonTrait.SLOW_METABOLISM,
+            ColorTrait.ADAPTIVE_CAMOUFLAGE
         ),
         animal(
             "reticulated python",
             SizeClass.SMALL,
             CommonTrait.ECTOTHERMY,
             CommonTrait.UNDULATING_BODY,
-            CommonTrait.CLIMBING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CONSTRICTING_BODY,
             CommonTrait.HISSING_WARNING,
@@ -1636,6 +1673,7 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.CLIMBING_LIMBS,
+            CommonTrait.STICKY_FEET,
             CommonTrait.PROJECTILE_TONGUE,
             CommonTrait.LEAPING_LEGS,
             CommonTrait.CROAKING_CALL,
@@ -1761,6 +1799,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.ELECTRORECEPTION,
+            CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.STRONG_JAWS,
             CommonTrait.FAT_RESERVES,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
@@ -2281,6 +2320,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.INSECTOID_WINGS,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.KEEN_EYESIGHT,
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.REGIONAL_MIGRATION,
             ColorTrait.GREEN_CAMOUFLAGE

@@ -80,6 +80,7 @@ data class InteractionProfile(
     val acousticSignalMask: Long,
     val soundLureCaptureBonus: Double,
     val pursuitSpeed: Double,
+    val pursuitTracking: Double,
     val defense: Double,
     val aposematicColoration: Boolean,
     val dangerousWarningModel: Boolean,
