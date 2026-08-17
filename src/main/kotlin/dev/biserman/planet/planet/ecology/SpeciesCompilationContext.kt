@@ -49,8 +49,14 @@ class SpeciesCompilationContext internal constructor(
     private var radiationRange = 1
     private var reproductionMultiplier = 1.0
     private var metabolicDemandMultiplier = 1.0
+    private var bodyMassMultiplier = 1.0
     private var maintenanceCost = 0.0
     private var captureAbility = 0.5
+    private var largerPreySizeClasses = 0
+    private var burrowerCaptureBonus = 0.0
+    private var usesBurrowRefuge = false
+    private var acousticSignalMask = 0L
+    private var soundLureCaptureBonus = 0.0
     private var pursuitSpeed = 0.0
     private var defense = 0.25
     private var aposematicColoration = false
@@ -73,6 +79,10 @@ class SpeciesCompilationContext internal constructor(
     private var maintenanceCostScale = 1.0
 
     internal fun apply(trait: SpeciesTrait) {
+        trait.acousticSignal?.let { signal ->
+            require(signal.ordinal < Long.SIZE_BITS)
+            acousticSignalMask = acousticSignalMask or (1L shl signal.ordinal)
+        }
         maintenanceCostScale = if (trait.isFoundation) 1.0 else 0.35
         trait.effects.forEach { it.applyTo(this) }
         maintenanceCostScale = 1.0
@@ -148,7 +158,7 @@ class SpeciesCompilationContext internal constructor(
             val strategy = strategySupport[niche.strategy.ordinal]
             if (habitat <= 0.0 || strategy <= 0.0) 0.0 else habitat * strategy
         }
-        val massKg = definition.sizeClass.typicalMassKg
+        val massKg = definition.sizeClass.typicalMassKg * bodyMassMultiplier
         val sessilePhotosyntheticMaintenance =
             if (
                 !definition.motile &&
@@ -229,6 +239,11 @@ class SpeciesCompilationContext internal constructor(
             ),
             interactions = InteractionProfile(
                 captureAbility = captureAbility.coerceIn(0.05, 1.5),
+                largerPreySizeClasses = largerPreySizeClasses,
+                burrowerCaptureBonus = burrowerCaptureBonus.coerceIn(0.0, 1.0),
+                usesBurrowRefuge = usesBurrowRefuge,
+                acousticSignalMask = acousticSignalMask,
+                soundLureCaptureBonus = soundLureCaptureBonus.coerceIn(0.0, 1.0),
                 pursuitSpeed = pursuitSpeed.coerceIn(0.0, 1.0),
                 defense = defense.coerceIn(0.0, 1.5),
                 aposematicColoration = aposematicColoration,
@@ -328,6 +343,21 @@ class SpeciesCompilationContext internal constructor(
     }
     fun changeCaptureAbility(change: Double) {
         captureAbility += change
+    }
+    fun multiplyBodyMass(multiplier: Double) {
+        bodyMassMultiplier *= multiplier
+    }
+    fun expandLargerPreySizeClasses(additionalClasses: Int) {
+        largerPreySizeClasses = max(largerPreySizeClasses, additionalClasses)
+    }
+    fun changeBurrowerCaptureBonus(change: Double) {
+        burrowerCaptureBonus += change
+    }
+    fun changeSoundLureCaptureBonus(change: Double) {
+        soundLureCaptureBonus += change
+    }
+    fun enableBurrowRefuge() {
+        usesBurrowRefuge = true
     }
     fun changePursuitSpeed(change: Double) {
         pursuitSpeed += change

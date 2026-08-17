@@ -237,6 +237,7 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.MEMBRANOUS_WINGS,
                 CommonTrait.FRUIT_EATING_MOUTHPARTS,
+                CommonTrait.SCREECHING_CALL,
                 CommonTrait.EXTENDED_PARENTAL_CARE
             ),
             mammal.extend(
@@ -261,15 +262,18 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.CLIMBING_LIMBS,
                 CommonTrait.FRUIT_EATING_MOUTHPARTS,
-                CommonTrait.EXTENDED_PARENTAL_CARE
+                CommonTrait.EXTENDED_PARENTAL_CARE,
+                CommonTrait.HOOTING_CALL
             ),
             mammal.extend(
                 "bison",
                 SizeClass.LARGE,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.OPEN_COUNTRY_HERDING,
+                CommonTrait.OPEN_COUNTRY_PREFERENCE,
+                CommonTrait.HERDING_BEHAVIOR,
                 CommonTrait.REGIONAL_MIGRATION,
+                CommonTrait.BELLOWING_CALL
             ),
             mammal.extend(
                 "camel",
@@ -279,6 +283,7 @@ object EarthlikeClades {
                 CommonTrait.FAT_RESERVES,
                 CommonTrait.FOOD_DERIVED_WATER,
                 CommonTrait.CONCENTRATED_URINE,
+                CommonTrait.GRUNTING_CALL
             ),
             mammal.extend(
                 "deer",
@@ -296,7 +301,9 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.RUMINANT_STOMACH,
                 CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
-                CommonTrait.OPEN_COUNTRY_HERDING,
+                CommonTrait.OPEN_COUNTRY_PREFERENCE,
+                CommonTrait.HERDING_BEHAVIOR,
+                CommonTrait.BLEATING_CALL
             ),
             mammal.extend(
                 "horse",
@@ -305,8 +312,10 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.FERMENTING_HINDGUT,
                 CommonTrait.SWEAT_GLANDS,
-                CommonTrait.OPEN_COUNTRY_HERDING,
+                CommonTrait.OPEN_COUNTRY_PREFERENCE,
+                CommonTrait.HERDING_BEHAVIOR,
                 CommonTrait.REGIONAL_MIGRATION,
+                CommonTrait.BRAYING_CALL
             ),
             mammal.extend(
                 "giraffe",
@@ -323,6 +332,19 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.FERMENTING_HINDGUT,
                 CommonTrait.ARMORED_HIDE,
+                CommonTrait.GRUNTING_CALL,
+                minus = listOf(CommonTrait.FUR)
+            ),
+            mammal.extend(
+                "goat",
+                SizeClass.MEDIUM,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.RUMINANT_STOMACH,
+                CommonTrait.LEAPING_LEGS,
+                CommonTrait.SEASONAL_WINTER_COAT,
+                CommonTrait.HIGH_AFFINITY_BLOOD,
+                CommonTrait.BLEATING_CALL,
+                ColorTrait.WHITE_CAMOUFLAGE
             ),
             mammal.extend(
                 "elephant",
@@ -331,8 +353,10 @@ object EarthlikeClades {
                 CommonTrait.PREHENSILE_TRUNK,
                 CommonTrait.MASSIVE_EARS,
                 CommonTrait.FERMENTING_HINDGUT,
-                CommonTrait.OPEN_COUNTRY_HERDING,
+                CommonTrait.HERDING_BEHAVIOR,
                 CommonTrait.REGIONAL_MIGRATION,
+                CommonTrait.EXTENDED_PARENTAL_CARE,
+                CommonTrait.TRUMPETING_CALL
             ),
             mammal.extend(
                 "anteater",
@@ -345,7 +369,25 @@ object EarthlikeClades {
                 SizeClass.LARGE,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.CAMOUFLAGE_PATTERN,
-                CommonTrait.FOOD_DERIVED_WATER
+                CommonTrait.FOOD_DERIVED_WATER,
+                CommonTrait.STRONG_JAWS,
+                CommonTrait.RETRACTABLE_CLAWS,
+                CommonTrait.FLEXIBLE_SPINE,
+                CommonTrait.ROARING_CALL
+            ),
+            mammal.extend(
+                "cat",
+                SizeClass.SMALL,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.CAMOUFLAGE_PATTERN,
+                CommonTrait.FOOD_DERIVED_WATER,
+                CommonTrait.RETRACTABLE_CLAWS,
+                CommonTrait.FLEXIBLE_SPINE,
+                CommonTrait.SLENDER_BODY,
+                CommonTrait.MEOWING_CALL,
+                CommonTrait.CHIRPING_CALL,
+                CommonTrait.PURRING_CALL
             ),
             mammal.extend(
                 "wolf",
@@ -354,13 +396,19 @@ object EarthlikeClades {
                 CommonTrait.MOTION_TRACKING_SENSES,
                 CommonTrait.COOPERATIVE_HUNTING,
                 CommonTrait.DENSE_UNDERCOAT,
-                CommonTrait.SEASONAL_WINTER_COAT
+                CommonTrait.SEASONAL_WINTER_COAT,
+                CommonTrait.HOWLING_CALL,
+                CommonTrait.BARKING_CALL,
+                ColorTrait.PALE_CAMOUFLAGE,
             ),
             mammal.extend(
                 "fox",
                 SizeClass.SMALL,
                 CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.CACHED_FOOD
+                CommonTrait.CACHED_FOOD,
+                CommonTrait.SLENDER_BODY,
+                CommonTrait.HIGH_POUNCING,
+                CommonTrait.BARKING_CALL
             ),
             mammal.extend(
                 "bear",
@@ -370,7 +418,9 @@ object EarthlikeClades {
                 CommonTrait.BROWSING_MOUTHPARTS,
                 CommonTrait.DENSE_UNDERCOAT,
                 CommonTrait.SEASONAL_TORPOR,
-                CommonTrait.FAT_RESERVES
+                CommonTrait.FAT_RESERVES,
+                CommonTrait.GROWLING_CALL,
+                CommonTrait.BULKY_BODY
             ),
             mammal.extend(
                 "seal",
@@ -379,8 +429,36 @@ object EarthlikeClades {
                 CommonTrait.PROLONGED_BREATH_HOLDING,
                 CommonTrait.STROKE_AND_GLIDE_SWIMMING,
                 CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.BLUBBER
+                CommonTrait.BLUBBER,
+                CommonTrait.BARKING_CALL,
+                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
             ),
+            mammal.extend(
+                "whale",
+                SizeClass.COLOSSAL,
+                CommonTrait.AQUATIC_FLIPPERS,
+                CommonTrait.PROLONGED_BREATH_HOLDING,
+                CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+                CommonTrait.STREAMLINED_BODY,
+                CommonTrait.BLUBBER,
+                CommonTrait.LONG_MIGRATION,
+                CommonTrait.WHALESONG,
+                CommonTrait.ECHOLOCATION,
+                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ),
+            mammal.extend(
+                "dolphin",
+                SizeClass.MEDIUM,
+                CommonTrait.AQUATIC_FLIPPERS,
+                CommonTrait.PROLONGED_BREATH_HOLDING,
+                CommonTrait.STREAMLINED_BODY,
+                CommonTrait.BLUBBER,
+                CommonTrait.LONG_MIGRATION,
+                CommonTrait.CLICK_WHISTLE_REPERTOIRE,
+                CommonTrait.COOPERATIVE_HUNTING,
+                CommonTrait.ECHOLOCATION,
+                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            )
         )
     )
 

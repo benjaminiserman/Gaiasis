@@ -8,7 +8,7 @@ enum class SizeClass(
 ) {
     MINUSCULE(0.000_001, 0.34, 1.20, 8.0),
     TINY(0.01, 0.25, 0.90, 5.0),
-    SMALL(1.0, 0.18, 0.60, 2.5),
+    SMALL(2.5, 0.18, 0.60, 2.5),
     MEDIUM(50.0, 0.12, 0.34, 1.0),
     LARGE(1_000.0, 0.08, 0.18, 0.38),
     HUGE(10_000.0, 0.055, 0.10, 0.12),
@@ -29,6 +29,7 @@ enum class TraitGroup {
     GUT_FERMENTATION,
     SPECIALIZED_TONGUE,
     DOMINANT_BODY_COVERING,
+    BODY_BUILD,
     PHOTOSYNTHETIC_STRUCTURE,
     TERRESTRIAL_ATTACHMENT,
     TERRESTRIAL_MOVEMENT_STRUCTURE,
@@ -42,6 +43,7 @@ enum class TraitCapability {
     HAIR_COVERING,
     FEATHER_COVERING,
     GROUND_WALKING,
+    ARBOREAL_LOCOMOTION,
     ACTIVE_FLIGHT,
     SOCIAL_COLONY,
     NECTAR_FEEDING,
@@ -59,6 +61,39 @@ enum class TraitCapability {
     ECTOTHERMIC_REGULATION,
     ABSORPTIVE_FILAMENTS,
     RIGID_REEF_FRAMEWORK,
+    CHIRPING_VOCALIZATION,
+}
+
+/** A recognizable sound pattern that another species may reproduce or exploit. */
+enum class AcousticSignal {
+    WHALESONG,
+    HOWL,
+    BIRDSONG,
+    CICADA_CHORUS,
+    RATTLE,
+    ROAR,
+    TRUMPET,
+    BELLOW,
+    BLEAT,
+    GRUNT,
+    HONK,
+    BUGLE,
+    CROAK,
+    BRAY,
+    HOOT,
+    BARK,
+    GROWL,
+    SCREECH,
+    QUACK,
+    CROW,
+    TRILL,
+    CHIRP,
+    MEOW,
+    PURR,
+    HISS,
+    BOOM,
+    WHOOP,
+    CLICK_WHISTLE,
 }
 
 sealed interface TraitRequirement {
@@ -105,6 +140,15 @@ sealed interface TraitRequirement {
 
         override fun describe(): String = "requires $sizeClass size"
     }
+
+    data object HasAcousticSignal : TraitRequirement {
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = definition.traits.any { it.acousticSignal != null }
+
+        override fun describe(): String = "requires an acoustic call"
+    }
 }
 
 sealed interface SpeciesTrait {
@@ -117,6 +161,11 @@ sealed interface SpeciesTrait {
         get() = false
     val invariantOnly: Boolean
         get() = false
+    /** Cosmetic traits document recognizable biology without changing simulation outcomes. */
+    val isCosmetic: Boolean
+        get() = false
+    val acousticSignal: AcousticSignal?
+        get() = null
     val group: TraitGroup?
         get() = null
     val capabilities: Set<TraitCapability>
@@ -221,6 +270,8 @@ enum class CommonTrait(
     override val effects: List<TraitEffect>,
     override val isFoundation: Boolean = false,
     override val invariantOnly: Boolean = false,
+    override val isCosmetic: Boolean = false,
+    override val acousticSignal: AcousticSignal? = null,
     override val group: TraitGroup? = null,
     override val capabilities: Set<TraitCapability> = emptySet(),
     override val requirements: List<TraitRequirement> = emptyList(),
@@ -798,6 +849,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.03),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        capabilities = setOf(TraitCapability.ARBOREAL_LOCOMOTION),
     ),
     CANOPY_GROWTH(
         "canopy growth",
@@ -1048,6 +1100,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 3.0, hotterC = 3.0),
             TraitEffect.WaterRequirement(-0.06),
+            TraitEffect.BurrowRefuge,
             TraitEffect.MaintenanceCost(0.10),
         ),
     ),
@@ -1056,6 +1109,7 @@ enum class CommonTrait(
         "A sheltered burrow or rock-crevice retreat buffers its occupant from the coldest exposed-air temperatures.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 5.0),
+            TraitEffect.BurrowRefuge,
             TraitEffect.MaintenanceCost(0.07),
         ),
     ),
@@ -1069,6 +1123,7 @@ enum class CommonTrait(
                 optimalMaximumChange = -0.66,
                 absoluteMaximumChange = -0.33,
             ),
+            TraitEffect.BurrowRefuge,
             TraitEffect.MaintenanceCost(0.05),
         ),
     ),
@@ -1181,6 +1236,117 @@ enum class CommonTrait(
         ),
         requirements = listOf(
             TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
+        ),
+    ),
+    SLENDER_BODY(
+        "slender body",
+        "A narrow, lightly built torso reduces the mass that must be accelerated and exposes more surface area for heat loss.",
+        listOf(
+            TraitEffect.BodyMassMultiplier(0.5),
+            TraitEffect.PursuitSpeed(0.08),
+            TraitEffect.TemperatureTolerance(colderC = -1.0, hotterC = 2.0),
+            TraitEffect.Defense(-0.04),
+            TraitEffect.MaintenanceCost(0.035),
+        ),
+        group = TraitGroup.BODY_BUILD,
+    ),
+    BULKY_BODY(
+        "bulky body",
+        "A broad, heavily built torso provides thermal mass and resilience but is costly to accelerate and reproduce.",
+        listOf(
+            TraitEffect.BodyMassMultiplier(2.0),
+            TraitEffect.PursuitSpeed(-0.05),
+            TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = -1.0),
+            TraitEffect.Defense(0.10),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.045),
+        ),
+        group = TraitGroup.BODY_BUILD,
+    ),
+    LONG_TUSKS(
+        "long tusks",
+        "Elongated exposed teeth serve as weapons, display structures, digging tools, or levers during contests and movement.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.Defense(0.14),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+    ),
+    STRONG_JAWS(
+        "strong jaws",
+        "Deep jaw muscles and reinforced skull structures generate unusually forceful bites for seizing, crushing, or dismembering food.",
+        listOf(
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.Defense(0.04),
+            TraitEffect.MaintenanceCost(0.07),
+        ),
+    ),
+    ANTLERS(
+        "antlers",
+        "Branching seasonal head weapons are regrown for display, mate competition, and defense.",
+        listOf(
+            TraitEffect.Defense(0.11),
+            TraitEffect.ReproductionMultiplier(1.06),
+            TraitEffect.MaintenanceCost(0.11),
+        ),
+    ),
+    LARGE_HORN(
+        "large horn",
+        "A large permanent keratinous or bony head weapon deters predators and resolves contests by impact or leverage.",
+        listOf(
+            TraitEffect.CaptureAbility(0.03),
+            TraitEffect.Defense(0.15),
+            TraitEffect.ReproductionMultiplier(0.98),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+    ),
+    RETRACTABLE_CLAWS(
+        "retractable claws",
+        "Claws are protected while traveling and extended for traction, climbing, grappling, and close-range prey capture.",
+        listOf(
+            TraitEffect.CaptureAbility(0.11),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.AnyOf(
+                setOf(
+                    TraitCapability.GROUND_WALKING,
+                    TraitCapability.ARBOREAL_LOCOMOTION,
+                ),
+            ),
+        ),
+    ),
+    FLEXIBLE_SPINE(
+        "flexible spine",
+        "A highly flexible axial skeleton lengthens the running stride and allows rapid twisting during pursuit, pouncing, and falls.",
+        listOf(
+            TraitEffect.PursuitSpeed(0.10),
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+    ),
+    HIGH_POUNCING(
+        "high pouncing",
+        "A high arcing leap uses sound and precise impact to pin prey hidden in shallow burrows, snow, or dense ground cover.",
+        listOf(
+            TraitEffect.BurrowerCaptureBonus(0.24),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.GROUND_WALKING)),
+        ),
+    ),
+    SPEAR_BILL(
+        "spear bill",
+        "A long pointed bill rapidly stabs or seizes small aquatic prey while its bearer wades or waits at the water's edge.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.FRESHWATER, 0.22),
+            TraitEffect.HabitatSupport(Habitat.COASTAL, 0.14),
+            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.34),
+            TraitEffect.CaptureAbility(0.15),
+            TraitEffect.MaintenanceCost(0.06),
         ),
     ),
     MOTION_TRACKING_SENSES(
@@ -1742,10 +1908,21 @@ enum class CommonTrait(
         "gliding membrane",
         "A broad skin membrane or flattened body turns height and forward speed into controlled unpowered flight.",
         listOf(
-            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.48),
-            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.32),
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.34),
+            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.18),
+            TraitEffect.PursuitSpeed(0.08),
+            TraitEffect.Defense(0.05),
+            TraitEffect.WaterRequirement(0.02),
+            TraitEffect.MaintenanceCost(0.07),
+        ),
+        group = TraitGroup.FLIGHT_STRUCTURE,
+        requirements = listOf(
+            TraitRequirement.AnyOf(
+                setOf(
+                    TraitCapability.ARBOREAL_LOCOMOTION,
+                    TraitCapability.AQUATIC_LOCOMOTION,
+                ),
+            ),
         ),
     ),
     WEB_SILK(
@@ -1827,6 +2004,19 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING
+    ),
+    REINFORCED_HIDE(
+        "reinforced hide",
+        "Dense, unusually tough skin beneath a fur coat resists tearing, punctures, and twisting bites without forming rigid armor.",
+        listOf(
+            TraitEffect.Defense(0.18),
+            TraitEffect.CaptureAbility(-0.02),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
+        ),
     ),
     PROTECTIVE_SHELL(
         "protective shell",
@@ -2022,6 +2212,7 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.12),
             TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.18),
             TraitEffect.CaptureAbility(0.18),
+            TraitEffect.LargerPreySizeClasses(1),
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.08),
         ),
@@ -2064,13 +2255,159 @@ enum class CommonTrait(
             ),
         ),
     ),
-    OPEN_COUNTRY_HERDING(
-        "open-country herding",
-        "Social groups rely on long sight lines, collective vigilance, and coordinated travel through open vegetation.",
+    OPEN_COUNTRY_PREFERENCE(
+        "open-country preference",
+        "Foraging, escape, and sensory behavior depend on long sight lines and unobstructed movement through sparse vegetation.",
         listOf(
             TraitEffect.DenseCanopyForagingPenalty(0.82),
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.06),
+            TraitEffect.MaintenanceCost(0.02),
+        ),
+    ),
+    HERDING_BEHAVIOR(
+        "herding behavior",
+        "Individuals maintain cohesive social groups that share vigilance and coordinate travel or defense.",
+        listOf(
             TraitEffect.Defense(0.08),
+            TraitEffect.ReproductionMultiplier(0.99),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+    ),
+    WHALESONG(
+        "whalesong",
+        "Long, structured sequences of low-frequency calls carry between distant individuals through open water.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.04),
             TraitEffect.MaintenanceCost(0.05),
+        ),
+        acousticSignal = AcousticSignal.WHALESONG,
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION))
+        )
+    ),
+    HOWLING_CALL(
+        "howling call",
+        "Long-range group calls coordinate dispersed pack members and advertise an occupied range.",
+        listOf(
+            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.05),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        acousticSignal = AcousticSignal.HOWL,
+    ),
+    BIRDSONG(
+        "birdsong",
+        "Learned or innately complex sequences communicate identity, territory, and reproductive quality.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.04),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        acousticSignal = AcousticSignal.BIRDSONG,
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.FEATHER_COVERING,
+                    TraitCapability.CHIRPING_VOCALIZATION,
+                ),
+            ),
+        ),
+    ),
+    CICADA_CHORUS(
+        "cicada chorus",
+        "Synchronized, high-intensity mating calls allow widely scattered adults to find one another during a short emergence.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.07),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        acousticSignal = AcousticSignal.CICADA_CHORUS,
+    ),
+    RATTLING_WARNING(
+        "rattling warning",
+        "A specialized vibrating structure produces a conspicuous warning that discourages accidental encounters with large animals.",
+        listOf(
+            TraitEffect.Defense(0.10),
+            TraitEffect.ReproductionMultiplier(0.98),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+        acousticSignal = AcousticSignal.RATTLE,
+    ),
+    ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.ROAR),
+    TRUMPETING_CALL("trumpeting call", "A loud trumpet communicates alarm, excitement, and identity between social group members.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRUMPET),
+    BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BELLOW),
+    BLEATING_CALL("bleating call", "A nasal bleat maintains contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BLEAT),
+    GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GRUNT),
+    HONKING_CALL("honking call", "A loud honk maintains contact within a flock and during coordinated flight.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HONK),
+    BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUGLE),
+    CROAKING_CALL("croaking call", "Repeated croaks advertise identity and reproductive readiness near breeding sites.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROAK),
+    BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BRAY),
+    HOOTING_CALL("hooting call", "Resonant hoots carry identity and location through forests or darkness.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HOOT),
+    BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BARK),
+    GROWLING_CALL("growling call", "A low rough vocal warning signals agitation and readiness for close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GROWL),
+    SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.SCREECH),
+    QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
+    CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
+    TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
+    CHIRPING_CALL("chirping call", "Short high-pitched calls maintain contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CHIRP, capabilities = setOf(TraitCapability.CHIRPING_VOCALIZATION)),
+    MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
+    PURRING_CALL("purring call", "A quiet rhythmic vibration communicates close-range social state and contentment.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.PURR),
+    HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
+    IMITATIVE_VOCALIZATION("imitative vocalization", "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.", emptyList(), isCosmetic = true),
+    BOOMING_CALL(
+        "booming call",
+        "A resonant low-frequency display call carries between widely separated potential mates.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.04),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        acousticSignal = AcousticSignal.BOOM,
+    ),
+    DRUMMING_DISPLAY(
+        "drumming display",
+        "Repeated impacts against a resonant surface create a long-range territorial and courtship signal.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.02),
+        ),
+    ),
+    WHOOPING_CALL(
+        "whooping call",
+        "Long-range whoops recruit and coordinate members of a dispersed social hunting group.",
+        listOf(
+            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.03),
+            TraitEffect.Defense(0.02),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        acousticSignal = AcousticSignal.WHOOP,
+    ),
+    CLICK_WHISTLE_REPERTOIRE(
+        "click-and-whistle repertoire",
+        "Individually distinctive whistles and patterned clicks coordinate a complex mobile social group.",
+        listOf(
+            TraitEffect.Defense(0.03),
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        acousticSignal = AcousticSignal.CLICK_WHISTLE,
+    ),
+    SOUND_LURES(
+        "sound lures",
+        "Familiar calls are imitated or repurposed to draw acoustically responsive prey into striking distance.",
+        listOf(
+            TraitEffect.SoundLureCaptureBonus(0.22),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(TraitRequirement.HasAcousticSignal),
+    ),
+    DAM_BUILDING(
+        "dam-building behavior",
+        "Coordinated cutting, digging, and placement of durable material impounds flowing water and maintains a protected freshwater home range.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.FRESHWATER, 0.32),
+            TraitEffect.Defense(0.06),
+            TraitEffect.ReserveCapacity(0.08),
+            TraitEffect.NicheCompetitionSensitivity(0.82),
+            TraitEffect.ReproductionMultiplier(0.94),
+            TraitEffect.MaintenanceCost(0.11),
         ),
     ),
     SCHOOLING(

@@ -82,6 +82,12 @@ object EcologyCompiler {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
         }
         definition.traits.filterNot { it.isFoundation }.forEach { trait ->
+            if (trait.isCosmetic) {
+                require(trait.effects.isEmpty() && trait.relationships.isEmpty()) {
+                    "Cosmetic trait '${trait.displayName}' cannot provide simulation effects"
+                }
+                return@forEach
+            }
             val cost = trait.effects.filterIsInstance<TraitEffect.MaintenanceCost>().sumOf { it.fraction }
             require(cost != 0.0) {
                 "Non-foundation trait '${trait.displayName}' must have an explicit non-zero maintenance adjustment"

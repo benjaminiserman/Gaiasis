@@ -317,9 +317,26 @@ internal object FoodWebCompiler {
                 1.0
             }
         val pursuitInteraction = pursuitSupport > ambushSupport
+        val burrowerCaptureBonus =
+            if (pair.target.interactions.usesBurrowRefuge) {
+                pair.consumer.interactions.burrowerCaptureBonus
+            } else {
+                0.0
+            }
+        val soundLureCaptureBonus =
+            if (
+                pair.consumer.interactions.acousticSignalMask and
+                    pair.target.interactions.acousticSignalMask != 0L
+            ) {
+                pair.consumer.interactions.soundLureCaptureBonus
+            } else {
+                0.0
+            }
         val effectiveCapture =
             pair.consumer.interactions.captureAbility +
-                if (pursuitInteraction) pair.consumer.interactions.pursuitSpeed else 0.0
+                (if (pursuitInteraction) pair.consumer.interactions.pursuitSpeed else 0.0) +
+                burrowerCaptureBonus +
+                soundLureCaptureBonus
         val effectiveDefense =
             pair.target.interactions.defense +
                 if (pursuitInteraction) pair.target.interactions.pursuitSpeed else 0.0
@@ -363,6 +380,10 @@ internal object FoodWebCompiler {
     }
 
     private fun sizeCompatiblePredation(pair: SpeciesPair): Boolean {
+        val largerPreySizeClasses =
+            pair.target.sizeClass.ordinal - pair.consumer.sizeClass.ordinal
+        val cooperativeLargerPreyCompatible =
+            largerPreySizeClasses in 1..pair.consumer.interactions.largerPreySizeClasses
         val aquaticTinyPreyCompatible =
             pair.sharedAquaticHabitat &&
                 pair.consumer.sizeClass == SizeClass.MEDIUM &&
@@ -370,6 +391,7 @@ internal object FoodWebCompiler {
                 pair.sizeRatio <= 1_000_000.0
         return pair.sizeRatio in 0.25..1_000.0 ||
             (pair.target.sizeClass == SizeClass.SMALL && pair.sizeRatio <= 10_000.0) ||
+            cooperativeLargerPreyCompatible ||
             aquaticTinyPreyCompatible
     }
 

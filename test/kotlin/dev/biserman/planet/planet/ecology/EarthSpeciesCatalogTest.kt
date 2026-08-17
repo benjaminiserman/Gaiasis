@@ -35,6 +35,55 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `body engineering and feeding traits cover their representative mammals`() {
+        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
+        val beaver = species.getValue("north-american-beaver")
+        val withoutDam = beaver.copy(
+            id = "beaver-without-dam",
+            traits = beaver.traits - CommonTrait.DAM_BUILDING,
+        )
+        val compiled = EcologyCompiler.compile(listOf(beaver, withoutDam))
+
+        assertTrue(CommonTrait.DAM_BUILDING in beaver.traits)
+        assertTrue(
+            compiled.species.single { it.id == beaver.id }.lifeHistory.reserveCapacity >
+                compiled.species.single { it.id == withoutDam.id }.lifeHistory.reserveCapacity,
+        )
+        assertTrue(CommonTrait.GLIDING_MEMBRANE in species.getValue("sugar-glider").traits)
+        assertTrue(CommonTrait.SLENDER_BODY in species.getValue("red-fox").traits)
+        assertTrue(CommonTrait.BULKY_BODY in species.getValue("brown-bear").traits)
+        listOf("african-elephant", "walrus", "hippopotamus").forEach { id ->
+            assertTrue(CommonTrait.LONG_TUSKS in species.getValue(id).traits)
+        }
+        listOf(
+            "orca",
+            "nile-crocodile",
+            "american-alligator",
+            "great-white-shark",
+            "hippopotamus",
+            "spotted-hyena",
+        ).forEach { id ->
+            assertTrue(CommonTrait.STRONG_JAWS in species.getValue(id).traits)
+        }
+
+        listOf("common-raccoon", "white-nosed-coati", "kinkajou").forEach(species::getValue)
+        listOf(
+            "sable",
+            "sea-otter",
+            "wolverine",
+            "european-badger",
+            "honey-badger",
+            "stoat",
+            "north-american-river-otter",
+        ).forEach(species::getValue)
+        val honeyBadger = species.getValue("honey-badger")
+        assertTrue(CommonTrait.REINFORCED_HIDE in honeyBadger.traits)
+        assertTrue(CommonTrait.FUR in honeyBadger.traits)
+        assertTrue(CommonTrait.BULKY_BODY !in honeyBadger.traits)
+        assertTrue(CommonTrait.STRONG_JAWS !in honeyBadger.traits)
+    }
+
+    @Test
     fun `cnidarian body plans compile into distinct ecological roles`() {
         val definitions = EarthSpeciesCatalog.INVERTEBRATES.associateBy { it.id }
         val ecology = EcologyCompiler.compile(EarthSpeciesCatalog.ALL + InvariantSpecies.ALL)
@@ -568,7 +617,7 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `open country herding and benthic suction feeding cover matching animals`() {
+    fun `open country preference herding and benthic suction feeding cover matching animals`() {
         val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
         val openCountryHerders = setOf(
             "plains-zebra",
@@ -582,7 +631,8 @@ class EarthSpeciesCatalogTest {
 
         openCountryHerders.forEach { speciesId ->
             assertTrue(
-                CommonTrait.OPEN_COUNTRY_HERDING in requireNotNull(definitions[speciesId]).traits,
+                CommonTrait.OPEN_COUNTRY_PREFERENCE in requireNotNull(definitions[speciesId]).traits &&
+                    CommonTrait.HERDING_BEHAVIOR in requireNotNull(definitions[speciesId]).traits,
                 speciesId,
             )
         }
@@ -598,6 +648,99 @@ class EarthSpeciesCatalogTest {
         val carp = ecology.species.single { it.id == "common-carp" }
         assertTrue(carp.niche.supportFor(EcoStrategy.GENERALIST_FORAGING) > 0.0)
         assertEquals(0.0, carp.niche.supportFor(EcoStrategy.FILTER_FEEDING))
+    }
+
+    @Test
+    fun `new defensive movement social and signaling traits cover representative species`() {
+        val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
+
+        fun traitsOf(id: String) = requireNotNull(definitions[id]).traits
+
+        assertTrue(CommonTrait.REINFORCED_HIDE in traitsOf("honey-badger"))
+        assertTrue(CommonTrait.FUR in traitsOf("honey-badger"))
+        assertTrue(CommonTrait.ANTLERS in traitsOf("white-tailed-deer"))
+        assertTrue(CommonTrait.LARGE_HORN in traitsOf("blue-wildebeest"))
+        assertTrue(CommonTrait.RETRACTABLE_CLAWS in traitsOf("african-lion"))
+        assertTrue(CommonTrait.FLEXIBLE_SPINE in traitsOf("cheetah"))
+        assertTrue(CommonTrait.HIGH_POUNCING in traitsOf("red-fox"))
+        assertTrue(CommonTrait.OPEN_COUNTRY_PREFERENCE !in traitsOf("woodland-caribou"))
+        assertTrue(CommonTrait.HERDING_BEHAVIOR in traitsOf("woodland-caribou"))
+        assertTrue(CommonTrait.WHALESONG in traitsOf("humpback-whale"))
+        assertTrue(CommonTrait.HOWLING_CALL in traitsOf("gray-wolf"))
+        assertTrue(CommonTrait.CICADA_CHORUS in traitsOf("periodical-cicada"))
+        assertTrue(CommonTrait.RATTLING_WARNING in traitsOf("western-diamondback-rattlesnake"))
+        assertTrue(CommonTrait.SPEAR_BILL in traitsOf("red-crowned-crane"))
+        assertTrue(CommonTrait.SPEAR_BILL in traitsOf("great-blue-heron"))
+    }
+
+    @Test
+    fun `major animal acoustic repertoires are represented without blanket sound traits`() {
+        val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
+
+        fun traitsOf(id: String) = requireNotNull(definitions[id]).traits
+
+        mapOf(
+            "plains-zebra" to CommonTrait.BRAYING_CALL,
+            "spotted-hyena" to CommonTrait.WHOOPING_CALL,
+            "chimpanzee" to CommonTrait.HOOTING_CALL,
+            "cheetah" to CommonTrait.CHIRPING_CALL,
+            "orca" to CommonTrait.CLICK_WHISTLE_REPERTOIRE,
+            "weddell-seal" to CommonTrait.TRILLING_CALL,
+            "great-horned-owl" to CommonTrait.HOOTING_CALL,
+            "scarlet-macaw" to CommonTrait.IMITATIVE_VOCALIZATION,
+            "common-ostrich" to CommonTrait.BOOMING_CALL,
+            "mallard-duck" to CommonTrait.QUACKING_CALL,
+            "pileated-woodpecker" to CommonTrait.DRUMMING_DISPLAY,
+            "nile-crocodile" to CommonTrait.BELLOWING_CALL,
+            "king-cobra" to CommonTrait.HISSING_WARNING,
+        ).forEach { (speciesId, acousticTrait) ->
+            assertTrue(acousticTrait in traitsOf(speciesId), speciesId)
+        }
+
+        listOf("cheetah", "snow-leopard", "canada-lynx", "margay", "european-wildcat").forEach { speciesId ->
+            assertTrue(CommonTrait.MEOWING_CALL in traitsOf(speciesId), speciesId)
+            assertTrue(CommonTrait.PURRING_CALL in traitsOf(speciesId), speciesId)
+        }
+        listOf("margay", "european-wildcat", "northern-shrike").forEach { speciesId ->
+            assertTrue(CommonTrait.CHIRPING_CALL in traitsOf(speciesId), speciesId)
+            assertTrue(CommonTrait.SOUND_LURES in traitsOf(speciesId), speciesId)
+        }
+
+        val explicitlyAcoustic = setOf(
+            CommonTrait.WHALESONG,
+            CommonTrait.HOWLING_CALL,
+            CommonTrait.BIRDSONG,
+            CommonTrait.CICADA_CHORUS,
+            CommonTrait.RATTLING_WARNING,
+            CommonTrait.ROARING_CALL,
+            CommonTrait.TRUMPETING_CALL,
+            CommonTrait.BELLOWING_CALL,
+            CommonTrait.BLEATING_CALL,
+            CommonTrait.GRUNTING_CALL,
+            CommonTrait.HONKING_CALL,
+            CommonTrait.BUGLING_CALL,
+            CommonTrait.CROAKING_CALL,
+            CommonTrait.BRAYING_CALL,
+            CommonTrait.HOOTING_CALL,
+            CommonTrait.BARKING_CALL,
+            CommonTrait.GROWLING_CALL,
+            CommonTrait.SCREECHING_CALL,
+            CommonTrait.QUACKING_CALL,
+            CommonTrait.CROWING_CALL,
+            CommonTrait.TRILLING_CALL,
+            CommonTrait.CHIRPING_CALL,
+            CommonTrait.MEOWING_CALL,
+            CommonTrait.PURRING_CALL,
+            CommonTrait.HISSING_WARNING,
+            CommonTrait.IMITATIVE_VOCALIZATION,
+            CommonTrait.BOOMING_CALL,
+            CommonTrait.DRUMMING_DISPLAY,
+            CommonTrait.WHOOPING_CALL,
+            CommonTrait.CLICK_WHISTLE_REPERTOIRE,
+        )
+        listOf("three-toed-sloth", "galapagos-tortoise", "turkey-vulture").forEach { speciesId ->
+            assertTrue(traitsOf(speciesId).none(explicitlyAcoustic::contains), speciesId)
+        }
     }
 
     @Test

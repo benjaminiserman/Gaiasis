@@ -177,6 +177,29 @@ sealed interface TraitEffect {
     data class CaptureAbility(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeCaptureAbility(change)
     }
+    data class BodyMassMultiplier(val multiplier: Double) : TraitEffect {
+        init {
+            require(multiplier > 0.0)
+        }
+        override fun applyTo(context: SpeciesCompilationContext) =
+            context.multiplyBodyMass(multiplier)
+    }
+    data class LargerPreySizeClasses(val additionalClasses: Int) : TraitEffect {
+        init {
+            require(additionalClasses > 0)
+        }
+        override fun applyTo(context: SpeciesCompilationContext) =
+            context.expandLargerPreySizeClasses(additionalClasses)
+    }
+    data class BurrowerCaptureBonus(val change: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.changeBurrowerCaptureBonus(change)
+    }
+    data class SoundLureCaptureBonus(val change: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.changeSoundLureCaptureBonus(change)
+    }
+    data object BurrowRefuge : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.enableBurrowRefuge()
+    }
     data class PursuitSpeed(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitSpeed(change)
     }

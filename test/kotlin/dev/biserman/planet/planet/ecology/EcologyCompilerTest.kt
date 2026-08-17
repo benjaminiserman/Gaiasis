@@ -71,6 +71,28 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `body build adjusts mass without changing size class`() {
+        val ordinary = predator("ordinary-build", SizeClass.MEDIUM)
+        val slender = predator("slender-build", SizeClass.MEDIUM).copy(
+            traits = predator("slender-build", SizeClass.MEDIUM).traits +
+                CommonTrait.SLENDER_BODY,
+        )
+        val bulky = predator("bulky-build", SizeClass.MEDIUM).copy(
+            traits = predator("bulky-build", SizeClass.MEDIUM).traits +
+                CommonTrait.BULKY_BODY,
+        )
+        val ecology = EcologyCompiler.compile(listOf(ordinary, slender, bulky))
+
+        fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
+
+        assertEquals(SizeClass.MEDIUM.typicalMassKg, compiled(ordinary.id).physiology.massKg)
+        assertEquals(SizeClass.MEDIUM.typicalMassKg * 0.5, compiled(slender.id).physiology.massKg)
+        assertEquals(SizeClass.MEDIUM.typicalMassKg * 2.0, compiled(bulky.id).physiology.massKg)
+        assertEquals(SizeClass.MEDIUM, compiled(slender.id).sizeClass)
+        assertEquals(SizeClass.MEDIUM, compiled(bulky.id).sizeClass)
+    }
+
+    @Test
     fun `motile species require exactly one thermal strategy`() {
         val invalid = SpeciesDefinition(
             id = "invalid",
@@ -158,6 +180,20 @@ class EcologyCompilerTest {
                 }
 
         assertTrue(failures.isEmpty(), failures.joinToString(separator = "\n"))
+    }
+
+    @Test
+    fun `birdsong requires both feathers and a chirping call`() {
+        val base = predator("singer")
+        val featheredSinger = base.copy(
+            traits = base.traits + CommonTrait.FEATHERS + CommonTrait.BIRDSONG,
+        )
+        val chirpingSinger = featheredSinger.copy(
+            traits = featheredSinger.traits + CommonTrait.CHIRPING_CALL,
+        )
+
+        assertTrue(TraitDependencies.unmetRequirements(featheredSinger).isNotEmpty())
+        assertTrue(TraitDependencies.unmetRequirements(chirpingSinger).isEmpty())
     }
 
     @Test
@@ -759,6 +795,50 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `cooperative hunters can attack prey one size class larger`() {
+        val ordinaryMedium = predator("ordinary-medium", SizeClass.MEDIUM)
+        val cooperativeMedium = predator("cooperative-medium", SizeClass.MEDIUM).copy(
+            traits = predator("cooperative-medium", SizeClass.MEDIUM).traits +
+                CommonTrait.COOPERATIVE_HUNTING,
+        )
+        val cooperativeLarge = predator("cooperative-large", SizeClass.LARGE).copy(
+            traits = predator("cooperative-large", SizeClass.LARGE).traits +
+                CommonTrait.COOPERATIVE_HUNTING,
+        )
+        val largePrey = terrestrialPrey("large-prey", SizeClass.LARGE)
+        val hugePrey = terrestrialPrey("huge-prey", SizeClass.HUGE)
+        val colossalPrey = terrestrialPrey("colossal-prey", SizeClass.COLOSSAL)
+        val ecology = EcologyCompiler.compile(
+            listOf(
+                ordinaryMedium,
+                cooperativeMedium,
+                cooperativeLarge,
+                largePrey,
+                hugePrey,
+                colossalPrey,
+            ),
+        )
+
+        fun interaction(consumerId: String, targetId: String): InteractionKind =
+            ecology.interactions.get(
+                ecology.speciesIndex(consumerId),
+                ecology.speciesIndex(targetId),
+            ).kind
+
+        val compiledCooperativeMedium =
+            ecology.species[ecology.speciesIndex(cooperativeMedium.id)]
+        assertEquals(1, compiledCooperativeMedium.interactions.largerPreySizeClasses)
+        assertTrue(compiledCooperativeMedium.niche.supportFor(Habitat.LAND_SURFACE) > 0.0)
+        assertTrue(
+            compiledCooperativeMedium.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0,
+        )
+        assertEquals(InteractionKind.NONE, interaction(ordinaryMedium.id, largePrey.id))
+        assertEquals(InteractionKind.PREDATION, interaction(cooperativeMedium.id, largePrey.id))
+        assertEquals(InteractionKind.PREDATION, interaction(cooperativeLarge.id, hugePrey.id))
+        assertEquals(InteractionKind.NONE, interaction(cooperativeMedium.id, colossalPrey.id))
+    }
+
+    @Test
     fun `terrestrial grazers consume the modeled carpet plant population`() {
         val grazer = predator("grazer", SizeClass.SMALL).copy(
             traits = listOf(
@@ -810,6 +890,88 @@ class EcologyCompilerTest {
             assertEquals(attack, interaction.targetLossRate, 1.0e-12)
             assertEquals(attack * 1.30, interaction.consumerGainRate, 1.0e-12)
         }
+    }
+
+    @Test
+    fun `high pouncing increases predation only against burrow users`() {
+        val pouncer = predator("pouncer", SizeClass.SMALL).copy(
+            traits = predator("pouncer", SizeClass.SMALL).traits + CommonTrait.HIGH_POUNCING,
+        )
+        val surfacePrey = predator("surface-prey", SizeClass.SMALL).copy(
+            traits = predator("surface-prey", SizeClass.SMALL).traits
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                CommonTrait.GRAZING_MOUTHPARTS,
+        )
+        val burrowingPrey = surfacePrey.copy(
+            id = "burrowing-prey",
+            displayName = "burrowing-prey",
+            traits = surfacePrey.traits + CommonTrait.SUBTERRANEAN_BURROWING,
+        )
+        val ecology = EcologyCompiler.compile(listOf(pouncer, surfacePrey, burrowingPrey))
+        val pouncerIndex = ecology.speciesIndex(pouncer.id)
+        val surfaceAttack = ecology.interactions
+            .get(pouncerIndex, ecology.speciesIndex(surfacePrey.id))
+            .targetLossRate
+        val burrowAttack = ecology.interactions
+            .get(pouncerIndex, ecology.speciesIndex(burrowingPrey.id))
+            .targetLossRate
+
+        assertTrue(burrowAttack > surfaceAttack)
+        assertTrue(ecology.species.single { it.id == burrowingPrey.id }.interactions.usesBurrowRefuge)
+        assertTrue(!ecology.species.single { it.id == surfacePrey.id }.interactions.usesBurrowRefuge)
+    }
+
+    @Test
+    fun `sound lures increase capture only against prey sharing a call`() {
+        val luringPredator = predator("sound-lurer", SizeClass.SMALL).copy(
+            traits = predator("sound-lurer", SizeClass.SMALL).traits +
+                listOf(CommonTrait.CHIRPING_CALL, CommonTrait.SOUND_LURES),
+        )
+        val preyBase = predator("prey-base", SizeClass.SMALL).copy(
+            traits = predator("prey-base", SizeClass.SMALL).traits
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                CommonTrait.GRAZING_MOUTHPARTS,
+        )
+        val chirpingPrey = preyBase.copy(
+            id = "chirping-prey",
+            displayName = "chirping prey",
+            traits = preyBase.traits + CommonTrait.CHIRPING_CALL,
+        )
+        val barkingPrey = preyBase.copy(
+            id = "barking-prey",
+            displayName = "barking prey",
+            traits = preyBase.traits + CommonTrait.BARKING_CALL,
+        )
+        val ecology = EcologyCompiler.compile(listOf(luringPredator, chirpingPrey, barkingPrey))
+        val predatorIndex = ecology.speciesIndex(luringPredator.id)
+        val sharedCallAttack = ecology.interactions
+            .get(predatorIndex, ecology.speciesIndex(chirpingPrey.id))
+            .targetLossRate
+        val differentCallAttack = ecology.interactions
+            .get(predatorIndex, ecology.speciesIndex(barkingPrey.id))
+            .targetLossRate
+
+        assertTrue(sharedCallAttack > differentCallAttack)
+    }
+
+    @Test
+    fun `cosmetic traits compile without changing phenotype parameters`() {
+        val ordinary = predator("ordinary")
+        val vocal = predator("vocal").copy(
+            traits = predator("vocal").traits + CommonTrait.ROARING_CALL,
+        )
+        val ordinaryCompiled = EcologyCompiler.compile(listOf(ordinary)).species.single()
+        val vocalCompiled = EcologyCompiler.compile(listOf(vocal)).species.single()
+
+        assertEquals(ordinaryCompiled.physiology, vocalCompiled.physiology)
+        assertEquals(ordinaryCompiled.environment, vocalCompiled.environment)
+        assertEquals(ordinaryCompiled.lifeHistory, vocalCompiled.lifeHistory)
+        assertEquals(
+            ordinaryCompiled.interactions,
+            vocalCompiled.interactions.copy(
+                acousticSignalMask = ordinaryCompiled.interactions.acousticSignalMask,
+            ),
+        )
     }
 
     @Test
@@ -874,6 +1036,10 @@ class EcologyCompilerTest {
             )
         }
         authoredTraits.filterNot { it.isFoundation }.forEach { trait ->
+            if (trait.isCosmetic) {
+                assertTrue(trait.effects.isEmpty(), "${trait.displayName} has cosmetic effects")
+                return@forEach
+            }
             assertTrue(
                 trait.effects.any { it is TraitEffect.MaintenanceCost && it.fraction != 0.0 },
                 "${trait.displayName} has no explicit non-zero maintenance adjustment",
@@ -949,6 +1115,23 @@ class EcologyCompilerTest {
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.BUOYANCY_BLADDER,
+        ),
+    )
+
+    private fun terrestrialPrey(
+        id: String,
+        sizeClass: SizeClass,
+    ) = SpeciesDefinition(
+        id = id,
+        displayName = id,
+        sizeClass = sizeClass,
+        motile = true,
+        traits = listOf(
+            CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.ENDOTHERMY,
+            CommonTrait.VIVIPARITY,
+            CommonTrait.WALKING_LIMBS,
+            CommonTrait.GRAZING_MOUTHPARTS,
         ),
     )
 

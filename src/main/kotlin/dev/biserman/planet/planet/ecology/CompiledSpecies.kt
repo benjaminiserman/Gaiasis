@@ -74,6 +74,11 @@ data class LifeHistoryProfile(
 
 data class InteractionProfile(
     val captureAbility: Double,
+    val largerPreySizeClasses: Int,
+    val burrowerCaptureBonus: Double,
+    val usesBurrowRefuge: Boolean,
+    val acousticSignalMask: Long,
+    val soundLureCaptureBonus: Double,
     val pursuitSpeed: Double,
     val defense: Double,
     val aposematicColoration: Boolean,
