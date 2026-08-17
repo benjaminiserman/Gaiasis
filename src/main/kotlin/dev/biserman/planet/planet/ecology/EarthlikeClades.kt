@@ -507,8 +507,6 @@ object EarthlikeClades {
         CommonTrait.FLOWERS,
     )
 
-
-
     fun SpeciesDefinition.extend(
         name: String,
         sizeClass: SizeClass,

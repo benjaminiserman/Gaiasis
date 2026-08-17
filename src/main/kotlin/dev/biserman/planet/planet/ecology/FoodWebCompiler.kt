@@ -326,7 +326,7 @@ internal object FoodWebCompiler {
         val soundLureCaptureBonus =
             if (
                 pair.consumer.interactions.acousticSignalMask and
-                    pair.target.interactions.acousticSignalMask != 0L
+                pair.target.interactions.acousticSignalMask != 0L
             ) {
                 pair.consumer.interactions.soundLureCaptureBonus
             } else {

@@ -161,6 +161,7 @@ sealed interface SpeciesTrait {
         get() = false
     val invariantOnly: Boolean
         get() = false
+
     /** Cosmetic traits document recognizable biology without changing simulation outcomes. */
     val isCosmetic: Boolean
         get() = false
@@ -2347,7 +2348,14 @@ enum class CommonTrait(
     QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
     CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
     TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
-    CHIRPING_CALL("chirping call", "Short high-pitched calls maintain contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CHIRP, capabilities = setOf(TraitCapability.CHIRPING_VOCALIZATION)),
+    CHIRPING_CALL(
+        "chirping call",
+        "Short high-pitched calls maintain contact between companions, parents, and young.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.CHIRP,
+        capabilities = setOf(TraitCapability.CHIRPING_VOCALIZATION)
+    ),
     MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
     PURRING_CALL("purring call", "A quiet rhythmic vibration communicates close-range social state and contentment.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.PURR),
     HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
