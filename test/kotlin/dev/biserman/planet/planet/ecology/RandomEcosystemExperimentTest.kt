@@ -107,7 +107,9 @@ class RandomEcosystemExperimentTest {
                 "RANDOM_ECOSYSTEM_1000Y seed=${result.seed} climate=${result.climate.presetId} " +
                     "land=${result.tile.isLand} survivors=${result.survivingSpecies.size}/${result.finalBiomassKg.size} " +
                     "dominant=$dominantSurvivors " +
-                    "climate_mismatch_losses=${climateMismatchLosses.joinToString("|")} " +
+                    "climate_mismatch_losses=${climateMismatchLosses.joinToString("|") { species ->
+                        "$species:${"%.3f".format(result.maximumAnnualClimateFitness.getValue(species))}"
+                    }} " +
                     "losses=${result.extinctionSeasons.entries.joinToString("|") { "${it.key}@${it.value}" }}",
             )
             assertTrue(result.anomalies.isEmpty(), "Seed ${result.seed}: ${result.anomalies}")

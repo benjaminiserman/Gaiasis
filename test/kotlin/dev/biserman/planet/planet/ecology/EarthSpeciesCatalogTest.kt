@@ -63,9 +63,64 @@ class EarthSpeciesCatalogTest {
         assertTrue(CommonTrait.BENTHIC_BODY in species.getValue("european-plaice").traits)
         assertTrue(CommonTrait.SCHOOLING in species.getValue("pacific-herring").traits)
         assertTrue(CommonTrait.MOLTING_EXOSKELETON in species.getValue("pea-aphid").traits)
-        assertTrue(CommonTrait.HOST_PENETRATING_FILAMENTS in species.getValue("wheat-stem-rust").traits)
         assertTrue(CommonTrait.EPIPHYTIC_ROOTS in species.getValue("epiphytic-orchid").traits)
         assertTrue(CommonTrait.CUSHION_GROWTH in species.getValue("moss-campion").traits)
+        listOf("sphagnum-moss", "reindeer-lichen").forEach { id ->
+            assertTrue(CommonTrait.SURFACE_HOLDFAST in species.getValue(id).traits)
+            assertTrue(CommonTrait.INTERWOVEN_MAT in species.getValue(id).traits)
+            assertTrue(CommonTrait.ROOTED_BODY !in species.getValue(id).traits)
+        }
+        assertTrue(CommonTrait.ROOTED_BODY in species.getValue("moss-campion").traits)
+    }
+
+    @Test
+    fun `trees use authored photosynthetic structures`() {
+        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
+        val conifers = listOf(
+            "coast-redwood",
+            "scots-pine",
+            "siberian-larch",
+            "himalayan-juniper",
+            "lodgepole-pine",
+            "saharan-cypress",
+            "black-spruce",
+        )
+        val broadLeafEvergreens = listOf("red-mangrove", "eucalyptus-tree", "strangler-fig")
+        val droughtDeciduous = listOf("african-baobab", "umbrella-thorn-acacia")
+
+        conifers.forEach { id ->
+            assertTrue(CommonTrait.NEEDLE_LEAVES in species.getValue(id).traits)
+            assertTrue(CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits)
+        }
+        broadLeafEvergreens.forEach { id ->
+            assertTrue(CommonTrait.LARGE_EVERGREEN_LEAVES in species.getValue(id).traits)
+            assertTrue(CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits)
+        }
+        droughtDeciduous.forEach { id ->
+            assertTrue(CommonTrait.DROUGHT_DECIDUOUS_LEAVES in species.getValue(id).traits)
+            assertTrue(CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits)
+        }
+        assertTrue(CommonTrait.DROUGHT_DECIDUOUS_LEAVES !in species.getValue("saharan-cypress").traits)
+    }
+
+    @Test
+    fun `earthlike sessile clades cover common plant and fungal forms`() {
+        val clades = listOf(
+            EarthlikeClades.forb,
+            EarthlikeClades.grass,
+            EarthlikeClades.vine,
+            EarthlikeClades.broadLeafTree,
+            EarthlikeClades.mold,
+            EarthlikeClades.mushroom,
+        )
+
+        EcologyCompiler.compile(clades)
+        assertTrue(clades.all { CommonTrait.TERRESTRIAL_OVOSPORE in it.traits })
+        assertTrue(CommonTrait.LARGE_EVERGREEN_LEAVES in EarthlikeClades.broadLeafTree.traits)
+        assertTrue(CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mold.traits)
+        assertTrue(CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mushroom.traits)
+        assertTrue(CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mold.traits)
+        assertTrue(CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mushroom.traits)
     }
 
     @Test

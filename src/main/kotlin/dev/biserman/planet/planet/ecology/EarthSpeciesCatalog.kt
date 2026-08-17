@@ -58,6 +58,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SWEAT_GLANDS,
             CommonTrait.OPEN_COUNTRY_HERDING,
             CommonTrait.REGIONAL_MIGRATION,
+            CommonTrait.CAMOUFLAGE_PATTERN,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -351,7 +352,6 @@ object EarthSpeciesCatalog {
             SizeClass.LARGE,
             CommonTrait.ENDOTHERMY,
             CommonTrait.WALKING_LIMBS,
-            CommonTrait.SWIFT_LEGS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.RUMINANT_STOMACH,
             CommonTrait.DENSE_UNDERCOAT,
@@ -2074,7 +2074,7 @@ object EarthSpeciesCatalog {
             "coast redwood",
             SizeClass.COLOSSAL,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.DEEP_ROOT_SYSTEM,
@@ -2097,7 +2097,7 @@ object EarthSpeciesCatalog {
             "scots pine",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2107,7 +2107,6 @@ object EarthSpeciesCatalog {
             "african baobab",
             SizeClass.HUGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FRUIT_BEARING,
@@ -2121,7 +2120,6 @@ object EarthSpeciesCatalog {
             "umbrella thorn acacia",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FRUIT_BEARING,
@@ -2135,7 +2133,7 @@ object EarthSpeciesCatalog {
             "red mangrove",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FLOWERS,
@@ -2189,7 +2187,7 @@ object EarthSpeciesCatalog {
             "eucalyptus tree",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FLOWERS,
@@ -2211,7 +2209,7 @@ object EarthSpeciesCatalog {
             "strangler fig",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.SHADE_FRONDS,
@@ -2235,7 +2233,9 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            CommonTrait.ROOTED_BODY,
+            CommonTrait.SURFACE_HOLDFAST,
+            CommonTrait.INTERWOVEN_MAT,
+            CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SHADE_FRONDS
         ),
         sessile(
@@ -2293,7 +2293,8 @@ object EarthSpeciesCatalog {
             // chlorophyll rather than a pale photosynthetic pigment.
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            CommonTrait.ROOTED_BODY,
+            CommonTrait.SURFACE_HOLDFAST,
+            CommonTrait.INTERWOVEN_MAT,
             CommonTrait.ABSORPTIVE_FILAMENTS,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.WHOLE_BODY_ANHYDROBIOSIS
@@ -2313,7 +2314,7 @@ object EarthSpeciesCatalog {
             "siberian larch",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2324,7 +2325,7 @@ object EarthSpeciesCatalog {
             "himalayan juniper",
             SizeClass.MEDIUM,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2335,7 +2336,7 @@ object EarthSpeciesCatalog {
             "lodgepole pine",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2357,18 +2358,17 @@ object EarthSpeciesCatalog {
             "saharan cypress",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.DEEP_ROOT_SYSTEM,
-            CommonTrait.WAXY_CUTICLE,
-            CommonTrait.DROUGHT_DECIDUOUS_LEAVES
+            CommonTrait.WAXY_CUTICLE
         ),
         sessile(
             "black spruce",
             SizeClass.LARGE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2523,16 +2523,21 @@ object EarthSpeciesCatalog {
         name: String,
         sizeClass: SizeClass,
         vararg adaptations: SpeciesTrait,
-    ) = SpeciesDefinition(
-        id = idFromName(name),
-        displayName = name,
-        sizeClass = sizeClass,
-        motile = false,
-        traits = listOf(
-            CommonTrait.TEMPERATE_BIOCHEMISTRY,
-            defaultOvosporeTrait(adaptations),
-        ) + adaptations,
-    )
+    ): SpeciesDefinition {
+        val reproduction =
+            if (adaptations.any { TraitCapability.REPRODUCTION in it.capabilities }) {
+                emptyList()
+            } else {
+                listOf(defaultOvosporeTrait(adaptations))
+            }
+        return SpeciesDefinition(
+            id = idFromName(name),
+            displayName = name,
+            sizeClass = sizeClass,
+            motile = false,
+            traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + reproduction + adaptations,
+        )
+    }
 
     private fun defaultOvosporeTrait(adaptations: Array<out SpeciesTrait>): CommonTrait {
         val supportedHabitats = adaptations

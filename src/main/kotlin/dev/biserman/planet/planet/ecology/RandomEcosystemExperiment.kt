@@ -108,6 +108,13 @@ object RandomEcosystemExperiment {
             selected = sampledCatalogSpecies,
             availableTargets = candidates,
         )
+        val annuallySuitableNicheBySpeciesId = selectedCatalogSpecies.associate { species ->
+            species.id to EcologySuitability.evaluate(
+                species,
+                catalogEcology,
+                annualEnvironments,
+            ).nicheIndex
+        }
         val selectedDefinitionsById = EarthSpeciesCatalog.ALL.associateBy { it.id }
         val selectedDefinitions = selectedCatalogSpecies.map { selectedDefinitionsById.getValue(it.id) }
         val selectedUsesAerialFilterFeeding = selectedCatalogSpecies.any { species ->
@@ -120,7 +127,14 @@ object RandomEcosystemExperiment {
         val ecology = EcologyCompiler.compile(definitions)
         val runtime = EcologyRuntime(ecology)
         val nicheBySpecies = ecology.species.associate { species ->
-            val nicheIndex = NicheSelection.choose(species, ecology, initialEnvironment)
+            val preservePelagicAerialResidency =
+                !tile.isLand && species.environment.pelagicAerialResident
+            val nicheIndex = if (preservePelagicAerialResidency) {
+                NicheSelection.choose(species, ecology, initialEnvironment)
+            } else {
+                annuallySuitableNicheBySpeciesId[species.id]
+                    ?: NicheSelection.choose(species, ecology, initialEnvironment)
+            }
             require(nicheIndex >= 0) { "No viable niche for ${species.displayName}" }
             species.index to nicheIndex
         }

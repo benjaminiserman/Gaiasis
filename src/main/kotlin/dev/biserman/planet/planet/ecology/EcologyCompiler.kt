@@ -75,8 +75,8 @@ object EcologyCompiler {
         require(definition.motile || TraitGroup.THERMOREGULATION !in traitsByGroup) {
             "${definition.displayName} is not motile but has a motile thermal strategy"
         }
-        require(!definition.motile || CommonTrait.ROOTED_BODY !in commonTraits) {
-            "${definition.displayName} is motile and cannot have a rooted body; use a locomotion trait"
+        require(!definition.motile || TraitGroup.TERRESTRIAL_ATTACHMENT !in traitsByGroup) {
+            "${definition.displayName} is motile and cannot use a sessile terrestrial attachment; use a locomotion trait"
         }
         require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"

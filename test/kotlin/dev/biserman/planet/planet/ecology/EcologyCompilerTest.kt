@@ -383,6 +383,53 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `surface-attached sessile life does not require roots`() {
+        val surfaceAttached = producer(
+            "surface-attached-producer",
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.PHOTOSYNTHETIC_SURFACE,
+                CommonTrait.SURFACE_HOLDFAST,
+                CommonTrait.INTERWOVEN_MAT,
+            ),
+        )
+
+        val compiled = EcologyCompiler.compile(listOf(surfaceAttached)).species.single()
+
+        assertTrue(CommonTrait.ROOTED_BODY !in surfaceAttached.traits)
+        assertTrue(compiled.niche.supportFor(Habitat.LAND_SURFACE) > 0.0)
+        assertTrue(TraitDependencies.unmetRequirements(surfaceAttached).isEmpty())
+    }
+
+    @Test
+    fun `leaf structures independently provide photosynthetic tissue`() {
+        val structures = listOf(
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.LARGE_EVERGREEN_LEAVES,
+            CommonTrait.NEEDLE_LEAVES,
+            CommonTrait.DROUGHT_DECIDUOUS_LEAVES,
+        )
+
+        structures.forEach { structure ->
+            assertEquals(TraitGroup.PHOTOSYNTHETIC_STRUCTURE, structure.group)
+            assertTrue(TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities)
+
+            val definition = producer(
+                "${structure.name.lowercase()}-producer",
+                traits = listOf(
+                    CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                    structure,
+                    CommonTrait.ROOTED_BODY,
+                ),
+            )
+            val compiled = EcologyCompiler.compile(listOf(definition)).species.single()
+
+            assertTrue(TraitDependencies.unmetRequirements(definition).isEmpty())
+            assertTrue(compiled.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0)
+        }
+    }
+
+    @Test
     fun `habitat and strategy jointly derive the strongest niche`() {
         val species = SpeciesDefinition(
             id = "cloud-sieve",
