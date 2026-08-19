@@ -518,6 +518,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.WHALESONG,
             CommonTrait.INFREQUENT_REPRODUCTION,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.BLUE_CAMOUFLAGE
         ),
         animal(
@@ -532,6 +533,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.FAT_RESERVES,
             CommonTrait.WHALESONG,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(

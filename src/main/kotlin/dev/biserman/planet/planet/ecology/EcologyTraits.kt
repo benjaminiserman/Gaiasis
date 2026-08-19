@@ -463,7 +463,7 @@ enum class CommonTrait(
         "Reproductive events occur only at long intervals, conserving routine reproductive investment while sharply limiting population growth.",
         listOf(
             TraitEffect.ReproductionMultiplier(0.35),
-            TraitEffect.MaintenanceCost(-0.05),
+            TraitEffect.MaintenanceCost(-0.11),
             TraitEffect.Defense(0.01)
         ),
     ),
