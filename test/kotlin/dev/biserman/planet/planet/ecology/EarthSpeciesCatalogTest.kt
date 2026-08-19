@@ -193,6 +193,39 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `catalog assigns limb regrowth to regenerative animals`() {
+        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
+        val regenerativeSpecies =
+            listOf(
+                "axolotl",
+                "common-mudpuppy",
+                "japanese-giant-salamander",
+                "common-octopus",
+                "giant-squid",
+                "crown-of-thorns-starfish",
+                "blue-crab",
+                "american-lobster",
+                "cleaner-shrimp",
+                "common-walkingstick",
+            )
+
+        regenerativeSpecies.forEach { id ->
+            assertTrue(CommonTrait.LIMB_REGROWTH in species.getValue(id).traits, id)
+        }
+
+        val axolotl = species.getValue("axolotl")
+        val withoutRegrowth = axolotl.copy(
+            id = "axolotl-without-limb-regrowth",
+            traits = axolotl.traits - CommonTrait.LIMB_REGROWTH,
+        )
+        val compiled = EcologyCompiler.compile(listOf(axolotl, withoutRegrowth)).species
+
+        assertTrue(compiled[0].interactions.defense > compiled[1].interactions.defense)
+        assertTrue(compiled[0].lifeHistory.seasonalReproduction < compiled[1].lifeHistory.seasonalReproduction)
+        assertTrue(compiled[0].physiology.maintenanceDemand > compiled[1].physiology.maintenanceDemand)
+    }
+
+    @Test
     fun `trees use authored photosynthetic structures`() {
         val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
         val conifers = listOf(

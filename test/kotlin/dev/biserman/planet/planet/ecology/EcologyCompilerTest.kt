@@ -400,6 +400,28 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `limb regrowth requires motile appendages`() {
+        val invalid = SpeciesDefinition(
+            id = "limbless-regenerator",
+            displayName = "Limbless regenerator",
+            sizeClass = SizeClass.SMALL,
+            motile = true,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.UNDULATING_BODY,
+                CommonTrait.LIMB_REGROWTH,
+            ),
+        )
+
+        val failure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+
+        assertTrue(failure.message.orEmpty().contains("requires MOTILE_APPENDAGES"))
+    }
+
+    @Test
     fun `deep diving accepts either underwater respiration or breath holding`() {
         val base = SpeciesDefinition(
             id = "deep-diver",

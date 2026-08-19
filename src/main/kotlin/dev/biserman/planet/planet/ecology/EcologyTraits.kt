@@ -45,6 +45,7 @@ enum class TraitCapability {
     FEATHER_COVERING,
     GROUND_WALKING,
     ARBOREAL_LOCOMOTION,
+    MOTILE_APPENDAGES,
     ACTIVE_FLIGHT,
     SOCIAL_COLONY,
     NECTAR_FEEDING,
@@ -205,7 +206,7 @@ fun broodParasitismOf(
     TargetedRelationshipTrait(
         displayName = "$hostDisplayName brood host",
         description =
-        "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+            "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
         relationships = listOf(
             RelationshipEffect.RequiresTarget(
                 SpeciesSelector.ExactSpecies(hostSpeciesId),
@@ -467,6 +468,14 @@ enum class CommonTrait(
             TraitEffect.Defense(0.01)
         ),
     ),
+    FREQUENT_REPRODUCTION(
+        "infrequent reproduction",
+        "Reproductive events occur only at long intervals, conserving routine reproductive investment while sharply limiting population growth.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.35),
+            TraitEffect.MaintenanceCost(0.15)
+        ),
+    ),
     TERRESTRIAL_OVOSPORE(
         "terrestrial ovospore",
         "A seed, spore, or egg develops outside its parent in a terrestrial environment and can be guarded or carried before hatching or germination.",
@@ -676,7 +685,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
-        capabilities = setOf(TraitCapability.GROUND_WALKING),
+        capabilities = setOf(
+            TraitCapability.GROUND_WALKING,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     UNDULATING_BODY(
         "undulating body",
@@ -709,6 +721,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
     ),
     ENLARGED_CARDIOPULMONARY_SYSTEM(
         "enlarged heart and lungs",
@@ -752,7 +765,10 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.52),
             TraitEffect.MaintenanceCost(0.10),
         ),
-        capabilities = setOf(TraitCapability.AQUATIC_LOCOMOTION),
+        capabilities = setOf(
+            TraitCapability.AQUATIC_LOCOMOTION,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     GILLS(
         "gills",
@@ -866,6 +882,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.54),
             TraitEffect.MaintenanceCost(0.11),
         ),
+        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
     ),
     WADING_LIMBS(
         "wading limbs",
@@ -878,7 +895,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.09),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
-        capabilities = setOf(TraitCapability.GROUND_WALKING),
+        capabilities = setOf(
+            TraitCapability.GROUND_WALKING,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     CLIMBING_LIMBS(
         "climbing limbs",
@@ -888,7 +908,10 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.03),
             TraitEffect.MaintenanceCost(0.08),
         ),
-        capabilities = setOf(TraitCapability.ARBOREAL_LOCOMOTION),
+        capabilities = setOf(
+            TraitCapability.ARBOREAL_LOCOMOTION,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     STICKY_FEET(
         "sticky feet",
@@ -1031,6 +1054,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.05),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
     ),
     SUBSTRATE_HOLDFAST(
         "aquatic holdfast",
@@ -1102,7 +1126,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.24),
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
-        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
+        capabilities = setOf(
+            TraitCapability.ACTIVE_FLIGHT,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
         requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
     ),
     MEMBRANOUS_WINGS(
@@ -1116,7 +1143,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.24),
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
-        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
+        capabilities = setOf(
+            TraitCapability.ACTIVE_FLIGHT,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     INSECTOID_WINGS(
         "insectoid wings",
@@ -1129,7 +1159,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.24),
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
-        capabilities = setOf(TraitCapability.ACTIVE_FLIGHT),
+        capabilities = setOf(
+            TraitCapability.ACTIVE_FLIGHT,
+            TraitCapability.MOTILE_APPENDAGES,
+        ),
     ),
     PELAGIC_SOARING_WINGS(
         "pelagic soaring wings",
@@ -1585,6 +1618,18 @@ enum class CommonTrait(
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
+    LIMB_REGROWTH(
+        "limb regrowth",
+        "Specialized wound responses rebuild a lost limb or equivalent motile appendage, restoring function over time at a substantial energetic cost.",
+        listOf(
+            TraitEffect.Defense(0.08),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.07),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.MOTILE_APPENDAGES)),
+        ),
+    ),
     WATER_RETENTIVE_SCALES(
         "water-retentive scales",
         "Overlapping low-permeability plates protect the body surface and slow water loss without requiring a continuously moist outer layer.",
@@ -1767,6 +1812,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.58),
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, -0.5),
+            TraitEffect.HabitatSupport(Habitat.FRESHWATER, -0.33),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.05),
         ),
@@ -2113,6 +2159,15 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
     ),
+    SLIMY_SKIN(
+        "slimy skin",
+        "Skin glands or accumulated compounds make the organism moderately distasteful or difficult to grasp.",
+        listOf(
+            TraitEffect.Defense(0.06),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+    ),
     INK_CLOUD(
         "defensive ink cloud",
         "A released cloud obscures vision and confuses chemical senses during escape.",
@@ -2143,6 +2198,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.12),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
     ),
     BIOLUMINESCENT_LURE(
         "bioluminescent lure",

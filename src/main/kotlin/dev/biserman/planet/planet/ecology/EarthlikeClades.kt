@@ -35,6 +35,7 @@ object EarthlikeClades {
         CommonTrait.ECTOTHERMY,
         CommonTrait.AMPHIBIOUS_LIMBS,
         CommonTrait.AQUATIC_OVOSPORE,
+        CommonTrait.FRESHWATER_OSMOREGULATION,
         ColorTrait.GREEN_CAMOUFLAGE,
     )
 
@@ -52,6 +53,7 @@ object EarthlikeClades {
         "bird",
         SizeClass.SMALL,
         CommonTrait.ENDOTHERMY,
+        CommonTrait.FEATHERS,
         CommonTrait.FEATHERED_WINGS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.OVOSPORE_NEST,
@@ -542,6 +544,158 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.SLOW_METABOLISM,
                 CommonTrait.PROTECTIVE_SHELL
+            )
+        ),
+        amphibian to listOf(
+            amphibian.extend(
+                "caecillian",
+                SizeClass.TINY,
+                CommonTrait.UNDULATING_BODY,
+                CommonTrait.SUBTERRANEAN_BURROWING,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.MAMMARY_GLANDS,
+                CommonTrait.VIVIPARITY,
+                CommonTrait.SLIMY_SKIN,
+                ColorTrait.PALE_CAMOUFLAGE
+            ),
+            amphibian.extend(
+                "frog",
+                SizeClass.TINY,
+                CommonTrait.LEAPING_LEGS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.PROJECTILE_TONGUE,
+                CommonTrait.CROAKING_CALL,
+                CommonTrait.SLIMY_SKIN
+            ),
+            amphibian.extend(
+                "salamander",
+                SizeClass.SMALL,
+                CommonTrait.SLIMY_SKIN,
+                CommonTrait.LIMB_REGROWTH,
+                CommonTrait.AMBUSH_MUSCULATURE
+            )
+        ),
+        bird to listOf(
+            bird.extend(
+                "ratite",
+                SizeClass.MEDIUM,
+                CommonTrait.WALKING_LIMBS,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.LONG_NECK,
+                CommonTrait.HERDING_BEHAVIOR,
+                minus = listOf(CommonTrait.FEATHERED_WINGS)
+            ),
+            bird.extend(
+                "fowl",
+                SizeClass.SMALL,
+                CommonTrait.WALKING_LIMBS,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.SEED_CRACKING_MOUTHPARTS,
+                CommonTrait.FREQUENT_REPRODUCTION,
+                CommonTrait.HERDING_BEHAVIOR
+            ),
+            bird.extend(
+                "crane",
+                SizeClass.MEDIUM,
+                CommonTrait.WADING_LIMBS,
+                CommonTrait.SEED_CRACKING_MOUTHPARTS,
+                CommonTrait.SPEAR_BILL,
+                CommonTrait.REGIONAL_MIGRATION,
+                CommonTrait.WATERPROOF_PLUMAGE,
+                ColorTrait.WHITE_CAMOUFLAGE
+            ),
+            bird.extend(
+                "gull",
+                SizeClass.SMALL,
+                CommonTrait.WADING_LIMBS,
+                CommonTrait.SCAVENGING_SENSES,
+                CommonTrait.WATERPROOF_PLUMAGE,
+                ColorTrait.PALE_CAMOUFLAGE
+            ),
+            bird.extend(
+                "hummingbird",
+                SizeClass.TINY,
+                CommonTrait.FAST_METABOLISM,
+                CommonTrait.NECTAR_SIPPING_TONGUE,
+                CommonTrait.POLLEN_CARRYING_SURFACES,
+                CommonTrait.LONG_MIGRATION,
+                CommonTrait.CHIRPING_CALL,
+                CommonTrait.CLICK_WHISTLE_REPERTOIRE
+            ),
+            bird.extend(
+                "penguin",
+                SizeClass.SMALL,
+                CommonTrait.AQUATIC_FLIPPERS,
+                CommonTrait.PROLONGED_BREATH_HOLDING,
+                CommonTrait.SEA_ICE_ROOKERY,
+                CommonTrait.MOTION_TRACKING_SENSES,
+                CommonTrait.INSULATED_BURROW_REFUGE,
+                CommonTrait.WATERPROOF_PLUMAGE,
+                CommonTrait.FAT_RESERVES,
+                CommonTrait.TRUMPETING_CALL,
+                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ),
+            bird.extend(
+                "owl",
+                SizeClass.SMALL,
+                CommonTrait.HOOKED_TALONS,
+                CommonTrait.MOTION_TRACKING_SENSES,
+                CommonTrait.HOOTING_CALL
+            ),
+            bird.extend(
+                "hawk",
+                SizeClass.SMALL,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.KEEN_EYESIGHT,
+                CommonTrait.HOOKED_TALONS
+            ),
+            bird.extend(
+                "vulture",
+                SizeClass.SMALL,
+                CommonTrait.SCAVENGING_SENSES,
+                CommonTrait.EXPANDABLE_CROP,
+                CommonTrait.LONG_MIGRATION
+            ),
+            bird.extend(
+                "hornbill",
+                SizeClass.SMALL,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.FRUIT_EATING_MOUTHPARTS,
+                CommonTrait.CROAKING_CALL,
+                ColorTrait.BLACK_CAMOUFLAGE
+            ),
+            bird.extend(
+                "woodpecker",
+                SizeClass.SMALL,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.DRUMMING_DISPLAY
+            ),
+            bird.extend(
+                "songbird",
+                SizeClass.TINY,
+                CommonTrait.SEED_CRACKING_MOUTHPARTS,
+                CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.CHIRPING_CALL,
+                CommonTrait.BIRDSONG,
+                CommonTrait.REGIONAL_MIGRATION
+            ),
+            bird.extend(
+                "parrot",
+                SizeClass.SMALL,
+                CommonTrait.SEED_CRACKING_MOUTHPARTS,
+                CommonTrait.CLIMBING_LIMBS,
+                CommonTrait.EXTENDED_PARENTAL_CARE,
+                CommonTrait.IMITATIVE_VOCALIZATION,
+            ),
+            bird.extend(
+                "corvid",
+                SizeClass.SMALL,
+                CommonTrait.SEED_CRACKING_MOUTHPARTS,
+                CommonTrait.SCAVENGING_SENSES,
+                CommonTrait.TOOL_MANIPULATION,
+                CommonTrait.CROAKING_CALL,
+                ColorTrait.BLACK_CAMOUFLAGE
             )
         )
     )

@@ -1244,13 +1244,11 @@ object EarthSpeciesCatalog {
             CommonTrait.ENDOTHERMY,
             CommonTrait.AQUATIC_FLIPPERS,
             CommonTrait.PROLONGED_BREATH_HOLDING,
-            CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             CommonTrait.SEA_ICE_ROOKERY,
             CommonTrait.BODY_CARRIED_OVOSPORES,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.WATERPROOF_PLUMAGE,
-            CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.FAT_RESERVES,
             CommonTrait.TRUMPETING_CALL,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
@@ -1709,6 +1707,7 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.CLIMBING_LIMBS,
             CommonTrait.PROJECTILE_TONGUE,
             CommonTrait.LEAPING_LEGS,
             CommonTrait.CROAKING_CALL,
@@ -1724,6 +1723,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GILLS,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -1734,6 +1734,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GILLS,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -1804,6 +1805,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
             CommonTrait.AMBUSH_MUSCULATURE,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -2126,6 +2128,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRASPING_TENTACLES,
             CommonTrait.SUCTION_CUPS,
             CommonTrait.INK_CLOUD,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.ADAPTIVE_CAMOUFLAGE
         ),
         animal(
@@ -2138,6 +2141,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRASPING_TENTACLES,
             CommonTrait.SUCTION_CUPS,
             CommonTrait.INK_CLOUD,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -2162,6 +2166,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TOXIC_SKIN,
             CommonTrait.REEF_BORING,
             CommonTrait.APOSEMATIC_COLORATION,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -2174,6 +2179,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CRUSHING_CLAWS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.MOLTING_EXOSKELETON,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.BLUE_CAMOUFLAGE
         ),
         animal(
@@ -2186,6 +2192,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.SLOW_GROWTH,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -2198,6 +2205,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.REEF_NESTING,
             CommonTrait.MOLTING_EXOSKELETON,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         sessile(
@@ -2488,6 +2496,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.CAMOUFLAGE_PATTERN,
             CommonTrait.MOLTING_EXOSKELETON,
+            CommonTrait.LIMB_REGROWTH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
