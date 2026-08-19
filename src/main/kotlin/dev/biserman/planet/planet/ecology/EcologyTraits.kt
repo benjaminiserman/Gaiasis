@@ -450,13 +450,21 @@ enum class CommonTrait(
             ),
         ),
     ),
-    LONG_INTERBIRTH_INTERVAL(
-        "long interbirth interval",
-        "Parents invest for years in each offspring before reproducing again, sharply limiting population growth even when food is abundant.",
+    SLOW_GROWTH(
+        "slow growth",
+        "New tissue and mature body mass accumulate gradually, reducing continual construction costs but slowing population biomass recovery.",
         listOf(
-            TraitEffect.Defense(0.01),
-            TraitEffect.ReproductionMultiplier(0.066),
-            TraitEffect.MaintenanceCost(-0.06),
+            TraitEffect.ReproductionMultiplier(0.72),
+            TraitEffect.MaintenanceCost(-0.08),
+        ),
+    ),
+    INFREQUENT_REPRODUCTION(
+        "infrequent reproduction",
+        "Reproductive events occur only at long intervals, conserving routine reproductive investment while sharply limiting population growth.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(0.35),
+            TraitEffect.MaintenanceCost(-0.05),
+            TraitEffect.Defense(0.01)
         ),
     ),
     TERRESTRIAL_OVOSPORE(
@@ -1748,7 +1756,7 @@ enum class CommonTrait(
         "frost-hardened tissues",
         "Seasonal changes in cell fluids and exposed tissues reduce damage from freezing without shifting the organism's entire biochemistry.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 12.0, hotterC = -1.0),
+            TraitEffect.TemperatureTolerance(colderC = 12.0, hotterC = -2.0),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.05),
         ),

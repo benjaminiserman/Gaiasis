@@ -38,7 +38,9 @@ object EarthSpeciesCatalog {
             CommonTrait.TRUMPETING_CALL,
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
-            CommonTrait.EXTENDED_PARENTAL_CARE
+            CommonTrait.EXTENDED_PARENTAL_CARE,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION
         ),
         animal(
             "giraffe",
@@ -170,6 +172,8 @@ object EarthSpeciesCatalog {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.BULKY_BODY,
             CommonTrait.LARGE_HORN,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
         ),
         animal(
             "western gorilla",
@@ -182,6 +186,8 @@ object EarthSpeciesCatalog {
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.BULKY_BODY,
             CommonTrait.HOOTING_CALL,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BLACK_CAMOUFLAGE
         ),
         animal(
@@ -194,6 +200,8 @@ object EarthSpeciesCatalog {
             CommonTrait.TOOL_MANIPULATION,
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.HOOTING_CALL,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BLACK_CAMOUFLAGE
         ),
         animal(
@@ -205,6 +213,8 @@ object EarthSpeciesCatalog {
             CommonTrait.TOOL_MANIPULATION,
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.HOOTING_CALL,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -220,6 +230,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BULKY_BODY,
             CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.WHITE_CAMOUFLAGE
         ),
         animal(
@@ -235,6 +246,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BULKY_BODY,
             CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -367,6 +379,8 @@ object EarthSpeciesCatalog {
                 displayName = "bamboo feeding specialization",
             ),
             CommonTrait.BLEATING_CALL,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -503,6 +517,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.FAT_RESERVES,
             CommonTrait.WHALESONG,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BLUE_CAMOUFLAGE
         ),
         animal(
@@ -528,7 +543,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.COOPERATIVE_HUNTING,
             CommonTrait.EXTENDED_PARENTAL_CARE,
-            CommonTrait.LONG_INTERBIRTH_INTERVAL,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             CommonTrait.BLUBBER,
             CommonTrait.ECHOLOCATION,
@@ -547,6 +562,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECHOLOCATION,
             CommonTrait.CLICK_WHISTLE_REPERTOIRE,
             CommonTrait.BLUBBER,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -610,6 +626,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BULKY_BODY,
             CommonTrait.LONG_TUSKS,
             CommonTrait.BELLOWING_CALL,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -620,6 +637,8 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
             CommonTrait.CHIRPING_CALL,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -1350,6 +1369,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SCAVENGING_SENSES,
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.LONG_MIGRATION,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -1390,6 +1410,7 @@ object EarthSpeciesCatalog {
             CommonTrait.EXPANDABLE_CROP,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.LONG_MIGRATION,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BLACK_CAMOUFLAGE
         ),
         animal(
@@ -1468,6 +1489,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
             CommonTrait.BOOMING_CALL,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.GREEN_CAMOUFLAGE
         ),
         animal(
@@ -1666,6 +1688,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.PROTECTIVE_SHELL,
             CommonTrait.FAT_RESERVES,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -1719,6 +1742,8 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.SUBTERRANEAN_BURROWING,
             CommonTrait.SEASONAL_TORPOR,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -1802,6 +1827,8 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.STRONG_JAWS,
             CommonTrait.FAT_RESERVES,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -1813,6 +1840,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             CommonTrait.GILL_PADS,
             CommonTrait.LONG_MIGRATION,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -1824,6 +1852,8 @@ object EarthSpeciesCatalog {
             CommonTrait.GILL_PADS,
             CommonTrait.ELECTRORECEPTION,
             CommonTrait.LONG_MIGRATION,
+            CommonTrait.SLOW_GROWTH,
+            CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -1980,6 +2010,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.COLD_ACTIVE_ENZYMES,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -1992,6 +2023,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.COLD_ACTIVE_ENZYMES,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.COUNTERSHADE_CAMOUFLAGE
         ),
         animal(
@@ -2032,6 +2064,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.ARMORED_HIDE,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.BROWN_CAMOUFLAGE
         ),
         animal(
@@ -2150,6 +2183,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CRUSHING_CLAWS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.MOLTING_EXOSKELETON,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         animal(
@@ -2357,7 +2391,8 @@ object EarthSpeciesCatalog {
             CommonTrait.REEF_BUILDING,
             CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
-            CommonTrait.WARM_WATER_ENZYMES
+            CommonTrait.WARM_WATER_ENZYMES,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "common sea fan",
@@ -2366,6 +2401,7 @@ object EarthSpeciesCatalog {
             CommonTrait.POLYP_BODY,
             CommonTrait.SUSPENSION_FEEDING_TENTACLES,
             CommonTrait.CLONAL_PROPAGATION,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.RED_CAMOUFLAGE
         ),
         sessile(
@@ -2384,6 +2420,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
             CommonTrait.POLYP_BODY,
             CommonTrait.SUSPENSION_FEEDING_TENTACLES,
+            CommonTrait.SLOW_GROWTH,
             ColorTrait.PALE_CAMOUFLAGE
         ),
         animal(
@@ -2486,7 +2523,8 @@ object EarthSpeciesCatalog {
             CommonTrait.FLOWERS,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.FROST_HARDENED_TISSUES,
-            CommonTrait.DEEP_ROOT_SYSTEM
+            CommonTrait.DEEP_ROOT_SYSTEM,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "scots pine",
@@ -2547,7 +2585,8 @@ object EarthSpeciesCatalog {
             CommonTrait.SUCCULENT_STEM,
             CommonTrait.WAXY_CUTICLE,
             CommonTrait.FROST_SENSITIVE_SUCCULENT_TISSUES,
-            CommonTrait.DESICCATION_RESISTANT_PROPAGULES
+            CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "common sunflower",
@@ -2692,7 +2731,8 @@ object EarthSpeciesCatalog {
             CommonTrait.INTERWOVEN_MAT,
             CommonTrait.ABSORPTIVE_FILAMENTS,
             CommonTrait.FROST_HARDENED_TISSUES,
-            CommonTrait.WHOLE_BODY_ANHYDROBIOSIS
+            CommonTrait.WHOLE_BODY_ANHYDROBIOSIS,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "venus flytrap",
@@ -2725,7 +2765,8 @@ object EarthSpeciesCatalog {
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.WAXY_CUTICLE,
-            CommonTrait.DEEP_ROOT_SYSTEM
+            CommonTrait.DEEP_ROOT_SYSTEM,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "lodgepole pine",
@@ -2757,7 +2798,8 @@ object EarthSpeciesCatalog {
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
             CommonTrait.DEEP_ROOT_SYSTEM,
-            CommonTrait.WAXY_CUTICLE
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "black spruce",
@@ -2822,7 +2864,8 @@ object EarthSpeciesCatalog {
             CommonTrait.CUSHION_GROWTH,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.WAXY_CUTICLE,
-            CommonTrait.PERENNIAL_STORAGE_TISSUE
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.SLOW_GROWTH
         ),
         sessile(
             "prickly pear cactus",

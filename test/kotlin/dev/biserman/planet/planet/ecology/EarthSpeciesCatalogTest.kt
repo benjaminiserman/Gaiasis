@@ -133,6 +133,66 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `catalog assigns authored slow life histories`() {
+        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
+
+        listOf(
+            "african-elephant",
+            "white-rhinoceros",
+            "western-gorilla",
+            "chimpanzee",
+            "bornean-orangutan",
+            "giant-panda",
+            "west-indian-manatee",
+            "galapagos-tortoise",
+            "tuatara",
+            "great-white-shark",
+            "whale-shark",
+            "giant-oceanic-manta-ray",
+            "antarctic-silverfish",
+            "antarctic-toothfish",
+            "alligator-gar",
+            "american-lobster",
+            "brain-coral",
+            "common-sea-fan",
+            "slender-sea-pen",
+            "english-oak",
+            "saguaro-cactus",
+            "reindeer-lichen",
+            "himalayan-juniper",
+            "saharan-cypress",
+            "moss-campion",
+        ).forEach { id ->
+            assertTrue(CommonTrait.SLOW_GROWTH in species.getValue(id).traits, id)
+        }
+        listOf(
+            "african-elephant",
+            "white-rhinoceros",
+            "western-gorilla",
+            "chimpanzee",
+            "bornean-orangutan",
+            "polar-bear",
+            "brown-bear",
+            "giant-panda",
+            "blue-whale",
+            "orca",
+            "bottlenose-dolphin",
+            "walrus",
+            "west-indian-manatee",
+            "wandering-albatross",
+            "andean-condor",
+            "kakapo",
+            "tuatara",
+            "great-white-shark",
+            "giant-oceanic-manta-ray",
+        ).forEach { id ->
+            assertTrue(CommonTrait.INFREQUENT_REPRODUCTION in species.getValue(id).traits, id)
+        }
+        assertTrue(CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue("humpback-whale").traits)
+        assertTrue(CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue("giant-bamboo").traits)
+    }
+
+    @Test
     fun `trees use authored photosynthetic structures`() {
         val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
         val conifers = listOf(
@@ -280,13 +340,13 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `long interbirth intervals reduce reproduction and its average maintenance`() {
+    fun `infrequent reproduction reduces reproduction and its average maintenance`() {
         val orca = EarthSpeciesCatalog.MAMMALS.single { it.id == "orca" }
-        val withoutLongInterbirth = orca.copy(
-            id = "orca-without-long-interbirth-interval",
-            traits = orca.traits - CommonTrait.LONG_INTERBIRTH_INTERVAL,
+        val frequentReproducer = orca.copy(
+            id = "orca-with-frequent-reproduction",
+            traits = orca.traits - CommonTrait.INFREQUENT_REPRODUCTION,
         )
-        val compiled = EcologyCompiler.compile(listOf(orca, withoutLongInterbirth)).species
+        val compiled = EcologyCompiler.compile(listOf(orca, frequentReproducer)).species
 
         assertTrue(compiled[0].lifeHistory.seasonalReproduction < compiled[1].lifeHistory.seasonalReproduction)
         assertTrue(compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand)
@@ -379,7 +439,7 @@ class EarthSpeciesCatalogTest {
             orca.traits -
                 setOf(
                     CommonTrait.EXTENDED_PARENTAL_CARE,
-                    CommonTrait.LONG_INTERBIRTH_INTERVAL,
+                    CommonTrait.INFREQUENT_REPRODUCTION,
                 )
         val ordinaryOrca = EcologyCompiler.compile(
             listOf(

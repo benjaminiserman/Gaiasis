@@ -150,6 +150,41 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `motile species default to neighbor dispersal while sessile species do not`() {
+        val motile = predator("default-motile-dispersal")
+        val sessile = producer(id = "default-sessile-dispersal")
+        val ecology = EcologyCompiler.compile(listOf(motile, sessile))
+
+        assertEquals(
+            DispersalKind.NEIGHBOR,
+            ecology.species[ecology.speciesIndex(motile.id)].lifeHistory.dispersalKind,
+        )
+        assertEquals(
+            DispersalKind.NONE,
+            ecology.species[ecology.speciesIndex(sessile.id)].lifeHistory.dispersalKind,
+        )
+    }
+
+    @Test
+    fun `slow growth and infrequent reproduction trade population growth for lower maintenance`() {
+        val ordinary = predator("ordinary-life-history")
+        val slowGrowing = predator("slow-growing").copy(
+            traits = predator("slow-growing").traits + CommonTrait.SLOW_GROWTH,
+        )
+        val infrequent = predator("infrequent-reproducer").copy(
+            traits = predator("infrequent-reproducer").traits + CommonTrait.INFREQUENT_REPRODUCTION,
+        )
+        val ecology = EcologyCompiler.compile(listOf(ordinary, slowGrowing, infrequent))
+
+        fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
+
+        assertTrue(compiled(slowGrowing.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand)
+        assertTrue(compiled(slowGrowing.id).lifeHistory.seasonalReproduction < compiled(ordinary.id).lifeHistory.seasonalReproduction)
+        assertTrue(compiled(infrequent.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand)
+        assertTrue(compiled(infrequent.id).lifeHistory.seasonalReproduction < compiled(slowGrowing.id).lifeHistory.seasonalReproduction)
+    }
+
+    @Test
     fun `motile species require exactly one thermal strategy`() {
         val invalid = SpeciesDefinition(
             id = "invalid",

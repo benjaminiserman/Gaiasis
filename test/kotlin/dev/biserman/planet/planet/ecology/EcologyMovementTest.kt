@@ -251,7 +251,6 @@ class EcologyMovementTest {
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.GILL_PADS,
-            CommonTrait.NEIGHBOR_DISPERSAL,
         ),
     )
 }

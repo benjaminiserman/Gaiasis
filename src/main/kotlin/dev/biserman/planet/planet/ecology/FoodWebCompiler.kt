@@ -340,7 +340,7 @@ internal object FoodWebCompiler {
                     } else {
                         0.0
                     }
-                ) +
+                    ) +
                 burrowerCaptureBonus +
                 soundLureCaptureBonus
         val effectiveDefense =

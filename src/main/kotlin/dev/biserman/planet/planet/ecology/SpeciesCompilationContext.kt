@@ -175,6 +175,12 @@ class SpeciesCompilationContext internal constructor(
                 max(0.15, 1.0 + maintenanceCost) *
                 metabolicDemandMultiplier *
                 sessilePhotosyntheticMaintenance
+        val compiledDispersalKind =
+            if (definition.motile && dispersalKind == DispersalKind.NONE) {
+                DispersalKind.NEIGHBOR
+            } else {
+                dispersalKind
+            }
         val minimumWater = waterRequirement.coerceIn(0.0, 1.0)
         val optimalWater = optimalMaximumWater.coerceIn(minimumWater, 1.0)
         val compiledMaximumWater = maximumWater.coerceIn(optimalWater, 1.0)
@@ -235,7 +241,7 @@ class SpeciesCompilationContext internal constructor(
                 dormantEntryBiomassRetention =
                 dormantEntryBiomassRetention.coerceIn(0.0, 1.0),
                 dormantReactivationMultiplier = dormantReactivationMultiplier,
-                dispersalKind = dispersalKind,
+                dispersalKind = compiledDispersalKind,
                 radiationRange = radiationRange,
             ),
             interactions = InteractionProfile(

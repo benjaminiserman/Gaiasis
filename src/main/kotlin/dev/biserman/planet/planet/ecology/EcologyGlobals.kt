@@ -94,13 +94,13 @@ object EcologyGlobals {
     var minimumViableIndividuals = 2.0
 
     /** Seasonal chance that a species without a dispersal trait attempts to colonize a neighbor. */
-    var unassistedRadiationChancePerSeason = 0.002
+    var unassistedRadiationChancePerSeason = 0.005
 
     /** Seasonal neighboring-colonization chance for species with a migration trait. */
     var migrationRadiationChancePerSeason = 0.06
 
     /** Seasonal neighboring-colonization chance for species specialized for local dispersal. */
-    var neighborRadiationChancePerSeason = 0.012
+    var neighborRadiationChancePerSeason = 0.02
 
     /**
      * Lowest intrinsic niche fit a colonist may choose, expressed as a fraction
