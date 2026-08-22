@@ -26,8 +26,8 @@ class EcologyExperimentsTest {
         addEstablished(community, ecology, environment, speciesIndex = 2, biomass = 180_000.0)
         repeat(600) { runtime.advanceSeason(community, environment) }
 
-        assertTrue(community.find(1) >= 0)
-        assertTrue(community.find(2) >= 0)
+        assertTrue(community.find(1) >= 0, message = "Similar resident and invader can partition a broad niche: expected `community.find(1) >= 0` to be true")
+        assertTrue(community.find(2) >= 0, message = "Similar resident and invader can partition a broad niche: expected `community.find(2) >= 0` to be true")
     }
 
     @Test
@@ -51,9 +51,9 @@ class EcologyExperimentsTest {
             "ECOLOGY_STABILITY final_biomass=${"%.3f".format(community.totalBiomass())} " +
                 "tail_cv=${"%.6f".format(coefficientOfVariation)} populations=${community.size}",
         )
-        assertTrue(mean > 0.0)
-        assertTrue(mean < terrestrialBiomassGuardrail(environment))
-        assertTrue(coefficientOfVariation < 0.12)
+        assertTrue(mean > 0.0, message = "Unchanged ecosystem settles into bounded variation: expected `mean > 0.0` to be true")
+        assertTrue(mean < terrestrialBiomassGuardrail(environment), message = "Unchanged ecosystem settles into bounded variation: expected `mean < terrestrialBiomassGuardrail(environment)` to be true")
+        assertTrue(coefficientOfVariation < 0.12, message = "Unchanged ecosystem settles into bounded variation: expected `coefficientOfVariation < 0.12` to be true")
     }
 
     @Test
@@ -73,7 +73,7 @@ class EcologyExperimentsTest {
         }
         repeat(300) { runtime.advanceSeason(community, environment) }
         val residentBefore = biomassOf(community, 1)
-        assertTrue(residentBefore > 0.0)
+        assertTrue(residentBefore > 0.0, message = "Invasion perturbs residents and then remains bounded: expected `residentBefore > 0.0` to be true")
         addEstablished(community, ecology, environment, speciesIndex = 2, biomass = 180_000.0)
         repeat(240) { runtime.advanceSeason(community, environment) }
         val residentAfter = biomassOf(community, 1)
@@ -85,9 +85,9 @@ class EcologyExperimentsTest {
                 "invader_after=${"%.3f".format(invaderAfter)} " +
                 "total_after=${"%.3f".format(community.totalBiomass())}",
         )
-        assertTrue(community.totalBiomass().isFinite())
-        assertTrue(community.totalBiomass() < terrestrialBiomassGuardrail(environment))
-        assertTrue(residentAfter != residentBefore || invaderAfter > 0.0)
+        assertTrue(community.totalBiomass().isFinite(), message = "Invasion perturbs residents and then remains bounded: expected `community.totalBiomass().isFinite()` to be true")
+        assertTrue(community.totalBiomass() < terrestrialBiomassGuardrail(environment), message = "Invasion perturbs residents and then remains bounded: expected `community.totalBiomass() < terrestrialBiomassGuardrail(environment)` to be true")
+        assertTrue(residentAfter != residentBefore || invaderAfter > 0.0, message = "Invasion perturbs residents and then remains bounded: expected `residentAfter != residentBefore || invaderAfter > 0.0` to be true")
     }
 
     @Test
@@ -125,10 +125,10 @@ class EcologyExperimentsTest {
                 "dormant_peak=${"%.3f".format(dormantPeak)} " +
                 "recovered=${"%.3f".format(recovered)}",
         )
-        assertTrue(dormantPeak > 0.0)
-        assertTrue(afterShock > 0.0)
-        assertTrue(recovered > afterShock)
-        assertTrue(recovered < terrestrialBiomassGuardrail(normal))
+        assertTrue(dormantPeak > 0.0, message = "Temporary climate shock uses dormancy and permits recovery: expected `dormantPeak > 0.0` to be true")
+        assertTrue(afterShock > 0.0, message = "Temporary climate shock uses dormancy and permits recovery: expected `afterShock > 0.0` to be true")
+        assertTrue(recovered > afterShock, message = "Temporary climate shock uses dormancy and permits recovery: expected `recovered > afterShock` to be true")
+        assertTrue(recovered < terrestrialBiomassGuardrail(normal), message = "Temporary climate shock uses dormancy and permits recovery: expected `recovered < terrestrialBiomassGuardrail(normal)` to be true")
     }
 
     private fun experimentalRuntime(ecology: CompiledEcology) = EcologyRuntime(

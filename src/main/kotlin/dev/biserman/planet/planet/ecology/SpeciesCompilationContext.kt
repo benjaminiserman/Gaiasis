@@ -54,11 +54,11 @@ class SpeciesCompilationContext internal constructor(
     private var captureAbility = 0.5
     private var largerPreySizeClasses = 0
     private var burrowerCaptureBonus = 0.0
-    private var usesBurrowRefuge = false
     private var acousticSignalMask = 0L
     private var soundLureCaptureBonus = 0.0
     private var pursuitSpeed = 0.0
-    private var pursuitTracking = 0.0
+    private var sensing = 0.0
+    private var activityPattern: ActivityPattern? = null
     private var defense = 0.25
     private var aposematicColoration = false
     private var reefUse = 0.0
@@ -131,12 +131,6 @@ class SpeciesCompilationContext internal constructor(
             strategySupport[EcoStrategy.GENERALIST_FORAGING.ordinal] =
                 (max(grazingSupport, predationSupport) + GENERALIST_BREADTH_BONUS)
                     .coerceAtMost(1.0)
-        }
-        if (
-            CommonTrait.COLONY_PROBING_TONGUE in commonTraits &&
-            CommonTrait.DIGGING_CLAWS in commonTraits
-        ) {
-            strategySupport[EcoStrategy.COLONY_RAIDING.ordinal] = 0.86
         }
     }
 
@@ -248,11 +242,11 @@ class SpeciesCompilationContext internal constructor(
                 captureAbility = captureAbility.coerceIn(0.05, 1.5),
                 largerPreySizeClasses = largerPreySizeClasses,
                 burrowerCaptureBonus = burrowerCaptureBonus.coerceIn(0.0, 1.0),
-                usesBurrowRefuge = usesBurrowRefuge,
                 acousticSignalMask = acousticSignalMask,
                 soundLureCaptureBonus = soundLureCaptureBonus.coerceIn(0.0, 1.0),
                 pursuitSpeed = pursuitSpeed.coerceIn(0.0, 1.0),
-                pursuitTracking = pursuitTracking.coerceIn(0.0, 1.0),
+                sensing = sensing.coerceIn(0.0, 1.0),
+                activityPattern = activityPattern,
                 defense = defense.coerceIn(0.0, 1.5),
                 aposematicColoration = aposematicColoration,
                 dangerousWarningModel =
@@ -364,15 +358,19 @@ class SpeciesCompilationContext internal constructor(
     fun changeSoundLureCaptureBonus(change: Double) {
         soundLureCaptureBonus += change
     }
-    fun enableBurrowRefuge() {
-        usesBurrowRefuge = true
-    }
     fun changePursuitSpeed(change: Double) {
         pursuitSpeed += change
     }
 
-    fun changePursuitTracking(change: Double) {
-        pursuitTracking += change
+    fun changeSensing(change: Double) {
+        sensing += change
+    }
+
+    fun setActivityPattern(pattern: ActivityPattern) {
+        require(activityPattern == null || activityPattern == pattern) {
+            "$speciesDisplayName has conflicting activity patterns"
+        }
+        activityPattern = pattern
     }
 
     fun changeDefense(change: Double) {

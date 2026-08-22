@@ -30,6 +30,6 @@ class ClimateTunerConfigurationTest {
             runClimateTuner(arrayOf("--tuning-space", "somewhere.json"))
         }
 
-        assertTrue(error.message.orEmpty().contains("Unknown option: --tuning-space"))
+        assertTrue(error.message.orEmpty().contains("Unknown option: --tuning-space"), "Unknown command line options are rejected: expected `error.message.orEmpty().contains(\"Unknown option: --tuning-space\")` to be true")
     }
 }

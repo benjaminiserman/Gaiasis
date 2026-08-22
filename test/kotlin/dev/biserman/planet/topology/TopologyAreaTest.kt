@@ -56,7 +56,7 @@ class TopologyAreaTest {
         }
 
         val fittedScale = numerator / denominator
-        assertEquals(fittedScale, tectonicAreaScale, 1e-12)
+        assertEquals(fittedScale, tectonicAreaScale, 1e-12, "Tectonic area scale is least squares fit to legacy plate inertia: expected `tectonicAreaScale` to match `fittedScale`")
     }
 
     private fun inertiaContribution(tiles: List<Tile>, area: (Tile) -> Double): DoubleArray {

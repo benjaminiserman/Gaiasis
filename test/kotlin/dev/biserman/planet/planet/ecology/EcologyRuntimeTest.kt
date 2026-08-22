@@ -18,7 +18,7 @@ class EcologyRuntimeTest {
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
                 add(CommonTrait.TERRESTRIAL_OVOSPORE)
-                add(CommonTrait.MEMBRANOUS_WINGS)
+                add(CommonTrait.WINGS)
                 add(CommonTrait.NECTAR_SIPPING_TONGUE)
                 if (pollinator) add(CommonTrait.POLLEN_CARRYING_SURFACES)
             },
@@ -51,11 +51,11 @@ class EcologyRuntimeTest {
 
         val robberFluxes = fluxesFor(pollinator = false)
         val pollinatorFluxes = fluxesFor(pollinator = true)
-        assertTrue(robberFluxes.nectarBiomass > 0.0)
-        assertTrue(robberFluxes.nectarConsumedBiomass > 0.0)
-        assertEquals(0.0, robberFluxes.pollinationBenefitBiomass)
-        assertTrue(pollinatorFluxes.nectarConsumedBiomass > 0.0)
-        assertTrue(pollinatorFluxes.pollinationBenefitBiomass > 0.0)
+        assertTrue(robberFluxes.nectarBiomass > 0.0, message = "Nectar feeding consumes seasonal flowers and pollen carrying returns a benefit: expected `robberFluxes.nectarBiomass > 0.0` to be true")
+        assertTrue(robberFluxes.nectarConsumedBiomass > 0.0, message = "Nectar feeding consumes seasonal flowers and pollen carrying returns a benefit: expected `robberFluxes.nectarConsumedBiomass > 0.0` to be true")
+        assertEquals(0.0, robberFluxes.pollinationBenefitBiomass, message = "Nectar feeding consumes seasonal flowers and pollen carrying returns a benefit: expected `robberFluxes.pollinationBenefitBiomass` to match `0.0`")
+        assertTrue(pollinatorFluxes.nectarConsumedBiomass > 0.0, message = "Nectar feeding consumes seasonal flowers and pollen carrying returns a benefit: expected `pollinatorFluxes.nectarConsumedBiomass > 0.0` to be true")
+        assertTrue(pollinatorFluxes.pollinationBenefitBiomass > 0.0, message = "Nectar feeding consumes seasonal flowers and pollen carrying returns a benefit: expected `pollinatorFluxes.pollinationBenefitBiomass > 0.0` to be true")
     }
 
     @Test
@@ -102,6 +102,7 @@ class EcologyRuntimeTest {
             lilyBiomassAfterSeason(withPlankton = false),
             lilyBiomassAfterSeason(withPlankton = true),
             1.0e-6,
+            message = "Suspended plankton biomass does not crowd an attached freshwater producer: expected `lilyBiomassAfterSeason(withPlankton = true)` to match `lilyBiomassAfterSeason(withPlankton = false)`",
         )
     }
 
@@ -167,8 +168,13 @@ class EcologyRuntimeTest {
         runtime.advanceSeason(withModel, landEnvironment(), finalizeExtinctions = false)
         runtime.advanceSeason(withoutModel, landEnvironment(), finalizeExtinctions = false)
 
-        assertTrue(withModel.activeBiomass[2] > withModel.activeBiomass[3])
-        assertEquals(withoutModel.activeBiomass[1], withoutModel.activeBiomass[2], 1.0e-9)
+        assertTrue(withModel.activeBiomass[2] > withModel.activeBiomass[3], message = "Aposematic prey require a same-color dangerous model in the same habitat: expected `withModel.activeBiomass[2] > withModel.activeBiomass[3]` to be true")
+        assertEquals(
+            withoutModel.activeBiomass[1],
+            withoutModel.activeBiomass[2],
+            1.0e-9,
+            message = "Aposematic prey require a same-color dangerous model in the same habitat: expected `withoutModel.activeBiomass[2]` to match `withoutModel.activeBiomass[1]`"
+        )
     }
 
     @Test
@@ -187,8 +193,8 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, environment, fluxes)
 
-        assertTrue(fluxes.fruitBiomass > 0.0)
-        assertTrue(fluxes.fruitConsumedBiomass > 0.0)
+        assertTrue(fluxes.fruitBiomass > 0.0, message = "Living fruit-bearing producers replenish fruit consumed by frugivores: expected `fluxes.fruitBiomass > 0.0` to be true")
+        assertTrue(fluxes.fruitConsumedBiomass > 0.0, message = "Living fruit-bearing producers replenish fruit consumed by frugivores: expected `fluxes.fruitConsumedBiomass > 0.0` to be true")
     }
 
     @Test
@@ -202,7 +208,7 @@ class EcologyRuntimeTest {
         runtime.advanceSeason(lowland, landEnvironment(elevationM = 2_000.0))
         runtime.advanceSeason(highland, landEnvironment(elevationM = 3_000.0))
 
-        assertTrue(highland.activeBiomass[0] < lowland.activeBiomass[0] * 0.25)
+        assertTrue(highland.activeBiomass[0] < lowland.activeBiomass[0] * 0.25, message = "Terrestrial animal above its lethal elevation suffers lethal mortality: expected `highland.activeBiomass[0] < lowland.activeBiomass[0] * 0.25` to be true")
     }
 
     @Test
@@ -219,8 +225,8 @@ class EcologyRuntimeTest {
         runtime.advanceSeason(withoutReserves, lethalSeason)
         runtime.advanceSeason(withReserves, lethalSeason)
 
-        assertTrue(withReserves.activeBiomass[0] > withoutReserves.activeBiomass[0])
-        assertTrue(withReserves.totalBiomass() <= 1_000.0)
+        assertTrue(withReserves.activeBiomass[0] > withoutReserves.activeBiomass[0], message = "Reserves delay starvation without creating biomass: expected `withReserves.activeBiomass[0] > withoutReserves.activeBiomass[0]` to be true")
+        assertTrue(withReserves.totalBiomass() <= 1_000.0, message = "Reserves delay starvation without creating biomass: expected `withReserves.totalBiomass() <= 1_000.0` to be true")
     }
 
     @Test
@@ -234,8 +240,8 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, landEnvironment(temperatureC = 105.0))
 
-        assertTrue(community.dormantBiomass[0] > community.activeBiomass[0])
-        assertTrue(community.dormantBiomass[0] > 600.0)
+        assertTrue(community.dormantBiomass[0] > community.activeBiomass[0], message = "Whole body desiccation moves land biomass dormant in a lethal season: expected `community.dormantBiomass[0] > community.activeBiomass[0]` to be true")
+        assertTrue(community.dormantBiomass[0] > 600.0, message = "Whole body desiccation moves land biomass dormant in a lethal season: expected `community.dormantBiomass[0] > 600.0` to be true")
     }
 
     @Test
@@ -249,7 +255,7 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, oceanEnvironment(temperatureC = 105.0))
 
-        assertEquals(0.0, community.dormantBiomass[0])
+        assertEquals(0.0, community.dormantBiomass[0], message = "Whole body desiccation cannot activate while immersed: expected `community.dormantBiomass[0]` to match `0.0`")
     }
 
     @Test
@@ -276,7 +282,7 @@ class EcologyRuntimeTest {
             EcologyRuntime(ecology).advanceSeason(community, environment)
         }
 
-        assertEquals(-1, community.find(0))
+        assertEquals(-1, community.find(0), message = "Cold dark leaf dormancy does not shelter an oak from a hot desert: expected `community.find(0)` to match `-1`")
     }
 
     @Test
@@ -299,7 +305,7 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, winter)
 
-        assertTrue(community.dormantBiomass[0] > community.activeBiomass[0])
+        assertTrue(community.dormantBiomass[0] > community.activeBiomass[0], message = "Cold dark leaf dormancy still protects an oak in winter: expected `community.dormantBiomass[0] > community.activeBiomass[0]` to be true")
     }
 
     @Test
@@ -324,7 +330,7 @@ class EcologyRuntimeTest {
             runtime.advanceSeason(community, permanentlyFrozen)
         }
 
-        assertEquals(-1, community.find(species.index))
+        assertEquals(-1, community.find(species.index), message = "Carpet plants disappear without any thawed season: expected `community.find(species.index)` to match `-1`")
     }
 
     @Test
@@ -384,7 +390,7 @@ class EcologyRuntimeTest {
         }
 
         val tropicalBiomass = tropical.totalBiomass()
-        assertTrue(lateWinterBiomass > 0.0)
+        assertTrue(lateWinterBiomass > 0.0, message = "Polar plankton overwinter as a small resting stock and regrow below tropical biomass: expected `lateWinterBiomass > 0.0` to be true")
         assertTrue(
             lateSummerBiomass > lateWinterBiomass * 2.0,
             "winter=${"%.3e".format(lateWinterBiomass)} " +
@@ -412,10 +418,10 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, oceanEnvironment(), fluxes)
 
-        assertTrue(fluxes.reefCoverDelta > 0.0)
-        assertEquals(0.0, fluxes.carrionBiomass)
-        assertTrue(fluxes.detritusBiomass > 0.0)
-        assertTrue(fluxes.marineSnowBiomass > 0.0)
+        assertTrue(fluxes.reefCoverDelta > 0.0, message = "Reef builders emit cover only from aquatic habitat: expected `fluxes.reefCoverDelta > 0.0` to be true")
+        assertEquals(0.0, fluxes.carrionBiomass, message = "Reef builders emit cover only from aquatic habitat: expected `fluxes.carrionBiomass` to match `0.0`")
+        assertTrue(fluxes.detritusBiomass > 0.0, message = "Reef builders emit cover only from aquatic habitat: expected `fluxes.detritusBiomass > 0.0` to be true")
+        assertTrue(fluxes.marineSnowBiomass > 0.0, message = "Reef builders emit cover only from aquatic habitat: expected `fluxes.marineSnowBiomass > 0.0` to be true")
     }
 
     @Test
@@ -437,9 +443,9 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, riverEnvironment, fluxes)
 
-        assertEquals(0.0, fluxes.carrionBiomass)
-        assertTrue(fluxes.detritusBiomass > 0.0)
-        assertEquals(0.0, fluxes.marineSnowBiomass)
+        assertEquals(0.0, fluxes.carrionBiomass, message = "Freshwater sessile deaths create detritus but not carrion or marine snow: expected `fluxes.carrionBiomass` to match `0.0`")
+        assertTrue(fluxes.detritusBiomass > 0.0, message = "Freshwater sessile deaths create detritus but not carrion or marine snow: expected `fluxes.detritusBiomass > 0.0` to be true")
+        assertEquals(0.0, fluxes.marineSnowBiomass, message = "Freshwater sessile deaths create detritus but not carrion or marine snow: expected `fluxes.marineSnowBiomass` to match `0.0`")
     }
 
     @Test
@@ -457,9 +463,9 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, landEnvironment(), fluxes)
 
-        assertTrue(fluxes.wasteBiomass > 0.0)
-        assertTrue(fluxes.carrionBiomass > 0.0)
-        assertTrue(fluxes.detritusBiomass > 0.0)
+        assertTrue(fluxes.wasteBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.wasteBiomass > 0.0` to be true")
+        assertTrue(fluxes.carrionBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.carrionBiomass > 0.0` to be true")
+        assertTrue(fluxes.detritusBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.detritusBiomass > 0.0` to be true")
     }
 
     @Test
@@ -480,7 +486,7 @@ class EcologyRuntimeTest {
             return community.totalBiomass()
         }
 
-        assertTrue(result(fertilized) > result(plain))
+        assertTrue(result(fertilized) > result(plain), message = "Waste absorbing roots increase producer growth when waste is available: expected `result(fertilized) > result(plain)` to be true")
     }
 
     @Test
@@ -530,8 +536,8 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, environment, fluxes)
 
-        assertTrue(fluxes.detritusConsumedBiomass > 0.0)
-        assertTrue(fluxes.wasteConsumedBiomass > 0.0)
+        assertTrue(fluxes.detritusConsumedBiomass > 0.0, message = "Recyclers emit consumption flux for detritus and waste: expected `fluxes.detritusConsumedBiomass > 0.0` to be true")
+        assertTrue(fluxes.wasteConsumedBiomass > 0.0, message = "Recyclers emit consumption flux for detritus and waste: expected `fluxes.wasteConsumedBiomass > 0.0` to be true")
     }
 
     @Test
@@ -550,7 +556,7 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(TileCommunity(), reef, fluxes)
 
-        assertTrue(fluxes.reefCoverDelta < 0.0)
+        assertTrue(fluxes.reefCoverDelta < 0.0, message = "Reef cover decays without builders: expected `fluxes.reefCoverDelta < 0.0` to be true")
     }
 
     @Test
@@ -564,8 +570,8 @@ class EcologyRuntimeTest {
 
         EcologyRuntime(ecology).advanceSeason(community, landEnvironment(temperatureC = 60.0))
 
-        assertEquals(0, community.size)
-        assertTrue(isGloballyExtinct(0, listOf(community)))
+        assertEquals(0, community.size, message = "Local extinction uses approximate individual count: expected `community.size` to match `0`")
+        assertTrue(isGloballyExtinct(0, listOf(community)), message = "Local extinction uses approximate individual count: expected `isGloballyExtinct(0, listOf(community))` to be true")
     }
 
     @Test
@@ -587,9 +593,10 @@ class EcologyRuntimeTest {
         definitions.indices.forEach { speciesIndex ->
             val firstPopulation = first.find(speciesIndex)
             val reversedPopulation = reversed.find(speciesIndex)
-            assertTrue(firstPopulation >= 0 && reversedPopulation >= 0)
+            assertTrue(firstPopulation >= 0 && reversedPopulation >= 0, message = "Seasonal update is independent of population storage order: expected `firstPopulation >= 0 && reversedPopulation >= 0` to be true")
             assertTrue(
                 abs(first.activeBiomass[firstPopulation] - reversed.activeBiomass[reversedPopulation]) < 1e-8,
+                message = "Seasonal update is independent of population storage order: expected `abs(first.activeBiomass[firstPopulation] - reversed.activeBiomass[reversedPopulation]) < 1e-8` to be true",
             )
         }
     }
@@ -604,15 +611,15 @@ class EcologyRuntimeTest {
         repeat(400) {
             runtime.advanceSeason(community, environment)
             for (index in 0 until community.size) {
-                assertTrue(community.activeBiomass[index].isFinite())
-                assertTrue(community.activeBiomass[index] >= 0.0)
-                assertTrue(community.reserves[index].isFinite())
-                assertTrue(community.dormantBiomass[index].isFinite())
+                assertTrue(community.activeBiomass[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.activeBiomass[index].isFinite()` to be true")
+                assertTrue(community.activeBiomass[index] >= 0.0, message = "Long unchanged run stays finite non-negative and bounded: expected `community.activeBiomass[index] >= 0.0` to be true")
+                assertTrue(community.reserves[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.reserves[index].isFinite()` to be true")
+                assertTrue(community.dormantBiomass[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.dormantBiomass[index].isFinite()` to be true")
             }
         }
 
-        assertTrue(community.totalBiomass() < 1e12)
-        assertFalse(community.size > 3)
+        assertTrue(community.totalBiomass() < 1e12, message = "Long unchanged run stays finite non-negative and bounded: expected `community.totalBiomass() < 1e12` to be true")
+        assertFalse(community.size > 3, message = "Long unchanged run stays finite non-negative and bounded: expected `community.size > 3` to be false")
     }
 
     @Test
@@ -636,9 +643,9 @@ class EcologyRuntimeTest {
             runtime.advanceSeason(community, environment)
         }
 
-        assertTrue(community.size < definitions.size)
-        assertTrue(community.size < 48)
-        assertTrue(community.find(0) >= 0)
+        assertTrue(community.size < definitions.size, message = "Soft habitat diversity pressure removes weak populations before the hard cap: expected `community.size < definitions.size` to be true")
+        assertTrue(community.size < 48, message = "Soft habitat diversity pressure removes weak populations before the hard cap: expected `community.size < 48` to be true")
+        assertTrue(community.find(0) >= 0, message = "Soft habitat diversity pressure removes weak populations before the hard cap: expected `community.find(0) >= 0` to be true")
     }
 
     @Test
@@ -649,14 +656,14 @@ class EcologyRuntimeTest {
         val environment = landEnvironment()
 
         val grazerIndex = community.find(1)
-        assertTrue(grazerIndex >= 0)
+        assertTrue(grazerIndex >= 0, message = "Large predator becomes locally extinct after its last modeled prey disappears: expected `grazerIndex >= 0` to be true")
         community.removeAt(grazerIndex)
 
         repeat(400) {
             runtime.advanceSeason(community, environment)
         }
 
-        assertEquals(-1, community.find(2))
+        assertEquals(-1, community.find(2), message = "Large predator becomes locally extinct after its last modeled prey disappears: expected `community.find(2)` to match `-1`")
     }
 
     @Test
@@ -676,8 +683,11 @@ class EcologyRuntimeTest {
         }
 
         val predatorIndex = community.find(2)
-        assertTrue(predatorIndex >= 0)
-        assertTrue(community.activeBiomass[predatorIndex] >= predator().sizeClass.typicalMassKg * 10.0)
+        assertTrue(predatorIndex >= 0, message = "Large predator persists when abundant modeled prey is present: expected `predatorIndex >= 0` to be true")
+        assertTrue(
+            community.activeBiomass[predatorIndex] >= predator().sizeClass.typicalMassKg * 10.0,
+            message = "Large predator persists when abundant modeled prey is present: expected `community.activeBiomass[predatorIndex] >= predator().sizeClass.typicalMassKg * 10.0` to be true"
+        )
     }
 
     private fun community(ecology: CompiledEcology, order: List<Int>): TileCommunity =
@@ -696,8 +706,8 @@ class EcologyRuntimeTest {
         strategy: EcoStrategy,
     ): Int {
         val index = ecology.niches.indexOf(NicheDefinition(habitat, strategy))
-        assertTrue(index >= 0)
-        assertTrue(ecology.species[speciesIndex].niche.fitFor(index) > 0.0)
+        assertTrue(index >= 0, message = "Large predator persists when abundant modeled prey is present: expected `index >= 0` to be true")
+        assertTrue(ecology.species[speciesIndex].niche.fitFor(index) > 0.0, message = "Large predator persists when abundant modeled prey is present: expected `ecology.species[speciesIndex].niche.fitFor(index) > 0.0` to be true")
         return index
     }
 

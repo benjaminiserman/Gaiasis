@@ -9,11 +9,11 @@ class EcologyBiomassTest {
     fun `authored biomass tables cover every size class`() {
         val allSizes = SizeClass.entries.toSet()
 
-        assertEquals(allSizes, EcologyBiomass.terrestrialProducerDensityKgKm2.keys)
-        assertEquals(allSizes, EcologyBiomass.aquaticProducerDensityKgKm2.keys)
-        assertEquals(allSizes, EcologyBiomass.terrestrialGrazingAccessibilityBySize.keys)
-        assertEquals(allSizes, EcologyBiomass.filterFeedingEfficiencyBySize.keys)
-        assertEquals(allSizes, EcologyBiomass.aquaticFilterFeederProducerFractionBySize.keys)
+        assertEquals(allSizes, EcologyBiomass.terrestrialProducerDensityKgKm2.keys, message = "Authored biomass tables cover every size class: expected `EcologyBiomass.terrestrialProducerDensityKgKm2.keys` to match `allSizes`")
+        assertEquals(allSizes, EcologyBiomass.aquaticProducerDensityKgKm2.keys, message = "Authored biomass tables cover every size class: expected `EcologyBiomass.aquaticProducerDensityKgKm2.keys` to match `allSizes`")
+        assertEquals(allSizes, EcologyBiomass.terrestrialGrazingAccessibilityBySize.keys, message = "Authored biomass tables cover every size class: expected `EcologyBiomass.terrestrialGrazingAccessibilityBySize.keys` to match `allSizes`")
+        assertEquals(allSizes, EcologyBiomass.filterFeedingEfficiencyBySize.keys, message = "Authored biomass tables cover every size class: expected `EcologyBiomass.filterFeedingEfficiencyBySize.keys` to match `allSizes`")
+        assertEquals(allSizes, EcologyBiomass.aquaticFilterFeederProducerFractionBySize.keys, message = "Authored biomass tables cover every size class: expected `EcologyBiomass.aquaticFilterFeederProducerFractionBySize.keys` to match `allSizes`")
     }
 
     @Test
@@ -21,11 +21,18 @@ class EcologyBiomassTest {
         val producerDensity = EcologyBiomass.terrestrialProducerDensityKgKm2
         val accessibility = EcologyBiomass.terrestrialGrazingAccessibilityBySize
 
-        assertTrue(producerDensity.getValue(SizeClass.HUGE) > producerDensity.getValue(SizeClass.TINY))
-        assertTrue(accessibility.getValue(SizeClass.HUGE) < accessibility.getValue(SizeClass.TINY))
+        assertTrue(
+            producerDensity.getValue(SizeClass.HUGE) > producerDensity.getValue(SizeClass.TINY),
+            message = "Large terrestrial producers store more standing biomass but expose less to grazers: expected `producerDensity.getValue(SizeClass.HUGE) > producerDensity.getValue(SizeClass.TINY)` to be true"
+        )
+        assertTrue(
+            accessibility.getValue(SizeClass.HUGE) < accessibility.getValue(SizeClass.TINY),
+            message = "Large terrestrial producers store more standing biomass but expose less to grazers: expected `accessibility.getValue(SizeClass.HUGE) < accessibility.getValue(SizeClass.TINY)` to be true"
+        )
         assertTrue(
             EcologyBiomass.filterFeedingEfficiency(SizeClass.HUGE) <
                 EcologyBiomass.filterFeedingEfficiency(SizeClass.MEDIUM),
+            message = "Large terrestrial producers store more standing biomass but expose less to grazers: expected `EcologyBiomass.filterFeedingEfficiency(SizeClass.HUGE) < EcologyBiomass.filterFeedingEfficiency(SizeClass.MEDIUM)` to be true",
         )
     }
 
@@ -48,7 +55,7 @@ class EcologyBiomassTest {
             environment,
         )
 
-        assertTrue(carryingCapacity in 1.0e9..1.0e11)
+        assertTrue(carryingCapacity in 1.0e9..1.0e11, message = "Ordinary ocean tile supports an order of magnitude plausible plankton stock: expected `carryingCapacity in 1.0e9..1.0e11` to be true")
     }
 
     @Test
@@ -69,7 +76,7 @@ class EcologyBiomassTest {
         val dryCapacity = EcologyBiomass.carryingCapacityKg(producer, niche, dry)
         val temperateCapacity = EcologyBiomass.carryingCapacityKg(producer, niche, temperate)
 
-        assertTrue(dry.waterAvailability < temperate.waterAvailability)
+        assertTrue(dry.waterAvailability < temperate.waterAvailability, message = "Dry climates support much less terrestrial producer biomass: expected `dry.waterAvailability < temperate.waterAvailability` to be true")
         assertTrue(
             dryCapacity < temperateCapacity * 0.20,
             "dry=${"%.3e".format(dryCapacity)} temperate=${"%.3e".format(temperateCapacity)}",
@@ -98,8 +105,8 @@ class EcologyBiomassTest {
                 environment.fertility *
                 environment.habitatAvailability(niche.habitat)
 
-        assertEquals(expectedCapacity, carryingCapacity)
-        assertEquals(0.0, environment.resourceSupport(niche, bugs.sizeClass))
+        assertEquals(expectedCapacity, carryingCapacity, message = "Modeled prey consumers receive a trophic ceiling without background food: expected `carryingCapacity` to match `expectedCapacity`")
+        assertEquals(0.0, environment.resourceSupport(niche, bugs.sizeClass), message = "Modeled prey consumers receive a trophic ceiling without background food: expected `environment.resourceSupport(niche, bugs.sizeClass)` to match `0.0`")
 
         val community = TileCommunity()
         community.add(bugs.index, nicheIndex, carryingCapacity * 0.50)
@@ -149,8 +156,8 @@ class EcologyBiomassTest {
 
         val planktonPopulation = community.find(ecology.speciesIndex(InvariantSpecies.PLANKTON.id))
         val whalePopulation = community.find(ecology.speciesIndex("whale-shark"))
-        assertTrue(planktonPopulation >= 0)
-        assertTrue(whalePopulation >= 0)
+        assertTrue(planktonPopulation >= 0, message = "Huge filter feeder remains far below its plankton stock over one thousand years: expected `planktonPopulation >= 0` to be true")
+        assertTrue(whalePopulation >= 0, message = "Huge filter feeder remains far below its plankton stock over one thousand years: expected `whalePopulation >= 0` to be true")
         val planktonBiomass =
             community.activeBiomass[planktonPopulation] + community.dormantBiomass[planktonPopulation]
         val whaleBiomass =

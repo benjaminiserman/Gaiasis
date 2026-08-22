@@ -8,14 +8,12 @@ class RelationshipCompilationContext internal constructor(
     private val resolve: (SpeciesSelector) -> List<Int>,
     private val writer: RelationshipInteractionWriter,
 ) {
-    fun forEachTarget(selector: SpeciesSelector, action: (Int) -> Unit) =
-        resolve(selector).forEach(action)
+    fun forEachTarget(selector: SpeciesSelector, action: (Int) -> Unit) = resolve(selector).forEach(action)
 
     fun requireProducerTarget(targetIndex: Int) {
         val target = compiledSpecies[targetIndex]
         require(
-            !target.motile &&
-                target.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0,
+            !target.motile && target.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0,
         ) {
             "${consumer.displayName} has non-producer obligate food ${target.displayName}"
         }
@@ -82,32 +80,31 @@ private class InteractionMatrixBuilder(
         requiredTargets[offset] = if (interaction.targetRequired) 1 else 0
     }
 
-    fun relationshipWriter(consumerIndex: Int): RelationshipInteractionWriter =
-        object : RelationshipInteractionWriter {
-            override fun setInteraction(
-                targetIndex: Int,
-                kind: InteractionKind,
-                targetLossRate: Double,
-                consumerGainRate: Double,
-                required: Boolean,
-            ) {
-                val offset = offset(consumerIndex, targetIndex)
-                kinds[offset] = kind.ordinal.toByte()
-                consumerGains[offset] = consumerGainRate
-                targetLosses[offset] = targetLossRate
-                // Authored effects compose: setting a feeding edge must not
-                // erase a benefit or requirement authored by another effect.
-                if (required) requiredTargets[offset] = 1
-            }
-
-            override fun addTargetBenefit(targetIndex: Int, benefitRate: Double) {
-                targetBenefits[offset(consumerIndex, targetIndex)] += benefitRate
-            }
-
-            override fun requireTarget(targetIndex: Int) {
-                requiredTargets[offset(consumerIndex, targetIndex)] = 1
-            }
+    fun relationshipWriter(consumerIndex: Int): RelationshipInteractionWriter = object : RelationshipInteractionWriter {
+        override fun setInteraction(
+            targetIndex: Int,
+            kind: InteractionKind,
+            targetLossRate: Double,
+            consumerGainRate: Double,
+            required: Boolean,
+        ) {
+            val offset = offset(consumerIndex, targetIndex)
+            kinds[offset] = kind.ordinal.toByte()
+            consumerGains[offset] = consumerGainRate
+            targetLosses[offset] = targetLossRate
+            // Authored effects compose: setting a feeding edge must not
+            // erase a benefit or requirement authored by another effect.
+            if (required) requiredTargets[offset] = 1
         }
+
+        override fun addTargetBenefit(targetIndex: Int, benefitRate: Double) {
+            targetBenefits[offset(consumerIndex, targetIndex)] += benefitRate
+        }
+
+        override fun requireTarget(targetIndex: Int) {
+            requiredTargets[offset(consumerIndex, targetIndex)] = 1
+        }
+    }
 
     fun build() = InteractionMatrix(
         speciesCount,
@@ -118,8 +115,7 @@ private class InteractionMatrixBuilder(
         requiredTargets,
     )
 
-    private fun offset(consumerIndex: Int, targetIndex: Int): Int =
-        consumerIndex * speciesCount + targetIndex
+    private fun offset(consumerIndex: Int, targetIndex: Int): Int = consumerIndex * speciesCount + targetIndex
 }
 
 private data class SpeciesPair(
@@ -129,44 +125,27 @@ private data class SpeciesPair(
 ) {
     val sizeRatio: Double = consumer.physiology.massKg / target.physiology.massKg
 
-    val sharedFeedingHabitat: Boolean =
-        directlySharesAnyHabitat() || sharesSeaIceMarineInterface()
+    val sharedFeedingHabitat: Boolean = directlySharesAnyHabitat() || sharesSeaIceMarineInterface()
 
-    val sharedAquaticHabitat: Boolean =
-        directlySharesAny(EcologyFitness.aquaticHabitats) || sharesSeaIceMarineInterface()
+    val sharedAquaticHabitat: Boolean = directlySharesAny(EcologyFitness.aquaticHabitats) || sharesSeaIceMarineInterface()
 
-    fun sharesHabitatFor(strategy: EcoStrategy): Boolean =
-        directlySharesAny(strategy.supportedHabitats)
+    fun sharesHabitatFor(strategy: EcoStrategy): Boolean = directlySharesAny(strategy.supportedHabitats)
 
-    private fun directlySharesAnyHabitat(): Boolean =
-        directlySharesAny(Habitat.entries)
+    private fun directlySharesAnyHabitat(): Boolean = directlySharesAny(Habitat.entries)
 
-    private fun directlySharesAny(habitats: Iterable<Habitat>): Boolean =
-        habitats.any { habitat ->
-            consumer.supports(habitat) && target.supports(habitat)
-        }
+    private fun directlySharesAny(habitats: Iterable<Habitat>): Boolean = habitats.any { habitat ->
+        consumer.supports(habitat) && target.supports(habitat)
+    }
 
-    private fun sharesSeaIceMarineInterface(): Boolean =
-        (
-            consumer.supports(Habitat.SEA_ICE) &&
-                EcologyFitness.aquaticHabitats.any(target::supports)
-            ) ||
-            (
-                target.supports(Habitat.SEA_ICE) &&
-                    EcologyFitness.aquaticHabitats.any(consumer::supports)
-                )
+    private fun sharesSeaIceMarineInterface(): Boolean = (consumer.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(target::supports)) || (target.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(consumer::supports))
 }
 
 private class PredationGraph(
     private val potentialPredation: Array<BooleanArray>,
 ) {
-    fun dietsOverlap(firstIndex: Int, secondIndex: Int): Boolean =
-        potentialPredation.indices.any { preyIndex ->
-            preyIndex != firstIndex &&
-                preyIndex != secondIndex &&
-                potentialPredation[firstIndex][preyIndex] &&
-                potentialPredation[secondIndex][preyIndex]
-        }
+    fun dietsOverlap(firstIndex: Int, secondIndex: Int): Boolean = potentialPredation.indices.any { preyIndex ->
+        preyIndex != firstIndex && preyIndex != secondIndex && potentialPredation[firstIndex][preyIndex] && potentialPredation[secondIndex][preyIndex]
+    }
 }
 
 internal object FoodWebCompiler {
@@ -188,11 +167,10 @@ internal object FoodWebCompiler {
             for (target in species) {
                 if (consumer.index == target.index) continue
                 val pair = SpeciesPair(consumer, target, definitions[target.index])
-                val interaction =
-                    filterFeedingInteraction(pair)
-                        ?: grazingInteraction(pair)
-                        ?: colonyRaidingInteraction(pair)
-                        ?: predationInteraction(pair, predationGraph)
+                val interaction = filterFeedingInteraction(pair)
+                    ?: grazingInteraction(pair)
+                    ?: colonyRaidingInteraction(pair)
+                    ?: predationInteraction(pair, predationGraph)
                 if (interaction != null) {
                     builder.set(consumer.index, target.index, interaction)
                 }
@@ -205,53 +183,27 @@ internal object FoodWebCompiler {
 
     private fun filterFeedingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.FILTER_FEEDING)
-        val sizeMatches =
-            pair.target.sizeClass == SizeClass.MINUSCULE ||
-                (
-                    pair.consumer.sizeClass.ordinal >= SizeClass.HUGE.ordinal &&
-                        pair.target.sizeClass == SizeClass.TINY
-                    )
-        if (
-            !pair.target.motile ||
-            !pair.sharesHabitatFor(EcoStrategy.FILTER_FEEDING) ||
-            support <= 0.0 ||
-            !sizeMatches
-        ) {
+        val sizeMatches = pair.target.sizeClass == SizeClass.MINUSCULE || (pair.consumer.sizeClass.ordinal >= SizeClass.HUGE.ordinal && pair.target.sizeClass == SizeClass.TINY)
+        if (!pair.target.motile || !pair.sharesHabitatFor(EcoStrategy.FILTER_FEEDING) || support <= 0.0 || !sizeMatches) {
             return null
         }
 
-        val attack = (
-            0.08 * support * pair.consumer.interactions.captureAbility /
-                max(0.25, pair.target.interactions.defense)
-            ).coerceIn(0.0, 0.30)
+        val attack = (0.08 * support * pair.consumer.interactions.captureAbility / max(0.25, pair.target.interactions.defense)).coerceIn(0.0, 0.30)
         return CompiledInteraction(
             kind = InteractionKind.FILTER_FEEDING,
-            consumerGainRate =
-            attack * EcologyBiomass.filterFeedingEfficiency(pair.consumer.sizeClass),
+            consumerGainRate = attack * EcologyBiomass.filterFeedingEfficiency(pair.consumer.sizeClass),
             targetLossRate = attack,
         )
     }
 
     private fun grazingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.GRAZING)
-        val targetPhotosynthetic =
-            pair.target.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
-        if (
-            pair.target.motile ||
-            !targetPhotosynthetic ||
-            !pair.sharesHabitatFor(EcoStrategy.GRAZING) ||
-            support <= 0.0
-        ) {
+        val targetPhotosynthetic = pair.target.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
+        if (pair.target.motile || !targetPhotosynthetic || !pair.sharesHabitatFor(EcoStrategy.GRAZING) || support <= 0.0) {
             return null
         }
 
-        val attack = (
-            0.025 *
-                EcologyBiomass.grazingAccessibility(pair.target) *
-                support *
-                pair.consumer.interactions.captureAbility /
-                max(0.25, pair.target.interactions.defense)
-            ).coerceIn(0.0, 0.24)
+        val attack = (0.025 * EcologyBiomass.grazingAccessibility(pair.target) * support * pair.consumer.interactions.captureAbility / max(0.25, pair.target.interactions.defense)).coerceIn(0.0, 0.24)
         return CompiledInteraction(
             kind = InteractionKind.GRAZING,
             consumerGainRate = attack * 0.65,
@@ -261,9 +213,8 @@ internal object FoodWebCompiler {
 
     private fun colonyRaidingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.COLONY_RAIDING)
-        val targetColonial = CommonTrait.COLONY_LIVING in pair.targetDefinition.traits
-        if (
-            !pair.target.motile ||
+        val targetColonial = CommonTrait.EUSOCIAL_COLONY in pair.targetDefinition.traits
+        if (!pair.target.motile ||
             pair.target.sizeClass != SizeClass.MINUSCULE ||
             !targetColonial ||
             !pair.sharesHabitatFor(EcoStrategy.COLONY_RAIDING) ||
@@ -272,10 +223,7 @@ internal object FoodWebCompiler {
             return null
         }
 
-        val attack = (
-            0.10 * support * pair.consumer.interactions.captureAbility /
-                max(0.25, pair.target.interactions.defense)
-            ).coerceIn(0.0, 0.30)
+        val attack = (0.10 * support * pair.consumer.interactions.captureAbility / max(0.25, pair.target.interactions.defense)).coerceIn(0.0, 0.30)
         return CompiledInteraction(
             kind = InteractionKind.PREDATION,
             consumerGainRate = attack * 1.20,
@@ -295,63 +243,44 @@ internal object FoodWebCompiler {
             pair.target.supportFor(EcoStrategy.AMBUSH_PREDATION),
             pair.target.supportFor(EcoStrategy.PURSUIT_PREDATION),
         )
-        val meaningfulIntraguildPredation =
-            targetPredatorSupport <= 0.0 || pair.sizeRatio >= 1.5
-        if (
-            !pair.sharedFeedingHabitat ||
-            predatorSupport <= 0.0 ||
-            !meaningfulIntraguildPredation ||
-            !sizeCompatiblePredation(pair)
-        ) {
+        val meaningfulIntraguildPredation = targetPredatorSupport <= 0.0 || pair.sizeRatio >= 1.5
+        if (!pair.sharedFeedingHabitat || predatorSupport <= 0.0 || !meaningfulIntraguildPredation || !sizeCompatiblePredation(pair)) {
             return null
         }
 
-        val intraguildAttackMultiplier =
-            if (
-                targetPredatorSupport > 0.0 &&
-                pair.sizeRatio < 4.0 &&
-                predationGraph.dietsOverlap(pair.consumer.index, pair.target.index)
-            ) {
-                0.50
-            } else {
-                1.0
-            }
+        val intraguildAttackMultiplier = if (targetPredatorSupport > 0.0 && pair.sizeRatio < 4.0 && predationGraph.dietsOverlap(pair.consumer.index, pair.target.index)) {
+            0.50
+        } else {
+            1.0
+        }
         val pursuitInteraction = pursuitSupport > ambushSupport
-        val burrowerCaptureBonus =
-            if (pair.target.interactions.usesBurrowRefuge) {
-                pair.consumer.interactions.burrowerCaptureBonus
+        val burrowerCaptureBonus = if (CommonTrait.FOSSORIAL_LIVING in pair.targetDefinition.traits) {
+            pair.consumer.interactions.burrowerCaptureBonus
+        } else {
+            0.0
+        }
+        val soundLureCaptureBonus = if (pair.consumer.interactions.acousticSignalMask and pair.target.interactions.acousticSignalMask != 0L) {
+            pair.consumer.interactions.soundLureCaptureBonus
+        } else {
+            0.0
+        }
+        val effectiveCapture = pair.consumer.interactions.captureAbility + (
+            if (pursuitInteraction) {
+                pair.consumer.interactions.pursuitSpeed + pair.consumer.interactions.sensing
             } else {
                 0.0
             }
-        val soundLureCaptureBonus =
-            if (
-                pair.consumer.interactions.acousticSignalMask and
-                pair.target.interactions.acousticSignalMask != 0L
-            ) {
-                pair.consumer.interactions.soundLureCaptureBonus
-            } else {
-                0.0
-            }
-        val effectiveCapture =
-            pair.consumer.interactions.captureAbility +
-                (
-                    if (pursuitInteraction) {
-                        pair.consumer.interactions.pursuitSpeed + pair.consumer.interactions.pursuitTracking
-                    } else {
-                        0.0
-                    }
-                    ) +
-                burrowerCaptureBonus +
-                soundLureCaptureBonus
-        val effectiveDefense =
-            pair.target.interactions.defense +
-                if (pursuitInteraction) pair.target.interactions.pursuitSpeed else 0.0
+            ) + burrowerCaptureBonus + soundLureCaptureBonus
+        val effectiveDefense = pair.target.interactions.defense + if (pursuitInteraction) {
+            pair.target.interactions.pursuitSpeed
+        } else {
+            pair.target.interactions.sensing
+        }
         val attack = (
-            0.07 *
-                intraguildAttackMultiplier *
-                predatorSupport *
-                effectiveCapture /
-                max(0.25, effectiveDefense)
+            0.07 * intraguildAttackMultiplier * activityOverlapMultiplier(
+                pair.consumer.interactions.activityPattern,
+                pair.target.interactions.activityPattern,
+            ) * predatorSupport * effectiveCapture / max(0.25, effectiveDefense)
             ).coerceIn(0.0, 0.25)
         return CompiledInteraction(
             kind = InteractionKind.PREDATION,
@@ -359,6 +288,22 @@ internal object FoodWebCompiler {
             consumerGainRate = attack * 1.30,
             targetLossRate = attack,
         )
+    }
+
+    private fun activityOverlapMultiplier(
+        predator: ActivityPattern?,
+        prey: ActivityPattern?,
+    ): Double {
+        if (predator == null || prey == null || predator == ActivityPattern.CATHEMERAL || prey == ActivityPattern.CATHEMERAL) {
+            return 1.0
+        }
+        if (predator == prey) {
+            return if (predator == ActivityPattern.VESPERTINE) 1.05 else 1.10
+        }
+        if (predator == ActivityPattern.VESPERTINE || prey == ActivityPattern.VESPERTINE) {
+            return 0.92
+        }
+        return 0.78
     }
 
     private fun buildPredationGraph(
@@ -375,30 +320,17 @@ internal object FoodWebCompiler {
             if (predatorSupport <= 0.0 || obligateFoodConsumers[consumer.index]) continue
             for (target in species) {
                 val pair = SpeciesPair(consumer, target, definitions[target.index])
-                potentialPredation[consumer.index][target.index] =
-                    consumer.index != target.index &&
-                    target.motile &&
-                    pair.sharedFeedingHabitat &&
-                    sizeCompatiblePredation(pair)
+                potentialPredation[consumer.index][target.index] = consumer.index != target.index && target.motile && pair.sharedFeedingHabitat && sizeCompatiblePredation(pair)
             }
         }
         return PredationGraph(potentialPredation)
     }
 
     private fun sizeCompatiblePredation(pair: SpeciesPair): Boolean {
-        val largerPreySizeClasses =
-            pair.target.sizeClass.ordinal - pair.consumer.sizeClass.ordinal
-        val cooperativeLargerPreyCompatible =
-            largerPreySizeClasses in 1..pair.consumer.interactions.largerPreySizeClasses
-        val aquaticTinyPreyCompatible =
-            pair.sharedAquaticHabitat &&
-                pair.consumer.sizeClass == SizeClass.MEDIUM &&
-                pair.target.sizeClass == SizeClass.TINY &&
-                pair.sizeRatio <= 1_000_000.0
-        return pair.sizeRatio in 0.25..1_000.0 ||
-            (pair.target.sizeClass == SizeClass.SMALL && pair.sizeRatio <= 10_000.0) ||
-            cooperativeLargerPreyCompatible ||
-            aquaticTinyPreyCompatible
+        val largerPreySizeClasses = pair.target.sizeClass.ordinal - pair.consumer.sizeClass.ordinal
+        val cooperativeLargerPreyCompatible = largerPreySizeClasses in 1..pair.consumer.interactions.largerPreySizeClasses
+        val aquaticTinyPreyCompatible = pair.sharedAquaticHabitat && pair.consumer.sizeClass == SizeClass.MEDIUM && pair.target.sizeClass == SizeClass.TINY && pair.sizeRatio <= 1_000_000.0
+        return pair.sizeRatio in 0.25..1_000.0 || (pair.target.sizeClass == SizeClass.SMALL && pair.sizeRatio <= 10_000.0) || cooperativeLargerPreyCompatible || aquaticTinyPreyCompatible
     }
 
     private fun compileAuthoredRelationships(
@@ -406,9 +338,7 @@ internal object FoodWebCompiler {
         species: List<CompiledSpecies>,
         builder: InteractionMatrixBuilder,
     ) {
-        val idToIndex = definitions
-            .mapIndexed { index, definition -> definition.id to index }
-            .toMap()
+        val idToIndex = definitions.mapIndexed { index, definition -> definition.id to index }.toMap()
         definitions.forEachIndexed { consumerIndex, definition ->
             val writer = builder.relationshipWriter(consumerIndex)
             definition.traits.flatMap { it.relationships }.forEach { relationship ->
@@ -417,7 +347,7 @@ internal object FoodWebCompiler {
                         consumer = definition,
                         compiledSpecies = species,
                         resolve = { selector ->
-                            resolveTargets(selector, definitions, idToIndex)
+                            resolveTargets(selector, definitions, idToIndex, consumerIndex)
                         },
                         writer = writer,
                     ),
@@ -426,24 +356,22 @@ internal object FoodWebCompiler {
         }
     }
 
-    private fun obligateFoodConsumers(definitions: List<SpeciesDefinition>): BooleanArray =
-        BooleanArray(definitions.size) { consumerIndex ->
-            definitions[consumerIndex].traits
-                .flatMap { it.relationships }
-                .any { it is RelationshipEffect.ObligateFood }
-        }
+    private fun obligateFoodConsumers(definitions: List<SpeciesDefinition>): BooleanArray = BooleanArray(definitions.size) { consumerIndex ->
+        definitions[consumerIndex].traits.flatMap { it.relationships }.any { it is RelationshipEffect.ObligateFood }
+    }
 
     private fun resolveTargets(
         selector: SpeciesSelector,
         definitions: List<SpeciesDefinition>,
         idToIndex: Map<String, Int>,
+        consumerIndex: Int,
     ): List<Int> = when (selector) {
-        is SpeciesSelector.ExactSpecies ->
-            listOf(
-                requireNotNull(idToIndex[selector.speciesId]) {
-                    "Unknown targeted species: ${selector.speciesId}"
-                }
-            )
+        is SpeciesSelector.ExactSpecies -> listOf(
+            requireNotNull(idToIndex[selector.speciesId]) {
+                "Unknown targeted species: ${selector.speciesId}"
+            }
+        )
+
         is SpeciesSelector.DescendantsOf -> {
             require(selector.ancestorSpeciesId in idToIndex) {
                 "Unknown targeted ancestor: ${selector.ancestorSpeciesId}"
@@ -456,6 +384,10 @@ internal object FoodWebCompiler {
                     idToIndex,
                 )
             }
+        }
+
+        is SpeciesSelector.HasTrait -> definitions.indices.filter { index ->
+            index != consumerIndex && selector.trait in definitions[index].traits
         }
     }
 
@@ -475,8 +407,6 @@ internal object FoodWebCompiler {
     }
 }
 
-private fun CompiledSpecies.supports(habitat: Habitat): Boolean =
-    niche.supports(habitat)
+private fun CompiledSpecies.supports(habitat: Habitat): Boolean = niche.supports(habitat)
 
-private fun CompiledSpecies.supportFor(strategy: EcoStrategy): Double =
-    niche.supportFor(strategy)
+private fun CompiledSpecies.supportFor(strategy: EcoStrategy): Double = niche.supportFor(strategy)

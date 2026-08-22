@@ -15,9 +15,9 @@ class RiverNetworkTest {
             listOf(firstTributary, secondTributary, joinedRiver, lowerRiver)
         )
 
-        assertEquals(0, counts[firstTributary])
-        assertEquals(0, counts[secondTributary])
-        assertEquals(2, counts[joinedRiver])
-        assertEquals(3, counts[lowerRiver])
+        assertEquals(0, counts[firstTributary], "Upstream segment counts accumulate tributaries downstream: expected `counts[firstTributary]` to match `0`")
+        assertEquals(0, counts[secondTributary], "Upstream segment counts accumulate tributaries downstream: expected `counts[secondTributary]` to match `0`")
+        assertEquals(2, counts[joinedRiver], "Upstream segment counts accumulate tributaries downstream: expected `counts[joinedRiver]` to match `2`")
+        assertEquals(3, counts[lowerRiver], "Upstream segment counts accumulate tributaries downstream: expected `counts[lowerRiver]` to match `3`")
     }
 }

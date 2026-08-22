@@ -36,9 +36,9 @@ class EcologyBenchmarkTest {
                 "ordered_pair_lookups=$pairLookups",
         )
 
-        assertEquals(20_000, scenario.communities.size)
-        assertEquals(480_000, populationUpdates)
-        assertTrue(medianMs.isFinite() && medianMs > 0.0)
+        assertEquals(20_000, scenario.communities.size, message = "Benchmark 20000 cell seasonal turn: expected `scenario.communities.size` to match `20_000`")
+        assertEquals(480_000, populationUpdates, message = "Benchmark 20000 cell seasonal turn: expected `populationUpdates` to match `480_000`")
+        assertTrue(medianMs.isFinite() && medianMs > 0.0, message = "Benchmark 20000 cell seasonal turn: expected `medianMs.isFinite() && medianMs > 0.0` to be true")
     }
 }
 

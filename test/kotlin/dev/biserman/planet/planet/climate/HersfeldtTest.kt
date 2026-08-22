@@ -13,13 +13,18 @@ class HersfeldtTest {
         val latentHeatOfVaporization = (595.5 - 0.55 * temperature) / 238.8
         val expectedDailyPet = 0.0135 * (temperature + 17.8) * dailySolarRadiation / latentHeatOfVaporization
 
-        assertEquals(expectedDailyPet * Hersfeldt.monthLength, Hersfeldt.hargreavesPet(temperature, irradiance), 1e-9)
+        assertEquals(
+            expectedDailyPet * Hersfeldt.monthLength,
+            Hersfeldt.hargreavesPet(temperature, irradiance),
+            1e-9,
+            "Hargreaves PET converts mean irradiance to monthly water depth: expected `Hersfeldt.hargreavesPet(temperature, irradiance)` to match `expectedDailyPet * Hersfeldt.monthLength`"
+        )
     }
 
     @Test
     fun `Hargreaves PET cannot be negative`() {
-        assertEquals(0.0, Hersfeldt.hargreavesPet(20.0, -100.0))
-        assertEquals(0.0, Hersfeldt.hargreavesPet(-20.0, 200.0))
+        assertEquals(0.0, Hersfeldt.hargreavesPet(20.0, -100.0), "Hargreaves PET cannot be negative: expected `Hersfeldt.hargreavesPet(20.0, -100.0)` to match `0.0`")
+        assertEquals(0.0, Hersfeldt.hargreavesPet(-20.0, 200.0), "Hargreaves PET cannot be negative: expected `Hersfeldt.hargreavesPet(-20.0, 200.0)` to match `0.0`")
     }
 
     @Test
@@ -38,8 +43,8 @@ class HersfeldtTest {
 
         val aet = Hersfeldt.estimateAet(datum, pet)
 
-        assertEquals(300.0, aet[1])
-        assertEquals(300.0, aet.sum())
+        assertEquals(300.0, aet[1], "AET cannot evaporate more water than precipitation and stored soil moisture: expected `aet[1]` to match `300.0`")
+        assertEquals(300.0, aet.sum(), "AET cannot evaporate more water than precipitation and stored soil moisture: expected `aet.sum()` to match `300.0`")
     }
 
     @Test
@@ -51,7 +56,7 @@ class HersfeldtTest {
             totalGddz = 0.0,
         )
 
-        assertEquals("TG", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id)
+        assertEquals("TG", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id, "Barren land takes priority over aridity: expected `Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id` to match `\"TG\"`")
     }
 
     @Test
@@ -64,7 +69,7 @@ class HersfeldtTest {
             totalGint = 0.0,
         )
 
-        assertEquals("TUA", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id)
+        assertEquals("TUA", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id, "Low tropical growth aridity takes priority over annual aridity: expected `Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id` to match `\"TUA\"`")
     }
 
     @Test
@@ -77,7 +82,7 @@ class HersfeldtTest {
             totalGint = 0.0,
         )
 
-        assertEquals("HDb", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id)
+        assertEquals("HDb", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id, "Torrid moist climate is swelter rather than supertropical: expected `Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id` to match `\"HDb\"`")
     }
 
     @Test
@@ -87,7 +92,11 @@ class HersfeldtTest {
             summerTemperature = 65.0,
         )
 
-        assertEquals("Or", Hersfeldt.classifyOcean(diagnostics, minIce = 0.0, maxIce = 0.0).id)
+        assertEquals(
+            "Or",
+            Hersfeldt.classifyOcean(diagnostics, minIce = 0.0, maxIce = 0.0).id,
+            "Ocean above sixty degrees is torrid despite a cool winter: expected `Hersfeldt.classifyOcean(diagnostics, minIce = 0.0, maxIce = 0.0).id` to match `\"Or\"`"
+        )
     }
 
     @Test
@@ -99,7 +108,7 @@ class HersfeldtTest {
             totalGint = 0.0,
         )
 
-        assertEquals("CDb", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id)
+        assertEquals("CDb", Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id, "High GDD continental climate is temperate even with low GInt: expected `Hersfeldt.classifyLand(diagnostics, minIce = 0.0).id` to match `\"CDb\"`")
     }
 
     @Test
@@ -117,10 +126,10 @@ class HersfeldtTest {
 
         val results = Hersfeldt.gdd(datum)
 
-        assertTrue(results.totalGdd.isInfinite())
-        assertTrue(results.totalGddl.isInfinite())
-        assertTrue(results.totalGddz.isInfinite())
-        assertTrue(results.totalGint.isInfinite())
+        assertTrue(results.totalGdd.isInfinite(), "Uninterrupted cyclic growth and interruption accumulate indefinitely: expected `results.totalGdd.isInfinite()` to be true")
+        assertTrue(results.totalGddl.isInfinite(), "Uninterrupted cyclic growth and interruption accumulate indefinitely: expected `results.totalGddl.isInfinite()` to be true")
+        assertTrue(results.totalGddz.isInfinite(), "Uninterrupted cyclic growth and interruption accumulate indefinitely: expected `results.totalGddz.isInfinite()` to be true")
+        assertTrue(results.totalGint.isInfinite(), "Uninterrupted cyclic growth and interruption accumulate indefinitely: expected `results.totalGint.isInfinite()` to be true")
     }
 
     private fun diagnostics(

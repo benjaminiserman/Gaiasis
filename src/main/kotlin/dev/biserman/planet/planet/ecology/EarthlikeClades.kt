@@ -26,6 +26,7 @@ object EarthlikeClades {
         CommonTrait.WALKING_LIMBS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.BEHAVIORAL_THERMOREGULATION,
+        CommonTrait.DIURNAL,
         ColorTrait.GREEN_CAMOUFLAGE,
     )
 
@@ -46,6 +47,7 @@ object EarthlikeClades {
         CommonTrait.GILLS,
         CommonTrait.AQUATIC_FLIPPERS,
         CommonTrait.AQUATIC_OVOSPORE,
+        CommonTrait.CATHEMERAL,
         ColorTrait.COUNTERSHADE_CAMOUFLAGE,
     )
 
@@ -54,9 +56,11 @@ object EarthlikeClades {
         SizeClass.SMALL,
         CommonTrait.ENDOTHERMY,
         CommonTrait.FEATHERS,
-        CommonTrait.FEATHERED_WINGS,
+        CommonTrait.WINGS,
+        CommonTrait.BEAK,
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.OVOSPORE_NEST,
+        CommonTrait.DIURNAL,
         ColorTrait.BROWN_CAMOUFLAGE,
     )
 
@@ -66,7 +70,7 @@ object EarthlikeClades {
         CommonTrait.ECTOTHERMY,
         CommonTrait.CLIMBING_LIMBS,
         CommonTrait.TERRESTRIAL_OVOSPORE,
-        CommonTrait.INSECTOID_WINGS,
+        CommonTrait.WINGS,
         CommonTrait.MOLTING_EXOSKELETON,
         ColorTrait.BROWN_CAMOUFLAGE
     )
@@ -216,7 +220,7 @@ object EarthlikeClades {
                 "mouse",
                 SizeClass.SMALL,
                 CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.DIGGING_CLAWS,
+                CommonTrait.DIGGING_LIMBS,
                 CommonTrait.CACHED_FOOD,
             ),
             mammal.extend(
@@ -230,6 +234,7 @@ object EarthlikeClades {
                 "rabbit",
                 SizeClass.SMALL,
                 CommonTrait.SWIFT_LEGS,
+                CommonTrait.DIGGING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.LEAPING_LEGS,
                 CommonTrait.DENSE_UNDERCOAT,
@@ -238,7 +243,7 @@ object EarthlikeClades {
             mammal.extend(
                 "megabat",
                 SizeClass.SMALL,
-                CommonTrait.MEMBRANOUS_WINGS,
+                CommonTrait.WINGS,
                 CommonTrait.FRUIT_EATING_MOUTHPARTS,
                 CommonTrait.SCREECHING_CALL,
                 CommonTrait.EXTENDED_PARENTAL_CARE
@@ -247,18 +252,19 @@ object EarthlikeClades {
                 "microbat",
                 SizeClass.TINY,
                 CommonTrait.HETEROTHERMY,
-                CommonTrait.MEMBRANOUS_WINGS,
+                CommonTrait.WINGS,
                 CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.KEEN_HEARING,
                 CommonTrait.ECHOLOCATION,
                 CommonTrait.SEASONAL_TORPOR,
             ),
             mammal.extend(
                 "mole",
                 SizeClass.SMALL,
-                CommonTrait.DIGGING_CLAWS,
-                CommonTrait.SUBTERRANEAN_BURROWING,
+                CommonTrait.DIGGING_LIMBS,
+                CommonTrait.FOSSORIAL_LIVING,
                 CommonTrait.VENOM_DELIVERY,
-                CommonTrait.INSULATED_BURROW_REFUGE,
+                CommonTrait.BURROW_BUILDER,
             ),
             mammal.extend(
                 "monkey",
@@ -359,7 +365,8 @@ object EarthlikeClades {
                 CommonTrait.HERDING_BEHAVIOR,
                 CommonTrait.REGIONAL_MIGRATION,
                 CommonTrait.EXTENDED_PARENTAL_CARE,
-                CommonTrait.TRUMPETING_CALL
+                CommonTrait.TRUMPETING_CALL,
+                CommonTrait.INTELLIGENT,
             ),
             mammal.extend(
                 "panther",
@@ -396,6 +403,7 @@ object EarthlikeClades {
                 CommonTrait.SEASONAL_WINTER_COAT,
                 CommonTrait.HOWLING_CALL,
                 CommonTrait.BARKING_CALL,
+                CommonTrait.INTELLIGENT,
                 ColorTrait.PALE_CAMOUFLAGE,
             ),
             mammal.extend(
@@ -424,7 +432,7 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.DIGGING_CLAWS,
+                CommonTrait.DIGGING_LIMBS,
                 CommonTrait.DENSE_UNDERCOAT,
                 ColorTrait.PALE_CAMOUFLAGE
             ),
@@ -449,7 +457,9 @@ object EarthlikeClades {
                 CommonTrait.BLUBBER,
                 CommonTrait.LONG_MIGRATION,
                 CommonTrait.WHALESONG,
+                CommonTrait.KEEN_HEARING,
                 CommonTrait.ECHOLOCATION,
+                CommonTrait.INTELLIGENT,
                 ColorTrait.COUNTERSHADE_CAMOUFLAGE,
             ),
             mammal.extend(
@@ -462,7 +472,9 @@ object EarthlikeClades {
                 CommonTrait.LONG_MIGRATION,
                 CommonTrait.CLICK_WHISTLE_REPERTOIRE,
                 CommonTrait.COOPERATIVE_HUNTING,
+                CommonTrait.KEEN_HEARING,
                 CommonTrait.ECHOLOCATION,
+                CommonTrait.INTELLIGENT,
                 ColorTrait.COUNTERSHADE_CAMOUFLAGE,
             )
         ),
@@ -489,7 +501,8 @@ object EarthlikeClades {
             reptile.extend(
                 "worm lizard",
                 SizeClass.TINY,
-                CommonTrait.SUBTERRANEAN_BURROWING,
+                CommonTrait.FOSSORIAL_LIVING,
+                CommonTrait.BURROW_BUILDER,
                 CommonTrait.SLENDER_BODY,
                 CommonTrait.UNDULATING_BODY,
                 ColorTrait.PALE_CAMOUFLAGE
@@ -551,7 +564,8 @@ object EarthlikeClades {
                 "caecillian",
                 SizeClass.TINY,
                 CommonTrait.UNDULATING_BODY,
-                CommonTrait.SUBTERRANEAN_BURROWING,
+                CommonTrait.FOSSORIAL_LIVING,
+                CommonTrait.BURROW_BUILDER,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.MAMMARY_GLANDS,
                 CommonTrait.VIVIPARITY,
@@ -583,7 +597,7 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.LONG_NECK,
                 CommonTrait.HERDING_BEHAVIOR,
-                minus = listOf(CommonTrait.FEATHERED_WINGS)
+                minus = listOf(CommonTrait.WINGS)
             ),
             bird.extend(
                 "fowl",
@@ -629,7 +643,7 @@ object EarthlikeClades {
                 CommonTrait.PROLONGED_BREATH_HOLDING,
                 CommonTrait.SEA_ICE_ROOKERY,
                 CommonTrait.MOTION_TRACKING_SENSES,
-                CommonTrait.INSULATED_BURROW_REFUGE,
+                CommonTrait.BURROW_BORROWER,
                 CommonTrait.WATERPROOF_PLUMAGE,
                 CommonTrait.FAT_RESERVES,
                 CommonTrait.TRUMPETING_CALL,
@@ -653,7 +667,7 @@ object EarthlikeClades {
                 "vulture",
                 SizeClass.SMALL,
                 CommonTrait.SCAVENGING_SENSES,
-                CommonTrait.EXPANDABLE_CROP,
+                CommonTrait.RESILIENT_DIGESTION,
                 CommonTrait.LONG_MIGRATION
             ),
             bird.extend(
@@ -687,6 +701,7 @@ object EarthlikeClades {
                 CommonTrait.CLIMBING_LIMBS,
                 CommonTrait.EXTENDED_PARENTAL_CARE,
                 CommonTrait.IMITATIVE_VOCALIZATION,
+                CommonTrait.INTELLIGENT,
             ),
             bird.extend(
                 "corvid",
@@ -694,6 +709,7 @@ object EarthlikeClades {
                 CommonTrait.SEED_CRACKING_MOUTHPARTS,
                 CommonTrait.SCAVENGING_SENSES,
                 CommonTrait.TOOL_MANIPULATION,
+                CommonTrait.INTELLIGENT,
                 CommonTrait.CROAKING_CALL,
                 ColorTrait.BLACK_CAMOUFLAGE
             )
@@ -745,6 +761,33 @@ object EarthlikeClades {
         CommonTrait.FLOWERS,
     )
 
+    private fun withInferredSocialOrganization(
+        traits: List<SpeciesTrait>,
+    ): List<SpeciesTrait> {
+        val withoutSocialOrganization =
+            traits.filterNot { it.group == TraitGroup.SOCIAL_ORGANIZATION }
+        val explicitOrganizations =
+            traits.filter { it.group == TraitGroup.SOCIAL_ORGANIZATION }
+        require(explicitOrganizations.size <= 1) {
+            "Multiple social organizations were authored: " +
+                explicitOrganizations.joinToString { it.displayName }
+        }
+        val organization = when {
+            CommonTrait.EUSOCIAL_COLONY in explicitOrganizations ->
+                CommonTrait.EUSOCIAL_COLONY
+            CommonTrait.COLLECTIVE_LIVING in explicitOrganizations ||
+                CommonTrait.HERDING_BEHAVIOR in traits ||
+                CommonTrait.SCHOOLING in traits ->
+                CommonTrait.COLLECTIVE_LIVING
+            CommonTrait.GROUP_LIVING in explicitOrganizations ||
+                CommonTrait.COOPERATIVE_HUNTING in traits ||
+                CommonTrait.GROUP_HUDDLING in traits ->
+                CommonTrait.GROUP_LIVING
+            else -> CommonTrait.SOLITARY
+        }
+        return withoutSocialOrganization + organization
+    }
+
     fun SpeciesDefinition.extend(
         name: String,
         sizeClass: SizeClass,
@@ -759,7 +802,9 @@ object EarthlikeClades {
                 .toSet()
                 .intersect(adaptations.mapNotNull { it.group }.toSet())
 
-            traits.filter { it.group !in categorySet && it !in minus } + adaptations
+            withInferredSocialOrganization(
+                traits.filter { it.group !in categorySet && it !in minus } + adaptations,
+            )
         },
     )
 }

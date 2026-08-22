@@ -15,7 +15,7 @@ class EcologyGlobalsTest {
             EcologyGlobals,
         )
 
-        assertEquals(currentGlobals, checkedIn)
+        assertEquals(currentGlobals, checkedIn, message = "Checked in ecology config matches the reloadable globals: expected `checkedIn` to match `currentGlobals`")
 
         // Exercise the same strict deserialization path as the in-game
         // refresh button, so a JSON property without a matching compiled
@@ -34,8 +34,8 @@ class EcologyGlobalsTest {
             )
             EcologyGlobals.validate()
 
-            assertEquals(original, existingSnapshot.backgroundMortality)
-            assertEquals(0.123, EcologyRuntimeConfig().backgroundMortality)
+            assertEquals(original, existingSnapshot.backgroundMortality, message = "Reloaded globals are captured by newly constructed runtime configs: expected `existingSnapshot.backgroundMortality` to match `original`")
+            assertEquals(0.123, EcologyRuntimeConfig().backgroundMortality, message = "Reloaded globals are captured by newly constructed runtime configs: expected `EcologyRuntimeConfig().backgroundMortality` to match `0.123`")
         } finally {
             EcologyGlobals.backgroundMortality = original
         }
@@ -49,7 +49,7 @@ class EcologyGlobalsTest {
                 """{"starLight":"RED"}""",
             )
 
-            assertEquals(StarLight.RED, EcologyGlobals.starLight)
+            assertEquals(StarLight.RED, EcologyGlobals.starLight, message = "Star light can be loaded from ecology config: expected `EcologyGlobals.starLight` to match `StarLight.RED`")
         } finally {
             EcologyGlobals.starLight = original
         }
@@ -61,6 +61,6 @@ class EcologyGlobalsTest {
 
         PlanetEcology.refreshRuntimeConfig()
 
-        assertEquals(originalRevision + 1, PlanetEcology.runtimeConfigRevision)
+        assertEquals(originalRevision + 1, PlanetEcology.runtimeConfigRevision, message = "Refreshing runtime configuration advances the cache revision: expected `PlanetEcology.runtimeConfigRevision` to match `originalRevision + 1`")
     }
 }

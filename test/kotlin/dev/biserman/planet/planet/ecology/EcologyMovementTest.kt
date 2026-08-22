@@ -25,8 +25,8 @@ class EcologyMovementTest {
             scratch = MovementScratch(maximumTransfers = 3, nicheCount = ecology.niches.size),
         )
 
-        assertTrue(communities[1].find(0) >= 0)
-        assertEquals(-1, communities[2].find(0))
+        assertTrue(communities[1].find(0) >= 0, message = "Neighbor dispersal establishes a viable adjacent rescue population: expected `communities[1].find(0) >= 0` to be true")
+        assertEquals(-1, communities[2].find(0), message = "Neighbor dispersal establishes a viable adjacent rescue population: expected `communities[2].find(0)` to match `-1`")
     }
 
     @Test
@@ -60,9 +60,9 @@ class EcologyMovementTest {
             scratch = MovementScratch(maximumTransfers = 3, nicheCount = ecology.niches.size),
         )
 
-        assertTrue(communities[2].find(0) >= 0)
-        assertEquals(-1, communities[1].find(0))
-        assertTrue(communities[0].reserves[0] < 2_000.0)
+        assertTrue(communities[2].find(0) >= 0, message = "Cached seasonal migration follows its fixed destination: expected `communities[2].find(0) >= 0` to be true")
+        assertEquals(-1, communities[1].find(0), message = "Cached seasonal migration follows its fixed destination: expected `communities[1].find(0)` to match `-1`")
+        assertTrue(communities[0].reserves[0] < 2_000.0, message = "Cached seasonal migration follows its fixed destination: expected `communities[0].reserves[0] < 2_000.0` to be true")
     }
 
     @Test
@@ -71,7 +71,7 @@ class EcologyMovementTest {
         val environments = arrayOf(land(majorRiver = true), land(majorRiver = false))
         val communities = emptyCommunities(2)
         val niche = NicheSelection.choose(ecology.species.single(), ecology, environments[0])
-        assertTrue(niche >= 0)
+        assertTrue(niche >= 0, message = "Freshwater specialist cannot radiate into a dry land cell: expected `niche >= 0` to be true")
         communities[0].add(0, niche, activeBiomass = 10_000.0)
         val plan = CompiledMovementPlan.compile(ecology, tileCount = 2, routes = emptyList())
 
@@ -86,7 +86,7 @@ class EcologyMovementTest {
             scratch = MovementScratch(maximumTransfers = 2, nicheCount = ecology.niches.size),
         )
 
-        assertEquals(-1, communities[1].find(0))
+        assertEquals(-1, communities[1].find(0), message = "Freshwater specialist cannot radiate into a dry land cell: expected `communities[1].find(0)` to match `-1`")
     }
 
     @Test
@@ -115,7 +115,7 @@ class EcologyMovementTest {
         }
 
         val communities = requireNotNull(radiated)
-        assertEquals(-1, communities[2].find(0))
+        assertEquals(-1, communities[2].find(0), message = "Population radiation is conservative and reaches only one neighbor per season: expected `communities[2].find(0)` to match `-1`")
         assertEquals(
             10_000.0,
             communities.sumOf { community ->
@@ -123,6 +123,7 @@ class EcologyMovementTest {
                 if (population < 0) 0.0 else community.activeBiomass[population]
             },
             absoluteTolerance = 1e-9,
+            message = "Assertion failed",
         )
         assertEquals(
             1_000.0,
@@ -131,6 +132,7 @@ class EcologyMovementTest {
                 if (population < 0) 0.0 else community.reserves[population]
             },
             absoluteTolerance = 1e-9,
+            message = "Assertion failed",
         )
     }
 
@@ -158,9 +160,9 @@ class EcologyMovementTest {
             canEstablish = { _, _, _ -> false },
         )
 
-        assertEquals(-1, communities[1].find(0))
-        assertEquals(10_000.0, communities[0].activeBiomass[0])
-        assertEquals(1_000.0, communities[0].reserves[0])
+        assertEquals(-1, communities[1].find(0), message = "Radiation establishment gate can reject an otherwise viable founder: expected `communities[1].find(0)` to match `-1`")
+        assertEquals(10_000.0, communities[0].activeBiomass[0], message = "Radiation establishment gate can reject an otherwise viable founder: expected `communities[0].activeBiomass[0]` to match `10_000.0`")
+        assertEquals(1_000.0, communities[0].reserves[0], message = "Radiation establishment gate can reject an otherwise viable founder: expected `communities[0].reserves[0]` to match `1_000.0`")
     }
 
     @Test
@@ -194,8 +196,8 @@ class EcologyMovementTest {
             config = EcologyRuntimeConfig(unassistedRadiationChancePerSeason = 1.0),
         )
 
-        assertEquals(8, ecology.species.single().lifeHistory.radiationRange)
-        assertTrue((2 until communities.size).any { communities[it].find(0) >= 0 })
+        assertEquals(8, ecology.species.single().lifeHistory.radiationRange, message = "Aerial ovospores radiate beyond neighboring tiles: expected `ecology.species.single().lifeHistory.radiationRange` to match `8`")
+        assertTrue((2 until communities.size).any { communities[it].find(0) >= 0 }, message = "Aerial ovospores radiate beyond neighboring tiles: expected `(2 until communities.size).any { communities[it].find(0) >= 0 }` to be true")
     }
 
     private fun emptyCommunities(count: Int) = Array(count) { TileCommunity() }

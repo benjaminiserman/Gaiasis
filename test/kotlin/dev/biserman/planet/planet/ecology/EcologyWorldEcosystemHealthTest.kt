@@ -259,21 +259,20 @@ class EcologyWorldEcosystemHealthTest {
                         community.dormantBiomass[populationIndex]
                     )
         }
-        val requiredRoles = TrophicRole.entries.filterTo(linkedSetOf()) { role ->
-            ecology.species.any { it.supports(role) }
+        val requiredRoles = ecology.species.mapNotNullTo(linkedSetOf()) { species ->
+            ecology.niches[nicheBySpecies.getValue(species.index)].strategy.trophicRole()
         }
-        val survivingSpecies = (0 until community.size).map { populationIndex ->
-            ecology.species[community.speciesIndices[populationIndex]]
+        val survivingRoles = (0 until community.size).mapNotNullTo(linkedSetOf()) { populationIndex ->
+            ecology.niches[community.nicheIndices[populationIndex]].strategy.trophicRole()
         }
-        val missingRoles = requiredRoles.filter { role ->
-            survivingSpecies.none { it.supports(role) }
-        }
+        val missingRoles = requiredRoles.filterNot(survivingRoles::contains)
         val trophicBiomass = trophicBiomass(ecology, community, finalBiomassById)
         val evolvingFilterFeederBiomass = (0 until community.size).sumOf { populationIndex ->
             val species = ecology.species[community.speciesIndices[populationIndex]]
             if (
                 species.kind == SpeciesKind.EVOLVING &&
-                species.niche.supportFor(EcoStrategy.FILTER_FEEDING) > 0.0
+                ecology.niches[community.nicheIndices[populationIndex]].strategy ==
+                EcoStrategy.FILTER_FEEDING
             ) {
                 finalBiomassById.getValue(species.id)
             } else {
@@ -326,6 +325,10 @@ class EcologyWorldEcosystemHealthTest {
     ): TrophicBiomass {
         val extantIndices = (0 until community.size)
             .mapTo(hashSetOf()) { community.speciesIndices[it] }
+        val roleBySpeciesIndex = (0 until community.size).associate { populationIndex ->
+            val speciesIndex = community.speciesIndices[populationIndex]
+            speciesIndex to ecology.niches[community.nicheIndices[populationIndex]].strategy.trophicRole()
+        }
         var producers = 0.0
         var primaryConsumers = 0.0
         var predators = 0.0
@@ -334,19 +337,19 @@ class EcologyWorldEcosystemHealthTest {
         extantIndices.forEach { speciesIndex ->
             val species = ecology.species[speciesIndex]
             val biomass = finalBiomassById.getValue(species.id)
-            when {
-                species.supports(TrophicRole.PRODUCER) -> producers += biomass
-                species.supports(TrophicRole.PREDATOR) -> {
+            when (roleBySpeciesIndex[speciesIndex]) {
+                TrophicRole.PRODUCER -> producers += biomass
+                TrophicRole.PREDATOR -> {
                     val eatsExtantPredator =
                         extantIndices.any { consumerIndex ->
                             consumerIndex != speciesIndex &&
-                                ecology.species[consumerIndex].supports(TrophicRole.PREDATOR) &&
+                                roleBySpeciesIndex[consumerIndex] == TrophicRole.PREDATOR &&
                                 ecology.interactions.get(speciesIndex, consumerIndex).kind ==
                                 InteractionKind.PREDATION
                         }
                     if (eatsExtantPredator) apexPredators += biomass else predators += biomass
                 }
-                species.supports(TrophicRole.PRIMARY_CONSUMER) -> primaryConsumers += biomass
+                TrophicRole.PRIMARY_CONSUMER -> primaryConsumers += biomass
                 else -> other += biomass
             }
         }
@@ -465,18 +468,19 @@ class EcologyWorldEcosystemHealthTest {
         PREDATOR,
     }
 
-    private fun CompiledSpecies.supports(role: TrophicRole): Boolean = when (role) {
-        TrophicRole.PRODUCER ->
-            niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
-        TrophicRole.PRIMARY_CONSUMER ->
-            niche.supportFor(EcoStrategy.FILTER_FEEDING) > 0.0 ||
-                niche.supportFor(EcoStrategy.GRAZING) > 0.0 ||
-                niche.supportFor(EcoStrategy.NECTAR_FEEDING) > 0.0 ||
-                niche.supportFor(EcoStrategy.DEPOSIT_FEEDING) > 0.0
-        TrophicRole.PREDATOR ->
-            niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0 ||
-                niche.supportFor(EcoStrategy.PURSUIT_PREDATION) > 0.0 ||
-                niche.supportFor(EcoStrategy.COLONY_RAIDING) > 0.0
+    private fun EcoStrategy.trophicRole(): TrophicRole? = when (this) {
+        EcoStrategy.PHOTOSYNTHESIS -> TrophicRole.PRODUCER
+        EcoStrategy.FILTER_FEEDING,
+        EcoStrategy.GRAZING,
+        EcoStrategy.FRUGIVORY,
+        EcoStrategy.NECTAR_FEEDING,
+        EcoStrategy.DEPOSIT_FEEDING,
+        -> TrophicRole.PRIMARY_CONSUMER
+        EcoStrategy.AMBUSH_PREDATION,
+        EcoStrategy.PURSUIT_PREDATION,
+        EcoStrategy.COLONY_RAIDING,
+        -> TrophicRole.PREDATOR
+        else -> null
     }
 
     private companion object {

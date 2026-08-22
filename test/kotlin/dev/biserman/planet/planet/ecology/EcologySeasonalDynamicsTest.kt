@@ -19,8 +19,8 @@ class EcologySeasonalDynamicsTest {
             hasMarineCompartment = false,
         )
 
-        assertTrue(updated.carrion > 0.0)
-        assertEquals(0.0, updated.marineSnow)
+        assertTrue(updated.carrion > 0.0, message = "Shared resource dynamics omit marine snow without a marine compartment: expected `updated.carrion > 0.0` to be true")
+        assertEquals(0.0, updated.marineSnow, message = "Shared resource dynamics omit marine snow without a marine compartment: expected `updated.marineSnow` to match `0.0`")
     }
 
     @Test
@@ -50,11 +50,11 @@ class EcologySeasonalDynamicsTest {
         val first = EcologyClimateVariability.anomaly(tileId = 42, year = 17.25)
         val repeated = EcologyClimateVariability.anomaly(tileId = 42, year = 17.25)
 
-        assertEquals(first, repeated)
+        assertEquals(first, repeated, message = "Climate anomalies are deterministic and remain within authored bounds: expected `repeated` to match `first`")
         repeat(1_000) { quarter ->
             val anomaly = EcologyClimateVariability.anomaly(tileId = 42, year = quarter / 4.0)
-            assertTrue(anomaly.temperatureC in -2.0..2.0)
-            assertTrue(anomaly.precipitationMultiplier in 0.75..1.25)
+            assertTrue(anomaly.temperatureC in -2.0..2.0, message = "Climate anomalies are deterministic and remain within authored bounds: expected `anomaly.temperatureC in -2.0..2.0` to be true")
+            assertTrue(anomaly.precipitationMultiplier in 0.75..1.25, message = "Climate anomalies are deterministic and remain within authored bounds: expected `anomaly.precipitationMultiplier in 0.75..1.25` to be true")
         }
     }
 
@@ -70,7 +70,7 @@ class EcologySeasonalDynamicsTest {
                 seasonalRetention = 0.68,
                 maximumAccessibleFraction = 0.75,
             )
-            assertTrue(level > 0.0)
+            assertTrue(level > 0.0, message = "Detritus accessibility prevents complete alternating depletion: expected `level > 0.0` to be true")
         }
     }
 }

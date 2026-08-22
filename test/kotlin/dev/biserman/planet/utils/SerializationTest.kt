@@ -17,7 +17,7 @@ class SerializationTest {
             Serialization.save(saveFile.toString(), original)
             val restored = Serialization.load(saveFile.toString(), SerializationFixture::class.java)
 
-            assertEquals(original, restored)
+            assertEquals(original, restored, "Value survives a serialization round trip: expected `restored` to match `original`")
         } finally {
             saveFile.deleteIfExists()
         }

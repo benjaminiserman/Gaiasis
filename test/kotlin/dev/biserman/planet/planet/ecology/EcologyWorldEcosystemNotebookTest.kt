@@ -19,20 +19,37 @@ class EcologyWorldEcosystemNotebookTest {
             .joinToString("")
         val scenarios = AuthoredEcosystems.ALL
 
-        assertEquals(22, scenarios.size)
-        assertEquals(1, scenarios.count { !it.intendedStable })
-        assertEquals(1, scenarios.count { it.introductions.isNotEmpty() })
-        assertEquals(2, scenarios.count { it.climateShifts.isNotEmpty() })
-        assertEquals(2, scenarios.count { it.habitatShifts.isNotEmpty() })
-        assertEquals(2, scenarios.count { it.populationRemovals.isNotEmpty() })
-        assertEquals(6, scenarios.count { it.expectedExtinctions.isNotEmpty() })
-        assertEquals(1, scenarios.count { it.tile.includeAeroplankton })
+        assertEquals(22, scenarios.size, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.size` to match `22`")
+        assertEquals(1, scenarios.count { !it.intendedStable }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { !it.intendedStable }` to match `1`")
+        assertEquals(1, scenarios.count { it.introductions.isNotEmpty() }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.introductions.isNotEmpty() }` to match `1`")
+        assertEquals(2, scenarios.count { it.climateShifts.isNotEmpty() }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.climateShifts.isNotEmpty() }` to match `2`")
+        assertEquals(2, scenarios.count { it.habitatShifts.isNotEmpty() }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.habitatShifts.isNotEmpty() }` to match `2`")
+        assertEquals(
+            2,
+            scenarios.count {
+                it.populationRemovals.isNotEmpty()
+            },
+            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.populationRemovals.isNotEmpty() }` to match `2`"
+        )
+        assertEquals(
+            6,
+            scenarios.count {
+                it.expectedExtinctions.isNotEmpty()
+            },
+            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.expectedExtinctions.isNotEmpty() }` to match `6`"
+        )
+        assertEquals(1, scenarios.count { it.tile.includeAeroplankton }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.tile.includeAeroplankton }` to match `1`")
         assertEquals(
             scenarios.size,
             Regex("""runEcosystem\(AuthoredEcosystems\.\w+\)""").findAll(source).count(),
+            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `Regex(\"\"\"runEcosystem\\(AuthoredEcosystems\\.\\w+\\)\"\"\").findAll(source).count()` to match `scenarios.size`",
         )
-        assertTrue("FunctionalResourceDynamics.update(" in source)
-        assertEquals(1, Regex("""repeat\(4000\)""").findAll(source).count())
+        assertTrue("FunctionalResourceDynamics.update(" in source, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `\"FunctionalResourceDynamics.update(\" in source` to be true")
+        assertEquals(
+            1,
+            Regex("""repeat\(4000\)""").findAll(source).count(),
+            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `Regex(\"\"\"repeat\\(4000\\)\"\"\").findAll(source).count()` to match `1`"
+        )
     }
 
     @Test
@@ -48,9 +65,9 @@ class EcologyWorldEcosystemNotebookTest {
             .toSet()
         val catalogSpecies = EarthSpeciesCatalog.ALL.map { it.id }.toSet()
 
-        assertTrue(referencedSpecies.isNotEmpty())
-        assertEquals(emptySet(), referencedSpecies - catalogSpecies)
-        assertTrue("SpeciesDefinition(" !in source)
-        assertTrue("TargetedRelationshipTrait(" !in source)
+        assertTrue(referencedSpecies.isNotEmpty(), message = "Notebook uses only Earth species catalog entries: expected `referencedSpecies.isNotEmpty()` to be true")
+        assertEquals(emptySet(), referencedSpecies - catalogSpecies, message = "Notebook uses only Earth species catalog entries: expected `referencedSpecies - catalogSpecies` to match `emptySet()`")
+        assertTrue("SpeciesDefinition(" !in source, message = "Notebook uses only Earth species catalog entries: expected `\"SpeciesDefinition(\" !in source` to be true")
+        assertTrue("TargetedRelationshipTrait(" !in source, message = "Notebook uses only Earth species catalog entries: expected `\"TargetedRelationshipTrait(\" !in source` to be true")
     }
 }

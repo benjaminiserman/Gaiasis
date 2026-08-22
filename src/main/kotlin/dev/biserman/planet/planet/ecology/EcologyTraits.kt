@@ -35,6 +35,10 @@ enum class TraitGroup {
     TERRESTRIAL_ATTACHMENT,
     TERRESTRIAL_MOVEMENT_STRUCTURE,
     FLIGHT_STRUCTURE,
+    ACTIVITY_PATTERN,
+    COGNITIVE_COMPLEXITY,
+    SOCIAL_ORGANIZATION,
+    BURROW_REFUGE,
     BIOLOGICAL_COLOR,
 }
 
@@ -46,7 +50,13 @@ enum class TraitCapability {
     GROUND_WALKING,
     ARBOREAL_LOCOMOTION,
     MOTILE_APPENDAGES,
+    TERRESTRIAL_ACTIVITY,
     ACTIVE_FLIGHT,
+    KEEN_HEARING,
+    SLOW_DEVELOPMENT,
+    INTELLIGENCE,
+    SOCIAL_GROUP,
+    COLLECTIVE_GROUP,
     SOCIAL_COLONY,
     NECTAR_FEEDING,
     SUBSTRATE_ANCHORING,
@@ -65,6 +75,10 @@ enum class TraitCapability {
     ABSORPTIVE_FILAMENTS,
     RIGID_REEF_FRAMEWORK,
     CHIRPING_VOCALIZATION,
+    BURROW_EXCAVATION,
+    BURROW_BUILDER,
+    BURROW_BORROWER,
+    OVIPOSITOR,
 }
 
 /** A recognizable sound pattern that another species may reproduce or exploit. */
@@ -135,6 +149,16 @@ sealed interface TraitRequirement {
             "requires one of ${capabilities.joinToString()}"
     }
 
+    data class NoneOf(val capabilities: Set<TraitCapability>) : TraitRequirement {
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = this.capabilities.none { it in capabilities }
+
+        override fun describe(): String =
+            "requires none of ${capabilities.joinToString()}"
+    }
+
     data class SizeClassIs(val sizeClass: SizeClass) : TraitRequirement {
         override fun isSatisfiedBy(
             definition: SpeciesDefinition,
@@ -144,6 +168,24 @@ sealed interface TraitRequirement {
         override fun describe(): String = "requires $sizeClass size"
     }
 
+    data class SizeClassAtLeast(val sizeClass: SizeClass) : TraitRequirement {
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = definition.sizeClass >= sizeClass
+
+        override fun describe(): String = "requires at least $sizeClass size"
+    }
+
+    data class SizeClassAtMost(val sizeClass: SizeClass) : TraitRequirement {
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<TraitCapability>,
+        ): Boolean = definition.sizeClass <= sizeClass
+
+        override fun describe(): String = "requires at most $sizeClass size"
+    }
+
     data object HasAcousticSignal : TraitRequirement {
         override fun isSatisfiedBy(
             definition: SpeciesDefinition,
@@ -151,6 +193,16 @@ sealed interface TraitRequirement {
         ): Boolean = definition.traits.any { it.acousticSignal != null }
 
         override fun describe(): String = "requires an acoustic call"
+    }
+
+    companion object {
+        fun allOf(vararg capabilities: TraitCapability) = AllOf(capabilities.toSet())
+        fun anyOf(vararg capabilities: TraitCapability) = AnyOf(capabilities.toSet())
+        fun noneOf(vararg capabilities: TraitCapability) = NoneOf(capabilities.toSet())
+
+        fun sizeClassIs(sizeClass: SizeClass) = SizeClassIs(sizeClass)
+        fun sizeClassAtLeast(sizeClass: SizeClass) = SizeClassAtLeast(sizeClass)
+        fun sizeClassAtMost(sizeClass: SizeClass) = SizeClassAtMost(sizeClass)
     }
 }
 
@@ -279,6 +331,7 @@ enum class CommonTrait(
     override val group: TraitGroup? = null,
     override val capabilities: Set<TraitCapability> = emptySet(),
     override val requirements: List<TraitRequirement> = emptyList(),
+    override val relationships: List<RelationshipEffect> = emptyList(),
 ) : SpeciesTrait {
     TEMPERATE_BIOCHEMISTRY(
         "temperate biochemistry",
@@ -417,7 +470,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.ECTOTHERMIC_REGULATION)),
+            TraitRequirement.allOf(TraitCapability.ECTOTHERMIC_REGULATION),
         ),
     ),
     EXTENDED_PARENTAL_CARE(
@@ -458,6 +511,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.72),
             TraitEffect.MaintenanceCost(-0.08),
         ),
+        capabilities = setOf(TraitCapability.SLOW_DEVELOPMENT),
     ),
     INFREQUENT_REPRODUCTION(
         "infrequent reproduction",
@@ -532,7 +586,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_REPRODUCTION)),
+            TraitRequirement.allOf(TraitCapability.OVOSPORE_REPRODUCTION),
         ),
     ),
     OVOSPORE_NEST(
@@ -544,7 +598,7 @@ enum class CommonTrait(
         ),
         capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+            TraitRequirement.allOf(TraitCapability.OVOSPORE_BROODING),
         ),
     ),
     BODY_CARRIED_OVOSPORES(
@@ -556,7 +610,7 @@ enum class CommonTrait(
         ),
         capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+            TraitRequirement.allOf(TraitCapability.OVOSPORE_BROODING),
         ),
     ),
     BROOD_PROVISIONING(
@@ -674,7 +728,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.035),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING),
         ),
     ),
     WALKING_LIMBS(
@@ -688,6 +742,7 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.GROUND_WALKING,
             TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
     ),
     UNDULATING_BODY(
@@ -700,6 +755,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(
+            TraitCapability.TERRESTRIAL_ACTIVITY,
+            TraitCapability.BURROW_EXCAVATION,
+        ),
     ),
     MUSCULAR_FOOT(
         "muscular foot",
@@ -711,6 +770,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(TraitCapability.TERRESTRIAL_ACTIVITY),
     ),
     CRAWLING_APPENDAGES(
         "crawling appendages",
@@ -721,7 +781,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
-        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
+        capabilities = setOf(
+            TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
+        ),
     ),
     ENLARGED_CARDIOPULMONARY_SYSTEM(
         "enlarged heart and lungs",
@@ -864,12 +927,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.12),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
-            TraitRequirement.AnyOf(
-                setOf(
-                    TraitCapability.UNDERWATER_RESPIRATION,
-                    TraitCapability.BREATH_HOLDING,
-                ),
+            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION),
+            TraitRequirement.anyOf(
+                TraitCapability.UNDERWATER_RESPIRATION,
+                TraitCapability.BREATH_HOLDING,
             ),
         ),
     ),
@@ -882,7 +943,10 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.54),
             TraitEffect.MaintenanceCost(0.11),
         ),
-        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
+        capabilities = setOf(
+            TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
+        ),
     ),
     WADING_LIMBS(
         "wading limbs",
@@ -898,6 +962,7 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.GROUND_WALKING,
             TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
     ),
     CLIMBING_LIMBS(
@@ -911,6 +976,7 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.ARBOREAL_LOCOMOTION,
             TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
     ),
     STICKY_FEET(
@@ -921,7 +987,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.ARBOREAL_LOCOMOTION)),
+            TraitRequirement.allOf(TraitCapability.ARBOREAL_LOCOMOTION),
         ),
     ),
     CANOPY_GROWTH(
@@ -970,7 +1036,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
+            TraitRequirement.allOf(TraitCapability.PHOTOSYNTHETIC_TISSUE),
         ),
     ),
     EPIPHYTIC_ROOTS(
@@ -1076,7 +1142,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
+            TraitRequirement.allOf(TraitCapability.PHOTOSYNTHETIC_TISSUE),
         ),
     ),
     BENTHIC_BODY(
@@ -1115,9 +1181,9 @@ enum class CommonTrait(
         ),
         capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
     ),
-    FEATHERED_WINGS(
-        "feathered wings",
-        "Forelimbs bearing asymmetric flight feathers generate lift and thrust through active wingbeats.",
+    WINGS(
+        "wings",
+        "Paired aerodynamic surfaces generate lift and thrust through active wingbeats.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
             TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
@@ -1129,40 +1195,22 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.ACTIVE_FLIGHT,
             TraitCapability.MOTILE_APPENDAGES,
-        ),
-        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
-    ),
-    MEMBRANOUS_WINGS(
-        "membranous wings",
-        "Thin living membranes stretched between elongated supports generate lift and thrust through active wingbeats.",
-        listOf(
-            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
-            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
-            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.12),
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        group = TraitGroup.FLIGHT_STRUCTURE,
-        capabilities = setOf(
-            TraitCapability.ACTIVE_FLIGHT,
-            TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
     ),
-    INSECTOID_WINGS(
-        "insectoid wings",
-        "Thin wings articulated to an external body wall generate lift and thrust without replacing the walking appendages.",
+    FLIGHTLESS_WINGS(
+        "flightless wings",
+        "Feathered forelimbs retained for balance, display, insulation, swimming, or defense after the loss of powered flight.",
         listOf(
-            TraitEffect.HabitatSupport(Habitat.AERIAL, 0.85),
-            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.20),
-            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.12),
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.MaintenanceCost(0.24),
+            TraitEffect.Defense(0.02),
+            TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(
-            TraitCapability.ACTIVE_FLIGHT,
             TraitCapability.MOTILE_APPENDAGES,
+            TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.FEATHER_COVERING)),
     ),
     PELAGIC_SOARING_WINGS(
         "pelagic soaring wings",
@@ -1174,40 +1222,59 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.ACTIVE_FLIGHT)),
+            TraitRequirement.allOf(TraitCapability.ACTIVE_FLIGHT),
         ),
     ),
-    SUBTERRANEAN_BURROWING(
-        "subterranean burrowing",
+    FOSSORIAL_LIVING(
+        "fossorial living",
         "Anatomy and behavior for excavating, navigating, and sheltering within soil or soft substrate.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 3.0, hotterC = 3.0),
             TraitEffect.WaterRequirement(-0.06),
-            TraitEffect.BurrowRefuge,
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.MaintenanceCost(0.05),
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(
+                TraitCapability.BURROW_EXCAVATION,
+                TraitCapability.BURROW_BUILDER,
+                TraitCapability.BURROW_BORROWER,
+            ),
         ),
     ),
-    INSULATED_BURROW_REFUGE(
-        "insulated burrow refuge",
-        "A sheltered burrow or rock-crevice retreat buffers its occupant from the coldest exposed-air temperatures.",
+    BURROW_BUILDER(
+        "burrow builder",
+        "A self-excavated burrow provides shelter, a buffered microclimate, and a dry chamber for nesting or resting.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 5.0),
-            TraitEffect.BurrowRefuge,
-            TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = 5.0),
+            TraitEffect.WaterRequirement(-0.06),
+            TraitEffect.MaximumWaterTolerance(
+                optimalMaximumChange = -0.25,
+                absoluteMaximumChange = -0.125,
+            ),
+            TraitEffect.Defense(0.05),
+            TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.BURROW_REFUGE,
+        capabilities = setOf(TraitCapability.BURROW_BUILDER),
+        requirements = listOf(TraitRequirement.anyOf(TraitCapability.BURROW_EXCAVATION)),
     ),
-    DRY_BURROW_NEST(
-        "dry burrow nest",
-        "A nest chamber whose eggs, young, stored food, or respiratory surfaces require a well-drained burrow.",
+    BURROW_BORROWER(
+        "burrow borrower",
+        "An occupant uses burrows excavated by another species for shelter, a buffered microclimate, and a dry chamber for nesting or resting.",
         listOf(
-            TraitEffect.TemperatureTolerance(hotterC = 5.0, colderC = 3.0),
+            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = 5.0),
             TraitEffect.WaterRequirement(-0.06),
             TraitEffect.MaximumWaterTolerance(
                 optimalMaximumChange = -0.66,
                 absoluteMaximumChange = -0.33,
             ),
-            TraitEffect.BurrowRefuge,
-            TraitEffect.MaintenanceCost(0.05),
+            TraitEffect.Defense(0.05),
+            TraitEffect.MaintenanceCost(0.01),
+        ),
+        group = TraitGroup.BURROW_REFUGE,
+        capabilities = setOf(TraitCapability.BURROW_BORROWER),
+        relationships = listOf(
+            RelationshipEffect.RequiresTarget(SpeciesSelector.HasTrait(BURROW_BUILDER)),
         ),
     ),
     BALEEN(
@@ -1225,7 +1292,7 @@ enum class CommonTrait(
         "Interlocking teeth form a sieve that retains minuscule swimming prey as water is expelled from the mouth.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.82),
-            TraitEffect.CaptureAbility(0.0),
+            TraitEffect.CaptureAbility(0.1),
             TraitEffect.MaintenanceCost(0.05),
         ),
         group = TraitGroup.FILTERING_APPARATUS,
@@ -1307,7 +1374,7 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(0.03),
             TraitEffect.MaintenanceCost(0.10),
         ),
-        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.GROUND_WALKING))),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.GROUND_WALKING)),
     ),
     STREAMLINED_BODY(
         "streamlined body",
@@ -1318,7 +1385,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.10),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
+            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION),
         ),
     ),
     SLENDER_BODY(
@@ -1393,11 +1460,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
         requirements = listOf(
-            TraitRequirement.AnyOf(
-                setOf(
-                    TraitCapability.GROUND_WALKING,
-                    TraitCapability.ARBOREAL_LOCOMOTION,
-                ),
+            TraitRequirement.anyOf(
+                TraitCapability.GROUND_WALKING,
+                TraitCapability.ARBOREAL_LOCOMOTION,
             ),
         ),
     ),
@@ -1418,7 +1483,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.GROUND_WALKING)),
+            TraitRequirement.allOf(TraitCapability.GROUND_WALKING),
         ),
     ),
     SPEAR_BILL(
@@ -1437,26 +1502,47 @@ enum class CommonTrait(
         "Vision, hearing, scent, vibration detection, or equivalent senses allow a hunter to follow moving prey through a sustained chase.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.70),
-            TraitEffect.CaptureAbility(0.18),
+            TraitEffect.Sensing(0.12),
             TraitEffect.MaintenanceCost(0.13),
         ),
     ),
     KEEN_SCENT_SENSE(
         "keen sense of smell",
-        "A large, sensitive chemical-sensing system follows faint trails and helps individuals locate distant mates.",
+        "A large, sensitive chemical-sensing system follows faint trails, detects concealed threats, and helps individuals locate distant mates.",
         listOf(
-            TraitEffect.PursuitTracking(0.12),
+            TraitEffect.Sensing(0.12),
             TraitEffect.ReproductionMultiplier(1.05),
             TraitEffect.MaintenanceCost(0.05),
         ),
+    ),
+    KEEN_HEARING(
+        "keen hearing",
+        "Sensitive auditory organs and neural processing locate faint or distant sounds, including concealed threats, and distinguish them from background noise.",
+        listOf(
+            TraitEffect.Sensing(0.08),
+            TraitEffect.CaptureAbility(0.03),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        capabilities = setOf(TraitCapability.KEEN_HEARING),
     ),
     KEEN_EYESIGHT(
         "keen eyesight",
         "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
         listOf(
-            TraitEffect.CaptureAbility(0.14),
+            TraitEffect.CaptureAbility(0.05),
             TraitEffect.MaintenanceCost(0.05),
         ),
+    ),
+    SILENT_MOVEMENT(
+        "silent movement",
+        "Silent movement allows creatures to avoid being noticed, and also improves the ability to ambush and capture prey.",
+        listOf(
+            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.5),
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.Defense(0.04),
+            TraitEffect.MaintenanceCost(0.08),
+        ),
+        requirements = listOf(TraitRequirement.SizeClassAtLeast(SizeClass.SMALL))
     ),
     CAMOUFLAGE_PATTERN(
         "camouflage pattern",
@@ -1476,9 +1562,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.09),
         ),
     ),
-    EXPANDABLE_CROP(
-        "expandable food crop",
-        "A distensible storage chamber holds a large meal after brief access to an unpredictable carcass.",
+    RESILIENT_DIGESTION(
+        "resilient digestion",
+        "A robust digestive system handles large, irregular meals and extracts nutrition from food of inconsistent quality.",
         listOf(
             TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.08),
             TraitEffect.ReserveCapacity(0.42),
@@ -1522,7 +1608,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING),
         ),
     ),
     MARINE_SNOW_COLLECTORS(
@@ -1564,7 +1650,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.ABSORPTIVE_FILAMENTS)),
+            TraitRequirement.allOf(TraitCapability.ABSORPTIVE_FILAMENTS),
         ),
     ),
     FUR(
@@ -1585,7 +1671,7 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(-0.04),
             TraitEffect.MaintenanceCost(0.04),
         ),
-        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING))),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.HAIR_COVERING)),
     ),
     WOOLLY_UNDERCOAT(
         "woolly undercoat",
@@ -1595,7 +1681,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
+            TraitRequirement.allOf(TraitCapability.HAIR_COVERING),
         ),
     ),
     FEATHERS(
@@ -1607,6 +1693,57 @@ enum class CommonTrait(
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
         capabilities = setOf(TraitCapability.FEATHER_COVERING),
+    ),
+    BEAK(
+        "beak",
+        "A hard projecting mouth structure cuts, crushes, probes, or tears food without teeth.",
+        listOf(TraitEffect.CaptureAbility(0.02), TraitEffect.MaintenanceCost(0.02)),
+    ),
+    FANGS(
+        "fangs",
+        "Elongated pointed teeth pierce and retain prey or deliver a disabling bite.",
+        listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.03)),
+    ),
+    CLAWS(
+        "claws",
+        "Curved hardened tips on the digits provide traction, defense, and a grip on food or prey.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES)),
+    ),
+    STINGER(
+        "stinger",
+        "A sharp specialized appendage punctures another organism during attack or defense.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.Defense(0.06),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES)),
+    ),
+    TENTACLES(
+        "tentacles",
+        "Flexible elongated appendages sense, grasp, or move food through water without rigid joints.",
+        listOf(TraitEffect.CaptureAbility(0.05), TraitEffect.MaintenanceCost(0.06)),
+        capabilities = setOf(TraitCapability.MOTILE_APPENDAGES),
+    ),
+    TAIL(
+        "tail",
+        "A posterior extension balances the body, signals to others, steers movement, or distracts attackers.",
+        listOf(TraitEffect.MaintenanceCost(0.01), TraitEffect.ReproductionMultiplier(1.01)),
+    ),
+    AUTOTOMY(
+        "autotomy",
+        "The organism deliberately sheds a trapped or attacked appendage, escaping at the cost of lost tissue and function.",
+        listOf(
+            TraitEffect.Defense(0.12),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES))
     ),
     MOLTING_EXOSKELETON(
         "molting exoskeleton",
@@ -1627,7 +1764,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.MOTILE_APPENDAGES)),
+            TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES),
         ),
     ),
     WATER_RETENTIVE_SCALES(
@@ -1646,11 +1783,11 @@ enum class CommonTrait(
         "insulating plumage",
         "Dense overlapping feathers trap air around the body while remaining lighter than an equally thick fur coat.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -2.0),
+            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
             TraitEffect.WaterRequirement(-0.03),
             TraitEffect.MaintenanceCost(0.05),
         ),
-        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.FEATHER_COVERING)),
     ),
     BARE_HEAT_DISSIPATING_SKIN(
         "bare heat-dissipating skin",
@@ -1696,7 +1833,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
+            TraitRequirement.allOf(TraitCapability.HAIR_COVERING),
         ),
     ),
     WATER_STORAGE_TISSUE(
@@ -1734,7 +1871,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING),
         ),
     ),
     SUCCULENT_STEM(
@@ -1747,7 +1884,7 @@ enum class CommonTrait(
         ),
         capabilities = setOf(TraitCapability.WATER_STORAGE),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING),
         ),
     ),
     WAXY_CUTICLE(
@@ -1768,7 +1905,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.02),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.WATER_STORAGE)),
+            TraitRequirement.allOf(TraitCapability.WATER_STORAGE),
         ),
     ),
     DROUGHT_DECIDUOUS_LEAVES(
@@ -1794,7 +1931,7 @@ enum class CommonTrait(
         ),
         group = TraitGroup.DORMANCY_MODE,
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.PHOTOSYNTHETIC_TISSUE)),
+            TraitRequirement.allOf(TraitCapability.PHOTOSYNTHETIC_TISSUE),
         ),
     ),
     FROST_HARDENED_TISSUES(
@@ -1817,7 +1954,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SUBSTRATE_ANCHORING)),
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING),
         ),
     ),
     BLUBBER(
@@ -1913,6 +2050,14 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.03),
         ),
         group = TraitGroup.DORMANCY_MODE,
+        requirements = listOf(
+            TraitRequirement.anyOf(
+                TraitCapability.BURROW_EXCAVATION,
+                TraitCapability.BURROW_BUILDER,
+                TraitCapability.BURROW_BORROWER,
+                TraitCapability.OVIPOSITOR,
+            ),
+        ),
     ),
     PROLONGED_JUVENILE_DORMANCY(
         "prolonged juvenile dormancy",
@@ -1955,7 +2100,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.09),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.RIGID_REEF_FRAMEWORK)),
+            TraitRequirement.allOf(TraitCapability.RIGID_REEF_FRAMEWORK),
         ),
     ),
     RIGID_COLONY_FRAMEWORK(
@@ -2030,11 +2175,9 @@ enum class CommonTrait(
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
         requirements = listOf(
-            TraitRequirement.AnyOf(
-                setOf(
-                    TraitCapability.ARBOREAL_LOCOMOTION,
-                    TraitCapability.AQUATIC_LOCOMOTION,
-                ),
+            TraitRequirement.anyOf(
+                TraitCapability.ARBOREAL_LOCOMOTION,
+                TraitCapability.AQUATIC_LOCOMOTION,
             ),
         ),
     ),
@@ -2085,6 +2228,9 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.20),
             TraitEffect.MaintenanceCost(0.09),
         ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.KEEN_HEARING),
+        ),
     ),
     ELECTRORECEPTION(
         "electroreception",
@@ -2128,7 +2274,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.HAIR_COVERING)),
+            TraitRequirement.allOf(TraitCapability.HAIR_COVERING),
         ),
     ),
     PROTECTIVE_SHELL(
@@ -2283,6 +2429,7 @@ enum class CommonTrait(
         "colony-probing tongue",
         "An extremely elongated adhesive tongue reaches minuscule colonial prey through narrow passages in opened nests.",
         listOf(
+            TraitEffect.StrategySupport(EcoStrategy.COLONY_RAIDING, 0.7),
             TraitEffect.CaptureAbility(0.28),
             TraitEffect.MaintenanceCost(0.06),
         ),
@@ -2339,16 +2486,69 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.08),
         ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.SOCIAL_GROUP),
+        ),
     ),
-    COLONY_LIVING(
-        "defended social colony",
-        "Many related individuals share shelter, defense, and food information in a persistent colony.",
+    SOLITARY(
+        "solitary living",
+        "Adults normally forage and maintain their living space independently outside courtship and parental care.",
+        listOf(
+            TraitEffect.MaintenanceCost(-0.05),
+            TraitEffect.ReproductionMultiplier(0.75)
+        ),
+        group = TraitGroup.SOCIAL_ORGANIZATION,
+    ),
+    GROUP_LIVING(
+        "group living",
+        "Individuals maintain recurring social relationships in a small or moderately sized group.",
+        listOf(
+            TraitEffect.Defense(0.04),
+            TraitEffect.NicheCompetitionSensitivity(1.05),
+            TraitEffect.MaintenanceCost(0.025),
+        ),
+        group = TraitGroup.SOCIAL_ORGANIZATION,
+        capabilities = setOf(TraitCapability.SOCIAL_GROUP),
+    ),
+    COLLECTIVE_LIVING(
+        "collective living",
+        "Large herds, flocks, shoals, or swarms coordinate movement and vigilance without forming a reproductive caste system.",
+        listOf(
+            TraitEffect.Defense(0.08),
+            TraitEffect.NicheCompetitionSensitivity(1.1),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        group = TraitGroup.SOCIAL_ORGANIZATION,
+        capabilities = setOf(
+            TraitCapability.SOCIAL_GROUP,
+            TraitCapability.COLLECTIVE_GROUP,
+        ),
+    ),
+    EUSOCIAL_COLONY(
+        "eusocial colony",
+        "Overlapping generations cooperate in a persistent colony with reproductive division of labor and communal brood care.",
         listOf(
             TraitEffect.Defense(0.18),
-            TraitEffect.ReproductionMultiplier(1.08),
+            TraitEffect.ReproductionMultiplier(1.1),
             TraitEffect.MaintenanceCost(0.09),
         ),
-        capabilities = setOf(TraitCapability.SOCIAL_COLONY),
+        group = TraitGroup.SOCIAL_ORGANIZATION,
+        capabilities = setOf(
+            TraitCapability.SOCIAL_GROUP,
+            TraitCapability.COLLECTIVE_GROUP,
+            TraitCapability.SOCIAL_COLONY,
+        ),
+    ),
+    GROUP_HUDDLING(
+        "group huddling",
+        "Individuals press together in dense groups, reducing exposed surface area and sharing metabolic heat during severe cold.",
+        listOf(
+            TraitEffect.TemperatureTolerance(colderC = 5.0),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.SOCIAL_GROUP),
+        ),
     ),
     COLONY_THERMOREGULATION(
         "colony thermoregulation",
@@ -2361,7 +2561,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.14),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.SOCIAL_COLONY)),
+            TraitRequirement.allOf(TraitCapability.SOCIAL_COLONY),
         ),
     ),
     HONEY_STORES(
@@ -2395,6 +2595,9 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.99),
             TraitEffect.MaintenanceCost(0.03),
         ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.COLLECTIVE_GROUP),
+        ),
     ),
     WHALESONG(
         "whalesong",
@@ -2405,7 +2608,7 @@ enum class CommonTrait(
         ),
         acousticSignal = AcousticSignal.WHALESONG,
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION))
+            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
         )
     ),
     HOWLING_CALL(
@@ -2550,7 +2753,12 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.AQUATIC_LOCOMOTION)),
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitCapability.AQUATIC_LOCOMOTION,
+                    TraitCapability.COLLECTIVE_GROUP,
+                ),
+            ),
         ),
     ),
     WATERPROOF_PLUMAGE(
@@ -2562,17 +2770,26 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = 2.0),
             TraitEffect.MaintenanceCost(0.07),
         ),
-        requirements = listOf(TraitRequirement.AllOf(setOf(TraitCapability.FEATHER_COVERING))),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.FEATHER_COVERING)),
     ),
-    DIGGING_CLAWS(
-        "digging claws",
-        "Broad reinforced claws rapidly excavate soil, tear apart nests, and expose concealed food.",
+    DIGGING_LIMBS(
+        "digging limbs",
+        "Reinforced limbs rapidly excavate soil, tear apart nests, and expose concealed food.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = 2.0),
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.WaterRequirement(-0.04),
-            TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.StrategySupport(EcoStrategy.COLONY_RAIDING, 0.15),
+            TraitEffect.CaptureAbility(0.05),
+            TraitEffect.MaintenanceCost(0.05),
         ),
+        capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
+    ),
+    OVIPOSITOR(
+        "ovipositor",
+        "A specialized egg-laying structure places eggs or equivalent propagules into soil, plant tissue, or another protected substrate.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+        capabilities = setOf(TraitCapability.OVIPOSITOR),
     ),
     LEAPING_LEGS(
         "powerful leaping legs",
@@ -2584,6 +2801,39 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.08),
         ),
     ),
+    INTELLIGENT(
+        "advanced intelligence",
+        "A large, flexible nervous system supports learning, memory, planning, social inference, and novel solutions across many situations.",
+        listOf(
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.Sensing(0.08),
+            TraitEffect.Defense(0.06),
+            TraitEffect.ReserveCapacity(0.05),
+            TraitEffect.NicheCompetitionSensitivity(0.94),
+            TraitEffect.ReproductionMultiplier(1.08),
+            TraitEffect.MaintenanceCost(0.35),
+        ),
+        group = TraitGroup.COGNITIVE_COMPLEXITY,
+        capabilities = setOf(TraitCapability.INTELLIGENCE),
+    ),
+    SAPIENT(
+        "sapient intelligence",
+        "Exceptional abstraction, cumulative culture, symbolic communication, and deliberate long-term planning reshape how the organism solves ecological problems.",
+        listOf(
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.Sensing(0.08),
+            TraitEffect.Defense(0.08),
+            TraitEffect.ReserveCapacity(0.08),
+            TraitEffect.NicheCompetitionSensitivity(0.90),
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.MaintenanceCost(0.55),
+        ),
+        group = TraitGroup.COGNITIVE_COMPLEXITY,
+        capabilities = setOf(TraitCapability.INTELLIGENCE),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.SLOW_DEVELOPMENT),
+        ),
+    ),
     TOOL_MANIPULATION(
         "tool manipulation",
         "Dexterous appendages manipulate stones, sticks, containers, or other objects to obtain defended food.",
@@ -2592,6 +2842,60 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.08),
             TraitEffect.CaptureAbility(0.14),
             TraitEffect.MaintenanceCost(0.10),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.INTELLIGENCE),
+        ),
+    ),
+    DIURNAL(
+        "diurnal activity",
+        "Daily activity is concentrated in the bright portion of the local light cycle.",
+        listOf(
+            TraitEffect.ActivityPatternEffect(ActivityPattern.DIURNAL),
+            TraitEffect.MaintenanceCost(0.01),
+            TraitEffect.TemperatureShift(-2.0)
+        ),
+        group = TraitGroup.ACTIVITY_PATTERN,
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_ACTIVITY),
+        ),
+    ),
+    NOCTURNAL(
+        "nocturnal activity",
+        "Daily activity is concentrated in the dark portion of the local light cycle.",
+        listOf(
+            TraitEffect.ActivityPatternEffect(ActivityPattern.NOCTURNAL),
+            TraitEffect.MaintenanceCost(0.02),
+            TraitEffect.TemperatureShift(2.0)
+        ),
+        group = TraitGroup.ACTIVITY_PATTERN,
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_ACTIVITY),
+        ),
+    ),
+    VESPERTINE(
+        "vespertine activity",
+        "Activity peaks around dawn and dusk, partially overlapping both day-active and night-active communities.",
+        listOf(
+            TraitEffect.ActivityPatternEffect(ActivityPattern.VESPERTINE),
+            TraitEffect.MaintenanceCost(0.015),
+        ),
+        group = TraitGroup.ACTIVITY_PATTERN,
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_ACTIVITY),
+        ),
+    ),
+    CATHEMERAL(
+        "cathemeral activity",
+        "Activity is distributed flexibly across day and night instead of specializing around one part of the light cycle.",
+        listOf(
+            TraitEffect.ActivityPatternEffect(ActivityPattern.CATHEMERAL),
+            TraitEffect.MaintenanceCost(0.01),
+            TraitEffect.TemperatureTolerance(1.0, 1.0)
+        ),
+        group = TraitGroup.ACTIVITY_PATTERN,
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_ACTIVITY),
         ),
     ),
     CRUSHING_CLAWS(

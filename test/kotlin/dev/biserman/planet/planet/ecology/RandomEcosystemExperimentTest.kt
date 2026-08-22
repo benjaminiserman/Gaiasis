@@ -13,26 +13,27 @@ class RandomEcosystemExperimentTest {
         val first = RandomEcosystemExperiment.run(seed = 7)
         val second = RandomEcosystemExperiment.run(seed = 7)
 
-        assertEquals(first.selectedSpecies, second.selectedSpecies)
-        assertEquals(first.tile, second.tile)
-        assertEquals(first.climate, second.climate)
-        assertEquals(first.extinctionSeasons, second.extinctionSeasons)
-        assertEquals(first.finalBiomassKg, second.finalBiomassKg)
-        assertEquals(10, first.selectedSpecies.size)
-        assertEquals(400, first.temperatureHistoryC.size)
-        assertTrue(first.biomassHistoryKg.values.all { it.size == 400 })
-        assertTrue(first.resourceHistory.values.all { it.size == 400 })
+        assertEquals(first.selectedSpecies, second.selectedSpecies, message = "Random experiment is deterministic and records a complete run: expected `second.selectedSpecies` to match `first.selectedSpecies`")
+        assertEquals(first.tile, second.tile, message = "Random experiment is deterministic and records a complete run: expected `second.tile` to match `first.tile`")
+        assertEquals(first.climate, second.climate, message = "Random experiment is deterministic and records a complete run: expected `second.climate` to match `first.climate`")
+        assertEquals(first.extinctionSeasons, second.extinctionSeasons, message = "Random experiment is deterministic and records a complete run: expected `second.extinctionSeasons` to match `first.extinctionSeasons`")
+        assertEquals(first.finalBiomassKg, second.finalBiomassKg, message = "Random experiment is deterministic and records a complete run: expected `second.finalBiomassKg` to match `first.finalBiomassKg`")
+        assertEquals(10, first.selectedSpecies.size, message = "Random experiment is deterministic and records a complete run: expected `first.selectedSpecies.size` to match `10`")
+        assertEquals(400, first.temperatureHistoryC.size, message = "Random experiment is deterministic and records a complete run: expected `first.temperatureHistoryC.size` to match `400`")
+        assertTrue(first.biomassHistoryKg.values.all { it.size == 400 }, message = "Random experiment is deterministic and records a complete run: expected `first.biomassHistoryKg.values.all { it.size == 400 }` to be true")
+        assertTrue(first.resourceHistory.values.all { it.size == 400 }, message = "Random experiment is deterministic and records a complete run: expected `first.resourceHistory.values.all { it.size == 400 }` to be true")
     }
 
     @Test
     fun `sampled communities remain numerically safe`() {
         val results = (0 until 64).map(RandomEcosystemExperiment::run)
 
-        assertTrue(results.any { it.tile.isLand })
-        assertTrue(results.any { !it.tile.isLand })
+        assertTrue(results.any { it.tile.isLand }, message = "Sampled communities remain numerically safe: expected `results.any { it.tile.isLand }` to be true")
+        assertTrue(results.any { !it.tile.isLand }, message = "Sampled communities remain numerically safe: expected `results.any { !it.tile.isLand }` to be true")
         assertEquals(
             HersfeldtClimatePresets.ALL.mapTo(hashSetOf()) { it.id },
             results.mapTo(hashSetOf()) { it.climate.presetId },
+            message = "Sampled communities remain numerically safe: expected `results.mapTo(hashSetOf()) { it.climate.presetId }` to match `HersfeldtClimatePresets.ALL.mapTo(hashSetOf()) { it.id }`",
         )
         val birdNames = EarthSpeciesCatalog.BIRDS.mapTo(hashSetOf()) { it.displayName }
         val openOceanBirds = setOf("emperor penguin", "wandering albatross")
@@ -46,8 +47,8 @@ class RandomEcosystemExperimentTest {
                     "anomalies=${result.anomalies.joinToString("|")} " +
                     "tail_cv=${"%.3f".format(result.tailCoefficientOfVariation)}",
             )
-            assertEquals(!result.climate.ocean, result.tile.isLand)
-            assertTrue(result.climate.presetId in HersfeldtClimatePresets.ALL.map { it.id })
+            assertEquals(!result.climate.ocean, result.tile.isLand, message = "Sampled communities remain numerically safe: expected `result.tile.isLand` to match `!result.climate.ocean`")
+            assertTrue(result.climate.presetId in HersfeldtClimatePresets.ALL.map { it.id }, message = "Sampled communities remain numerically safe: expected `result.climate.presetId in HersfeldtClimatePresets.ALL.map { it.id }` to be true")
             if (!result.tile.isLand) {
                 assertTrue(
                     result.selectedSpecies.filter { it in birdNames }.all { it in openOceanBirds },
@@ -142,17 +143,18 @@ class RandomEcosystemExperimentTest {
             .flatMap { cell -> cell["source"]?.map { it.asText() }.orEmpty() }
             .count { line -> line.trim().matches(Regex("""showRandomEcosystem\(\d+\)""")) }
 
-        assertEquals(4, notebook["nbformat"].asInt())
-        assertEquals(6, runCalls)
-        assertTrue(notebookText.contains("speciesCount = 10"))
-        assertTrue(notebookText.contains("seasons = 400"))
-        assertTrue(notebookText.contains("visibleResources"))
-        assertTrue(notebookText.contains("Math.log10"))
-        assertTrue(notebookText.contains("org.jetbrains.kotlinx.kandy.dsl.plot"))
+        assertEquals(4, notebook["nbformat"].asInt(), message = "Random community notebook contains six reproducible runs: expected `notebook[\"nbformat\"].asInt()` to match `4`")
+        assertEquals(6, runCalls, message = "Random community notebook contains six reproducible runs: expected `runCalls` to match `6`")
+        assertTrue(notebookText.contains("speciesCount = 10"), message = "Random community notebook contains six reproducible runs: expected `notebookText.contains(\"speciesCount = 10\")` to be true")
+        assertTrue(notebookText.contains("seasons = 400"), message = "Random community notebook contains six reproducible runs: expected `notebookText.contains(\"seasons = 400\")` to be true")
+        assertTrue(notebookText.contains("visibleResources"), message = "Random community notebook contains six reproducible runs: expected `notebookText.contains(\"visibleResources\")` to be true")
+        assertTrue(notebookText.contains("Math.log10"), message = "Random community notebook contains six reproducible runs: expected `notebookText.contains(\"Math.log10\")` to be true")
+        assertTrue(notebookText.contains("org.jetbrains.kotlinx.kandy.dsl.plot"), message = "Random community notebook contains six reproducible runs: expected `notebookText.contains(\"org.jetbrains.kotlinx.kandy.dsl.plot\")` to be true")
         assertTrue(
             notebookText.contains(
                 "fun showRandomEcosystem(seed: Int, seasons: Int = 400) = run {",
             ),
+            message = "Random community notebook contains six reproducible runs: expected `notebookText.contains( \"fun showRandomEcosystem(seed: Int, seasons: Int = 400) = run {\", )` to be true",
         )
     }
 

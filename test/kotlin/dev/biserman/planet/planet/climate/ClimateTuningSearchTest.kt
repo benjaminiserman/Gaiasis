@@ -18,10 +18,10 @@ class ClimateTuningSearchTest {
             afterEvaluation = evaluations::add,
         ).run()
 
-        assertEquals(9.0, result.initialLoss)
-        assertEquals(0.0, result.bestLoss)
-        assertEquals(3.0, result.bestValues.getValue("temperature"))
-        assertEquals(result.evaluations, evaluations.size)
+        assertEquals(9.0, result.initialLoss, "Coordinate search improves and shrinks its step: expected `result.initialLoss` to match `9.0`")
+        assertEquals(0.0, result.bestLoss, "Coordinate search improves and shrinks its step: expected `result.bestLoss` to match `0.0`")
+        assertEquals(3.0, result.bestValues.getValue("temperature"), "Coordinate search improves and shrinks its step: expected `result.bestValues.getValue(\"temperature\")` to match `3.0`")
+        assertEquals(result.evaluations, evaluations.size, "Coordinate search improves and shrinks its step: expected `evaluations.size` to match `result.evaluations`")
     }
 
     @Test
@@ -38,9 +38,9 @@ class ClimateTuningSearchTest {
             },
         ).run()
 
-        assertEquals(2, result.evaluations)
-        assertEquals(2, seen.size)
-        assertTrue(seen.all { it in 0.0..1.0 })
+        assertEquals(2, result.evaluations, "Coordinate search respects its evaluation budget and bounds: expected `result.evaluations` to match `2`")
+        assertEquals(2, seen.size, "Coordinate search respects its evaluation budget and bounds: expected `seen.size` to match `2`")
+        assertTrue(seen.all { it in 0.0..1.0 }, "Coordinate search respects its evaluation budget and bounds: expected `seen.all { it in 0.0..1.0 }` to be true")
     }
 
     @Test
@@ -58,9 +58,9 @@ class ClimateTuningSearchTest {
             },
         ).run()
 
-        assertEquals(0.0, result.bestLoss)
-        assertEquals(1.0, result.bestValues.getValue("temperature"))
-        assertEquals(1.0, result.bestValues.getValue("moisture"))
-        assertTrue(result.evaluations <= 9)
+        assertEquals(0.0, result.bestLoss, "Interaction trials find improvements hidden from coordinate moves: expected `result.bestLoss` to match `0.0`")
+        assertEquals(1.0, result.bestValues.getValue("temperature"), "Interaction trials find improvements hidden from coordinate moves: expected `result.bestValues.getValue(\"temperature\")` to match `1.0`")
+        assertEquals(1.0, result.bestValues.getValue("moisture"), "Interaction trials find improvements hidden from coordinate moves: expected `result.bestValues.getValue(\"moisture\")` to match `1.0`")
+        assertTrue(result.evaluations <= 9, "Interaction trials find improvements hidden from coordinate moves: expected `result.evaluations <= 9` to be true")
     }
 }

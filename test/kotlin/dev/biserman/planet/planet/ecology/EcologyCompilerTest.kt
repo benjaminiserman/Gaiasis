@@ -33,10 +33,10 @@ class EcologyCompilerTest {
         camouflage[Habitat.LAND_SURFACE.ordinal] = 0.0
         nicheFit[0] = 0.0
 
-        assertEquals(0.75, profile.supportFor(Habitat.LAND_SURFACE))
-        assertEquals(0.60, profile.supportFor(EcoStrategy.GRAZING))
-        assertEquals(0.40, profile.camouflageFor(Habitat.LAND_SURFACE))
-        assertEquals(0.45, profile.fitFor(0))
+        assertEquals(0.75, profile.supportFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(Habitat.LAND_SURFACE)` to match `0.75`")
+        assertEquals(0.60, profile.supportFor(EcoStrategy.GRAZING), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(EcoStrategy.GRAZING)` to match `0.60`")
+        assertEquals(0.40, profile.camouflageFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.camouflageFor(Habitat.LAND_SURFACE)` to match `0.40`")
+        assertEquals(0.45, profile.fitFor(0), message = "Compiled niche profile owns its optimized arrays: expected `profile.fitFor(0)` to match `0.45`")
     }
 
     @Test
@@ -53,10 +53,10 @@ class EcologyCompilerTest {
 
         val compiled = EcologyCompiler.compile(listOf(producer)).species.single()
 
-        assertEquals(-4.0, compiled.physiology.thermal.outerLowC)
-        assertEquals(27.0, compiled.physiology.thermal.outerHighC)
-        assertTrue(compiled.niche.hasViableNiche())
-        assertTrue(compiled.physiology.maintenanceDemand > 0.0)
+        assertEquals(-4.0, compiled.physiology.thermal.outerLowC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerLowC` to match `-4.0`")
+        assertEquals(27.0, compiled.physiology.thermal.outerHighC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerHighC` to match `27.0`")
+        assertTrue(compiled.niche.hasViableNiche(), message = "Traits compile into climate and niche parameters: expected `compiled.niche.hasViableNiche()` to be true")
+        assertTrue(compiled.physiology.maintenanceDemand > 0.0, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.maintenanceDemand > 0.0` to be true")
     }
 
     @Test
@@ -64,10 +64,16 @@ class EcologyCompilerTest {
         val small = EcologyCompiler.compile(listOf(predator("small", SizeClass.SMALL))).species.single()
         val huge = EcologyCompiler.compile(listOf(predator("huge", SizeClass.HUGE))).species.single()
 
-        assertEquals(SizeClass.SMALL.typicalMassKg, small.physiology.massKg)
-        assertEquals(SizeClass.HUGE.typicalMassKg, huge.physiology.massKg)
-        assertTrue(huge.physiology.thermal.outerLowC < small.physiology.thermal.outerLowC)
-        assertTrue(huge.physiology.thermal.outerHighC > small.physiology.thermal.outerHighC)
+        assertEquals(SizeClass.SMALL.typicalMassKg, small.physiology.massKg, message = "Size foundation establishes mass and slightly widens temperature range: expected `small.physiology.massKg` to match `SizeClass.SMALL.typicalMassKg`")
+        assertEquals(SizeClass.HUGE.typicalMassKg, huge.physiology.massKg, message = "Size foundation establishes mass and slightly widens temperature range: expected `huge.physiology.massKg` to match `SizeClass.HUGE.typicalMassKg`")
+        assertTrue(
+            huge.physiology.thermal.outerLowC < small.physiology.thermal.outerLowC,
+            message = "Size foundation establishes mass and slightly widens temperature range: expected `huge.physiology.thermal.outerLowC < small.physiology.thermal.outerLowC` to be true"
+        )
+        assertTrue(
+            huge.physiology.thermal.outerHighC > small.physiology.thermal.outerHighC,
+            message = "Size foundation establishes mass and slightly widens temperature range: expected `huge.physiology.thermal.outerHighC > small.physiology.thermal.outerHighC` to be true"
+        )
     }
 
     @Test
@@ -85,11 +91,23 @@ class EcologyCompilerTest {
 
         fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
 
-        assertEquals(SizeClass.MEDIUM.typicalMassKg, compiled(ordinary.id).physiology.massKg)
-        assertEquals(SizeClass.MEDIUM.typicalMassKg * 0.5, compiled(slender.id).physiology.massKg)
-        assertEquals(SizeClass.MEDIUM.typicalMassKg * 2.0, compiled(bulky.id).physiology.massKg)
-        assertEquals(SizeClass.MEDIUM, compiled(slender.id).sizeClass)
-        assertEquals(SizeClass.MEDIUM, compiled(bulky.id).sizeClass)
+        assertEquals(
+            SizeClass.MEDIUM.typicalMassKg,
+            compiled(ordinary.id).physiology.massKg,
+            message = "Body build adjusts mass without changing size class: expected `compiled(ordinary.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg`"
+        )
+        assertEquals(
+            SizeClass.MEDIUM.typicalMassKg * 0.5,
+            compiled(slender.id).physiology.massKg,
+            message = "Body build adjusts mass without changing size class: expected `compiled(slender.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg * 0.5`"
+        )
+        assertEquals(
+            SizeClass.MEDIUM.typicalMassKg * 2.0,
+            compiled(bulky.id).physiology.massKg,
+            message = "Body build adjusts mass without changing size class: expected `compiled(bulky.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg * 2.0`"
+        )
+        assertEquals(SizeClass.MEDIUM, compiled(slender.id).sizeClass, message = "Body build adjusts mass without changing size class: expected `compiled(slender.id).sizeClass` to match `SizeClass.MEDIUM`")
+        assertEquals(SizeClass.MEDIUM, compiled(bulky.id).sizeClass, message = "Body build adjusts mass without changing size class: expected `compiled(bulky.id).sizeClass` to match `SizeClass.MEDIUM`")
     }
 
     @Test
@@ -112,12 +130,46 @@ class EcologyCompilerTest {
         fun predationRate(predator: SpeciesDefinition) =
             ecology.interactions.get(ecology.speciesIndex(predator.id), ecology.speciesIndex(prey.id)).targetLossRate
 
-        assertTrue(compiled(scent.id).interactions.pursuitTracking > compiled(ordinary.id).interactions.pursuitTracking)
-        assertEquals(compiled(ordinary.id).interactions.pursuitSpeed, compiled(scent.id).interactions.pursuitSpeed)
-        assertTrue(compiled(scent.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction)
-        assertTrue(compiled(sight.id).interactions.captureAbility > compiled(ordinary.id).interactions.captureAbility)
-        assertTrue(predationRate(scent) > predationRate(ordinary))
-        assertTrue(predationRate(sight) > predationRate(ordinary))
+        assertTrue(
+            compiled(scent.id).interactions.sensing > compiled(ordinary.id).interactions.sensing,
+            message = "Specialized senses compile distinct hunting and reproductive benefits: expected `compiled(scent.id).interactions.sensing > compiled(ordinary.id).interactions.sensing` to be true"
+        )
+        assertEquals(
+            compiled(ordinary.id).interactions.pursuitSpeed,
+            compiled(scent.id).interactions.pursuitSpeed,
+            message = "Specialized senses compile distinct hunting and reproductive benefits: expected `compiled(scent.id).interactions.pursuitSpeed` to match `compiled(ordinary.id).interactions.pursuitSpeed`"
+        )
+        assertTrue(
+            compiled(scent.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction,
+            message = "Specialized senses compile distinct hunting and reproductive benefits: expected `compiled(scent.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction` to be true"
+        )
+        assertTrue(
+            compiled(sight.id).interactions.captureAbility > compiled(ordinary.id).interactions.captureAbility,
+            message = "Specialized senses compile distinct hunting and reproductive benefits: expected `compiled(sight.id).interactions.captureAbility > compiled(ordinary.id).interactions.captureAbility` to be true"
+        )
+        assertTrue(predationRate(scent) > predationRate(ordinary), message = "Specialized senses compile distinct hunting and reproductive benefits: expected `predationRate(scent) > predationRate(ordinary)` to be true")
+        assertTrue(predationRate(sight) > predationRate(ordinary), message = "Specialized senses compile distinct hunting and reproductive benefits: expected `predationRate(sight) > predationRate(ordinary)` to be true")
+    }
+
+    @Test
+    fun `sensing protects prey against ambush predation`() {
+        val ambusher = predator("ambusher", SizeClass.LARGE)
+        val ordinaryPrey = terrestrialPrey("ordinary-prey", SizeClass.SMALL)
+        val alertPrey = ordinaryPrey.copy(
+            id = "alert-prey",
+            displayName = "alert-prey",
+            traits = ordinaryPrey.traits + CommonTrait.KEEN_HEARING,
+        )
+        val ecology = EcologyCompiler.compile(listOf(ambusher, ordinaryPrey, alertPrey))
+
+        fun predationRate(prey: SpeciesDefinition) =
+            ecology.interactions.get(ecology.speciesIndex(ambusher.id), ecology.speciesIndex(prey.id)).targetLossRate
+
+        assertTrue(
+            ecology.species[ecology.speciesIndex(alertPrey.id)].interactions.sensing > 0.0,
+            message = "Sensing protects prey against ambush predation: expected `ecology.species[ecology.speciesIndex(alertPrey.id)].interactions.sensing > 0.0` to be true"
+        )
+        assertTrue(predationRate(alertPrey) < predationRate(ordinaryPrey), message = "Sensing protects prey against ambush predation: expected `predationRate(alertPrey) < predationRate(ordinaryPrey)` to be true")
     }
 
     @Test
@@ -130,9 +182,18 @@ class EcologyCompilerTest {
 
         fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
 
-        assertTrue(compiled(fast.id).physiology.maintenanceDemand > compiled(ordinary.id).physiology.maintenanceDemand)
-        assertTrue(compiled(fast.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction)
-        assertTrue(compiled(fast.id).interactions.pursuitSpeed > compiled(ordinary.id).interactions.pursuitSpeed)
+        assertTrue(
+            compiled(fast.id).physiology.maintenanceDemand > compiled(ordinary.id).physiology.maintenanceDemand,
+            message = "Fast metabolism raises activity reproduction and food demand: expected `compiled(fast.id).physiology.maintenanceDemand > compiled(ordinary.id).physiology.maintenanceDemand` to be true"
+        )
+        assertTrue(
+            compiled(fast.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction,
+            message = "Fast metabolism raises activity reproduction and food demand: expected `compiled(fast.id).lifeHistory.seasonalReproduction > compiled(ordinary.id).lifeHistory.seasonalReproduction` to be true"
+        )
+        assertTrue(
+            compiled(fast.id).interactions.pursuitSpeed > compiled(ordinary.id).interactions.pursuitSpeed,
+            message = "Fast metabolism raises activity reproduction and food demand: expected `compiled(fast.id).interactions.pursuitSpeed > compiled(ordinary.id).interactions.pursuitSpeed` to be true"
+        )
     }
 
     @Test
@@ -146,7 +207,7 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("METABOLIC_PACE"))
+        assertTrue(failure.message.orEmpty().contains("METABOLIC_PACE"), message = "Fast and slow metabolisms are mutually exclusive: expected `failure.message.orEmpty().contains(\"METABOLIC_PACE\")` to be true")
     }
 
     @Test
@@ -158,10 +219,12 @@ class EcologyCompilerTest {
         assertEquals(
             DispersalKind.NEIGHBOR,
             ecology.species[ecology.speciesIndex(motile.id)].lifeHistory.dispersalKind,
+            message = "Motile species default to neighbor dispersal while sessile species do not: expected `ecology.species[ecology.speciesIndex(motile.id)].lifeHistory.dispersalKind` to match `DispersalKind.NEIGHBOR`",
         )
         assertEquals(
             DispersalKind.NONE,
             ecology.species[ecology.speciesIndex(sessile.id)].lifeHistory.dispersalKind,
+            message = "Motile species default to neighbor dispersal while sessile species do not: expected `ecology.species[ecology.speciesIndex(sessile.id)].lifeHistory.dispersalKind` to match `DispersalKind.NONE`",
         )
     }
 
@@ -178,10 +241,22 @@ class EcologyCompilerTest {
 
         fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
 
-        assertTrue(compiled(slowGrowing.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand)
-        assertTrue(compiled(slowGrowing.id).lifeHistory.seasonalReproduction < compiled(ordinary.id).lifeHistory.seasonalReproduction)
-        assertTrue(compiled(infrequent.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand)
-        assertTrue(compiled(infrequent.id).lifeHistory.seasonalReproduction < compiled(slowGrowing.id).lifeHistory.seasonalReproduction)
+        assertTrue(
+            compiled(slowGrowing.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand,
+            message = "Slow growth and infrequent reproduction trade population growth for lower maintenance: expected `compiled(slowGrowing.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand` to be true"
+        )
+        assertTrue(
+            compiled(slowGrowing.id).lifeHistory.seasonalReproduction < compiled(ordinary.id).lifeHistory.seasonalReproduction,
+            message = "Slow growth and infrequent reproduction trade population growth for lower maintenance: expected `compiled(slowGrowing.id).lifeHistory.seasonalReproduction < compiled(ordinary.id).lifeHistory.seasonalReproduction` to be true"
+        )
+        assertTrue(
+            compiled(infrequent.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand,
+            message = "Slow growth and infrequent reproduction trade population growth for lower maintenance: expected `compiled(infrequent.id).physiology.maintenanceDemand < compiled(ordinary.id).physiology.maintenanceDemand` to be true"
+        )
+        assertTrue(
+            compiled(infrequent.id).lifeHistory.seasonalReproduction < compiled(slowGrowing.id).lifeHistory.seasonalReproduction,
+            message = "Slow growth and infrequent reproduction trade population growth for lower maintenance: expected `compiled(infrequent.id).lifeHistory.seasonalReproduction < compiled(slowGrowing.id).lifeHistory.seasonalReproduction` to be true"
+        )
     }
 
     @Test
@@ -215,9 +290,12 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("DOMINANT_BODY_COVERING"))
-        assertTrue(failure.message.orEmpty().contains(CommonTrait.FUR.displayName))
-        assertTrue(failure.message.orEmpty().contains(CommonTrait.FEATHERS.displayName))
+        assertTrue(failure.message.orEmpty().contains("DOMINANT_BODY_COVERING"), message = "Traits in the same biological group are mutually exclusive: expected `failure.message.orEmpty().contains(\"DOMINANT_BODY_COVERING\")` to be true")
+        assertTrue(failure.message.orEmpty().contains(CommonTrait.FUR.displayName), message = "Traits in the same biological group are mutually exclusive: expected `failure.message.orEmpty().contains(CommonTrait.FUR.displayName)` to be true")
+        assertTrue(
+            failure.message.orEmpty().contains(CommonTrait.FEATHERS.displayName),
+            message = "Traits in the same biological group are mutually exclusive: expected `failure.message.orEmpty().contains(CommonTrait.FEATHERS.displayName)` to be true"
+        )
     }
 
     @Test
@@ -227,7 +305,11 @@ class EcologyCompilerTest {
                 .filter { it.group != null }
                 .groupBy { it.group }
 
-        assertEquals(TraitGroup.entries.toSet(), groupedTraits.keys.filterNotNull().toSet())
+        assertEquals(
+            TraitGroup.entries.toSet(),
+            groupedTraits.keys.filterNotNull().toSet(),
+            message = "Every declared trait group has multiple authored alternatives: expected `groupedTraits.keys.filterNotNull().toSet()` to match `TraitGroup.entries.toSet()`"
+        )
         groupedTraits.forEach { (group, traits) ->
             assertTrue(traits.size >= 2, "$group has fewer than two alternatives")
         }
@@ -237,7 +319,7 @@ class EcologyCompilerTest {
     fun `biological color is compiled from mutually exclusive traits`() {
         val brownPredator = predator("brown-predator")
         val compiled = EcologyCompiler.compile(listOf(brownPredator)).species.single()
-        assertEquals(BiologicalColor.BROWN, compiled.niche.camouflageColor)
+        assertEquals(BiologicalColor.BROWN, compiled.niche.camouflageColor, message = "Biological color is compiled from mutually exclusive traits: expected `compiled.niche.camouflageColor` to match `BiologicalColor.BROWN`")
 
         val adaptivePredator =
             brownPredator.copy(
@@ -249,6 +331,7 @@ class EcologyCompilerTest {
         val adaptiveCompiled = EcologyCompiler.compile(listOf(adaptivePredator)).species.single()
         assertTrue(
             adaptiveCompiled.physiology.maintenanceDemand > compiled.physiology.maintenanceDemand,
+            message = "Biological color is compiled from mutually exclusive traits: expected `adaptiveCompiled.physiology.maintenanceDemand > compiled.physiology.maintenanceDemand` to be true",
         )
 
         val conflicting = brownPredator.copy(
@@ -257,7 +340,7 @@ class EcologyCompilerTest {
         val failure = assertFailsWith<IllegalArgumentException> {
             EcologyCompiler.compile(listOf(conflicting))
         }
-        assertTrue(failure.message.orEmpty().contains("BIOLOGICAL_COLOR"))
+        assertTrue(failure.message.orEmpty().contains("BIOLOGICAL_COLOR"), message = "Biological color is compiled from mutually exclusive traits: expected `failure.message.orEmpty().contains(\"BIOLOGICAL_COLOR\")` to be true")
     }
 
     @Test
@@ -284,8 +367,8 @@ class EcologyCompilerTest {
             traits = featheredSinger.traits + CommonTrait.CHIRPING_CALL,
         )
 
-        assertTrue(TraitDependencies.unmetRequirements(featheredSinger).isNotEmpty())
-        assertTrue(TraitDependencies.unmetRequirements(chirpingSinger).isEmpty())
+        assertTrue(TraitDependencies.unmetRequirements(featheredSinger).isNotEmpty(), message = "Birdsong requires both feathers and a chirping call: expected `TraitDependencies.unmetRequirements(featheredSinger).isNotEmpty()` to be true")
+        assertTrue(TraitDependencies.unmetRequirements(chirpingSinger).isEmpty(), message = "Birdsong requires both feathers and a chirping call: expected `TraitDependencies.unmetRequirements(chirpingSinger).isEmpty()` to be true")
     }
 
     @Test
@@ -306,7 +389,7 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("reproductive strategy"))
+        assertTrue(failure.message.orEmpty().contains("reproductive strategy"), message = "Every compiled species requires at least one reproductive strategy: expected `failure.message.orEmpty().contains(\"reproductive strategy\")` to be true")
     }
 
     @Test
@@ -317,12 +400,21 @@ class EcologyCompilerTest {
         EcologyCompiler.compile(listOf(mixedStrategy))
 
         listOf(CommonTrait.TERRESTRIAL_OVOSPORE, CommonTrait.AQUATIC_OVOSPORE).forEach { ovospore ->
-            assertTrue(TraitCapability.REPRODUCTION in ovospore.capabilities)
-            assertTrue(TraitCapability.OVOSPORE_REPRODUCTION in ovospore.capabilities)
-            assertTrue(TraitCapability.OVOSPORE_BROODING in ovospore.capabilities)
+            assertTrue(TraitCapability.REPRODUCTION in ovospore.capabilities, message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `TraitCapability.REPRODUCTION in ovospore.capabilities` to be true")
+            assertTrue(
+                TraitCapability.OVOSPORE_REPRODUCTION in ovospore.capabilities,
+                message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `TraitCapability.OVOSPORE_REPRODUCTION in ovospore.capabilities` to be true"
+            )
+            assertTrue(TraitCapability.OVOSPORE_BROODING in ovospore.capabilities, message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `TraitCapability.OVOSPORE_BROODING in ovospore.capabilities` to be true")
         }
-        assertTrue(TraitCapability.REPRODUCTION in CommonTrait.VIVIPARITY.capabilities)
-        assertTrue(TraitCapability.REPRODUCTION in CommonTrait.CLONAL_PROPAGATION.capabilities)
+        assertTrue(
+            TraitCapability.REPRODUCTION in CommonTrait.VIVIPARITY.capabilities,
+            message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `TraitCapability.REPRODUCTION in CommonTrait.VIVIPARITY.capabilities` to be true"
+        )
+        assertTrue(
+            TraitCapability.REPRODUCTION in CommonTrait.CLONAL_PROPAGATION.capabilities,
+            message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `TraitCapability.REPRODUCTION in CommonTrait.CLONAL_PROPAGATION.capabilities` to be true"
+        )
 
         val invalidAerialDisperser = predator("invalid-aerial-disperser").copy(
             traits = predator("invalid-aerial-disperser").traits
@@ -332,7 +424,7 @@ class EcologyCompilerTest {
         val failure = assertFailsWith<IllegalArgumentException> {
             EcologyCompiler.compile(listOf(invalidAerialDisperser))
         }
-        assertTrue(failure.message.orEmpty().contains("OVOSPORE_REPRODUCTION"))
+        assertTrue(failure.message.orEmpty().contains("OVOSPORE_REPRODUCTION"), message = "Reproductive strategies compose and aerial dispersal requires ovospores: expected `failure.message.orEmpty().contains(\"OVOSPORE_REPRODUCTION\")` to be true")
     }
 
     @Test
@@ -341,7 +433,7 @@ class EcologyCompilerTest {
             listOf(predator("explicit-thermal-strategy")),
         ).species.single()
 
-        assertEquals(ThermalStrategy.ENDOTHERMY, compiled.physiology.thermal.regulation)
+        assertEquals(ThermalStrategy.ENDOTHERMY, compiled.physiology.thermal.regulation, message = "Thermal foundation compiles to an explicit runtime strategy: expected `compiled.physiology.thermal.regulation` to match `ThermalStrategy.ENDOTHERMY`")
     }
 
     @Test
@@ -371,10 +463,13 @@ class EcologyCompilerTest {
         val floatingProfile = ecology.species[0].niche
         val photosyntheticProfile = ecology.species[1].niche
 
-        assertTrue(floatingProfile.supportFor(Habitat.AERIAL) > 0.0)
-        assertEquals(0.0, floatingProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS))
-        assertTrue(photosyntheticProfile.supportFor(Habitat.AERIAL) > 0.0)
-        assertTrue(photosyntheticProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0)
+        assertTrue(floatingProfile.supportFor(Habitat.AERIAL) > 0.0, message = "Floating body provides aerial habitat independently of photosynthesis: expected `floatingProfile.supportFor(Habitat.AERIAL) > 0.0` to be true")
+        assertEquals(0.0, floatingProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS), message = "Floating body provides aerial habitat independently of photosynthesis: expected `floatingProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS)` to match `0.0`")
+        assertTrue(photosyntheticProfile.supportFor(Habitat.AERIAL) > 0.0, message = "Floating body provides aerial habitat independently of photosynthesis: expected `photosyntheticProfile.supportFor(Habitat.AERIAL) > 0.0` to be true")
+        assertTrue(
+            photosyntheticProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0,
+            message = "Floating body provides aerial habitat independently of photosynthesis: expected `photosyntheticProfile.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0` to be true"
+        )
     }
 
     @Test
@@ -396,7 +491,7 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires MINUSCULE size"))
+        assertTrue(failure.message.orEmpty().contains("requires MINUSCULE size"), message = "Floating body requires minuscule size: expected `failure.message.orEmpty().contains(\"requires MINUSCULE size\")` to be true")
     }
 
     @Test
@@ -418,7 +513,7 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires MOTILE_APPENDAGES"))
+        assertTrue(failure.message.orEmpty().contains("requires MOTILE_APPENDAGES"), message = "Limb regrowth requires motile appendages: expected `failure.message.orEmpty().contains(\"requires MOTILE_APPENDAGES\")` to be true")
     }
 
     @Test
@@ -438,17 +533,22 @@ class EcologyCompilerTest {
         )
 
         val missingRespiration = TraitDependencies.unmetRequirements(base)
-        assertEquals(1, missingRespiration.size)
-        assertTrue(missingRespiration.single().requirement is TraitRequirement.AnyOf)
+        assertEquals(1, missingRespiration.size, message = "Deep diving accepts either underwater respiration or breath holding: expected `missingRespiration.size` to match `1`")
+        assertTrue(
+            missingRespiration.single().requirement is TraitRequirement.AnyOf,
+            message = "Deep diving accepts either underwater respiration or breath holding: expected `missingRespiration.single().requirement is TraitRequirement.AnyOf` to be true"
+        )
         assertTrue(
             TraitDependencies.unmetRequirements(
                 base.copy(traits = base.traits + CommonTrait.GILLS),
             ).isEmpty(),
+            message = "Deep diving accepts either underwater respiration or breath holding: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.GILLS), ).isEmpty()` to be true",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
                 base.copy(traits = base.traits + CommonTrait.PROLONGED_BREATH_HOLDING),
             ).isEmpty(),
+            message = "Deep diving accepts either underwater respiration or breath holding: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.PROLONGED_BREATH_HOLDING), ).isEmpty()` to be true",
         )
     }
 
@@ -462,7 +562,7 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires ACTIVE_FLIGHT"))
+        assertTrue(failure.message.orEmpty().contains("requires ACTIVE_FLIGHT"), message = "Pelagic soaring wings require a flight structure: expected `failure.message.orEmpty().contains(\"requires ACTIVE_FLIGHT\")` to be true")
     }
 
     @Test
@@ -473,11 +573,13 @@ class EcologyCompilerTest {
             TraitDependencies.unmetRequirements(
                 base.copy(traits = base.traits + CommonTrait.DENSE_UNDERCOAT),
             ).single().requirement is TraitRequirement.AllOf,
+            message = "Specialized anatomy requires its underlying structure: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.DENSE_UNDERCOAT), ).single().requirement is TraitRequirement.AllOf` to be true",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
                 base.copy(traits = base.traits + CommonTrait.SWIFT_LEGS),
             ).isEmpty(),
+            message = "Specialized anatomy requires its underlying structure: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.SWIFT_LEGS), ).isEmpty()` to be true",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
@@ -487,11 +589,13 @@ class EcologyCompilerTest {
                         CommonTrait.SWIFT_LEGS,
                 ),
             ).isNotEmpty(),
+            message = "Assertion failed",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
                 base.copy(traits = base.traits + CommonTrait.STICKY_FEET),
             ).isNotEmpty(),
+            message = "Specialized anatomy requires its underlying structure: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.STICKY_FEET), ).isNotEmpty()` to be true",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
@@ -501,6 +605,7 @@ class EcologyCompilerTest {
                         listOf(CommonTrait.CLIMBING_LIMBS, CommonTrait.STICKY_FEET),
                 ),
             ).isEmpty(),
+            message = "Assertion failed",
         )
     }
 
@@ -512,10 +617,10 @@ class EcologyCompilerTest {
                 terrestrial.copy(traits = terrestrial.traits + traits),
             )
 
-        assertTrue(unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty())
-        assertTrue(unmet(CommonTrait.SCHOOLING).isNotEmpty())
-        assertTrue(unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty())
-        assertTrue(unmet(CommonTrait.REEF_BUILDING).isNotEmpty())
+        assertTrue(unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.SCHOOLING).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.SCHOOLING).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.REEF_BUILDING).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.REEF_BUILDING).isNotEmpty()` to be true")
 
         val ectotherm = terrestrial.copy(
             traits = terrestrial.traits
@@ -523,14 +628,88 @@ class EcologyCompilerTest {
                 CommonTrait.ECTOTHERMY +
                 CommonTrait.BEHAVIORAL_THERMOREGULATION,
         )
-        assertTrue(TraitDependencies.unmetRequirements(ectotherm).isEmpty())
-        assertTrue(unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty())
-        assertTrue(unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty())
+        assertTrue(TraitDependencies.unmetRequirements(ectotherm).isEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `TraitDependencies.unmetRequirements(ectotherm).isEmpty()` to be true")
+        assertTrue(
+            unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty(),
+            message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty()` to be true"
+        )
+        assertTrue(
+            unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty(),
+            message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty()` to be true"
+        )
 
         val aquatic = terrestrial.copy(
-            traits = terrestrial.traits + CommonTrait.AQUATIC_FLIPPERS + CommonTrait.SCHOOLING,
+            traits = terrestrial.traits +
+                CommonTrait.AQUATIC_FLIPPERS +
+                CommonTrait.COLLECTIVE_LIVING +
+                CommonTrait.SCHOOLING,
         )
-        assertTrue(TraitDependencies.unmetRequirements(aquatic).isEmpty())
+        assertTrue(TraitDependencies.unmetRequirements(aquatic).isEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `TraitDependencies.unmetRequirements(aquatic).isEmpty()` to be true")
+    }
+
+    @Test
+    fun `hearing cognition and tool dependencies are explicit`() {
+        val base = predator("dependency-base")
+        fun unmet(vararg traits: SpeciesTrait) =
+            TraitDependencies.unmetRequirements(base.copy(traits = base.traits + traits))
+
+        assertTrue(unmet(CommonTrait.ECHOLOCATION).isNotEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.ECHOLOCATION).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.KEEN_HEARING, CommonTrait.ECHOLOCATION).isEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.KEEN_HEARING, CommonTrait.ECHOLOCATION).isEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.INTELLIGENT).isEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.INTELLIGENT).isEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.SAPIENT).isNotEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.SAPIENT).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.SLOW_GROWTH, CommonTrait.SAPIENT).isEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.SLOW_GROWTH, CommonTrait.SAPIENT).isEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.TOOL_MANIPULATION).isNotEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.TOOL_MANIPULATION).isNotEmpty()` to be true")
+        assertTrue(
+            unmet(
+                CommonTrait.INTELLIGENT,
+                CommonTrait.TOOL_MANIPULATION,
+            ).isEmpty(),
+            message = "Hearing cognition and tool dependencies are explicit: expected `unmet( CommonTrait.INTELLIGENT, CommonTrait.TOOL_MANIPULATION, ).isEmpty()` to be true",
+        )
+    }
+
+    @Test
+    fun `group huddling requires a non-solitary social organization`() {
+        val base = predator("huddling-dependencies")
+        fun unmet(organization: CommonTrait) =
+            TraitDependencies.unmetRequirements(
+                base.copy(traits = base.traits + organization + CommonTrait.GROUP_HUDDLING),
+            )
+
+        assertTrue(unmet(CommonTrait.SOLITARY).isNotEmpty(), message = "Group huddling requires a non-solitary social organization: expected `unmet(CommonTrait.SOLITARY).isNotEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.GROUP_LIVING).isEmpty(), message = "Group huddling requires a non-solitary social organization: expected `unmet(CommonTrait.GROUP_LIVING).isEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.COLLECTIVE_LIVING).isEmpty(), message = "Group huddling requires a non-solitary social organization: expected `unmet(CommonTrait.COLLECTIVE_LIVING).isEmpty()` to be true")
+        assertTrue(unmet(CommonTrait.EUSOCIAL_COLONY).isEmpty(), message = "Group huddling requires a non-solitary social organization: expected `unmet(CommonTrait.EUSOCIAL_COLONY).isEmpty()` to be true")
+    }
+
+    @Test
+    fun `activity overlap modifies only terrestrial predation matchups`() {
+        fun activePredator(id: String, pattern: CommonTrait) =
+            predator(id).copy(traits = predator(id).traits + pattern)
+        val matched = activePredator("matched", CommonTrait.DIURNAL)
+        val neutral = activePredator("neutral", CommonTrait.CATHEMERAL)
+        val mismatched = activePredator("mismatched", CommonTrait.NOCTURNAL)
+        val prey = predator("day-prey", SizeClass.SMALL).copy(
+            traits = predator("day-prey", SizeClass.SMALL).traits
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                CommonTrait.GRAZING_MOUTHPARTS +
+                CommonTrait.DIURNAL,
+        )
+        val ecology = EcologyCompiler.compile(listOf(matched, neutral, mismatched, prey))
+
+        fun predationRate(predator: SpeciesDefinition) =
+            ecology.interactions.get(
+                ecology.speciesIndex(predator.id),
+                ecology.speciesIndex(prey.id),
+            ).targetLossRate
+
+        assertTrue(predationRate(matched) > predationRate(neutral), message = "Activity overlap modifies only terrestrial predation matchups: expected `predationRate(matched) > predationRate(neutral)` to be true")
+        assertTrue(predationRate(neutral) > predationRate(mismatched), message = "Activity overlap modifies only terrestrial predation matchups: expected `predationRate(neutral) > predationRate(mismatched)` to be true")
+        assertEquals(
+            ActivityPattern.DIURNAL,
+            ecology.species[ecology.speciesIndex(matched.id)].interactions.activityPattern,
+            message = "Activity overlap modifies only terrestrial predation matchups: expected `ecology.species[ecology.speciesIndex(matched.id)].interactions.activityPattern` to match `ActivityPattern.DIURNAL`",
+        )
     }
 
     @Test
@@ -560,9 +739,9 @@ class EcologyCompilerTest {
 
         val compiled = EcologyCompiler.compile(listOf(surfaceAttached)).species.single()
 
-        assertTrue(CommonTrait.ROOTED_BODY !in surfaceAttached.traits)
-        assertTrue(compiled.niche.supportFor(Habitat.LAND_SURFACE) > 0.0)
-        assertTrue(TraitDependencies.unmetRequirements(surfaceAttached).isEmpty())
+        assertTrue(CommonTrait.ROOTED_BODY !in surfaceAttached.traits, message = "Surface-attached sessile life does not require roots: expected `CommonTrait.ROOTED_BODY !in surfaceAttached.traits` to be true")
+        assertTrue(compiled.niche.supportFor(Habitat.LAND_SURFACE) > 0.0, message = "Surface-attached sessile life does not require roots: expected `compiled.niche.supportFor(Habitat.LAND_SURFACE) > 0.0` to be true")
+        assertTrue(TraitDependencies.unmetRequirements(surfaceAttached).isEmpty(), message = "Surface-attached sessile life does not require roots: expected `TraitDependencies.unmetRequirements(surfaceAttached).isEmpty()` to be true")
     }
 
     @Test
@@ -575,8 +754,8 @@ class EcologyCompilerTest {
         )
 
         structures.forEach { structure ->
-            assertEquals(TraitGroup.PHOTOSYNTHETIC_STRUCTURE, structure.group)
-            assertTrue(TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities)
+            assertEquals(TraitGroup.PHOTOSYNTHETIC_STRUCTURE, structure.group, message = "Leaf structures independently provide photosynthetic tissue: expected `structure.group` to match `TraitGroup.PHOTOSYNTHETIC_STRUCTURE`")
+            assertTrue(TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities, message = "Leaf structures independently provide photosynthetic tissue: expected `TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities` to be true")
 
             val definition = producer(
                 "${structure.name.lowercase()}-producer",
@@ -588,8 +767,8 @@ class EcologyCompilerTest {
             )
             val compiled = EcologyCompiler.compile(listOf(definition)).species.single()
 
-            assertTrue(TraitDependencies.unmetRequirements(definition).isEmpty())
-            assertTrue(compiled.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0)
+            assertTrue(TraitDependencies.unmetRequirements(definition).isEmpty(), message = "Leaf structures independently provide photosynthetic tissue: expected `TraitDependencies.unmetRequirements(definition).isEmpty()` to be true")
+            assertTrue(compiled.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0, message = "Leaf structures independently provide photosynthetic tissue: expected `compiled.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0` to be true")
         }
     }
 
@@ -604,7 +783,7 @@ class EcologyCompilerTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
-                CommonTrait.MEMBRANOUS_WINGS,
+                CommonTrait.WINGS,
                 CommonTrait.GILL_PADS,
             ),
         )
@@ -612,8 +791,8 @@ class EcologyCompilerTest {
         val compiled = ecology.species.single()
         val strongest = ecology.niches[compiled.niche.bestNicheIndex()]
 
-        assertEquals(Habitat.AERIAL, strongest.habitat)
-        assertEquals(EcoStrategy.FILTER_FEEDING, strongest.strategy)
+        assertEquals(Habitat.AERIAL, strongest.habitat, message = "Habitat and strategy jointly derive the strongest niche: expected `strongest.habitat` to match `Habitat.AERIAL`")
+        assertEquals(EcoStrategy.FILTER_FEEDING, strongest.strategy, message = "Habitat and strategy jointly derive the strongest niche: expected `strongest.strategy` to match `EcoStrategy.FILTER_FEEDING`")
     }
 
     @Test
@@ -640,20 +819,23 @@ class EcologyCompilerTest {
         val compiled = ecology.species[ecology.speciesIndex("omnivore")]
         val strongest = ecology.niches[compiled.niche.bestNicheIndex()]
 
-        assertEquals(Habitat.LAND_SURFACE, strongest.habitat)
-        assertEquals(EcoStrategy.GENERALIST_FORAGING, strongest.strategy)
+        assertEquals(Habitat.LAND_SURFACE, strongest.habitat, message = "Plant and animal feeding adaptations derive a generalist niche: expected `strongest.habitat` to match `Habitat.LAND_SURFACE`")
+        assertEquals(EcoStrategy.GENERALIST_FORAGING, strongest.strategy, message = "Plant and animal feeding adaptations derive a generalist niche: expected `strongest.strategy` to match `EcoStrategy.GENERALIST_FORAGING`")
         assertEquals(
             InteractionKind.GRAZING,
             ecology.interactions.get(compiled.index, ecology.speciesIndex("plant")).kind,
+            message = "Plant and animal feeding adaptations derive a generalist niche: expected `ecology.interactions.get(compiled.index, ecology.speciesIndex(\"plant\")).kind` to match `InteractionKind.GRAZING`",
         )
         assertEquals(
             InteractionKind.PREDATION,
             ecology.interactions.get(compiled.index, ecology.speciesIndex("herbivore")).kind,
+            message = "Plant and animal feeding adaptations derive a generalist niche: expected `ecology.interactions.get(compiled.index, ecology.speciesIndex(\"herbivore\")).kind` to match `InteractionKind.PREDATION`",
         )
         assertEquals(
             0.0,
             ecology.species[ecology.speciesIndex("herbivore")]
                 .niche.supportFor(EcoStrategy.GENERALIST_FORAGING),
+            message = "Plant and animal feeding adaptations derive a generalist niche: expected `ecology.species[ecology.speciesIndex(\"herbivore\")] .niche.supportFor(EcoStrategy.GENERALIST_FORAGING)` to match `0.0`",
         )
     }
 
@@ -676,6 +858,7 @@ class EcologyCompilerTest {
             TraitDependencies.unmetRequirements(
                 viviparous.copy(traits = viviparous.traits + CommonTrait.OVOSPORE_NEST),
             ).isNotEmpty(),
+            message = "Assertion failed",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
@@ -683,6 +866,7 @@ class EcologyCompilerTest {
                     traits = namedOvospore.traits + CommonTrait.BROOD_PROVISIONING,
                 ),
             ).isNotEmpty(),
+            message = "Assertion failed",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
@@ -692,6 +876,7 @@ class EcologyCompilerTest {
                         CommonTrait.BROOD_PROVISIONING,
                 ),
             ).isEmpty(),
+            message = "Assertion failed",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
@@ -699,6 +884,7 @@ class EcologyCompilerTest {
                     traits = namedOvospore.traits + CommonTrait.BODY_CARRIED_OVOSPORES,
                 ),
             ).isEmpty(),
+            message = "Assertion failed",
         )
     }
 
@@ -720,7 +906,7 @@ class EcologyCompilerTest {
             ),
         )
 
-        assertTrue(TraitDependencies.unmetRequirements(parasiteBase).isNotEmpty())
+        assertTrue(TraitDependencies.unmetRequirements(parasiteBase).isNotEmpty(), message = "Brood parasitism requires its authored host relationship: expected `TraitDependencies.unmetRequirements(parasiteBase).isNotEmpty()` to be true")
 
         val parasite = parasiteBase.copy(
             traits = parasiteBase.traits + broodParasitismOf(host.id, host.displayName),
@@ -729,8 +915,8 @@ class EcologyCompilerTest {
         val parasiteIndex = ecology.speciesIndex(parasite.id)
         val hostIndex = ecology.speciesIndex(host.id)
 
-        assertTrue(TraitDependencies.unmetRequirements(parasite).isEmpty())
-        assertTrue(ecology.interactions.get(parasiteIndex, hostIndex).targetRequired)
+        assertTrue(TraitDependencies.unmetRequirements(parasite).isEmpty(), message = "Brood parasitism requires its authored host relationship: expected `TraitDependencies.unmetRequirements(parasite).isEmpty()` to be true")
+        assertTrue(ecology.interactions.get(parasiteIndex, hostIndex).targetRequired, message = "Brood parasitism requires its authored host relationship: expected `ecology.interactions.get(parasiteIndex, hostIndex).targetRequired` to be true")
         assertEquals(
             listOf(parasite, host).map { it.id }.toSet(),
             EcologyAssembly.completeRequiredTargets(
@@ -738,6 +924,7 @@ class EcologyCompilerTest {
                 selected = listOf(ecology.species[parasiteIndex]),
                 availableTargets = ecology.species,
             ).map { it.id }.toSet(),
+            message = "Assertion failed",
         )
         assertTrue(
             EcologyAssembly.completeRequiredTargets(
@@ -745,6 +932,7 @@ class EcologyCompilerTest {
                 selected = listOf(ecology.species[parasiteIndex]),
                 availableTargets = emptyList(),
             ).isEmpty(),
+            message = "Assertion failed",
         )
     }
 
@@ -772,8 +960,8 @@ class EcologyCompilerTest {
         val cucumberEdge = ecology.interactions.get(consumer, ecology.speciesIndex("aardvark-cucumber"))
         val otherEdge = ecology.interactions.get(consumer, ecology.speciesIndex("other-producer"))
 
-        assertEquals(InteractionKind.SUPPLEMENTAL_FEEDING, cucumberEdge.kind)
-        assertEquals(InteractionKind.NONE, otherEdge.kind)
+        assertEquals(InteractionKind.SUPPLEMENTAL_FEEDING, cucumberEdge.kind, message = "Specific food creates only the requested directed edge: expected `cucumberEdge.kind` to match `InteractionKind.SUPPLEMENTAL_FEEDING`")
+        assertEquals(InteractionKind.NONE, otherEdge.kind, message = "Specific food creates only the requested directed edge: expected `otherEdge.kind` to match `InteractionKind.NONE`")
     }
 
     @Test
@@ -807,9 +995,9 @@ class EcologyCompilerTest {
             ecology.speciesIndex(producer.id),
         )
 
-        assertEquals(InteractionKind.SUPPLEMENTAL_FEEDING, interaction.kind)
-        assertEquals(0.07, interaction.targetBenefitRate)
-        assertTrue(interaction.targetRequired)
+        assertEquals(InteractionKind.SUPPLEMENTAL_FEEDING, interaction.kind, message = "Authored relationship effects compose on one interaction edge: expected `interaction.kind` to match `InteractionKind.SUPPLEMENTAL_FEEDING`")
+        assertEquals(0.07, interaction.targetBenefitRate, message = "Authored relationship effects compose on one interaction edge: expected `interaction.targetBenefitRate` to match `0.07`")
+        assertTrue(interaction.targetRequired, message = "Authored relationship effects compose on one interaction edge: expected `interaction.targetRequired` to be true")
     }
 
     @Test
@@ -834,22 +1022,27 @@ class EcologyCompilerTest {
         assertEquals(
             InteractionKind.FILTER_FEEDING,
             ecology.interactions.get(ecology.speciesIndex(mediumFilter.id), minuscule).kind,
+            message = "Assertion failed",
         )
         assertEquals(
             InteractionKind.NONE,
             ecology.interactions.get(ecology.speciesIndex(mediumFilter.id), tiny).kind,
+            message = "Filter feeders target minuscule motile life and huge or colossal feeders also target tiny life: expected `ecology.interactions.get(ecology.speciesIndex(mediumFilter.id), tiny).kind` to match `InteractionKind.NONE`",
         )
         assertEquals(
             InteractionKind.FILTER_FEEDING,
             ecology.interactions.get(ecology.speciesIndex(hugeFilter.id), minuscule).kind,
+            message = "Assertion failed",
         )
         assertEquals(
             InteractionKind.FILTER_FEEDING,
             ecology.interactions.get(ecology.speciesIndex(hugeFilter.id), tiny).kind,
+            message = "Filter feeders target minuscule motile life and huge or colossal feeders also target tiny life: expected `ecology.interactions.get(ecology.speciesIndex(hugeFilter.id), tiny).kind` to match `InteractionKind.FILTER_FEEDING`",
         )
         assertEquals(
             InteractionKind.FILTER_FEEDING,
             ecology.interactions.get(ecology.speciesIndex(colossalFilter.id), tiny).kind,
+            message = "Filter feeders target minuscule motile life and huge or colossal feeders also target tiny life: expected `ecology.interactions.get(ecology.speciesIndex(colossalFilter.id), tiny).kind` to match `InteractionKind.FILTER_FEEDING`",
         )
     }
 
@@ -871,8 +1064,8 @@ class EcologyCompilerTest {
                 adjacentToMajorRiver = 1.0,
             )
 
-            assertEquals(0.0, species.niche.supportFor(Habitat.FRESHWATER))
-            assertEquals(-1, NicheSelection.choose(species, ecology, river))
+            assertEquals(0.0, species.niche.supportFor(Habitat.FRESHWATER), message = "Huge and colossal aquatic species cannot occupy river habitat: expected `species.niche.supportFor(Habitat.FRESHWATER)` to match `0.0`")
+            assertEquals(-1, NicheSelection.choose(species, ecology, river), message = "Huge and colossal aquatic species cannot occupy river habitat: expected `NicheSelection.choose(species, ecology, river)` to match `-1`")
         }
     }
 
@@ -896,10 +1089,12 @@ class EcologyCompilerTest {
         assertEquals(
             InteractionKind.NONE,
             ecology.interactions.get(consumer, ecology.speciesIndex(InvariantSpecies.BUGS.id)).kind,
+            message = "Medium predators do not use tiny aggregate insects as prey: expected `ecology.interactions.get(consumer, ecology.speciesIndex(InvariantSpecies.BUGS.id)).kind` to match `InteractionKind.NONE`",
         )
         assertEquals(
             InteractionKind.PREDATION,
             ecology.interactions.get(consumer, ecology.speciesIndex(smallPrey.id)).kind,
+            message = "Medium predators do not use tiny aggregate insects as prey: expected `ecology.interactions.get(consumer, ecology.speciesIndex(smallPrey.id)).kind` to match `InteractionKind.PREDATION`",
         )
     }
 
@@ -915,10 +1110,12 @@ class EcologyCompilerTest {
         assertEquals(
             InteractionKind.PREDATION,
             ecology.interactions.get(ecology.speciesIndex(mediumPredator.id), prey).kind,
+            message = "Medium aquatic predators can use tiny aquatic life without opening that prey to large hunters: expected `ecology.interactions.get(ecology.speciesIndex(mediumPredator.id), prey).kind` to match `InteractionKind.PREDATION`",
         )
         assertEquals(
             InteractionKind.NONE,
             ecology.interactions.get(ecology.speciesIndex(largePredator.id), prey).kind,
+            message = "Medium aquatic predators can use tiny aquatic life without opening that prey to large hunters: expected `ecology.interactions.get(ecology.speciesIndex(largePredator.id), prey).kind` to match `InteractionKind.NONE`",
         )
     }
 
@@ -927,10 +1124,12 @@ class EcologyCompilerTest {
         val ordinaryMedium = predator("ordinary-medium", SizeClass.MEDIUM)
         val cooperativeMedium = predator("cooperative-medium", SizeClass.MEDIUM).copy(
             traits = predator("cooperative-medium", SizeClass.MEDIUM).traits +
+                CommonTrait.GROUP_LIVING +
                 CommonTrait.COOPERATIVE_HUNTING,
         )
         val cooperativeLarge = predator("cooperative-large", SizeClass.LARGE).copy(
             traits = predator("cooperative-large", SizeClass.LARGE).traits +
+                CommonTrait.GROUP_LIVING +
                 CommonTrait.COOPERATIVE_HUNTING,
         )
         val largePrey = terrestrialPrey("large-prey", SizeClass.LARGE)
@@ -955,15 +1154,31 @@ class EcologyCompilerTest {
 
         val compiledCooperativeMedium =
             ecology.species[ecology.speciesIndex(cooperativeMedium.id)]
-        assertEquals(1, compiledCooperativeMedium.interactions.largerPreySizeClasses)
-        assertTrue(compiledCooperativeMedium.niche.supportFor(Habitat.LAND_SURFACE) > 0.0)
+        assertEquals(1, compiledCooperativeMedium.interactions.largerPreySizeClasses, message = "Cooperative hunters can attack prey one size class larger: expected `compiledCooperativeMedium.interactions.largerPreySizeClasses` to match `1`")
+        assertTrue(
+            compiledCooperativeMedium.niche.supportFor(Habitat.LAND_SURFACE) > 0.0,
+            message = "Cooperative hunters can attack prey one size class larger: expected `compiledCooperativeMedium.niche.supportFor(Habitat.LAND_SURFACE) > 0.0` to be true"
+        )
         assertTrue(
             compiledCooperativeMedium.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0,
+            message = "Cooperative hunters can attack prey one size class larger: expected `compiledCooperativeMedium.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0` to be true",
         )
-        assertEquals(InteractionKind.NONE, interaction(ordinaryMedium.id, largePrey.id))
-        assertEquals(InteractionKind.PREDATION, interaction(cooperativeMedium.id, largePrey.id))
-        assertEquals(InteractionKind.PREDATION, interaction(cooperativeLarge.id, hugePrey.id))
-        assertEquals(InteractionKind.NONE, interaction(cooperativeMedium.id, colossalPrey.id))
+        assertEquals(InteractionKind.NONE, interaction(ordinaryMedium.id, largePrey.id), message = "Cooperative hunters can attack prey one size class larger: expected `interaction(ordinaryMedium.id, largePrey.id)` to match `InteractionKind.NONE`")
+        assertEquals(
+            InteractionKind.PREDATION,
+            interaction(cooperativeMedium.id, largePrey.id),
+            message = "Cooperative hunters can attack prey one size class larger: expected `interaction(cooperativeMedium.id, largePrey.id)` to match `InteractionKind.PREDATION`"
+        )
+        assertEquals(
+            InteractionKind.PREDATION,
+            interaction(cooperativeLarge.id, hugePrey.id),
+            message = "Cooperative hunters can attack prey one size class larger: expected `interaction(cooperativeLarge.id, hugePrey.id)` to match `InteractionKind.PREDATION`"
+        )
+        assertEquals(
+            InteractionKind.NONE,
+            interaction(cooperativeMedium.id, colossalPrey.id),
+            message = "Cooperative hunters can attack prey one size class larger: expected `interaction(cooperativeMedium.id, colossalPrey.id)` to match `InteractionKind.NONE`"
+        )
     }
 
     @Test
@@ -985,6 +1200,7 @@ class EcologyCompilerTest {
                 ecology.speciesIndex(grazer.id),
                 ecology.speciesIndex(InvariantSpecies.CARPET_PLANTS.id),
             ).kind,
+            message = "Assertion failed",
         )
     }
 
@@ -1006,7 +1222,12 @@ class EcologyCompilerTest {
             val pursuit =
                 consumer.niche.supportFor(EcoStrategy.PURSUIT_PREDATION) >
                     consumer.niche.supportFor(EcoStrategy.AMBUSH_PREDATION)
-            val capture = consumer.interactions.captureAbility + if (pursuit) consumer.interactions.pursuitSpeed else 0.0
+            val capture = consumer.interactions.captureAbility +
+                if (pursuit) {
+                    consumer.interactions.pursuitSpeed + consumer.interactions.sensing
+                } else {
+                    0.0
+                }
             val defense = target.interactions.defense + if (pursuit) target.interactions.pursuitSpeed else 0.0
             return (0.07 * support * capture / maxOf(0.25, defense)).coerceIn(0.0, 0.25)
         }
@@ -1014,14 +1235,14 @@ class EcologyCompilerTest {
         listOf(orca to seal, seal to silverfish).forEach { (consumer, target) ->
             val interaction = ecology.interactions.get(consumer.index, target.index)
             val attack = undiscountedAttack(consumer, target)
-            assertEquals(InteractionKind.PREDATION, interaction.kind)
-            assertEquals(attack, interaction.targetLossRate, 1.0e-12)
-            assertEquals(attack * 1.30, interaction.consumerGainRate, 1.0e-12)
+            assertEquals(InteractionKind.PREDATION, interaction.kind, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.kind` to match `InteractionKind.PREDATION`")
+            assertEquals(attack, interaction.targetLossRate, 1.0e-12, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.targetLossRate` to match `attack`")
+            assertEquals(attack * 1.30, interaction.consumerGainRate, 1.0e-12, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.consumerGainRate` to match `attack * 1.30`")
         }
     }
 
     @Test
-    fun `high pouncing increases predation only against burrow users`() {
+    fun `high pouncing increases predation only against fossorial prey`() {
         val pouncer = predator("pouncer", SizeClass.SMALL).copy(
             traits = predator("pouncer", SizeClass.SMALL).traits + CommonTrait.HIGH_POUNCING,
         )
@@ -1033,7 +1254,9 @@ class EcologyCompilerTest {
         val burrowingPrey = surfacePrey.copy(
             id = "burrowing-prey",
             displayName = "burrowing-prey",
-            traits = surfacePrey.traits + CommonTrait.SUBTERRANEAN_BURROWING,
+            traits = surfacePrey.traits +
+                CommonTrait.DIGGING_LIMBS +
+                CommonTrait.FOSSORIAL_LIVING,
         )
         val ecology = EcologyCompiler.compile(listOf(pouncer, surfacePrey, burrowingPrey))
         val pouncerIndex = ecology.speciesIndex(pouncer.id)
@@ -1044,9 +1267,31 @@ class EcologyCompilerTest {
             .get(pouncerIndex, ecology.speciesIndex(burrowingPrey.id))
             .targetLossRate
 
-        assertTrue(burrowAttack > surfaceAttack)
-        assertTrue(ecology.species.single { it.id == burrowingPrey.id }.interactions.usesBurrowRefuge)
-        assertTrue(!ecology.species.single { it.id == surfacePrey.id }.interactions.usesBurrowRefuge)
+        assertTrue(burrowAttack > surfaceAttack, message = "High pouncing increases predation only against fossorial prey: expected `burrowAttack > surfaceAttack` to be true")
+    }
+
+    @Test
+    fun `burrow borrowers require another local burrow builder`() {
+        val builder = predator("burrow-builder", SizeClass.SMALL).copy(
+            traits = predator("burrow-builder", SizeClass.SMALL).traits +
+                CommonTrait.DIGGING_LIMBS +
+                CommonTrait.BURROW_BUILDER,
+        )
+        val borrower = predator("burrow-borrower", SizeClass.SMALL).copy(
+            traits = predator("burrow-borrower", SizeClass.SMALL).traits
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                CommonTrait.GRAZING_MOUTHPARTS +
+                CommonTrait.BURROW_BORROWER,
+        )
+        val ecology = EcologyCompiler.compile(listOf(builder, borrower))
+
+        assertTrue(
+            ecology.interactions.get(
+                ecology.speciesIndex(borrower.id),
+                ecology.speciesIndex(builder.id),
+            ).targetRequired,
+            message = "Burrow borrowers require another local burrow builder: expected `ecology.interactions.get( ecology.speciesIndex(borrower.id), ecology.speciesIndex(builder.id), ).targetRequired` to be true",
+        )
     }
 
     @Test
@@ -1079,7 +1324,7 @@ class EcologyCompilerTest {
             .get(predatorIndex, ecology.speciesIndex(barkingPrey.id))
             .targetLossRate
 
-        assertTrue(sharedCallAttack > differentCallAttack)
+        assertTrue(sharedCallAttack > differentCallAttack, message = "Sound lures increase capture only against prey sharing a call: expected `sharedCallAttack > differentCallAttack` to be true")
     }
 
     @Test
@@ -1091,14 +1336,15 @@ class EcologyCompilerTest {
         val ordinaryCompiled = EcologyCompiler.compile(listOf(ordinary)).species.single()
         val vocalCompiled = EcologyCompiler.compile(listOf(vocal)).species.single()
 
-        assertEquals(ordinaryCompiled.physiology, vocalCompiled.physiology)
-        assertEquals(ordinaryCompiled.environment, vocalCompiled.environment)
-        assertEquals(ordinaryCompiled.lifeHistory, vocalCompiled.lifeHistory)
+        assertEquals(ordinaryCompiled.physiology, vocalCompiled.physiology, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.physiology` to match `ordinaryCompiled.physiology`")
+        assertEquals(ordinaryCompiled.environment, vocalCompiled.environment, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.environment` to match `ordinaryCompiled.environment`")
+        assertEquals(ordinaryCompiled.lifeHistory, vocalCompiled.lifeHistory, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.lifeHistory` to match `ordinaryCompiled.lifeHistory`")
         assertEquals(
             ordinaryCompiled.interactions,
             vocalCompiled.interactions.copy(
                 acousticSignalMask = ordinaryCompiled.interactions.acousticSignalMask,
             ),
+            message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.interactions.copy( acousticSignalMask = ordinaryCompiled.interactions.acousticSignalMask, )` to match `ordinaryCompiled.interactions`",
         )
     }
 
@@ -1110,11 +1356,13 @@ class EcologyCompilerTest {
         assertEquals(
             ProducerCompetitionLayer.ATTACHED,
             ecology.species.single { it.id == waterLily.id }.niche.producerCompetitionLayer,
+            message = "Attached and suspended photosynthesizers compile to separate competition layers: expected `ecology.species.single { it.id == waterLily.id }.niche.producerCompetitionLayer` to match `ProducerCompetitionLayer.ATTACHED`",
         )
         assertEquals(
             ProducerCompetitionLayer.SUSPENDED,
             ecology.species.single { it.id == InvariantSpecies.PLANKTON.id }
                 .niche.producerCompetitionLayer,
+            message = "Assertion failed",
         )
     }
 
@@ -1133,24 +1381,37 @@ class EcologyCompilerTest {
     fun `invariant guilds compile as ordinary populations with explicit metadata`() {
         val ecology = EcologyCompiler.compile(InvariantSpecies.ALL)
 
-        assertEquals(5, ecology.species.size)
-        assertTrue(ecology.species.all { it.kind == SpeciesKind.INVARIANT })
-        assertTrue(ecology.species.all { it.lifeHistory.dormancyKind == DormancyKind.PROPAGULE })
-        assertTrue(ecology.species.all { it.lifeHistory.nicheCompetitionSensitivity < 0.20 })
+        assertEquals(5, ecology.species.size, message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.size` to match `5`")
+        assertTrue(ecology.species.all { it.kind == SpeciesKind.INVARIANT }, message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.all { it.kind == SpeciesKind.INVARIANT }` to be true")
+        assertTrue(
+            ecology.species.all {
+                it.lifeHistory.dormancyKind == DormancyKind.PROPAGULE
+            },
+            message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.all { it.lifeHistory.dormancyKind == DormancyKind.PROPAGULE }` to be true"
+        )
+        assertTrue(
+            ecology.species.all {
+                it.lifeHistory.nicheCompetitionSensitivity < 0.20
+            },
+            message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.all { it.lifeHistory.nicheCompetitionSensitivity < 0.20 }` to be true"
+        )
         assertEquals(
             0.10,
             ecology.species.single { it.id == InvariantSpecies.PLANKTON.id }
                 .lifeHistory.dormantEntryBiomassRetention,
+            message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.single { it.id == InvariantSpecies.PLANKTON.id } .lifeHistory.dormantEntryBiomassRetention` to match `0.10`",
         )
         assertEquals(
             10.0,
             ecology.species.single { it.id == InvariantSpecies.PLANKTON.id }
                 .lifeHistory.dormantReactivationMultiplier,
+            message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species.single { it.id == InvariantSpecies.PLANKTON.id } .lifeHistory.dormantReactivationMultiplier` to match `10.0`",
         )
         assertTrue(
             ecology.species
                 .filterNot { it.id == InvariantSpecies.PLANKTON.id }
                 .all { it.lifeHistory.dormantEntryBiomassRetention == 1.0 },
+            message = "Invariant guilds compile as ordinary populations with explicit metadata: expected `ecology.species .filterNot { it.id == InvariantSpecies.PLANKTON.id } .all { it.lifeHistory.dormantEntryBiomassRetention == 1.0 }` to be true",
         )
     }
 

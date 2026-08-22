@@ -20,8 +20,8 @@ class EcologyProductionTest {
             HabitatCacheMask.bit(habitat).toByte().toInt() and 0xFF
         }
 
-        assertEquals(Habitat.entries.size, roundTrippedBits.toSet().size)
-        assertTrue(roundTrippedBits.none { it == 0 })
+        assertEquals(Habitat.entries.size, roundTrippedBits.toSet().size, message = "Every current habitat has a distinct byte cache bit: expected `roundTrippedBits.toSet().size` to match `Habitat.entries.size`")
+        assertTrue(roundTrippedBits.none { it == 0 }, message = "Every current habitat has a distinct byte cache bit: expected `roundTrippedBits.none { it == 0 }` to be true")
     }
 
     @Test
@@ -31,6 +31,7 @@ class EcologyProductionTest {
             EarthSpeciesCatalog.ALL
                 .filter { it.sizeClass == SizeClass.COLOSSAL }
                 .mapTo(linkedSetOf()) { it.id },
+            message = "Assertion failed",
         )
     }
 
@@ -46,8 +47,14 @@ class EcologyProductionTest {
                     EcologySuitability.evaluate(species, ecology, environment)
                 }
                 results.forEach { result ->
-                    assertTrue(result.score.isFinite(), species.displayName)
-                    assertTrue(result.score in 0.0..1.0, species.displayName)
+                    assertTrue(
+                        result.score.isFinite(),
+                        "${species.displayName} should have a finite suitability score, but had ${result.score}",
+                    )
+                    assertTrue(
+                        result.score in 0.0..1.0,
+                        "${species.displayName} suitability should be within 0..1, but was ${result.score}",
+                    )
                 }
                 if (results.none { it.suitable }) {
                     val best = results.maxBy { it.score }
@@ -98,8 +105,8 @@ class EcologyProductionTest {
         val southernInvariants =
             PlanetEcology.relevantInvariantSpecies(southernYear).map { it.id }.toSet()
 
-        assertEquals(northernInvariants, southernInvariants)
-        assertTrue(InvariantSpecies.PLANKTON.id in northernInvariants)
+        assertEquals(northernInvariants, southernInvariants, message = "Random ecosystem initialization is independent of hemisphere season: expected `southernInvariants` to match `northernInvariants`")
+        assertTrue(InvariantSpecies.PLANKTON.id in northernInvariants, message = "Random ecosystem initialization is independent of hemisphere season: expected `InvariantSpecies.PLANKTON.id in northernInvariants` to be true")
 
         val plankton = ecology.species.single { it.id == InvariantSpecies.PLANKTON.id }
         val nicheIndex =
@@ -110,7 +117,7 @@ class EcologyProductionTest {
         val southernCapacity =
             PlanetEcology.initialCarryingCapacityKg(plankton, niche, southernYear)
 
-        assertEquals(northernCapacity, southernCapacity, northernCapacity * 1e-12)
+        assertEquals(northernCapacity, southernCapacity, northernCapacity * 1e-12, message = "Random ecosystem initialization is independent of hemisphere season: expected `southernCapacity` to match `northernCapacity`")
     }
 
     @Test
@@ -129,8 +136,8 @@ class EcologyProductionTest {
 
         val tiger = ecology.species.single { it.id == "bengal-tiger" }
         val kangaroo = ecology.species.single { it.id == "red-kangaroo" }
-        assertTrue(tiger.physiology.hydration.minimumWater > 0.0)
-        assertTrue(kangaroo.physiology.hydration.minimumWater > 0.0)
+        assertTrue(tiger.physiology.hydration.minimumWater > 0.0, message = "Catalog animals do not gain broad climate ranges from generic physiology: expected `tiger.physiology.hydration.minimumWater > 0.0` to be true")
+        assertTrue(kangaroo.physiology.hydration.minimumWater > 0.0, message = "Catalog animals do not gain broad climate ranges from generic physiology: expected `kangaroo.physiology.hydration.minimumWater > 0.0` to be true")
     }
 
     @Test
@@ -165,6 +172,7 @@ class EcologyProductionTest {
                 desert,
                 Habitat.LAND_SURFACE,
             ).suitable,
+            message = "Suitability can target one habitat compartment: expected `EcologySuitability.evaluate( species, ecology, desert, Habitat.LAND_SURFACE, ).suitable` to be true",
         )
         assertFalse(
             EcologySuitability.evaluate(
@@ -173,6 +181,7 @@ class EcologyProductionTest {
                 desert,
                 Habitat.FRESHWATER,
             ).suitable,
+            message = "Suitability can target one habitat compartment: expected `EcologySuitability.evaluate( species, ecology, desert, Habitat.FRESHWATER, ).suitable` to be false",
         )
     }
 
@@ -202,9 +211,9 @@ class EcologyProductionTest {
             Serialization.save(saveFile.toString(), original)
             val restored = Serialization.load(saveFile.toString(), TileEcosystem::class.java)
 
-            assertEquals(original, restored)
-            assertEquals(1, restored.community(ecology).size)
-            assertEquals("dromedary-camel", restored.populations.single().speciesId)
+            assertEquals(original, restored, message = "Tile ecosystem survives a compressed save round trip: expected `restored` to match `original`")
+            assertEquals(1, restored.community(ecology).size, message = "Tile ecosystem survives a compressed save round trip: expected `restored.community(ecology).size` to match `1`")
+            assertEquals("dromedary-camel", restored.populations.single().speciesId, message = "Tile ecosystem survives a compressed save round trip: expected `restored.populations.single().speciesId` to match `\"dromedary-camel\"`")
         } finally {
             saveFile.deleteIfExists()
         }

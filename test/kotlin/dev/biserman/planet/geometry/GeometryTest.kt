@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test
 class GeometryTest {
     @Test
     fun `longitude distance wraps across the date line`() {
-        assertEquals(0.0, longitudeDistanceDegrees(-10.0, 350.0))
-        assertEquals(2.0, longitudeDistanceDegrees(-179.0, 179.0))
+        assertEquals(0.0, longitudeDistanceDegrees(-10.0, 350.0), "Longitude distance wraps across the date line: expected `longitudeDistanceDegrees(-10.0, 350.0)` to match `0.0`")
+        assertEquals(2.0, longitudeDistanceDegrees(-179.0, 179.0), "Longitude distance wraps across the date line: expected `longitudeDistanceDegrees(-179.0, 179.0)` to match `2.0`")
     }
 
     @Test
@@ -16,7 +16,8 @@ class GeometryTest {
 
         assertEquals(
             120.0,
-            bestOceanCorridorDateLineDegrees(coverage, listOf(-60.0 to 1.0))
+            bestOceanCorridorDateLineDegrees(coverage, listOf(-60.0 to 1.0)),
+            "Best date line chooses the center of the widest ocean corridor: expected `bestOceanCorridorDateLineDegrees(coverage, listOf(-60.0 to 1.0))` to match `120.0`",
         )
     }
 
@@ -26,7 +27,8 @@ class GeometryTest {
 
         assertEquals(
             180.0,
-            bestOceanCorridorDateLineDegrees(coverage, listOf(0.0 to 1.0))
+            bestOceanCorridorDateLineDegrees(coverage, listOf(0.0 to 1.0)),
+            "Best date line centers land when ocean corridors are equally wide: expected `bestOceanCorridorDateLineDegrees(coverage, listOf(0.0 to 1.0))` to match `180.0`",
         )
     }
 }

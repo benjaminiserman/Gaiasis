@@ -27,6 +27,13 @@ enum class ThermalStrategy {
     HETEROTHERMY,
 }
 
+enum class ActivityPattern {
+    DIURNAL,
+    NOCTURNAL,
+    VESPERTINE,
+    CATHEMERAL,
+}
+
 enum class AquaticSalinityTolerance {
     SALTWATER_ONLY,
     FRESHWATER_ONLY,
@@ -197,14 +204,14 @@ sealed interface TraitEffect {
     data class SoundLureCaptureBonus(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeSoundLureCaptureBonus(change)
     }
-    data object BurrowRefuge : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.enableBurrowRefuge()
-    }
     data class PursuitSpeed(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitSpeed(change)
     }
-    data class PursuitTracking(val change: Double) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitTracking(change)
+    data class Sensing(val change: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.changeSensing(change)
+    }
+    data class ActivityPatternEffect(val pattern: ActivityPattern) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.setActivityPattern(pattern)
     }
     data class Defense(val change: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeDefense(change)
@@ -325,6 +332,7 @@ sealed interface TraitEffect {
 sealed interface SpeciesSelector {
     data class ExactSpecies(val speciesId: String) : SpeciesSelector
     data class DescendantsOf(val ancestorSpeciesId: String) : SpeciesSelector
+    data class HasTrait(val trait: CommonTrait) : SpeciesSelector
 }
 
 sealed interface RelationshipEffect {

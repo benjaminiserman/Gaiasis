@@ -17,9 +17,9 @@ class ClimateDatumTest {
 
     @Test
     fun `sampleAt returns monthly samples at month boundaries`() {
-        assertEquals(climate.months[0], climate.sampleAt(0.0))
-        assertEquals(climate.months[6], climate.sampleAt(0.5))
-        assertEquals(climate.months[0], climate.sampleAt(1.0))
+        assertEquals(climate.months[0], climate.sampleAt(0.0), "SampleAt returns monthly samples at month boundaries: expected `climate.sampleAt(0.0)` to match `climate.months[0]`")
+        assertEquals(climate.months[6], climate.sampleAt(0.5), "SampleAt returns monthly samples at month boundaries: expected `climate.sampleAt(0.5)` to match `climate.months[6]`")
+        assertEquals(climate.months[0], climate.sampleAt(1.0), "SampleAt returns monthly samples at month boundaries: expected `climate.sampleAt(1.0)` to match `climate.months[0]`")
     }
 
     @Test
@@ -27,10 +27,12 @@ class ClimateDatumTest {
         assertEquals(
             ClimateDatumSample(0.5, 5.0, 50.0),
             climate.sampleAt(1.0 / 24.0),
+            "SampleAt interpolates every climate field and wraps the year: expected `climate.sampleAt(1.0 / 24.0)` to match `ClimateDatumSample(0.5, 5.0, 50.0)`",
         )
         assertEquals(
             ClimateDatumSample(5.5, 55.0, 550.0),
             climate.sampleAt(23.0 / 24.0),
+            "SampleAt interpolates every climate field and wraps the year: expected `climate.sampleAt(23.0 / 24.0)` to match `ClimateDatumSample(5.5, 55.0, 550.0)`",
         )
     }
 }
