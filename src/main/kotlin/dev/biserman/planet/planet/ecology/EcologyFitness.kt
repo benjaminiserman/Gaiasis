@@ -29,7 +29,7 @@ object EcologyFitness {
         if (species.physiology.thermal.seasonalColdToleranceC <= 0.0 || trigger <= 0.0 || insolation >= trigger) {
             return temperature(species, temperatureC)
         }
-        val coatFraction = ((trigger - insolation) / trigger).coerceIn(0.0, 1.0)
+        val coatFraction = ((trigger - insolation) / trigger).coerceIn(0.0, 1.0).pow(0.5)
         val coldBonus = species.physiology.thermal.seasonalColdToleranceC * coatFraction
         val adjustedOuterLow = species.physiology.thermal.outerLowC - coldBonus
         val adjustedOptimalLow = species.physiology.thermal.optimalLowC - coldBonus * 0.45

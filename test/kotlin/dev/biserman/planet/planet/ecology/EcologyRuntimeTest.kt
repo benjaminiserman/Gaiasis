@@ -17,6 +17,7 @@ class EcologyRuntimeTest {
             traits = buildList {
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
+                add(CommonTrait.SOLITARY)
                 add(CommonTrait.TERRESTRIAL_OVOSPORE)
                 add(CommonTrait.WINGS)
                 add(CommonTrait.NECTAR_SIPPING_TONGUE)
@@ -120,6 +121,7 @@ class EcologyRuntimeTest {
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -136,6 +138,7 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
@@ -511,6 +514,7 @@ class EcologyRuntimeTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.WASTE_FEEDING_MOUTHPARTS,
@@ -754,6 +758,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -770,6 +775,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
@@ -786,6 +792,7 @@ class EcologyRuntimeTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,

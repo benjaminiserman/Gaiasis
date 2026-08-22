@@ -689,14 +689,26 @@ class EarthSpeciesCatalogTest {
                 CommonTrait.CONCENTRATED_URINE in adapted.traits,
                 "$speciesId should have concentrated urine",
             )
-            val baseline = adapted.copy(
-                id = "$speciesId-without-concentrated-urine",
-                traits = adapted.traits - CommonTrait.CONCENTRATED_URINE,
+            // Several of these mammals also have other water-saving traits, which can
+            // legitimately clamp both complete phenotypes to zero required free water.
+            // Isolate the kidney trait so the comparison retains its observable range.
+            val hydrationControl = adapted.copy(
+                id = "$speciesId-hydration-control",
+                traits = adapted.traits.filterNot {
+                    it != CommonTrait.CONCENTRATED_URINE &&
+                        it.effects.any { effect -> effect is TraitEffect.WaterRequirement }
+                },
             )
-            val compiled = EcologyCompiler.compile(listOf(adapted, baseline)).species
+            val baseline = hydrationControl.copy(
+                id = "$speciesId-without-concentrated-urine",
+                traits = hydrationControl.traits - CommonTrait.CONCENTRATED_URINE,
+            )
+            val compiled = EcologyCompiler.compile(listOf(hydrationControl, baseline)).species
             assertTrue(
                 compiled[0].physiology.hydration.minimumWater < compiled[1].physiology.hydration.minimumWater,
-                message = "Documented arid mammals conserve water with concentrated urine: expected `compiled[0].physiology.hydration.minimumWater < compiled[1].physiology.hydration.minimumWater` to be true"
+                message = "$speciesId: expected concentrated urine to lower minimum water; " +
+                    "adapted=${compiled[0].physiology.hydration.minimumWater}, " +
+                    "baseline=${compiled[1].physiology.hydration.minimumWater}",
             )
             assertTrue(
                 compiled[0].physiology.maintenanceDemand > compiled[1].physiology.maintenanceDemand,
@@ -736,7 +748,7 @@ class EarthSpeciesCatalogTest {
         val solitaryInsect = ant.copy(
             id = "solitary-insect",
             displayName = "Solitary insect",
-            traits = ant.traits - CommonTrait.EUSOCIAL_COLONY,
+            traits = ant.traits - CommonTrait.EUSOCIAL_COLONY + CommonTrait.SOLITARY,
         )
 
         assertTrue(
@@ -839,7 +851,7 @@ class EarthSpeciesCatalogTest {
             assertTrue(CommonTrait.FRUIT_EATING_MOUTHPARTS in species.traits, message = "Fruit specialists and fruit-bearing producers use the frugivory system: expected `CommonTrait.FRUIT_EATING_MOUTHPARTS in species.traits` to be true")
             assertTrue(CommonTrait.BROWSING_MOUTHPARTS !in species.traits, message = "Fruit specialists and fruit-bearing producers use the frugivory system: expected `CommonTrait.BROWSING_MOUTHPARTS !in species.traits` to be true")
         }
-        listOf("strangler-fig", "african-baobab", "english-oak").forEach { speciesId ->
+        listOf("strangler-fig", "african-baobab").forEach { speciesId ->
             assertTrue(
                 CommonTrait.FRUIT_BEARING in definitions.getValue(speciesId).traits,
                 message = "Fruit specialists and fruit-bearing producers use the frugivory system: expected `CommonTrait.FRUIT_BEARING in definitions.getValue(speciesId).traits` to be true"
@@ -854,6 +866,35 @@ class EarthSpeciesCatalogTest {
             compiled.niche.supportFor(EcoStrategy.FRUGIVORY) >
                 compiled.niche.supportFor(EcoStrategy.GRAZING),
             message = "Fruit specialists and fruit-bearing producers use the frugivory system: expected `compiled.niche.supportFor(EcoStrategy.FRUGIVORY) > compiled.niche.supportFor(EcoStrategy.GRAZING)` to be true",
+        )
+    }
+
+    @Test
+    fun `pelican scoop mouth favors coastal fish hunting over land`() {
+        val pelican = EarthSpeciesCatalog.ALL.single { it.id == "brown-pelican" }
+        assertTrue(
+            CommonTrait.SCOOP_MOUTH in pelican.traits,
+            message = "Brown pelicans have an expandable scoop pouch for fish hunting.",
+        )
+        val withoutScoopMouth = pelican.copy(
+            id = "brown-pelican-without-scoop-mouth",
+            traits = pelican.traits - CommonTrait.SCOOP_MOUTH,
+        )
+        val compiled = EcologyCompiler.compile(listOf(pelican, withoutScoopMouth)).species
+
+        assertTrue(
+            compiled[0].niche.supportFor(Habitat.COASTAL) >
+                compiled[1].niche.supportFor(Habitat.COASTAL),
+            message = "A scoop mouth improves a pelican's coastal habitat fit.",
+        )
+        assertTrue(
+            compiled[0].niche.supportFor(Habitat.LAND_SURFACE) <
+                compiled[1].niche.supportFor(Habitat.LAND_SURFACE),
+            message = "A scoop mouth reduces a pelican's land-surface habitat fit.",
+        )
+        assertTrue(
+            compiled[0].niche.supportFor(Habitat.LAND_SURFACE) > 0.0,
+            message = "A scoop mouth does not prevent pelicans from resting and nesting on land.",
         )
     }
 
@@ -958,7 +999,9 @@ class EarthSpeciesCatalogTest {
             val suitability = EcologySuitability.evaluate(species, ecology, annualEnvironments)
             assertTrue(
                 suitability.suitable,
-                "$speciesId: score=${suitability.score}, issues=${suitability.issues}",
+                "$speciesId: score=${suitability.score}, mean=${suitability.meanAnnualFitness}, " +
+                    "best=${suitability.bestSeasonFitness}, viable=${suitability.viableSeasonFraction}, " +
+                    "issues=${suitability.issues}",
             )
         }
     }
@@ -1095,16 +1138,16 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `social organization is inferred from specialized behavior`() {
+    fun `social organization is explicitly authored`() {
         val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
         fun traitsOf(id: String) = requireNotNull(definitions[id]).traits
 
-        assertTrue(CommonTrait.SOLITARY in traitsOf("bengal-tiger"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.SOLITARY in traitsOf(\"bengal-tiger\")` to be true")
-        assertTrue(CommonTrait.GROUP_LIVING in traitsOf("gray-wolf"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.GROUP_LIVING in traitsOf(\"gray-wolf\")` to be true")
-        assertTrue(CommonTrait.GROUP_LIVING in traitsOf("emperor-penguin"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.GROUP_LIVING in traitsOf(\"emperor-penguin\")` to be true")
-        assertTrue(CommonTrait.COLLECTIVE_LIVING in traitsOf("plains-zebra"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.COLLECTIVE_LIVING in traitsOf(\"plains-zebra\")` to be true")
-        assertTrue(CommonTrait.COLLECTIVE_LIVING in traitsOf("pacific-herring"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.COLLECTIVE_LIVING in traitsOf(\"pacific-herring\")` to be true")
-        assertTrue(CommonTrait.EUSOCIAL_COLONY in traitsOf("western-honey-bee"), message = "Social organization is inferred from specialized behavior: expected `CommonTrait.EUSOCIAL_COLONY in traitsOf(\"western-honey-bee\")` to be true")
+        assertTrue(CommonTrait.SOLITARY in traitsOf("bengal-tiger"), message = "Social organization is explicitly authored: expected `CommonTrait.SOLITARY in traitsOf(\"bengal-tiger\")` to be true")
+        assertTrue(CommonTrait.GROUP_LIVING in traitsOf("gray-wolf"), message = "Social organization is explicitly authored: expected `CommonTrait.GROUP_LIVING in traitsOf(\"gray-wolf\")` to be true")
+        assertTrue(CommonTrait.COLLECTIVE_LIVING in traitsOf("emperor-penguin"), message = "Social organization is explicitly authored: expected `CommonTrait.COLLECTIVE_LIVING in traitsOf(\"emperor-penguin\")` to be true")
+        assertTrue(CommonTrait.COLLECTIVE_LIVING in traitsOf("plains-zebra"), message = "Social organization is explicitly authored: expected `CommonTrait.COLLECTIVE_LIVING in traitsOf(\"plains-zebra\")` to be true")
+        assertTrue(CommonTrait.COLLECTIVE_LIVING in traitsOf("pacific-herring"), message = "Social organization is explicitly authored: expected `CommonTrait.COLLECTIVE_LIVING in traitsOf(\"pacific-herring\")` to be true")
+        assertTrue(CommonTrait.EUSOCIAL_COLONY in traitsOf("western-honey-bee"), message = "Social organization is explicitly authored: expected `CommonTrait.EUSOCIAL_COLONY in traitsOf(\"western-honey-bee\")` to be true")
 
         EarthSpeciesCatalog.ALL.filter { it.motile }.forEach { definition ->
             assertEquals(

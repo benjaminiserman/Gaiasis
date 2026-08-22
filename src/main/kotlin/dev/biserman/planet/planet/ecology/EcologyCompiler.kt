@@ -72,6 +72,9 @@ object EcologyCompiler {
         require(!definition.motile || traitsByGroup[TraitGroup.THERMOREGULATION]?.size == 1) {
             "${definition.displayName} is motile and must have exactly one thermal strategy"
         }
+        require(!definition.motile || traitsByGroup[TraitGroup.SOCIAL_ORGANIZATION]?.size == 1) {
+            "${definition.displayName} is motile and must have exactly one social organization"
+        }
         require(definition.motile || TraitGroup.THERMOREGULATION !in traitsByGroup) {
             "${definition.displayName} is not motile but has a motile thermal strategy"
         }

@@ -173,6 +173,7 @@ private class BenchmarkScenario(
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     if (index % 2 == 0) CommonTrait.ECTOTHERMY else CommonTrait.ENDOTHERMY,
+                    CommonTrait.SOLITARY,
                     CommonTrait.TERRESTRIAL_OVOSPORE,
                     CommonTrait.WALKING_LIMBS,
                     strategyTrait,
@@ -198,6 +199,7 @@ private class BenchmarkScenario(
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     CommonTrait.ECTOTHERMY,
+                    CommonTrait.SOLITARY,
                     CommonTrait.AQUATIC_OVOSPORE,
                     CommonTrait.BUOYANCY_BLADDER,
                     CommonTrait.GILLS,

@@ -214,6 +214,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.HETEROTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -230,6 +231,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
@@ -246,6 +248,7 @@ class EcologyExperimentsTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,

@@ -235,6 +235,7 @@ class EcologyMovementTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -250,6 +251,7 @@ class EcologyMovementTest {
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
+            CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.GILL_PADS,

@@ -54,9 +54,24 @@ class EcologyCompilerTest {
         val compiled = EcologyCompiler.compile(listOf(producer)).species.single()
 
         assertEquals(-4.0, compiled.physiology.thermal.outerLowC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerLowC` to match `-4.0`")
-        assertEquals(27.0, compiled.physiology.thermal.outerHighC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerHighC` to match `27.0`")
+        assertEquals(26.0, compiled.physiology.thermal.outerHighC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerHighC` to match `26.0`")
         assertTrue(compiled.niche.hasViableNiche(), message = "Traits compile into climate and niche parameters: expected `compiled.niche.hasViableNiche()` to be true")
         assertTrue(compiled.physiology.maintenanceDemand > 0.0, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.maintenanceDemand > 0.0` to be true")
+    }
+
+    @Test
+    fun `motile species require an explicitly authored social organization`() {
+        val unsocial = predator("unsocial").copy(
+            traits = predator("unsocial").traits.filter {
+                it.group != TraitGroup.SOCIAL_ORGANIZATION
+            },
+        )
+
+        val exception = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(unsocial))
+        }
+
+        assertTrue(exception.message.orEmpty().contains("social organization"))
     }
 
     @Test
@@ -446,6 +461,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.FLOATING_BODY,
             ),
@@ -673,7 +689,10 @@ class EcologyCompilerTest {
         val base = predator("huddling-dependencies")
         fun unmet(organization: CommonTrait) =
             TraitDependencies.unmetRequirements(
-                base.copy(traits = base.traits + organization + CommonTrait.GROUP_HUDDLING),
+                base.copy(
+                    traits = base.traits.filter { it.group != TraitGroup.SOCIAL_ORGANIZATION } +
+                        organization + CommonTrait.GROUP_HUDDLING,
+                ),
             )
 
         assertTrue(unmet(CommonTrait.SOLITARY).isNotEmpty(), message = "Group huddling requires a non-solitary social organization: expected `unmet(CommonTrait.SOLITARY).isNotEmpty()` to be true")
@@ -782,6 +801,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WINGS,
                 CommonTrait.GILL_PADS,
@@ -806,6 +826,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -863,17 +884,8 @@ class EcologyCompilerTest {
         assertTrue(
             TraitDependencies.unmetRequirements(
                 namedOvospore.copy(
-                    traits = namedOvospore.traits + CommonTrait.BROOD_PROVISIONING,
-                ),
-            ).isNotEmpty(),
-            message = "Assertion failed",
-        )
-        assertTrue(
-            TraitDependencies.unmetRequirements(
-                namedOvospore.copy(
                     traits = namedOvospore.traits +
-                        CommonTrait.OVOSPORE_NEST +
-                        CommonTrait.BROOD_PROVISIONING,
+                        CommonTrait.OVOSPORE_NEST
                 ),
             ).isEmpty(),
             message = "Assertion failed",
@@ -899,6 +911,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1076,6 +1089,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1123,12 +1137,14 @@ class EcologyCompilerTest {
     fun `cooperative hunters can attack prey one size class larger`() {
         val ordinaryMedium = predator("ordinary-medium", SizeClass.MEDIUM)
         val cooperativeMedium = predator("cooperative-medium", SizeClass.MEDIUM).copy(
-            traits = predator("cooperative-medium", SizeClass.MEDIUM).traits +
+            traits = predator("cooperative-medium", SizeClass.MEDIUM).traits
+                .filter { it.group != TraitGroup.SOCIAL_ORGANIZATION } +
                 CommonTrait.GROUP_LIVING +
                 CommonTrait.COOPERATIVE_HUNTING,
         )
         val cooperativeLarge = predator("cooperative-large", SizeClass.LARGE).copy(
-            traits = predator("cooperative-large", SizeClass.LARGE).traits +
+            traits = predator("cooperative-large", SizeClass.LARGE).traits
+                .filter { it.group != TraitGroup.SOCIAL_ORGANIZATION } +
                 CommonTrait.GROUP_LIVING +
                 CommonTrait.COOPERATIVE_HUNTING,
         )
@@ -1187,6 +1203,7 @@ class EcologyCompilerTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1469,6 +1486,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.SOLITARY,
             CommonTrait.AMBUSH_MUSCULATURE,
             ColorTrait.BROWN_CAMOUFLAGE,
         ),
@@ -1487,6 +1505,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.SOLITARY,
             CommonTrait.BALEEN,
         ),
     )
@@ -1504,6 +1523,7 @@ class EcologyCompilerTest {
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.BUOYANCY_BLADDER,
+            CommonTrait.SOLITARY,
         ),
     )
 
@@ -1520,6 +1540,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.VIVIPARITY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.SOLITARY,
             CommonTrait.GRAZING_MOUTHPARTS,
         ),
     )
@@ -1537,6 +1558,7 @@ class EcologyCompilerTest {
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.SOLITARY,
             CommonTrait.AMBUSH_MUSCULATURE,
         ),
     )

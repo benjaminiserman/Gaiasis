@@ -562,8 +562,8 @@ enum class CommonTrait(
         "viviparity",
         "Offspring develop within a parent's body until they can survive outside it, protecting early development at a substantial metabolic cost.",
         listOf(
-            TraitEffect.Defense(0.10),
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.Defense(0.07),
+            TraitEffect.MaintenanceCost(0.07),
         ),
         isFoundation = true,
         capabilities = setOf(
@@ -611,22 +611,6 @@ enum class CommonTrait(
         capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
         requirements = listOf(
             TraitRequirement.allOf(TraitCapability.OVOSPORE_BROODING),
-        ),
-    ),
-    BROOD_PROVISIONING(
-        "brood provisioning",
-        "Parents stock a brood site or repeatedly deliver food to dependent young that cannot yet forage effectively for themselves.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.22),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        requirements = listOf(
-            TraitRequirement.AllOf(
-                setOf(
-                    TraitCapability.OVOSPORE_BROODING,
-                    TraitCapability.OVOSPORE_BROOD_SITE,
-                ),
-            ),
         ),
     ),
     BROOD_PARASITISM(
@@ -777,6 +761,7 @@ enum class CommonTrait(
         "Several small jointed appendages distribute weight and provide precise movement over irregular solid surfaces.",
         listOf(
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.65),
             TraitEffect.CaptureAbility(0.01),
             TraitEffect.MaintenanceCost(0.06),
         ),
@@ -785,6 +770,7 @@ enum class CommonTrait(
             TraitCapability.MOTILE_APPENDAGES,
             TraitCapability.TERRESTRIAL_ACTIVITY,
         ),
+        requirements = listOf(TraitRequirement.sizeClassAtMost(SizeClass.SMALL))
     ),
     ENLARGED_CARDIOPULMONARY_SYSTEM(
         "enlarged heart and lungs",
@@ -826,7 +812,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.HabitatSupport(Habitat.SUNLIT_WATER, 0.72),
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.52),
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.MaintenanceCost(0.05),
         ),
         capabilities = setOf(
             TraitCapability.AQUATIC_LOCOMOTION,
@@ -899,7 +885,7 @@ enum class CommonTrait(
             TraitEffect.ObligateResidentHabitat(Habitat.SEA_ICE),
             TraitEffect.RequiresAdjacentLand,
             TraitEffect.ReproductionMultiplier(0.94),
-            TraitEffect.MaintenanceCost(0.06),
+            TraitEffect.MaintenanceCost(0.02),
         ),
     ),
     COASTAL_BREEDING_SITE(
@@ -941,7 +927,7 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, 0.44),
             TraitEffect.HabitatSupport(Habitat.FRESHWATER, 0.58),
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.54),
-            TraitEffect.MaintenanceCost(0.11),
+            TraitEffect.MaintenanceCost(0.08),
         ),
         capabilities = setOf(
             TraitCapability.MOTILE_APPENDAGES,
@@ -1372,7 +1358,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.PursuitSpeed(0.18),
             TraitEffect.WaterRequirement(0.03),
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.MaintenanceCost(0.08),
         ),
         requirements = listOf(TraitRequirement.allOf(TraitCapability.GROUND_WALKING)),
     ),
@@ -1457,7 +1443,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.CaptureAbility(0.11),
             TraitEffect.Defense(0.03),
-            TraitEffect.MaintenanceCost(0.05),
+            TraitEffect.MaintenanceCost(0.06),
         ),
         requirements = listOf(
             TraitRequirement.anyOf(
@@ -1494,6 +1480,17 @@ enum class CommonTrait(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.14),
             TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.34),
             TraitEffect.CaptureAbility(0.15),
+            TraitEffect.MaintenanceCost(0.04),
+        ),
+    ),
+    SCOOP_MOUTH(
+        "expandable scoop pouch",
+        "A long bill and distensible throat pouch rapidly engulf small fish and drain excess water before swallowing.",
+        listOf(
+            TraitEffect.HabitatSupport(Habitat.COASTAL, 0.18),
+            TraitEffect.HabitatSupport(Habitat.LAND_SURFACE, -0.18),
+            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.14),
+            TraitEffect.CaptureAbility(0.14),
             TraitEffect.MaintenanceCost(0.06),
         ),
     ),
@@ -1558,7 +1555,7 @@ enum class CommonTrait(
         "long-range carrion senses",
         "Sensory organs capable of locating dead organisms across a broad area.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.82),
+            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.6),
             TraitEffect.MaintenanceCost(0.09),
         ),
     ),
@@ -1566,10 +1563,10 @@ enum class CommonTrait(
         "resilient digestion",
         "A robust digestive system handles large, irregular meals and extracts nutrition from food of inconsistent quality.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.08),
-            TraitEffect.ReserveCapacity(0.42),
+            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.4),
+            TraitEffect.MetabolicDemandMultiplier(0.8),
             TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MaintenanceCost(0.06),
         ),
     ),
     DECOMPOSING_ENZYMES(
@@ -1667,7 +1664,7 @@ enum class CommonTrait(
         "dense undercoat",
         "A thick layer of fine hair beneath the outer fur traps still air close to the body.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -2.0),
+            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
             TraitEffect.WaterRequirement(-0.04),
             TraitEffect.MaintenanceCost(0.04),
         ),
@@ -1688,8 +1685,8 @@ enum class CommonTrait(
         "feathers",
         "Branching keratinous filaments form a light protective body covering that can support specialized insulation, display, waterproofing, or flight.",
         listOf(
-            TraitEffect.Defense(0.02),
             TraitEffect.MaintenanceCost(0.02),
+            TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = 0.0),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
         capabilities = setOf(TraitCapability.FEATHER_COVERING),
@@ -1697,12 +1694,12 @@ enum class CommonTrait(
     BEAK(
         "beak",
         "A hard projecting mouth structure cuts, crushes, probes, or tears food without teeth.",
-        listOf(TraitEffect.CaptureAbility(0.02), TraitEffect.MaintenanceCost(0.02)),
+        listOf(TraitEffect.CaptureAbility(0.02), TraitEffect.MaintenanceCost(0.01)),
     ),
     FANGS(
         "fangs",
         "Elongated pointed teeth pierce and retain prey or deliver a disabling bite.",
-        listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.03)),
+        listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.02)),
     ),
     CLAWS(
         "claws",
@@ -1710,7 +1707,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.CaptureAbility(0.04),
             TraitEffect.Defense(0.03),
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MaintenanceCost(0.02),
         ),
         requirements = listOf(TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES)),
     ),
@@ -1720,7 +1717,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.CaptureAbility(0.04),
             TraitEffect.Defense(0.06),
-            TraitEffect.MaintenanceCost(0.06),
+            TraitEffect.MaintenanceCost(0.04),
         ),
         requirements = listOf(TraitRequirement.allOf(TraitCapability.MOTILE_APPENDAGES)),
     ),
@@ -1783,7 +1780,7 @@ enum class CommonTrait(
         "insulating plumage",
         "Dense overlapping feathers trap air around the body while remaining lighter than an equally thick fur coat.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
+            TraitEffect.TemperatureTolerance(colderC = 10.0, hotterC = -3.0),
             TraitEffect.WaterRequirement(-0.03),
             TraitEffect.MaintenanceCost(0.05),
         ),
@@ -1802,8 +1799,16 @@ enum class CommonTrait(
         "concentrated urine",
         "Highly water-retentive kidneys excrete dissolved wastes in a small volume of concentrated urine.",
         listOf(
+            TraitEffect.WaterRequirement(-0.07),
             TraitEffect.MaintenanceCost(0.03),
-            TraitEffect.WaterRequirement(-0.1),
+        ),
+    ),
+    SAND_ADAPTATION(
+        "sand adaptation",
+        "Anatomy and behavior suited to persist in sandy, freely draining terrain with scarce surface water.",
+        listOf(
+            TraitEffect.WaterRequirement(-0.07),
+            TraitEffect.MaintenanceCost(0.01)
         ),
     ),
     SWEAT_GLANDS(
@@ -1828,9 +1833,9 @@ enum class CommonTrait(
         "seasonal winter coat",
         "Insulation grown in response to the low-insolation portion of the year and shed as light returns.",
         listOf(
-            TraitEffect.SeasonalColdTolerance(maximumBonusC = 18.0, triggerInsolation = 0.58),
-            TraitEffect.TemperatureTolerance(hotterC = -1.5),
-            TraitEffect.MaintenanceCost(0.07),
+            TraitEffect.SeasonalColdTolerance(maximumBonusC = 12.0, triggerInsolation = 0.58),
+            TraitEffect.TemperatureTolerance(hotterC = -0.5),
+            TraitEffect.MaintenanceCost(0.05),
         ),
         requirements = listOf(
             TraitRequirement.allOf(TraitCapability.HAIR_COVERING),
@@ -1851,14 +1856,15 @@ enum class CommonTrait(
         "The organism deliberately consumes snow or surface ice when liquid drinking water is unavailable.",
         listOf(
             TraitEffect.SnowHydration,
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MetabolicDemandMultiplier(1.1),
+            TraitEffect.MaintenanceCost(0.03),
         ),
     ),
     FOOD_DERIVED_WATER(
         "food-derived water",
         "Efficient kidneys and digestion obtain nearly all required water from moist food or metabolically produced water.",
         listOf(
-            TraitEffect.WaterRequirement(-0.18),
+            TraitEffect.WaterRequirement(-0.14),
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.05),
         ),
@@ -2364,7 +2370,7 @@ enum class CommonTrait(
             TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.20),
             TraitEffect.ReserveCapacity(0.10),
             TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(0.06),
+            TraitEffect.MaintenanceCost(0.05),
         ),
         group = TraitGroup.GUT_FERMENTATION,
     ),
@@ -2392,10 +2398,9 @@ enum class CommonTrait(
         "nectar-sipping tongue",
         "An elongated tongue or proboscis reaches energy-rich secretions within elevated reproductive structures.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.NECTAR_FEEDING, 0.70),
-            TraitEffect.HabitatSupport(Habitat.CANOPY, 0.24),
+            TraitEffect.StrategySupport(EcoStrategy.NECTAR_FEEDING, 1.0),
             TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MaintenanceCost(-0.03),
         ),
         group = TraitGroup.SPECIALIZED_TONGUE,
         capabilities = setOf(TraitCapability.NECTAR_FEEDING),
@@ -2414,7 +2419,7 @@ enum class CommonTrait(
         "Conspicuous colors advertise a dangerous or distasteful organism—or mimic another local organism carrying the same warning colors.",
         listOf(
             TraitEffect.AposematicColoration,
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MaintenanceCost(0.03),
         ),
     ),
     RAPID_GROWTH(
@@ -2767,7 +2772,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.HabitatSupport(Habitat.COASTAL, 0.34),
             TraitEffect.HabitatSupport(Habitat.FRESHWATER, 0.30),
-            TraitEffect.TemperatureTolerance(colderC = 2.0),
+            TraitEffect.TemperatureTolerance(colderC = 0.5),
             TraitEffect.MaintenanceCost(0.07),
         ),
         requirements = listOf(TraitRequirement.allOf(TraitCapability.FEATHER_COVERING)),
@@ -2838,9 +2843,8 @@ enum class CommonTrait(
         "tool manipulation",
         "Dexterous appendages manipulate stones, sticks, containers, or other objects to obtain defended food.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.08),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.08),
             TraitEffect.CaptureAbility(0.14),
+            TraitEffect.Defense(0.03),
             TraitEffect.MaintenanceCost(0.10),
         ),
         requirements = listOf(
@@ -2935,7 +2939,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.Dispersal(DispersalKind.SHORT_MIGRATION),
             TraitEffect.ReserveCapacity(0.10),
-            TraitEffect.MaintenanceCost(0.08),
+            TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.DISPERSAL_RANGE,
     ),
@@ -2945,7 +2949,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.Dispersal(DispersalKind.REGIONAL_MIGRATION),
             TraitEffect.ReserveCapacity(0.18),
-            TraitEffect.MaintenanceCost(0.13),
+            TraitEffect.MaintenanceCost(0.05),
         ),
         group = TraitGroup.DISPERSAL_RANGE,
     ),
@@ -2955,7 +2959,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.Dispersal(DispersalKind.LONG_MIGRATION),
             TraitEffect.ReserveCapacity(0.28),
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.MaintenanceCost(0.07),
         ),
         group = TraitGroup.DISPERSAL_RANGE,
     ),

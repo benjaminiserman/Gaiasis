@@ -377,6 +377,7 @@ object EarthlikeClades {
                 CommonTrait.STRONG_JAWS,
                 CommonTrait.RETRACTABLE_CLAWS,
                 CommonTrait.FLEXIBLE_SPINE,
+                CommonTrait.SILENT_MOVEMENT,
                 CommonTrait.ROARING_CALL
             ),
             mammal.extend(
@@ -389,6 +390,7 @@ object EarthlikeClades {
                 CommonTrait.RETRACTABLE_CLAWS,
                 CommonTrait.FLEXIBLE_SPINE,
                 CommonTrait.SLENDER_BODY,
+                CommonTrait.SILENT_MOVEMENT,
                 CommonTrait.MEOWING_CALL,
                 CommonTrait.CHIRPING_CALL,
                 CommonTrait.PURRING_CALL
@@ -413,6 +415,8 @@ object EarthlikeClades {
                 CommonTrait.CACHED_FOOD,
                 CommonTrait.SLENDER_BODY,
                 CommonTrait.HIGH_POUNCING,
+                CommonTrait.DIGGING_LIMBS,
+                CommonTrait.BURROW_BUILDER,
                 CommonTrait.BARKING_CALL
             ),
             mammal.extend(
@@ -654,6 +658,9 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.HOOKED_TALONS,
                 CommonTrait.MOTION_TRACKING_SENSES,
+                CommonTrait.KEEN_HEARING,
+                CommonTrait.SILENT_MOVEMENT,
+                CommonTrait.INSULATING_PLUMAGE,
                 CommonTrait.HOOTING_CALL
             ),
             bird.extend(
@@ -661,6 +668,7 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.KEEN_EYESIGHT,
+                CommonTrait.MOTION_TRACKING_SENSES,
                 CommonTrait.HOOKED_TALONS
             ),
             bird.extend(
@@ -683,6 +691,8 @@ object EarthlikeClades {
                 SizeClass.SMALL,
                 CommonTrait.CLIMBING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
+                CommonTrait.DIGGING_LIMBS,
+                CommonTrait.BURROW_BUILDER,
                 CommonTrait.DRUMMING_DISPLAY
             ),
             bird.extend(

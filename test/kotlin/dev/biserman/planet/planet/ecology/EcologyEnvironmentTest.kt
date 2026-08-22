@@ -297,6 +297,7 @@ class EcologyEnvironmentTest {
             traits = listOfNotNull(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.DIGGING_LIMBS,
                 CommonTrait.FOSSORIAL_LIVING,
@@ -339,6 +340,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 thermalTrait,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -377,6 +379,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -449,6 +452,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.ENDOTHERMY.takeIf { motile },
+                CommonTrait.SOLITARY.takeIf { motile },
                 locomotion,
                 CommonTrait.GRAZING_MOUTHPARTS.takeIf { motile },
                 CommonTrait.PHOTOSYNTHETIC_SURFACE.takeIf { !motile },
@@ -625,6 +629,7 @@ class EcologyEnvironmentTest {
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.WINGS,
                 CommonTrait.SCAVENGING_SENSES,

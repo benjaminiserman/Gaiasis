@@ -33,7 +33,6 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
-import kotlin.math.ln1p
 import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.min
@@ -318,7 +317,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
                 val biomass = tile.ecosystem.populations
                     .filter { it.speciesId == species.id }
                     .sumOf { it.activeBiomassKg + it.dormantBiomassKg }
-                if (biomass <= 0.0) null else ln1p(biomass) / 12.0
+                if (biomass <= 0.0) null else log10(biomass) / 12.0
             }
             animalRangeModes[species.id] = mode
             add(mode)
@@ -334,7 +333,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
                 val biomass = tile.ecosystem.populations
                     .filter { it.speciesId == species.id }
                     .sumOf { it.activeBiomassKg + it.dormantBiomassKg }
-                if (biomass <= 0.0) null else ln1p(biomass) / 12.0
+                if (biomass <= 0.0) null else log10(biomass) / 12.0
             }
             sessileRangeModes[species.id] = mode
             add(mode)
