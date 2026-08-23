@@ -1,6 +1,9 @@
 package dev.biserman.planet.planet.ecology
 
 import dev.biserman.planet.planet.ecology.earthlike_clades.EarthlikeClades
+import dev.biserman.planet.planet.ecology.earthlike_clades.mold
+import dev.biserman.planet.planet.ecology.earthlike_clades.mushroom
+import dev.biserman.planet.planet.ecology.earthlike_clades.reptile
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -77,10 +80,10 @@ class EarthSpeciesCatalogTest {
         }
         assertTrue(
             CommonTrait.STICKY_FEET in
-                EarthlikeClades.minorCreatureGroups.getValue(EarthlikeClades.reptile)
+                EarthlikeClades.minorCreatureGroups.getValue(reptile)
                     .values.single { it.displayName == "gecko" }.traits,
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected " +
-                "`CommonTrait.STICKY_FEET in EarthlikeClades.minorCreatureGroups.getValue(EarthlikeClades.reptile) " +
+                "`CommonTrait.STICKY_FEET in EarthlikeClades.minorCreatureGroups.getValue(reptile) " +
                 ".single { it.displayName == \"gecko\" }.traits` to be true",
         )
         assertTrue(CommonTrait.FUR in species.getValue("cheetah").traits, message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.FUR in species.getValue(\"cheetah\").traits` to be true")
@@ -371,8 +374,8 @@ class EarthSpeciesCatalogTest {
             EarthlikeClades.grass,
             EarthlikeClades.vine,
             EarthlikeClades.broadLeafTree,
-            EarthlikeClades.mold,
-            EarthlikeClades.mushroom,
+            mold,
+            mushroom,
         )
 
         EcologyCompiler.compile(clades)
@@ -381,18 +384,18 @@ class EarthSpeciesCatalogTest {
             CommonTrait.LARGE_EVERGREEN_LEAVES in EarthlikeClades.broadLeafTree.traits,
             message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.LARGE_EVERGREEN_LEAVES in EarthlikeClades.broadLeafTree.traits` to be true"
         )
-        assertTrue(CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mold.traits, message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mold.traits` to be true")
+        assertTrue(CommonTrait.ABSORPTIVE_FILAMENTS in mold.traits, message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in mold.traits` to be true")
         assertTrue(
-            CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mushroom.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in EarthlikeClades.mushroom.traits` to be true"
+            CommonTrait.ABSORPTIVE_FILAMENTS in mushroom.traits,
+            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in mushroom.traits` to be true"
         )
         assertTrue(
-            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mold.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mold.traits` to be true"
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mold.traits,
+            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mold.traits` to be true"
         )
         assertTrue(
-            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mushroom.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in EarthlikeClades.mushroom.traits` to be true"
+            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mushroom.traits,
+            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mushroom.traits` to be true"
         )
     }
 

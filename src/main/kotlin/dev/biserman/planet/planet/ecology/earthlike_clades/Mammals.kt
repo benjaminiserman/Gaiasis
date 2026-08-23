@@ -22,8 +22,6 @@ val mammal = EarthSpeciesCatalog.animal(
     ColorTrait.BROWN_CAMOUFLAGE,
 )
 
-// higher clades
-
 // glires
 val glires = mammal.descend(
     "glires",

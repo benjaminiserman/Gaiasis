@@ -438,7 +438,7 @@ class EcologyCompilerTest {
     fun `birdsong requires both feathers and a chirping call`() {
         val base = predator("singer")
         val featheredSinger = base.copy(
-            traits = base.traits + CommonTrait.FEATHERS + CommonTrait.BIRDSONG,
+            traits = base.traits + CommonTrait.FEATHERS + CommonTrait.COMPLEX_VOCALIZATIONS,
         )
         val chirpingSinger = featheredSinger.copy(
             traits = featheredSinger.traits + CommonTrait.CHIRPING_CALL,
