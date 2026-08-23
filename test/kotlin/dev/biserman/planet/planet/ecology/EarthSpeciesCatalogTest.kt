@@ -1,5 +1,6 @@
 package dev.biserman.planet.planet.ecology
 
+import dev.biserman.planet.planet.ecology.earthlike_clades.EarthlikeClades
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -77,7 +78,7 @@ class EarthSpeciesCatalogTest {
         assertTrue(
             CommonTrait.STICKY_FEET in
                 EarthlikeClades.minorCreatureGroups.getValue(EarthlikeClades.reptile)
-                    .single { it.displayName == "gecko" }.traits,
+                    .values.single { it.displayName == "gecko" }.traits,
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected " +
                 "`CommonTrait.STICKY_FEET in EarthlikeClades.minorCreatureGroups.getValue(EarthlikeClades.reptile) " +
                 ".single { it.displayName == \"gecko\" }.traits` to be true",
@@ -1076,7 +1077,7 @@ class EarthSpeciesCatalogTest {
         assertTrue(CommonTrait.REINFORCED_HIDE in traitsOf("honey-badger"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.REINFORCED_HIDE in traitsOf(\"honey-badger\")` to be true")
         assertTrue(CommonTrait.FUR in traitsOf("honey-badger"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.FUR in traitsOf(\"honey-badger\")` to be true")
         assertTrue(CommonTrait.ANTLERS in traitsOf("white-tailed-deer"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.ANTLERS in traitsOf(\"white-tailed-deer\")` to be true")
-        assertTrue(CommonTrait.LARGE_HORN in traitsOf("blue-wildebeest"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.LARGE_HORN in traitsOf(\"blue-wildebeest\")` to be true")
+        assertTrue(CommonTrait.HORNS in traitsOf("blue-wildebeest"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.LARGE_HORN in traitsOf(\"blue-wildebeest\")` to be true")
         assertTrue(
             CommonTrait.RETRACTABLE_CLAWS in traitsOf("african-lion"),
             message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.RETRACTABLE_CLAWS in traitsOf(\"african-lion\")` to be true"
@@ -1159,6 +1160,49 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `catalog activity patterns are non-conflicting and structurally valid`() {
+        val conflicting = EarthSpeciesCatalog.ALL.filter { definition ->
+            definition.traits.count { it.group == TraitGroup.ACTIVITY_PATTERN } > 1
+        }
+
+        assertTrue(conflicting.isEmpty(), "Conflicting activity patterns: ${conflicting.joinToString { it.id }}")
+        EarthSpeciesCatalog.ALL.forEach { definition ->
+            assertTrue(
+                TraitDependencies.unmetRequirements(definition).none {
+                    it.trait.group == TraitGroup.ACTIVITY_PATTERN
+                },
+                "${definition.displayName} has an invalid activity pattern",
+            )
+        }
+    }
+
+    @Test
+    fun `earthlike motile clades explicitly author valid social and activity traits`() {
+        val clades = EarthlikeClades.majorCreatureGroups +
+            EarthlikeClades.minorCreatureGroups.values.flatMap { it.values }
+
+        clades.filter { it.motile }.forEach { definition ->
+            val traits = definition.traits
+            assertEquals(
+                1,
+                traits.count { it.group == TraitGroup.SOCIAL_ORGANIZATION },
+                definition.displayName,
+            )
+            val terrestrial = traits.any { TraitCapability.TERRESTRIAL_ACTIVITY in it.capabilities }
+            assertEquals(
+                if (terrestrial) 1 else 0,
+                traits.count { it.group == TraitGroup.ACTIVITY_PATTERN },
+                definition.displayName,
+            )
+            assertTrue(
+                TraitDependencies.unmetRequirements(definition).isEmpty(),
+                "${definition.displayName}: ${TraitDependencies.unmetRequirements(definition)}",
+            )
+            EcologyCompiler.compile(listOf(definition))
+        }
+    }
+
+    @Test
     fun `major animal acoustic repertoires are represented without blanket sound traits`() {
         val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
 
@@ -1169,7 +1213,7 @@ class EarthSpeciesCatalogTest {
             "spotted-hyena" to CommonTrait.WHOOPING_CALL,
             "chimpanzee" to CommonTrait.HOOTING_CALL,
             "cheetah" to CommonTrait.CHIRPING_CALL,
-            "orca" to CommonTrait.CLICK_WHISTLE_REPERTOIRE,
+            "orca" to CommonTrait.COMPLEX_VOCALIZATIONS,
             "weddell-seal" to CommonTrait.TRILLING_CALL,
             "great-horned-owl" to CommonTrait.HOOTING_CALL,
             "scarlet-macaw" to CommonTrait.IMITATIVE_VOCALIZATION,
@@ -1221,7 +1265,7 @@ class EarthSpeciesCatalogTest {
             CommonTrait.BOOMING_CALL,
             CommonTrait.DRUMMING_DISPLAY,
             CommonTrait.WHOOPING_CALL,
-            CommonTrait.CLICK_WHISTLE_REPERTOIRE,
+            CommonTrait.COMPLEX_VOCALIZATIONS,
         )
         listOf("three-toed-sloth", "galapagos-tortoise", "turkey-vulture").forEach { speciesId ->
             assertTrue(

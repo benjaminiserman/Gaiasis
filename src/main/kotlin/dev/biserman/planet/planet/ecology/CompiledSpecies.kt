@@ -64,6 +64,7 @@ data class LifeHistoryProfile(
     val seasonalReproduction: Double,
     val reserveCapacity: Double,
     val nicheCompetitionSensitivity: Double,
+    val selfCrowdingSensitivity: Double,
     val dormancyKind: DormancyKind,
     val dormantSurvival: Double,
     val dormantEntryBiomassRetention: Double,

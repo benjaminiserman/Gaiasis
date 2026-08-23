@@ -1,25 +1,17 @@
-package dev.biserman.planet.planet.ecology
+package dev.biserman.planet.planet.ecology.earthlike_clades
 
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog.animal
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog.sessile
-import kotlin.collections.listOf
+import dev.biserman.planet.planet.ecology.ColorTrait
+import dev.biserman.planet.planet.ecology.CommonTrait
+import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
+import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.SpeciesDefinition
+import dev.biserman.planet.planet.ecology.SpeciesTrait
 
 /**
  * Similar to EarthSpeciesCatalog, but a bit less specific to Earth
  */
 object EarthlikeClades {
-    val mammal = animal(
-        "mammal",
-        SizeClass.MEDIUM,
-        CommonTrait.ENDOTHERMY,
-        CommonTrait.WALKING_LIMBS,
-        CommonTrait.FUR,
-        CommonTrait.MAMMARY_GLANDS,
-        CommonTrait.VIVIPARITY,
-        ColorTrait.BROWN_CAMOUFLAGE,
-    )
-
-    val reptile = animal(
+    val reptile = EarthSpeciesCatalog.animal(
         "reptile",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
@@ -27,31 +19,35 @@ object EarthlikeClades {
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.BEHAVIORAL_THERMOREGULATION,
         CommonTrait.DIURNAL,
+        CommonTrait.SOLITARY,
         ColorTrait.GREEN_CAMOUFLAGE,
     )
 
-    val amphibian = animal(
+    val amphibian = EarthSpeciesCatalog.animal(
         "amphibian",
         SizeClass.TINY,
         CommonTrait.ECTOTHERMY,
         CommonTrait.AMPHIBIOUS_LIMBS,
         CommonTrait.AQUATIC_OVOSPORE,
         CommonTrait.FRESHWATER_OSMOREGULATION,
+        CommonTrait.NOCTURNAL,
+        CommonTrait.SOLITARY,
         ColorTrait.GREEN_CAMOUFLAGE,
     )
 
-    val fish = animal(
+    val fish = EarthSpeciesCatalog.animal(
         "fish",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
         CommonTrait.GILLS,
         CommonTrait.AQUATIC_FLIPPERS,
         CommonTrait.AQUATIC_OVOSPORE,
+        CommonTrait.COLLECTIVE_LIVING,
         CommonTrait.CATHEMERAL,
         ColorTrait.COUNTERSHADE_CAMOUFLAGE,
     )
 
-    val bird = animal(
+    val bird = EarthSpeciesCatalog.animal(
         "bird",
         SizeClass.SMALL,
         CommonTrait.ENDOTHERMY,
@@ -61,10 +57,11 @@ object EarthlikeClades {
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.OVOSPORE_NEST,
         CommonTrait.DIURNAL,
+        CommonTrait.COLLECTIVE_LIVING,
         ColorTrait.BROWN_CAMOUFLAGE,
     )
 
-    val insect = animal(
+    val insect = EarthSpeciesCatalog.animal(
         "insect",
         SizeClass.TINY,
         CommonTrait.ECTOTHERMY,
@@ -72,10 +69,11 @@ object EarthlikeClades {
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.WINGS,
         CommonTrait.MOLTING_EXOSKELETON,
+        CommonTrait.SOLITARY,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 
-    val arachnid = animal(
+    val arachnid = EarthSpeciesCatalog.animal(
         "arachnid",
         SizeClass.TINY,
         CommonTrait.ECTOTHERMY,
@@ -83,20 +81,23 @@ object EarthlikeClades {
         CommonTrait.TERRESTRIAL_OVOSPORE,
         CommonTrait.VENOM_DELIVERY,
         CommonTrait.MOLTING_EXOSKELETON,
+        CommonTrait.NOCTURNAL,
+        CommonTrait.SOLITARY,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 
-    val gastropod = animal(
+    val gastropod = EarthSpeciesCatalog.animal(
         "gastropod",
         SizeClass.TINY,
         CommonTrait.ECTOTHERMY,
         CommonTrait.MUSCULAR_FOOT,
         CommonTrait.SLOW_METABOLISM,
         CommonTrait.TERRESTRIAL_OVOSPORE,
+        CommonTrait.SOLITARY,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 
-    val crustacean = animal(
+    val crustacean = EarthSpeciesCatalog.animal(
         "crustacean",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
@@ -104,10 +105,12 @@ object EarthlikeClades {
         CommonTrait.AQUATIC_OVOSPORE,
         CommonTrait.ARMORED_HIDE,
         CommonTrait.CRUSHING_CLAWS,
+        CommonTrait.NOCTURNAL,
+        CommonTrait.SOLITARY,
         ColorTrait.RED_CAMOUFLAGE
     )
 
-    val bivalve = sessile(
+    val bivalve = EarthSpeciesCatalog.sessile(
         "bivalve",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
@@ -115,10 +118,12 @@ object EarthlikeClades {
         CommonTrait.GILL_PADS,
         CommonTrait.MUSCULAR_FOOT,
         CommonTrait.AQUATIC_OVOSPORE,
+        CommonTrait.CATHEMERAL,
+        CommonTrait.SOLITARY,
         ColorTrait.BROWN_CAMOUFLAGE
     )
 
-    val cephalopod = animal(
+    val cephalopod = EarthSpeciesCatalog.animal(
         "cephalopod",
         SizeClass.SMALL,
         CommonTrait.ECTOTHERMY,
@@ -126,10 +131,12 @@ object EarthlikeClades {
         CommonTrait.GRASPING_TENTACLES,
         CommonTrait.AQUATIC_OVOSPORE,
         CommonTrait.INK_CLOUD,
+        CommonTrait.SOLITARY,
+        CommonTrait.NOCTURNAL,
         ColorTrait.ADAPTIVE_CAMOUFLAGE,
     )
 
-    val moss = sessile(
+    val moss = EarthSpeciesCatalog.sessile(
         "moss",
         SizeClass.TINY,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -141,7 +148,7 @@ object EarthlikeClades {
         CommonTrait.SURFACE_HOLDFAST
     )
 
-    val fern = sessile(
+    val fern = EarthSpeciesCatalog.sessile(
         "fern",
         SizeClass.SMALL,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -150,7 +157,7 @@ object EarthlikeClades {
         CommonTrait.AERIAL_OVOSPORE_DISPERSAL
     )
 
-    val conifer = sessile(
+    val conifer = EarthSpeciesCatalog.sessile(
         "conifer",
         SizeClass.LARGE,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -162,7 +169,7 @@ object EarthlikeClades {
         CommonTrait.SEASONAL_LEAF_DORMANCY,
     )
 
-    val angiosperm = sessile(
+    val angiosperm = EarthSpeciesCatalog.sessile(
         "angiosperm",
         SizeClass.SMALL,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -172,7 +179,7 @@ object EarthlikeClades {
         CommonTrait.FLOWERS,
     )
 
-    val mold = sessile(
+    val mold = EarthSpeciesCatalog.sessile(
         "mold",
         SizeClass.TINY,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -183,7 +190,7 @@ object EarthlikeClades {
         CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
     )
 
-    val mushroom = sessile(
+    val mushroom = EarthSpeciesCatalog.sessile(
         "mushroom",
         SizeClass.SMALL,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -215,273 +222,6 @@ object EarthlikeClades {
     )
 
     val minorCreatureGroups = mapOf(
-        mammal to listOf(
-            mammal.extend(
-                "mouse",
-                SizeClass.SMALL,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.DIGGING_LIMBS,
-                CommonTrait.CACHED_FOOD,
-            ),
-            mammal.extend(
-                "squirrel",
-                SizeClass.SMALL,
-                CommonTrait.CLIMBING_LIMBS,
-                CommonTrait.SEED_CRACKING_MOUTHPARTS,
-                CommonTrait.CACHED_FOOD,
-            ),
-            mammal.extend(
-                "rabbit",
-                SizeClass.SMALL,
-                CommonTrait.SWIFT_LEGS,
-                CommonTrait.DIGGING_LIMBS,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.LEAPING_LEGS,
-                CommonTrait.DENSE_UNDERCOAT,
-                CommonTrait.SEASONAL_WINTER_COAT,
-            ),
-            mammal.extend(
-                "megabat",
-                SizeClass.SMALL,
-                CommonTrait.WINGS,
-                CommonTrait.FRUIT_EATING_MOUTHPARTS,
-                CommonTrait.SCREECHING_CALL,
-                CommonTrait.EXTENDED_PARENTAL_CARE
-            ),
-            mammal.extend(
-                "microbat",
-                SizeClass.TINY,
-                CommonTrait.HETEROTHERMY,
-                CommonTrait.WINGS,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.KEEN_HEARING,
-                CommonTrait.ECHOLOCATION,
-                CommonTrait.SEASONAL_TORPOR,
-            ),
-            mammal.extend(
-                "mole",
-                SizeClass.SMALL,
-                CommonTrait.DIGGING_LIMBS,
-                CommonTrait.FOSSORIAL_LIVING,
-                CommonTrait.VENOM_DELIVERY,
-                CommonTrait.BURROW_BUILDER,
-            ),
-            mammal.extend(
-                "monkey",
-                SizeClass.SMALL,
-                CommonTrait.CLIMBING_LIMBS,
-                CommonTrait.FRUIT_EATING_MOUTHPARTS,
-                CommonTrait.EXTENDED_PARENTAL_CARE,
-                CommonTrait.HOOTING_CALL
-            ),
-            mammal.extend(
-                "bison",
-                SizeClass.LARGE,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.OPEN_COUNTRY_PREFERENCE,
-                CommonTrait.HERDING_BEHAVIOR,
-                CommonTrait.REGIONAL_MIGRATION,
-                CommonTrait.BELLOWING_CALL
-            ),
-            mammal.extend(
-                "camel",
-                SizeClass.LARGE,
-                CommonTrait.BROWSING_MOUTHPARTS,
-                CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.FAT_RESERVES,
-                CommonTrait.FOOD_DERIVED_WATER,
-                CommonTrait.CONCENTRATED_URINE,
-                CommonTrait.GRUNTING_CALL
-            ),
-            mammal.extend(
-                "deer",
-                SizeClass.MEDIUM,
-                CommonTrait.BROWSING_MOUTHPARTS,
-                CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.DENSE_UNDERCOAT,
-                CommonTrait.SWIFT_LEGS,
-                CommonTrait.SEASONAL_WINTER_COAT
-            ),
-            mammal.extend(
-                "antelope",
-                SizeClass.MEDIUM,
-                CommonTrait.SWIFT_LEGS,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
-                CommonTrait.OPEN_COUNTRY_PREFERENCE,
-                CommonTrait.HERDING_BEHAVIOR,
-                CommonTrait.BLEATING_CALL
-            ),
-            mammal.extend(
-                "horse",
-                SizeClass.LARGE,
-                CommonTrait.SWIFT_LEGS,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.FERMENTING_HINDGUT,
-                CommonTrait.SWEAT_GLANDS,
-                CommonTrait.OPEN_COUNTRY_PREFERENCE,
-                CommonTrait.HERDING_BEHAVIOR,
-                CommonTrait.REGIONAL_MIGRATION,
-                CommonTrait.BRAYING_CALL
-            ),
-            mammal.extend(
-                "giraffe",
-                SizeClass.LARGE,
-                CommonTrait.BROWSING_MOUTHPARTS,
-                CommonTrait.LONG_NECK,
-                CommonTrait.RUMINANT_STOMACH,
-            ),
-            mammal.extend(
-                "hippo",
-                SizeClass.LARGE,
-                CommonTrait.AMPHIBIOUS_LIMBS,
-                CommonTrait.FRESHWATER_OSMOREGULATION,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.FERMENTING_HINDGUT,
-                CommonTrait.ARMORED_HIDE,
-                CommonTrait.GRUNTING_CALL,
-                minus = listOf(CommonTrait.FUR)
-            ),
-            mammal.extend(
-                "goat",
-                SizeClass.MEDIUM,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.RUMINANT_STOMACH,
-                CommonTrait.LEAPING_LEGS,
-                CommonTrait.SEASONAL_WINTER_COAT,
-                CommonTrait.HIGH_AFFINITY_BLOOD,
-                CommonTrait.BLEATING_CALL,
-                ColorTrait.WHITE_CAMOUFLAGE
-            ),
-            mammal.extend(
-                "elephant",
-                SizeClass.HUGE,
-                CommonTrait.BROWSING_MOUTHPARTS,
-                CommonTrait.PREHENSILE_TRUNK,
-                CommonTrait.MASSIVE_EARS,
-                CommonTrait.FERMENTING_HINDGUT,
-                CommonTrait.HERDING_BEHAVIOR,
-                CommonTrait.REGIONAL_MIGRATION,
-                CommonTrait.EXTENDED_PARENTAL_CARE,
-                CommonTrait.TRUMPETING_CALL,
-                CommonTrait.INTELLIGENT,
-            ),
-            mammal.extend(
-                "panther",
-                SizeClass.LARGE,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.CAMOUFLAGE_PATTERN,
-                CommonTrait.FOOD_DERIVED_WATER,
-                CommonTrait.STRONG_JAWS,
-                CommonTrait.RETRACTABLE_CLAWS,
-                CommonTrait.FLEXIBLE_SPINE,
-                CommonTrait.SILENT_MOVEMENT,
-                CommonTrait.ROARING_CALL
-            ),
-            mammal.extend(
-                "cat",
-                SizeClass.SMALL,
-                CommonTrait.CLIMBING_LIMBS,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.CAMOUFLAGE_PATTERN,
-                CommonTrait.FOOD_DERIVED_WATER,
-                CommonTrait.RETRACTABLE_CLAWS,
-                CommonTrait.FLEXIBLE_SPINE,
-                CommonTrait.SLENDER_BODY,
-                CommonTrait.SILENT_MOVEMENT,
-                CommonTrait.MEOWING_CALL,
-                CommonTrait.CHIRPING_CALL,
-                CommonTrait.PURRING_CALL
-            ),
-            mammal.extend(
-                "wolf",
-                SizeClass.MEDIUM,
-                CommonTrait.SWIFT_LEGS,
-                CommonTrait.MOTION_TRACKING_SENSES,
-                CommonTrait.COOPERATIVE_HUNTING,
-                CommonTrait.DENSE_UNDERCOAT,
-                CommonTrait.SEASONAL_WINTER_COAT,
-                CommonTrait.HOWLING_CALL,
-                CommonTrait.BARKING_CALL,
-                CommonTrait.INTELLIGENT,
-                ColorTrait.PALE_CAMOUFLAGE,
-            ),
-            mammal.extend(
-                "fox",
-                SizeClass.SMALL,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.CACHED_FOOD,
-                CommonTrait.SLENDER_BODY,
-                CommonTrait.HIGH_POUNCING,
-                CommonTrait.DIGGING_LIMBS,
-                CommonTrait.BURROW_BUILDER,
-                CommonTrait.BARKING_CALL
-            ),
-            mammal.extend(
-                "bear",
-                SizeClass.LARGE,
-                CommonTrait.HETEROTHERMY,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.BROWSING_MOUTHPARTS,
-                CommonTrait.DENSE_UNDERCOAT,
-                CommonTrait.SEASONAL_TORPOR,
-                CommonTrait.FAT_RESERVES,
-                CommonTrait.GROWLING_CALL,
-                CommonTrait.BULKY_BODY
-            ),
-            mammal.extend(
-                "badger",
-                SizeClass.SMALL,
-                CommonTrait.GRAZING_MOUTHPARTS,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.DIGGING_LIMBS,
-                CommonTrait.DENSE_UNDERCOAT,
-                ColorTrait.PALE_CAMOUFLAGE
-            ),
-            mammal.extend(
-                "seal",
-                SizeClass.MEDIUM,
-                CommonTrait.AQUATIC_FLIPPERS,
-                CommonTrait.PROLONGED_BREATH_HOLDING,
-                CommonTrait.STROKE_AND_GLIDE_SWIMMING,
-                CommonTrait.AMBUSH_MUSCULATURE,
-                CommonTrait.BLUBBER,
-                CommonTrait.BARKING_CALL,
-                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
-            ),
-            mammal.extend(
-                "whale",
-                SizeClass.COLOSSAL,
-                CommonTrait.AQUATIC_FLIPPERS,
-                CommonTrait.PROLONGED_BREATH_HOLDING,
-                CommonTrait.DEEP_DIVING_PHYSIOLOGY,
-                CommonTrait.STREAMLINED_BODY,
-                CommonTrait.BLUBBER,
-                CommonTrait.LONG_MIGRATION,
-                CommonTrait.WHALESONG,
-                CommonTrait.KEEN_HEARING,
-                CommonTrait.ECHOLOCATION,
-                CommonTrait.INTELLIGENT,
-                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
-            ),
-            mammal.extend(
-                "dolphin",
-                SizeClass.MEDIUM,
-                CommonTrait.AQUATIC_FLIPPERS,
-                CommonTrait.PROLONGED_BREATH_HOLDING,
-                CommonTrait.STREAMLINED_BODY,
-                CommonTrait.BLUBBER,
-                CommonTrait.LONG_MIGRATION,
-                CommonTrait.CLICK_WHISTLE_REPERTOIRE,
-                CommonTrait.COOPERATIVE_HUNTING,
-                CommonTrait.KEEN_HEARING,
-                CommonTrait.ECHOLOCATION,
-                CommonTrait.INTELLIGENT,
-                ColorTrait.COUNTERSHADE_CAMOUFLAGE,
-            )
-        ),
         reptile to listOf(
             reptile.extend(
                 "gecko",
@@ -491,6 +231,7 @@ object EarthlikeClades {
                 CommonTrait.STICKY_FEET,
                 CommonTrait.SLENDER_BODY,
                 CommonTrait.CHIRPING_CALL,
+                CommonTrait.NOCTURNAL,
             ),
             reptile.extend(
                 "monitor lizard",
@@ -519,6 +260,7 @@ object EarthlikeClades {
                 CommonTrait.HISSING_WARNING,
                 CommonTrait.VENOM_DELIVERY,
                 CommonTrait.KEEN_SCENT_SENSE,
+                CommonTrait.NOCTURNAL,
                 ColorTrait.BROWN_CAMOUFLAGE
             ),
             reptile.extend(
@@ -547,7 +289,8 @@ object EarthlikeClades {
                 CommonTrait.ARMORED_HIDE,
                 CommonTrait.KEEN_SCENT_SENSE,
                 CommonTrait.SEASONAL_TORPOR,
-                CommonTrait.BELLOWING_CALL
+                CommonTrait.BELLOWING_CALL,
+                CommonTrait.NOCTURNAL,
             ),
             reptile.extend(
                 "turtle",
@@ -601,6 +344,7 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.LONG_NECK,
                 CommonTrait.HERDING_BEHAVIOR,
+                CommonTrait.COLLECTIVE_LIVING,
                 minus = listOf(CommonTrait.WINGS)
             ),
             bird.extend(
@@ -610,7 +354,8 @@ object EarthlikeClades {
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.SEED_CRACKING_MOUTHPARTS,
                 CommonTrait.FREQUENT_REPRODUCTION,
-                CommonTrait.HERDING_BEHAVIOR
+                CommonTrait.HERDING_BEHAVIOR,
+                CommonTrait.COLLECTIVE_LIVING,
             ),
             bird.extend(
                 "crane",
@@ -638,7 +383,7 @@ object EarthlikeClades {
                 CommonTrait.POLLEN_CARRYING_SURFACES,
                 CommonTrait.LONG_MIGRATION,
                 CommonTrait.CHIRPING_CALL,
-                CommonTrait.CLICK_WHISTLE_REPERTOIRE
+                CommonTrait.COMPLEX_VOCALIZATIONS
             ),
             bird.extend(
                 "penguin",
@@ -661,7 +406,8 @@ object EarthlikeClades {
                 CommonTrait.KEEN_HEARING,
                 CommonTrait.SILENT_MOVEMENT,
                 CommonTrait.INSULATING_PLUMAGE,
-                CommonTrait.HOOTING_CALL
+                CommonTrait.HOOTING_CALL,
+                CommonTrait.NOCTURNAL,
             ),
             bird.extend(
                 "hawk",
@@ -701,7 +447,6 @@ object EarthlikeClades {
                 CommonTrait.SEED_CRACKING_MOUTHPARTS,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.CHIRPING_CALL,
-                CommonTrait.BIRDSONG,
                 CommonTrait.REGIONAL_MIGRATION
             ),
             bird.extend(
@@ -724,9 +469,9 @@ object EarthlikeClades {
                 ColorTrait.BLACK_CAMOUFLAGE
             )
         )
-    )
+    ).mapValues { (_, clades) -> clades.associateBy { it.id } }
 
-    val forb = sessile(
+    val forb = EarthSpeciesCatalog.sessile(
         "forb",
         SizeClass.SMALL,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -737,7 +482,7 @@ object EarthlikeClades {
         CommonTrait.NECTARIES,
     )
 
-    val grass = sessile(
+    val grass = EarthSpeciesCatalog.sessile(
         "grass",
         SizeClass.SMALL,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -748,7 +493,7 @@ object EarthlikeClades {
         CommonTrait.INTERWOVEN_MAT,
     )
 
-    val vine = sessile(
+    val vine = EarthSpeciesCatalog.sessile(
         "vine",
         SizeClass.MEDIUM,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -760,7 +505,7 @@ object EarthlikeClades {
         CommonTrait.FLOWERS,
     )
 
-    val broadLeafTree = sessile(
+    val broadLeafTree = EarthSpeciesCatalog.sessile(
         "broad-leaf tree",
         SizeClass.LARGE,
         CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -771,40 +516,13 @@ object EarthlikeClades {
         CommonTrait.FLOWERS,
     )
 
-    private fun withInferredSocialOrganization(
-        traits: List<SpeciesTrait>,
-    ): List<SpeciesTrait> {
-        val withoutSocialOrganization =
-            traits.filterNot { it.group == TraitGroup.SOCIAL_ORGANIZATION }
-        val explicitOrganizations =
-            traits.filter { it.group == TraitGroup.SOCIAL_ORGANIZATION }
-        require(explicitOrganizations.size <= 1) {
-            "Multiple social organizations were authored: " +
-                explicitOrganizations.joinToString { it.displayName }
-        }
-        val organization = when {
-            CommonTrait.EUSOCIAL_COLONY in explicitOrganizations ->
-                CommonTrait.EUSOCIAL_COLONY
-            CommonTrait.COLLECTIVE_LIVING in explicitOrganizations ||
-                CommonTrait.HERDING_BEHAVIOR in traits ||
-                CommonTrait.SCHOOLING in traits ->
-                CommonTrait.COLLECTIVE_LIVING
-            CommonTrait.GROUP_LIVING in explicitOrganizations ||
-                CommonTrait.COOPERATIVE_HUNTING in traits ||
-                CommonTrait.GROUP_HUDDLING in traits ->
-                CommonTrait.GROUP_LIVING
-            else -> CommonTrait.SOLITARY
-        }
-        return withoutSocialOrganization + organization
-    }
-
     fun SpeciesDefinition.extend(
         name: String,
         sizeClass: SizeClass,
         vararg adaptations: SpeciesTrait,
         minus: List<SpeciesTrait> = listOf(),
     ) = copy(
-        id = "...",
+        id = EarthSpeciesCatalog.idFromName(name),
         displayName = name,
         sizeClass = sizeClass,
         traits = this.traits.let { traits ->
@@ -812,9 +530,7 @@ object EarthlikeClades {
                 .toSet()
                 .intersect(adaptations.mapNotNull { it.group }.toSet())
 
-            withInferredSocialOrganization(
-                traits.filter { it.group !in categorySet && it !in minus } + adaptations,
-            )
+            traits.filter { it.group !in categorySet && it !in minus } + adaptations
         },
     )
 }

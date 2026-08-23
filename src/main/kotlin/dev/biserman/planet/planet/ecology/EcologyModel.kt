@@ -82,6 +82,7 @@ data class SpeciesDefinition(
     val traits: List<SpeciesTrait>,
     val ancestorSpeciesId: String? = null,
     val kind: SpeciesKind = SpeciesKind.EVOLVING,
+    val descendants: MutableList<SpeciesDefinition> = mutableListOf()
 ) {
     init {
         require(id.isNotBlank())
@@ -267,6 +268,18 @@ sealed interface TraitEffect {
     data class NicheCompetitionSensitivity(val multiplier: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyNicheCompetitionSensitivity(multiplier)
+    }
+
+    /** Increases the resource crowding caused by this species' own biomass. */
+    data class SelfCrowdingSensitivity(val multiplier: Double) : TraitEffect {
+        init {
+            require(multiplier >= 1.0) {
+                "Self-crowding sensitivity must not reduce self-crowding"
+            }
+        }
+
+        override fun applyTo(context: SpeciesCompilationContext) =
+            context.multiplySelfCrowdingSensitivity(multiplier)
     }
     data class Dormancy(val kind: DormancyKind, val survivalPerSeason: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enterDormancy(kind, survivalPerSeason)

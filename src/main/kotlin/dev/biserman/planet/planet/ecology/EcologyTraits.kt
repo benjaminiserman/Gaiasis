@@ -38,6 +38,9 @@ enum class TraitGroup {
     ACTIVITY_PATTERN,
     COGNITIVE_COMPLEXITY,
     SOCIAL_ORGANIZATION,
+    VISION_ACUITY,
+    HEARING_ACUITY,
+    SCENT_ACUITY,
     BURROW_REFUGE,
     BIOLOGICAL_COLOR,
 }
@@ -104,13 +107,14 @@ enum class AcousticSignal {
     QUACK,
     CROW,
     TRILL,
+    WHISTLE,
+    CLICK,
     CHIRP,
     MEOW,
     PURR,
     HISS,
     BOOM,
     WHOOP,
-    CLICK_WHISTLE,
 }
 
 sealed interface TraitRequirement {
@@ -228,6 +232,25 @@ sealed interface SpeciesTrait {
         get() = emptySet()
     val requirements: List<TraitRequirement>
         get() = emptyList()
+}
+
+/**
+ * A named trait for species-specific effects that do not belong in the shared
+ * [CommonTrait] catalog.
+ */
+data class EffectTrait(
+    override val displayName: String,
+    override val description: String,
+    override val effects: List<TraitEffect>,
+    override val group: TraitGroup? = null,
+    override val capabilities: Set<TraitCapability> = emptySet(),
+    override val requirements: List<TraitRequirement> = emptyList(),
+) : SpeciesTrait {
+    init {
+        require(displayName.isNotBlank())
+        require(description.isNotBlank())
+        require(effects.isNotEmpty())
+    }
 }
 
 data class TargetedRelationshipTrait(
@@ -1367,8 +1390,7 @@ enum class CommonTrait(
         "A smooth tapered profile reduces drag during sustained swimming, helping hunters close distance and prey escape pursuit.",
         listOf(
             TraitEffect.PursuitSpeed(0.18),
-            TraitEffect.WaterRequirement(0.03),
-            TraitEffect.MaintenanceCost(0.10),
+            TraitEffect.MaintenanceCost(0.03),
         ),
         requirements = listOf(
             TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION),
@@ -1427,9 +1449,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.11),
         ),
     ),
-    LARGE_HORN(
-        "large horn",
-        "A large permanent keratinous or bony head weapon deters predators and resolves contests by impact or leverage.",
+    HORNS(
+        "horns",
+        "One or more large permanent keratinous or bony head weapons deter predators and resolve contests by impact or leverage.",
         listOf(
             TraitEffect.CaptureAbility(0.03),
             TraitEffect.Defense(0.15),
@@ -1511,6 +1533,17 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(1.05),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.SCENT_ACUITY,
+    ),
+    POOR_SCENT_SENSE(
+        "poor sense of smell",
+        "Reduced chemical sensitivity makes it harder to follow faint trails, detect concealed threats, and locate distant mates.",
+        listOf(
+            TraitEffect.Sensing(-0.12),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(-0.05),
+        ),
+        group = TraitGroup.SCENT_ACUITY,
     ),
     KEEN_HEARING(
         "keen hearing",
@@ -1520,15 +1553,38 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.03),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.HEARING_ACUITY,
         capabilities = setOf(TraitCapability.KEEN_HEARING),
+    ),
+    POOR_HEARING(
+        "poor hearing",
+        "Reduced auditory sensitivity makes it harder to detect faint sounds and to distinguish useful signals from background noise.",
+        listOf(
+            TraitEffect.Sensing(-0.08),
+            TraitEffect.CaptureAbility(-0.03),
+            TraitEffect.MaintenanceCost(-0.04),
+        ),
+        group = TraitGroup.HEARING_ACUITY,
     ),
     KEEN_EYESIGHT(
         "keen eyesight",
         "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
         listOf(
+            TraitEffect.Sensing(0.08),
             TraitEffect.CaptureAbility(0.05),
             TraitEffect.MaintenanceCost(0.05),
         ),
+        group = TraitGroup.VISION_ACUITY,
+    ),
+    POOR_VISION(
+        "poor vision",
+        "Low-resolution visual organs make it harder to recognize prey and other important targets at range or against cluttered backgrounds.",
+        listOf(
+            TraitEffect.Sensing(-0.08),
+            TraitEffect.CaptureAbility(-0.05),
+            TraitEffect.MaintenanceCost(-0.05),
+        ),
+        group = TraitGroup.VISION_ACUITY,
     ),
     SILENT_MOVEMENT(
         "silent movement",
@@ -1665,7 +1721,6 @@ enum class CommonTrait(
         "A thick layer of fine hair beneath the outer fur traps still air close to the body.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
-            TraitEffect.WaterRequirement(-0.04),
             TraitEffect.MaintenanceCost(0.04),
         ),
         requirements = listOf(TraitRequirement.allOf(TraitCapability.HAIR_COVERING)),
@@ -1700,6 +1755,11 @@ enum class CommonTrait(
         "fangs",
         "Elongated pointed teeth pierce and retain prey or deliver a disabling bite.",
         listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.02)),
+    ),
+    NAILS(
+        "nails",
+        "Flattened keratin plates protect the tips of grasping digits while preserving fine touch and manipulation, rather than serving as hooked weapons.",
+        listOf(TraitEffect.CaptureAbility(-0.03), TraitEffect.MaintenanceCost(0.02)),
     ),
     CLAWS(
         "claws",
@@ -2495,6 +2555,16 @@ enum class CommonTrait(
             TraitRequirement.allOf(TraitCapability.SOCIAL_GROUP),
         ),
     ),
+    TERRITORIAL(
+        "territorial behavior",
+        "Individuals or small groups defend an exclusive local area, limiting overlap with rivals at an energetic cost.",
+        listOf(
+            TraitEffect.Defense(-0.05),
+            TraitEffect.SelfCrowdingSensitivity(1.35),
+            TraitEffect.ReproductionMultiplier(0.66),
+            TraitEffect.MaintenanceCost(0.07),
+        ),
+    ),
     SOLITARY(
         "solitary living",
         "Adults normally forage and maintain their living space independently outside courtship and parental care.",
@@ -2604,18 +2674,6 @@ enum class CommonTrait(
             TraitRequirement.allOf(TraitCapability.COLLECTIVE_GROUP),
         ),
     ),
-    WHALESONG(
-        "whalesong",
-        "Long, structured sequences of low-frequency calls carry between distant individuals through open water.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.04),
-            TraitEffect.MaintenanceCost(0.05),
-        ),
-        acousticSignal = AcousticSignal.WHALESONG,
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
-        )
-    ),
     HOWLING_CALL(
         "howling call",
         "Long-range group calls coordinate dispersed pack members and advertise an occupied range.",
@@ -2625,32 +2683,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.05),
         ),
         acousticSignal = AcousticSignal.HOWL,
-    ),
-    BIRDSONG(
-        "birdsong",
-        "Learned or innately complex sequences communicate identity, territory, and reproductive quality.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.04),
-            TraitEffect.MaintenanceCost(0.04),
-        ),
-        acousticSignal = AcousticSignal.BIRDSONG,
-        requirements = listOf(
-            TraitRequirement.AllOf(
-                setOf(
-                    TraitCapability.FEATHER_COVERING,
-                    TraitCapability.CHIRPING_VOCALIZATION,
-                ),
-            ),
-        ),
-    ),
-    CICADA_CHORUS(
-        "cicada chorus",
-        "Synchronized, high-intensity mating calls allow widely scattered adults to find one another during a short emergence.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.07),
-            TraitEffect.MaintenanceCost(0.05),
-        ),
-        acousticSignal = AcousticSignal.CICADA_CHORUS,
     ),
     RATTLING_WARNING(
         "rattling warning",
@@ -2678,6 +2710,8 @@ enum class CommonTrait(
     QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
     CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
     TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
+    WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.WHISTLE),
+    CLICKING_CALL("clicking call", "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CLICK),
     CHIRPING_CALL(
         "chirping call",
         "Short high-pitched calls maintain contact between companions, parents, and young.",
@@ -2717,15 +2751,15 @@ enum class CommonTrait(
         ),
         acousticSignal = AcousticSignal.WHOOP,
     ),
-    CLICK_WHISTLE_REPERTOIRE(
-        "click-and-whistle repertoire",
-        "Individually distinctive whistles and patterned clicks coordinate a complex mobile social group.",
+    COMPLEX_VOCALIZATIONS(
+        "complex vocalizations",
+        "A diverse repertoire of individually distinctive calls coordinates a complex mobile social group.",
         listOf(
             TraitEffect.Defense(0.03),
             TraitEffect.ReproductionMultiplier(1.02),
             TraitEffect.MaintenanceCost(0.04),
         ),
-        acousticSignal = AcousticSignal.CLICK_WHISTLE,
+        requirements = listOf(TraitRequirement.HasAcousticSignal),
     ),
     SOUND_LURES(
         "sound lures",

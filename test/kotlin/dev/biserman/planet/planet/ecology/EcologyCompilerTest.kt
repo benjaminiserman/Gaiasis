@@ -5,7 +5,52 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
+private val selfCrowdingTestTrait = EffectTrait(
+    displayName = "self-crowding behavior",
+    description = "Behavior that makes conspecific resource use overlap more strongly.",
+    effects = listOf(
+        TraitEffect.SelfCrowdingSensitivity(1.35),
+        TraitEffect.MaintenanceCost(0.01),
+    ),
+)
+
 class EcologyCompilerTest {
+    @Test
+    fun `self crowding traits compile independently of niche competition`() {
+        val ordinary = predator("ordinary-self-crowding")
+        val crowdingSensitive = ordinary.copy(
+            id = "crowding-sensitive",
+            displayName = "crowding-sensitive",
+            traits = ordinary.traits + selfCrowdingTestTrait,
+        )
+
+        val compiled = EcologyCompiler.compile(listOf(ordinary, crowdingSensitive)).species
+        val ordinaryCompiled = compiled.single { it.id == ordinary.id }
+        val crowdingSensitiveCompiled = compiled.single { it.id == crowdingSensitive.id }
+
+        assertEquals(1.0, ordinaryCompiled.lifeHistory.selfCrowdingSensitivity)
+        assertEquals(1.35, crowdingSensitiveCompiled.lifeHistory.selfCrowdingSensitivity)
+        assertEquals(
+            ordinaryCompiled.lifeHistory.nicheCompetitionSensitivity,
+            crowdingSensitiveCompiled.lifeHistory.nicheCompetitionSensitivity,
+        )
+    }
+
+    @Test
+    fun `territorial behavior increases self crowding`() {
+        val ordinary = predator("ordinary-territory")
+        val territorial = ordinary.copy(
+            id = "territorial",
+            displayName = "territorial",
+            traits = ordinary.traits + CommonTrait.TERRITORIAL,
+        )
+
+        val compiled = EcologyCompiler.compile(listOf(ordinary, territorial)).species
+
+        assertEquals(1.0, compiled.single { it.id == ordinary.id }.lifeHistory.selfCrowdingSensitivity)
+        assertEquals(1.35, compiled.single { it.id == territorial.id }.lifeHistory.selfCrowdingSensitivity)
+    }
+
     @Test
     fun `compiled niche profile owns its optimized arrays`() {
         val habitatSupport = DoubleArray(Habitat.entries.size).also {
@@ -164,6 +209,23 @@ class EcologyCompilerTest {
         )
         assertTrue(predationRate(scent) > predationRate(ordinary), message = "Specialized senses compile distinct hunting and reproductive benefits: expected `predationRate(scent) > predationRate(ordinary)` to be true")
         assertTrue(predationRate(sight) > predationRate(ordinary), message = "Specialized senses compile distinct hunting and reproductive benefits: expected `predationRate(sight) > predationRate(ordinary)` to be true")
+    }
+
+    @Test
+    fun `keen and poor sensory traits are mutually exclusive`() {
+        listOf(
+            CommonTrait.KEEN_EYESIGHT to CommonTrait.POOR_VISION,
+            CommonTrait.KEEN_HEARING to CommonTrait.POOR_HEARING,
+            CommonTrait.KEEN_SCENT_SENSE to CommonTrait.POOR_SCENT_SENSE,
+        ).forEach { (keen, poor) ->
+            val conflicting = predator("${keen.name}-${poor.name}").copy(
+                traits = predator("${keen.name}-${poor.name}").traits + listOf(keen, poor),
+            )
+
+            assertFailsWith<IllegalArgumentException> {
+                EcologyCompiler.compile(listOf(conflicting))
+            }
+        }
     }
 
     @Test

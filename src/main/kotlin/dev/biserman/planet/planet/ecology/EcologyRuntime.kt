@@ -842,7 +842,7 @@ class EcologyRuntime(
                     species.sizeClass.densityScale *
                     species.lifeHistory.nicheCompetitionSensitivity
             val competingBiomass =
-                active +
+                active * species.lifeHistory.selfCrowdingSensitivity +
                     max(0.0, normalizedNicheBiomass - normalizedActive) *
                     species.sizeClass.densityScale *
                     config.interspecificNicheCompetition *

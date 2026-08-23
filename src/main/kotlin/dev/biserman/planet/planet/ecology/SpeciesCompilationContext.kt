@@ -41,6 +41,7 @@ class SpeciesCompilationContext internal constructor(
     private var denseCanopyForagingPenalty = 0.0
     private var reserveCapacity = 0.25
     private var nicheCompetitionSensitivity = 1.0
+    private var selfCrowdingSensitivity = 1.0
     private var dormancyKind = DormancyKind.NONE
     private var dormantSurvival = 0.0
     private var dormantEntryBiomassRetention = 1.0
@@ -230,6 +231,7 @@ class SpeciesCompilationContext internal constructor(
                 definition.sizeClass.seasonalReproduction * reproductionMultiplier,
                 reserveCapacity = reserveCapacity.coerceIn(0.0, 1.5),
                 nicheCompetitionSensitivity = nicheCompetitionSensitivity.coerceIn(0.0, 1.0),
+                selfCrowdingSensitivity = selfCrowdingSensitivity.coerceIn(1.0, 4.0),
                 dormancyKind = dormancyKind,
                 dormantSurvival = dormantSurvival,
                 dormantEntryBiomassRetention =
@@ -414,6 +416,9 @@ class SpeciesCompilationContext internal constructor(
     }
     fun multiplyNicheCompetitionSensitivity(multiplier: Double) {
         nicheCompetitionSensitivity *= multiplier
+    }
+    fun multiplySelfCrowdingSensitivity(multiplier: Double) {
+        selfCrowdingSensitivity *= multiplier
     }
     fun enterDormancy(kind: DormancyKind, survivalPerSeason: Double) {
         require(dormancyKind == DormancyKind.NONE) {
