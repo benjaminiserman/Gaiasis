@@ -197,6 +197,7 @@ val ape = primate.descend(
     "ape",
     SizeClass.MEDIUM,
     CommonTrait.TOOL_MANIPULATION,
+    CommonTrait.SLOW_GROWTH,
     minus = listOf(CommonTrait.GRAZING_MOUTHPARTS, CommonTrait.TAIL)
 )
 

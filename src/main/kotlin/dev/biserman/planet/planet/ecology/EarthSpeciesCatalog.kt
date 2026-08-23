@@ -2095,7 +2095,6 @@ object EarthSpeciesCatalog {
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.AQUATIC_FLIPPERS,
             CommonTrait.PROLONGED_BREATH_HOLDING,
-            CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.PROTECTIVE_SHELL,
             CommonTrait.LONG_MIGRATION,
             ColorTrait.GREEN_CAMOUFLAGE,
