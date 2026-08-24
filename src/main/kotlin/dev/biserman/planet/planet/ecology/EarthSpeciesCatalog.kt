@@ -2843,7 +2843,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.GILLS,
             CommonTrait.GRAZING_MOUTHPARTS,
-            CommonTrait.QUILLS,
+            CommonTrait.SPINES,
             CommonTrait.REEF_NESTING,
             ColorTrait.BROWN_CAMOUFLAGE,
             CommonTrait.SOLITARY,

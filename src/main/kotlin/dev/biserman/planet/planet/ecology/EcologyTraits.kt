@@ -10,9 +10,9 @@ enum class SizeClass(
     TINY(0.01, 0.25, 0.90, 5.0),
     SMALL(2.5, 0.18, 0.60, 2.5),
     MEDIUM(50.0, 0.12, 0.34, 1.0),
-    LARGE(1_000.0, 0.08, 0.18, 0.38),
-    HUGE(10_000.0, 0.055, 0.10, 0.12),
-    COLOSSAL(100_000.0, 0.040, 0.06, 0.04),
+    LARGE(500.0, 0.08, 0.18, 0.38),
+    HUGE(5_000.0, 0.055, 0.10, 0.12),
+    COLOSSAL(50_000.0, 0.040, 0.06, 0.04),
 }
 
 /**
@@ -44,6 +44,8 @@ enum class TraitGroup : FulfillsTraitRequirement {
     BURROW_REFUGE,
     BIOLOGICAL_COLOR,
     SKELETON,
+    SCALE_TYPE,
+    OVOSPORE_TYPE
 }
 
 /** Anatomical or behavioral capability that can satisfy another trait's prerequisites. */
@@ -926,6 +928,7 @@ enum class CommonTrait(
             TraitEffect.Defense(0.07),
             TraitEffect.MaintenanceCost(0.21),
         ),
+        group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
         ),
@@ -965,6 +968,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(1.02),
             TraitEffect.MaintenanceCost(0.09),
         ),
+        group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
             TraitCapability.OVOSPORE_REPRODUCTION,
@@ -978,6 +982,7 @@ enum class CommonTrait(
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.04),
         ),
+        group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
             TraitCapability.OVOSPORE_REPRODUCTION,
@@ -1783,6 +1788,7 @@ enum class CommonTrait(
             TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
             TraitEffect.MetabolicDemandMultiplier(0.9),
             TraitEffect.MaintenanceCost(0.12),
+            TraitEffect.BodyMassMultiplier(1.03)
         ),
         requirements = listOf(TraitRequirement.allOf(FUR)),
     ),
@@ -1792,6 +1798,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 5.0, hotterC = -2.0),
             TraitEffect.MaintenanceCost(0.18),
+            TraitEffect.BodyMassMultiplier(1.02)
         ),
         requirements = listOf(
             TraitRequirement.allOf(FUR),
@@ -1829,7 +1836,21 @@ enum class CommonTrait(
             TraitEffect.PursuitSpeed(-0.04),
             TraitEffect.ReproductionMultiplier(0.97),
             TraitEffect.MaintenanceCost(0.18),
+            TraitEffect.BodyMassMultiplier(1.05)
         ),
+        group = TraitGroup.SCALE_TYPE,
+        requirements = listOf(TraitRequirement.allOf(SCALES)),
+    ),
+    PLACOID_SCALES(
+        "placoid scales",
+        "Small tooth-like scales protect the skin and channel water along the body, reducing drag during swimming.",
+        listOf(
+            TraitEffect.Defense(0.10),
+            TraitEffect.PursuitSpeed(0.06),
+            TraitEffect.MaintenanceCost(0.18),
+            TraitEffect.BodyMassMultiplier(1.02)
+        ),
+        group = TraitGroup.SCALE_TYPE,
         requirements = listOf(TraitRequirement.allOf(SCALES)),
     ),
     INSULATING_PLUMAGE(
@@ -2153,6 +2174,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(1.08),
             TraitEffect.MaintenanceCost(0.18),
         ),
+        requirements = listOf(TraitRequirement.anyOf(REGIONAL_MIGRATION, LONG_MIGRATION))
     ),
 
     // Sense traits
@@ -2426,6 +2448,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.07),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.24),
+            TraitEffect.BodyMassMultiplier(1.2)
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING
     ),
@@ -2437,6 +2460,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.02),
             TraitEffect.ReproductionMultiplier(0.97),
             TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.BodyMassMultiplier(1.1)
         ),
         requirements = listOf(
             TraitRequirement.allOf(FUR),
@@ -2452,7 +2476,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.3),
         ),
     ),
-    QUILLS(
+    SPINES(
         "defensive quills",
         "Long rigid hairs or spines make biting and grappling dangerous.",
         listOf(

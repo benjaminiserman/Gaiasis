@@ -10,16 +10,11 @@ val amphibian = EarthSpeciesCatalog.animal(
     SizeClass.TINY,
     CommonTrait.ECTOTHERMY,
     CommonTrait.AMPHIBIOUS_LIMBS,
-    CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.NOCTURNAL,
-    CommonTrait.SOLITARY,
     CommonTrait.SLIMY_SKIN,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.LUNGS,
     CommonTrait.PASSIVE_RESPIRATION,
-    CommonTrait.TAIL,
-    CommonTrait.TEETH,
     ColorTrait.GREEN_CAMOUFLAGE
 )
 

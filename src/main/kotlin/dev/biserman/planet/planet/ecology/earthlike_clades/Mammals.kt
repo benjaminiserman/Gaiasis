@@ -7,19 +7,14 @@ import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.SpeciesDefinition
 import dev.biserman.planet.planet.ecology.SpeciesTrait
 
-val mammal = EarthSpeciesCatalog.animal(
+val mammal = tetrapoda.descend(
     "mammal",
     SizeClass.MEDIUM,
     CommonTrait.ENDOTHERMY,
-    CommonTrait.WALKING_LIMBS,
     CommonTrait.FUR,
-    CommonTrait.EYES,
-    CommonTrait.LUNGS,
-    CommonTrait.TEETH,
     CommonTrait.MAMMARY_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.NOCTURNAL,
-    CommonTrait.SOLITARY,
     CommonTrait.CLAWS,
     CommonTrait.TAIL,
     ColorTrait.BROWN_CAMOUFLAGE,
@@ -49,7 +44,7 @@ val mouse = rodent.descend(
 val porcupine = rodent.descend(
     "porcupine",
     SizeClass.MEDIUM,
-    CommonTrait.QUILLS
+    CommonTrait.SPINES
 )
 val marmot = rodent.descend(
     "marmot",
@@ -136,7 +131,7 @@ val trueInsectivore = mammal.descend(
 val hedgehog = trueInsectivore.descend(
     "hedgehog",
     SizeClass.SMALL,
-    CommonTrait.QUILLS,
+    CommonTrait.SPINES,
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.GRAZING_MOUTHPARTS,
     minus = listOf(CommonTrait.TERRITORIAL)

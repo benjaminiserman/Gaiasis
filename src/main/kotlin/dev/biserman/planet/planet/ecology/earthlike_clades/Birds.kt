@@ -2,22 +2,17 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 
-val bird = EarthSpeciesCatalog.animal(
+val bird = reptile.descend(
     "bird",
     SizeClass.SMALL,
-    CommonTrait.ENDOTHERMY,
     CommonTrait.FEATHERS,
     CommonTrait.WINGS,
-    CommonTrait.TAIL,
-    CommonTrait.EYES,
     CommonTrait.BEAK,
-    CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.OVOSPORE_NEST,
-    CommonTrait.DIURNAL,
     CommonTrait.COLLECTIVE_LIVING,
+    CommonTrait.REGIONAL_MIGRATION,
     ColorTrait.BROWN_CAMOUFLAGE,
 )
 
@@ -29,6 +24,7 @@ val ratite = bird.descend(
     CommonTrait.LONG_NECK,
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
+    CommonTrait.NEIGHBOR_DISPERSAL,
     minus = listOf(CommonTrait.WINGS),
 )
 val fowl = bird.descend(

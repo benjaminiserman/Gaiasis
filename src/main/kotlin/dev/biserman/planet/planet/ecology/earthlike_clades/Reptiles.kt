@@ -2,23 +2,14 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 
-val reptile = EarthSpeciesCatalog.animal(
+val reptile = tetrapoda.descend(
     "reptile",
     SizeClass.SMALL,
-    CommonTrait.ECTOTHERMY,
-    CommonTrait.WALKING_LIMBS,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.BEHAVIORAL_THERMOREGULATION,
     CommonTrait.DIURNAL,
-    CommonTrait.SOLITARY,
-    CommonTrait.SCALES,
-    CommonTrait.TEETH,
-    CommonTrait.EYES,
-    CommonTrait.LUNGS,
-    CommonTrait.TAIL,
     ColorTrait.GREEN_CAMOUFLAGE
 )
 val crocodile = reptile.extend(
