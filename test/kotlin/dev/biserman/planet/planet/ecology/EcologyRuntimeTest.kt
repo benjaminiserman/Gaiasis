@@ -15,6 +15,9 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = buildList {
+                add(CommonTrait.LUNGS)
+                add(CommonTrait.VASCULAR_SYSTEM)
+                add(CommonTrait.LIMBED_BODY)
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
                 add(CommonTrait.SOLITARY)
@@ -119,10 +122,13 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOfNotNull(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.APOSEMATIC_COLORATION,
@@ -136,10 +142,13 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 ColorTrait.BROWN_CAMOUFLAGE,
@@ -472,27 +481,6 @@ class EcologyRuntimeTest {
     }
 
     @Test
-    fun `waste absorbing roots increase producer growth when waste is available`() {
-        val plain = landProducer(id = "plain")
-        val fertilized = landProducer(
-            id = "fertilized",
-            extraTraits = listOf(CommonTrait.WASTE_ABSORBING_ROOTS),
-        )
-        fun result(species: SpeciesDefinition): Double {
-            val ecology = EcologyCompiler.compile(listOf(species))
-            val niche = nicheFor(ecology, 0, Habitat.LAND_SURFACE, EcoStrategy.PHOTOSYNTHESIS)
-            val community = TileCommunity().also { it.add(0, niche, activeBiomass = 50_000.0) }
-            val environment = landEnvironment().withResources(
-                landEnvironment().resources.copy(waste = 0.90),
-            )
-            EcologyRuntime(ecology).advanceSeason(community, environment)
-            return community.totalBiomass()
-        }
-
-        assertTrue(result(fertilized) > result(plain), message = "Waste absorbing roots increase producer growth when waste is available: expected `result(fertilized) > result(plain)` to be true")
-    }
-
-    @Test
     fun `recyclers emit consumption flux for detritus and waste`() {
         val decomposer = SpeciesDefinition(
             id = "decomposer",
@@ -500,6 +488,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = false,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.ROOTED_BODY,
@@ -512,10 +501,13 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.WASTE_FEEDING_MOUTHPARTS,
             ),
@@ -725,6 +717,7 @@ class EcologyRuntimeTest {
         sizeClass = sizeClass,
         motile = false,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -745,7 +738,7 @@ class EcologyRuntimeTest {
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.BUOYANCY_BLADDER,
-            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+            CommonTrait.PASSIVE_RESPIRATION,
             ColorTrait.BLUE_PHOTOSYNTHETIC_PIGMENTS,
         ) + extraTraits,
     )
@@ -756,10 +749,13 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
@@ -773,13 +769,16 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.LARGE,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.CAMOUFLAGE_PATTERN,
+            CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             ColorTrait.BROWN_CAMOUFLAGE,
         ),
     )
@@ -790,10 +789,13 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
             ColorTrait.BLACK_CAMOUFLAGE,

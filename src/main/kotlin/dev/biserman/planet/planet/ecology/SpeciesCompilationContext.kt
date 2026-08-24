@@ -78,16 +78,12 @@ class SpeciesCompilationContext internal constructor(
     private var obligateResidentHabitat: Habitat? = null
     private var requiresAdjacentLand = false
 
-    private var maintenanceCostScale = 1.0
-
     internal fun apply(trait: SpeciesTrait) {
         trait.acousticSignal?.let { signal ->
             require(signal.ordinal < Long.SIZE_BITS)
             acousticSignalMask = acousticSignalMask or (1L shl signal.ordinal)
         }
-        maintenanceCostScale = if (trait.isFoundation) 1.0 else 0.35
         trait.effects.forEach { it.applyTo(this) }
-        maintenanceCostScale = 1.0
     }
 
     /** Applies phenotype rules that emerge from combinations of authored traits. */
@@ -98,19 +94,27 @@ class SpeciesCompilationContext internal constructor(
         when (compiledSalinityTolerance()) {
             AquaticSalinityTolerance.SALTWATER_ONLY ->
                 habitatSupport[Habitat.FRESHWATER.ordinal] = 0.0
+
             AquaticSalinityTolerance.FRESHWATER_ONLY -> {
                 habitatSupport[Habitat.COASTAL.ordinal] = 0.0
                 habitatSupport[Habitat.SUNLIT_WATER.ordinal] = 0.0
                 habitatSupport[Habitat.DARK_WATER.ordinal] = 0.0
             }
+
             AquaticSalinityTolerance.BROAD -> Unit
         }
-        if (sizeClass.ordinal >= SizeClass.HUGE.ordinal) {
-            habitatSupport[Habitat.FRESHWATER.ordinal] = 0.0
-        }
-        if (!underwaterBreathing && !prolongedBreathHolding) {
-            habitatSupport[Habitat.SUNLIT_WATER.ordinal] = 0.0
-            habitatSupport[Habitat.DARK_WATER.ordinal] = 0.0
+        if (commonTraits.any { TraitCapability.LOCOMOTION in it.capabilities }) {
+            if (sizeClass.ordinal >= SizeClass.HUGE.ordinal) {
+                habitatSupport[Habitat.FRESHWATER.ordinal] = 0.0
+            }
+            if (sizeClass >= SizeClass.LARGE) {
+                habitatSupport[Habitat.CANOPY.ordinal] = 0.0
+            }
+            if (!underwaterBreathing && !prolongedBreathHolding) {
+                habitatSupport[Habitat.SUNLIT_WATER.ordinal] = 0.0
+                habitatSupport[Habitat.DARK_WATER.ordinal] = 0.0
+                reefUse = 0.0
+            }
         }
         obligateResidentHabitat?.let { requiredHabitat ->
             habitatSupport.indices.forEach { habitatIndex ->
@@ -266,9 +270,11 @@ class SpeciesCompilationContext internal constructor(
                 producerCompetitionLayer = when {
                     strategySupport[EcoStrategy.PHOTOSYNTHESIS.ordinal] <= 0.0 ->
                         ProducerCompetitionLayer.NONE
+
                     CommonTrait.ROOTED_BODY in commonTraits ||
                         CommonTrait.SUBSTRATE_HOLDFAST in commonTraits ->
                         ProducerCompetitionLayer.ATTACHED
+
                     else -> ProducerCompetitionLayer.SUSPENDED
                 },
                 photosyntheticColor = photosyntheticColor,
@@ -298,68 +304,88 @@ class SpeciesCompilationContext internal constructor(
     fun shiftTemperature(degreesC: Double) {
         temperatureShift += degreesC
     }
+
     fun widenTemperatureTolerance(colderC: Double, hotterC: Double) {
         colderTolerance += colderC
         hotterTolerance += hotterC
     }
+
     fun widenOptimalTemperatureTolerance(colderC: Double, hotterC: Double) {
         colderOptimalTolerance += colderC
         hotterOptimalTolerance += hotterC
     }
+
     fun requireMinimumActiveTemperature(temperatureC: Double) {
         minimumActiveTemperatureC = max(minimumActiveTemperatureC, temperatureC)
     }
+
     fun multiplyFrozenDormantSurvival(fraction: Double) {
         frozenDormantSurvival *= fraction
     }
+
     fun regulateTemperatureWith(strategy: ThermalStrategy) {
         thermalStrategy = strategy
     }
+
     fun tolerateSeasonalCold(maximumBonusC: Double, triggerInsolation: Double) {
         seasonalColdTolerance += maximumBonusC
         seasonalColdTrigger = max(seasonalColdTrigger, triggerInsolation)
     }
+
     fun changeWaterRequirement(change: Double) {
         waterRequirement += change
     }
+
     fun changeMaximumWaterTolerance(optimalChange: Double, absoluteChange: Double) {
         optimalMaximumWater += optimalChange
         maximumWater += absoluteChange
     }
+
     fun limitWaterDepth(optimalMaximumM: Double, absoluteMaximumM: Double) {
         optimalMaximumWaterDepthM = minOf(optimalMaximumWaterDepthM, optimalMaximumM)
         absoluteMaximumWaterDepthM = minOf(absoluteMaximumWaterDepthM, absoluteMaximumM)
     }
+
     fun shiftElevationTolerance(meters: Double) {
         elevationToleranceShiftM += meters
     }
+
     fun hydrateFromSnow() {
         snowHydration = true
     }
+
     fun shiftInsolationOptimum(change: Double) {
         insolationOptimum += change
     }
+
     fun changeCanopyLightEfficiency(change: Double) {
         canopyLightEfficiency += change
     }
+
     fun addDenseCanopyForagingPenalty(penalty: Double) {
         denseCanopyForagingPenalty += penalty
     }
+
     fun changeCaptureAbility(change: Double) {
         captureAbility += change
     }
+
     fun multiplyBodyMass(multiplier: Double) {
         bodyMassMultiplier *= multiplier
     }
+
     fun expandLargerPreySizeClasses(additionalClasses: Int) {
         largerPreySizeClasses = max(largerPreySizeClasses, additionalClasses)
     }
+
     fun changeBurrowerCaptureBonus(change: Double) {
         burrowerCaptureBonus += change
     }
+
     fun changeSoundLureCaptureBonus(change: Double) {
         soundLureCaptureBonus += change
     }
+
     fun changePursuitSpeed(change: Double) {
         pursuitSpeed += change
     }
@@ -378,48 +404,63 @@ class SpeciesCompilationContext internal constructor(
     fun changeDefense(change: Double) {
         defense += change
     }
+
     fun addCamouflage(habitat: Habitat, change: Double) {
         camouflage[habitat.ordinal] += change
     }
+
     fun setCamouflageColor(color: BiologicalColor) {
         camouflageColor = color
     }
+
     fun setPhotosyntheticColor(color: BiologicalColor) {
         photosyntheticColor = color
     }
+
     fun enableAposematicColoration() {
         aposematicColoration = true
     }
+
     fun changeReefUse(change: Double) {
         reefUse += change
     }
+
     fun changeReefBuilding(change: Double) {
         reefBuilding += change
     }
+
     fun produceFruit(fractionPerSeason: Double) {
         fruitProduction += fractionPerSeason
     }
+
     fun enableFlowering() {
         flowering = true
     }
+
     fun produceNectar(fractionPerSeason: Double) {
         nectarProduction += fractionPerSeason
     }
+
     fun changePollinationEfficiency(change: Double) {
         pollinationEfficiency += change
     }
+
     fun changeWasteFertilization(change: Double) {
         wasteFertilization += change
     }
+
     fun changeReserveCapacity(change: Double) {
         reserveCapacity += change
     }
+
     fun multiplyNicheCompetitionSensitivity(multiplier: Double) {
         nicheCompetitionSensitivity *= multiplier
     }
+
     fun multiplySelfCrowdingSensitivity(multiplier: Double) {
         selfCrowdingSensitivity *= multiplier
     }
+
     fun enterDormancy(kind: DormancyKind, survivalPerSeason: Double) {
         require(dormancyKind == DormancyKind.NONE) {
             "$speciesDisplayName has multiple dormancy modes"
@@ -427,53 +468,67 @@ class SpeciesCompilationContext internal constructor(
         dormancyKind = kind
         dormantSurvival = survivalPerSeason
     }
+
     fun multiplyDormantEntryRetention(fraction: Double) {
         dormantEntryBiomassRetention *= fraction
     }
+
     fun multiplyDormantReactivation(multiplier: Double) {
         dormantReactivationMultiplier *= multiplier
     }
+
     fun enableDispersal(kind: DispersalKind) {
         if (kind.rangeClass > dispersalKind.rangeClass) dispersalKind = kind
     }
+
     fun expandRadiationRange(tileSteps: Int) {
         radiationRange = max(radiationRange, tileSteps)
     }
+
     fun multiplyReproduction(multiplier: Double) {
         reproductionMultiplier *= multiplier
     }
+
     fun multiplyMetabolicDemand(multiplier: Double) {
         metabolicDemandMultiplier *= multiplier
     }
+
     fun enableFreshwaterOsmoregulation() {
         freshwaterAdapted = true
     }
+
     fun enableBroadSalinityTolerance() {
         broadSalinityTolerance = true
     }
+
     fun enableAquaticRespiration(mode: AquaticRespirationMode) {
         when (mode) {
             AquaticRespirationMode.UNDERWATER -> underwaterBreathing = true
             AquaticRespirationMode.BREATH_HOLDING -> prolongedBreathHolding = true
         }
     }
+
     fun enablePelagicAerialResidency() {
         pelagicAerialResident = true
     }
+
     fun adaptToDarkWater() {
         darkWaterAdapted = true
     }
+
     fun requireResidentHabitat(habitat: Habitat) {
         require(obligateResidentHabitat == null || obligateResidentHabitat == habitat) {
             "$speciesDisplayName requires multiple exclusive resident habitats"
         }
         obligateResidentHabitat = habitat
     }
+
     fun requireAdjacentLand() {
         requiresAdjacentLand = true
     }
+
     fun addMaintenanceCost(fraction: Double) {
-        maintenanceCost += fraction * maintenanceCostScale
+        maintenanceCost += fraction
     }
 
     private companion object {

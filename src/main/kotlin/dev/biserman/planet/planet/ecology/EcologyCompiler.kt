@@ -54,6 +54,9 @@ object EcologyCompiler {
         require(TraitCapability.REPRODUCTION in capabilities) {
             "${definition.displayName} must have at least one reproductive strategy"
         }
+        require(TraitCapability.RESPIRATION in capabilities) {
+            "${definition.displayName} must have at least one respiratory strategy"
+        }
         require(
             definition.kind == SpeciesKind.INVARIANT ||
                 definition.traits.none { it.invariantOnly },
@@ -78,26 +81,8 @@ object EcologyCompiler {
         require(definition.motile || TraitGroup.THERMOREGULATION !in traitsByGroup) {
             "${definition.displayName} is not motile but has a motile thermal strategy"
         }
-        require(!definition.motile || TraitGroup.TERRESTRIAL_ATTACHMENT !in traitsByGroup) {
-            "${definition.displayName} is motile and cannot use a sessile terrestrial attachment; use a locomotion trait"
-        }
         require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
-        }
-        definition.traits.filterNot { it.isFoundation }.forEach { trait ->
-            if (trait.isCosmetic) {
-                require(trait.effects.isEmpty() && trait.relationships.isEmpty()) {
-                    "Cosmetic trait '${trait.displayName}' cannot provide simulation effects"
-                }
-                return@forEach
-            }
-            val cost = trait.effects.filterIsInstance<TraitEffect.MaintenanceCost>().sumOf { it.fraction }
-            require(cost != 0.0) {
-                "Non-foundation trait '${trait.displayName}' must have an explicit non-zero maintenance adjustment"
-            }
-            require(trait.effects.any { it !is TraitEffect.MaintenanceCost } || trait.relationships.isNotEmpty()) {
-                "Non-foundation trait '${trait.displayName}' must provide an effect"
-            }
         }
 
         val context = SpeciesCompilationContext(

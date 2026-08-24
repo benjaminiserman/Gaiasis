@@ -102,6 +102,7 @@ private class BenchmarkScenario(
                         sizeClass = SizeClass.entries[index % 4],
                         motile = false,
                         traits = listOf(
+                            CommonTrait.LUNGS,
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
                             CommonTrait.TERRESTRIAL_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -135,7 +136,7 @@ private class BenchmarkScenario(
                             CommonTrait.AQUATIC_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
                             CommonTrait.BUOYANCY_BLADDER,
-                            CommonTrait.DIFFUSIVE_AQUATIC_GAS_EXCHANGE,
+                            CommonTrait.PASSIVE_RESPIRATION,
                             ColorTrait.photosynthetic(
                                 BiologicalColor.entries[index % BiologicalColor.entries.size],
                             ),
@@ -171,10 +172,13 @@ private class BenchmarkScenario(
                 sizeClass = SizeClass.entries[2 + index % 4],
                 motile = true,
                 traits = listOf(
+                    CommonTrait.LUNGS,
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     if (index % 2 == 0) CommonTrait.ECTOTHERMY else CommonTrait.ENDOTHERMY,
                     CommonTrait.SOLITARY,
                     CommonTrait.TERRESTRIAL_OVOSPORE,
+                    CommonTrait.VASCULAR_SYSTEM,
+                    CommonTrait.LIMBED_BODY,
                     CommonTrait.WALKING_LIMBS,
                     strategyTrait,
                     ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
@@ -184,7 +188,7 @@ private class BenchmarkScenario(
 
         private fun oceanConsumer(id: String, strategy: EcoStrategy, index: Int): SpeciesDefinition {
             val strategyTrait = when (strategy) {
-                EcoStrategy.FILTER_FEEDING -> CommonTrait.GILL_PADS
+                EcoStrategy.FILTER_FEEDING -> CommonTrait.SUSPENSION_FEEDING_TENTACLES
                 EcoStrategy.GRAZING -> CommonTrait.GRAZING_MOUTHPARTS
                 EcoStrategy.AMBUSH_PREDATION -> CommonTrait.AMBUSH_MUSCULATURE
                 EcoStrategy.DEPOSIT_FEEDING -> CommonTrait.MARINE_SNOW_COLLECTORS

@@ -88,6 +88,7 @@ class EcologyCompilerTest {
     fun `traits compile into climate and niche parameters`() {
         val producer = producer(
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
@@ -141,11 +142,11 @@ class EcologyCompilerTest {
         val ordinary = predator("ordinary-build", SizeClass.MEDIUM)
         val slender = predator("slender-build", SizeClass.MEDIUM).copy(
             traits = predator("slender-build", SizeClass.MEDIUM).traits +
-                CommonTrait.SLENDER_BODY,
+                CommonTrait.SLENDER_PHYSIQUE,
         )
         val bulky = predator("bulky-build", SizeClass.MEDIUM).copy(
             traits = predator("bulky-build", SizeClass.MEDIUM).traits +
-                CommonTrait.BULKY_BODY,
+                CommonTrait.BULKY_PHYSIQUE,
         )
         val ecology = EcologyCompiler.compile(listOf(ordinary, slender, bulky))
 
@@ -344,10 +345,11 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.BUOYANCY_BLADDER,
-                CommonTrait.GILL_PADS,
+                CommonTrait.SUSPENSION_FEEDING_TENTACLES,
             ),
         )
 
@@ -456,8 +458,11 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
             ),
         )
@@ -521,6 +526,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.MINUSCULE,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -558,6 +564,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.CLONAL_PROPAGATION,
@@ -573,15 +580,18 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `limb regrowth requires motile appendages`() {
+    fun `limb regrowth requires a limbed body`() {
         val invalid = SpeciesDefinition(
             id = "limbless-regenerator",
             displayName = "Limbless regenerator",
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.UNDULATING_BODY,
                 CommonTrait.LIMB_REGROWTH,
             ),
@@ -591,7 +601,10 @@ class EcologyCompilerTest {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires MOTILE_APPENDAGES"), message = "Limb regrowth requires motile appendages: expected `failure.message.orEmpty().contains(\"requires MOTILE_APPENDAGES\")` to be true")
+        assertTrue(
+            failure.message.orEmpty().contains("requires one of LIMBED_BODY, TENTACLES"),
+            message = "Limb regrowth requires limbs or tentacles: expected `failure.message.orEmpty().contains(\"requires one of LIMBED_BODY, TENTACLES\")` to be true",
+        )
     }
 
     @Test
@@ -602,10 +615,13 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.AQUATIC_OVOSPORE,
-                CommonTrait.AQUATIC_FLIPPERS,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
+                CommonTrait.AQUATIC_LIMBS,
                 CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             ),
         )
@@ -633,14 +649,14 @@ class EcologyCompilerTest {
     @Test
     fun `pelagic soaring wings require a flight structure`() {
         val invalid = predator("flightless-soarer").copy(
-            traits = predator("flightless-soarer").traits + CommonTrait.PELAGIC_SOARING_WINGS,
+            traits = predator("flightless-soarer").traits + CommonTrait.PELAGIC_SOARING,
         )
 
         val failure = assertFailsWith<IllegalArgumentException> {
             EcologyCompiler.compile(listOf(invalid))
         }
 
-        assertTrue(failure.message.orEmpty().contains("requires ACTIVE_FLIGHT"), message = "Pelagic soaring wings require a flight structure: expected `failure.message.orEmpty().contains(\"requires ACTIVE_FLIGHT\")` to be true")
+        assertTrue(failure.message.orEmpty().contains("requires WINGS"), message = "Pelagic soaring wings require a flight structure: expected `failure.message.orEmpty().contains(\"requires WINGS\")` to be true")
     }
 
     @Test
@@ -718,7 +734,7 @@ class EcologyCompilerTest {
 
         val aquatic = terrestrial.copy(
             traits = terrestrial.traits +
-                CommonTrait.AQUATIC_FLIPPERS +
+                CommonTrait.AQUATIC_LIMBS +
                 CommonTrait.COLLECTIVE_LIVING +
                 CommonTrait.SCHOOLING,
         )
@@ -811,6 +827,7 @@ class EcologyCompilerTest {
         val surfaceAttached = producer(
             "surface-attached-producer",
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.SURFACE_HOLDFAST,
@@ -836,11 +853,11 @@ class EcologyCompilerTest {
 
         structures.forEach { structure ->
             assertEquals(TraitGroup.PHOTOSYNTHETIC_STRUCTURE, structure.group, message = "Leaf structures independently provide photosynthetic tissue: expected `structure.group` to match `TraitGroup.PHOTOSYNTHETIC_STRUCTURE`")
-            assertTrue(TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities, message = "Leaf structures independently provide photosynthetic tissue: expected `TraitCapability.PHOTOSYNTHETIC_TISSUE in structure.capabilities` to be true")
 
             val definition = producer(
                 "${structure.name.lowercase()}-producer",
                 traits = listOf(
+                    CommonTrait.LUNGS,
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     structure,
                     CommonTrait.ROOTED_BODY,
@@ -861,12 +878,15 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WINGS,
-                CommonTrait.GILL_PADS,
+                CommonTrait.SUSPENSION_FEEDING_TENTACLES,
             ),
         )
         val ecology = EcologyCompiler.compile(listOf(species))
@@ -886,10 +906,13 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -971,10 +994,13 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
                 CommonTrait.BROOD_PARASITISM,
@@ -1149,10 +1175,13 @@ class EcologyCompilerTest {
         val mediumPredator = predator("medium-predator", SizeClass.MEDIUM)
         val smallPrey = predator("small-prey", SizeClass.SMALL).copy(
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -1263,10 +1292,13 @@ class EcologyCompilerTest {
     fun `terrestrial grazers consume the modeled carpet plant population`() {
         val grazer = predator("grazer", SizeClass.SMALL).copy(
             traits = listOf(
+                CommonTrait.LUNGS,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
             ),
@@ -1495,7 +1527,7 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `all authored non-foundation traits declare an effect and a maintenance adjustment`() {
+    fun `all authored traits declare an effect or relationship`() {
         val authoredTraits: List<SpeciesTrait> = CommonTrait.entries + ColorTrait.entries
         authoredTraits.forEach { trait ->
             assertTrue(
@@ -1503,18 +1535,14 @@ class EcologyCompilerTest {
                 "${trait.displayName} has no player-facing description",
             )
         }
-        authoredTraits.filterNot { it.isFoundation }.forEach { trait ->
+        authoredTraits.forEach { trait ->
             if (trait.isCosmetic) {
                 assertTrue(trait.effects.isEmpty(), "${trait.displayName} has cosmetic effects")
                 return@forEach
             }
             assertTrue(
-                trait.effects.any { it is TraitEffect.MaintenanceCost && it.fraction != 0.0 },
-                "${trait.displayName} has no explicit non-zero maintenance adjustment",
-            )
-            assertTrue(
-                trait.effects.any { it !is TraitEffect.MaintenanceCost },
-                "${trait.displayName} has no non-maintenance effect",
+                trait.effects.isNotEmpty() || trait.relationships.isNotEmpty(),
+                "${trait.displayName} has no effect or relationship",
             )
         }
     }
@@ -1522,6 +1550,7 @@ class EcologyCompilerTest {
     private fun producer(
         id: String = "producer",
         traits: List<SpeciesTrait> = listOf(
+            CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
@@ -1544,9 +1573,12 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
             CommonTrait.AMBUSH_MUSCULATURE,
@@ -1563,11 +1595,15 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
-            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
+            CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SOLITARY,
+            CommonTrait.JAW,
             CommonTrait.BALEEN,
         ),
     )
@@ -1581,6 +1617,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
@@ -1598,9 +1635,12 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.VIVIPARITY,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -1616,10 +1656,13 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
+            CommonTrait.LUNGS,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
-            CommonTrait.AQUATIC_FLIPPERS,
+            CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
+            CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SOLITARY,
             CommonTrait.AMBUSH_MUSCULATURE,
         ),

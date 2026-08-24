@@ -12,7 +12,7 @@ val crustacean = EarthSpeciesCatalog.animal(
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.ARMORED_HIDE,
-    CommonTrait.CRUSHING_CLAWS,
+    CommonTrait.CRUSHING_PINCERS,
     CommonTrait.NOCTURNAL,
     CommonTrait.SOLITARY,
     ColorTrait.RED_CAMOUFLAGE

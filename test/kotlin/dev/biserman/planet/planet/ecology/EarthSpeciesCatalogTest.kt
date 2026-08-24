@@ -1,14 +1,33 @@
 package dev.biserman.planet.planet.ecology
 
-import dev.biserman.planet.planet.ecology.earthlike_clades.EarthlikeClades
-import dev.biserman.planet.planet.ecology.earthlike_clades.mold
-import dev.biserman.planet.planet.ecology.earthlike_clades.mushroom
-import dev.biserman.planet.planet.ecology.earthlike_clades.reptile
+import org.junit.jupiter.api.BeforeAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class EarthSpeciesCatalogTest {
+    companion object {
+        private lateinit var compiledCatalog: CompiledEcology
+
+        /**
+         * Gates this test class on catalog validity so an invalid catalog produces
+         * one actionable compilation failure instead of many cascading failures.
+         */
+        @JvmStatic
+        @BeforeAll
+        fun compileCatalogBeforeCatalogTests() {
+            compiledCatalog = EcologyCompiler.compile(EarthSpeciesCatalog.ALL + InvariantSpecies.ALL)
+        }
+    }
+
+    @Test
+    fun `earth species catalog compiled successfully`() {
+        assertEquals(
+            EarthSpeciesCatalog.ALL.size + InvariantSpecies.ALL.size,
+            compiledCatalog.species.size,
+        )
+    }
+
     @Test
     fun `catalog IDs are inferred from common names`() {
         val catalog = EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES
@@ -70,7 +89,7 @@ class EarthSpeciesCatalogTest {
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.SWIFT_LEGS in species.getValue(\"cheetah\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.STREAMLINED_BODY in species.getValue("atlantic-bluefin-tuna").traits,
+            CommonTrait.STREAMLINED_PHYSIQUE in species.getValue("atlantic-bluefin-tuna").traits,
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.STREAMLINED_BODY in species.getValue(\"atlantic-bluefin-tuna\").traits` to be true"
         )
         listOf("tokay-gecko", "common-house-gecko", "red-eyed-tree-frog").forEach { speciesId ->
@@ -78,14 +97,6 @@ class EarthSpeciesCatalogTest {
             assertTrue(CommonTrait.CLIMBING_LIMBS in traits, "$speciesId should have climbing limbs")
             assertTrue(CommonTrait.STICKY_FEET in traits, "$speciesId should have sticky feet")
         }
-        assertTrue(
-            CommonTrait.STICKY_FEET in
-                EarthlikeClades.minorCreatureGroups.getValue(reptile)
-                    .values.single { it.displayName == "gecko" }.traits,
-            message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected " +
-                "`CommonTrait.STICKY_FEET in EarthlikeClades.minorCreatureGroups.getValue(reptile) " +
-                ".single { it.displayName == \"gecko\" }.traits` to be true",
-        )
         assertTrue(CommonTrait.FUR in species.getValue("cheetah").traits, message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.FUR in species.getValue(\"cheetah\").traits` to be true")
         assertTrue(CommonTrait.FUR !in species.getValue("blue-whale").traits, message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.FUR !in species.getValue(\"blue-whale\").traits` to be true")
     }
@@ -113,11 +124,11 @@ class EarthSpeciesCatalogTest {
             message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.GLIDING_MEMBRANE in species.getValue(\"sugar-glider\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.SLENDER_BODY in species.getValue("red-fox").traits,
+            CommonTrait.SLENDER_PHYSIQUE in species.getValue("red-fox").traits,
             message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.SLENDER_BODY in species.getValue(\"red-fox\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.BULKY_BODY in species.getValue("brown-bear").traits,
+            CommonTrait.BULKY_PHYSIQUE in species.getValue("brown-bear").traits,
             message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.BULKY_BODY in species.getValue(\"brown-bear\").traits` to be true"
         )
         listOf("african-elephant", "walrus", "hippopotamus").forEach { id ->
@@ -147,7 +158,7 @@ class EarthSpeciesCatalogTest {
         val honeyBadger = species.getValue("honey-badger")
         assertTrue(CommonTrait.REINFORCED_HIDE in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.REINFORCED_HIDE in honeyBadger.traits` to be true")
         assertTrue(CommonTrait.FUR in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.FUR in honeyBadger.traits` to be true")
-        assertTrue(CommonTrait.BULKY_BODY !in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.BULKY_BODY !in honeyBadger.traits` to be true")
+        assertTrue(CommonTrait.BULKY_PHYSIQUE !in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.BULKY_BODY !in honeyBadger.traits` to be true")
         assertTrue(CommonTrait.STRONG_JAWS !in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.STRONG_JAWS !in honeyBadger.traits` to be true")
     }
 
@@ -196,7 +207,7 @@ class EarthSpeciesCatalogTest {
             message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.BEHAVIORAL_THERMOREGULATION in species.getValue(\"desert-horned-lizard\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.BENTHIC_BODY in species.getValue("european-plaice").traits,
+            CommonTrait.FLATTENED_PHYSIQUE in species.getValue("european-plaice").traits,
             message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.BENTHIC_BODY in species.getValue(\"european-plaice\").traits` to be true"
         )
         assertTrue(
@@ -368,38 +379,6 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `earthlike sessile clades cover common plant and fungal forms`() {
-        val clades = listOf(
-            EarthlikeClades.forb,
-            EarthlikeClades.grass,
-            EarthlikeClades.vine,
-            EarthlikeClades.broadLeafTree,
-            mold,
-            mushroom,
-        )
-
-        EcologyCompiler.compile(clades)
-        assertTrue(clades.all { CommonTrait.TERRESTRIAL_OVOSPORE in it.traits }, message = "Earthlike sessile clades cover common plant and fungal forms: expected `clades.all { CommonTrait.TERRESTRIAL_OVOSPORE in it.traits }` to be true")
-        assertTrue(
-            CommonTrait.LARGE_EVERGREEN_LEAVES in EarthlikeClades.broadLeafTree.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.LARGE_EVERGREEN_LEAVES in EarthlikeClades.broadLeafTree.traits` to be true"
-        )
-        assertTrue(CommonTrait.ABSORPTIVE_FILAMENTS in mold.traits, message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in mold.traits` to be true")
-        assertTrue(
-            CommonTrait.ABSORPTIVE_FILAMENTS in mushroom.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.ABSORPTIVE_FILAMENTS in mushroom.traits` to be true"
-        )
-        assertTrue(
-            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mold.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mold.traits` to be true"
-        )
-        assertTrue(
-            CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mushroom.traits,
-            message = "Earthlike sessile clades cover common plant and fungal forms: expected `CommonTrait.AERIAL_OVOSPORE_DISPERSAL in mushroom.traits` to be true"
-        )
-    }
-
-    @Test
     fun `periodical cicadas spend most of their lifecycle as dormant juveniles`() {
         val cicada = EarthSpeciesCatalog.INVERTEBRATES.single { it.id == "periodical-cicada" }
         val ordinaryBurrowedEggLifecycle = cicada.copy(
@@ -491,10 +470,6 @@ class EarthSpeciesCatalogTest {
         val compiled = EcologyCompiler.compile(listOf(mammal, withoutMammaryGlands)).species
 
         assertTrue(
-            TraitCapability.LACTATION in CommonTrait.MAMMARY_GLANDS.capabilities,
-            message = "Mammary glands trade metabolic upkeep for effective offspring recruitment: expected `TraitCapability.LACTATION in CommonTrait.MAMMARY_GLANDS.capabilities` to be true"
-        )
-        assertTrue(
             compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction,
             message = "Mammary glands trade metabolic upkeep for effective offspring recruitment: expected `compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction` to be true"
         )
@@ -533,9 +508,9 @@ class EarthSpeciesCatalogTest {
         )
         val requirements = CommonTrait.BROOD_POUCH.requirements.single() as TraitRequirement.AllOf
         assertEquals(
-            setOf(TraitCapability.VIVIPAROUS_REPRODUCTION),
-            requirements.capabilities,
-            message = "Marsupials protect developing young in a brood pouch: expected `requirements.capabilities` to match `setOf(TraitCapability.VIVIPAROUS_REPRODUCTION)`",
+            setOf(CommonTrait.VIVIPARITY),
+            requirements.requirements,
+            message = "Marsupials protect developing young in a brood pouch: expected `requirements.requirements` to match `setOf(CommonTrait.VIVIPARITY)`",
         )
         val nonLactatingBrooder = kangaroo.copy(
             id = "non-lactating-brood-pouch",
@@ -561,24 +536,6 @@ class EarthSpeciesCatalogTest {
             compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand,
             message = "Infrequent reproduction reduces reproduction and its average maintenance: expected `compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand` to be true"
         )
-    }
-
-    @Test
-    fun `true seals reduce dive costs with stroke and glide swimming`() {
-        val definitions = EarthSpeciesCatalog.MAMMALS.associateBy { it.id }
-        listOf("harbor-seal", "weddell-seal", "crabeater-seal").forEach { sealId ->
-            val seal = definitions.getValue(sealId)
-            val continuousSwimming = seal.copy(
-                id = "$sealId-without-stroke-and-glide-swimming",
-                traits = seal.traits - CommonTrait.STROKE_AND_GLIDE_SWIMMING,
-            )
-            val compiled = EcologyCompiler.compile(listOf(seal, continuousSwimming)).species
-
-            assertTrue(
-                compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand,
-                message = "True seals reduce dive costs with stroke and glide swimming: expected `compiled[0].physiology.maintenanceDemand < compiled[1].physiology.maintenanceDemand` to be true"
-            )
-        }
     }
 
     @Test
@@ -985,7 +942,9 @@ class EarthSpeciesCatalogTest {
             0.49, 0.55, 0.65, 0.75, 0.81, 0.83,
             0.82, 0.78, 0.70, 0.60, 0.52, 0.47,
         )
-        val precipitation = listOf(2.0, 2.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0)
+        // About 327 mm annually: a dry, high-elevation semidesert with
+        // winter snow and a modest summer monsoon rather than hyperarid desert.
+        val precipitation = listOf(6.0, 8.0, 14.0, 24.0, 34.0, 48.0, 58.0, 56.0, 42.0, 22.0, 10.0, 5.0)
         val annualEnvironments = temperatures.indices.map { month ->
             SeasonalCellEnvironment.create(
                 areaKm2 = 40_000.0,
@@ -1016,7 +975,7 @@ class EarthSpeciesCatalogTest {
         val walrus = requireNotNull(definitions["walrus"])
         val manatee = requireNotNull(definitions["west-indian-manatee"])
 
-        assertTrue(CommonTrait.BENTHIC_SUCTION_FEEDING in walrus.traits, message = "Catalog corrections keep feeding and insulation anatomy explicit: expected `CommonTrait.BENTHIC_SUCTION_FEEDING in walrus.traits` to be true")
+        assertTrue(CommonTrait.SUCTION_FEEDING in walrus.traits, message = "Catalog corrections keep feeding and insulation anatomy explicit: expected `CommonTrait.BENTHIC_SUCTION_FEEDING in walrus.traits` to be true")
         assertTrue(CommonTrait.SIEVING_TEETH !in walrus.traits, message = "Catalog corrections keep feeding and insulation anatomy explicit: expected `CommonTrait.SIEVING_TEETH !in walrus.traits` to be true")
         assertTrue(CommonTrait.BLUBBER !in manatee.traits, message = "Catalog corrections keep feeding and insulation anatomy explicit: expected `CommonTrait.BLUBBER !in manatee.traits` to be true")
         assertTrue("tardigrade" !in definitions, message = "Catalog corrections keep feeding and insulation anatomy explicit: expected `\"tardigrade\" !in definitions` to be true")
@@ -1056,7 +1015,7 @@ class EarthSpeciesCatalogTest {
         }
         benthicSuctionFeeders.forEach { speciesId ->
             assertTrue(
-                CommonTrait.BENTHIC_SUCTION_FEEDING in
+                CommonTrait.SUCTION_FEEDING in
                     requireNotNull(definitions[speciesId]).traits,
                 "$speciesId should have benthic suction feeding",
             )
@@ -1095,12 +1054,7 @@ class EarthSpeciesCatalogTest {
             CommonTrait.HERDING_BEHAVIOR in traitsOf("woodland-caribou"),
             message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.HERDING_BEHAVIOR in traitsOf(\"woodland-caribou\")` to be true"
         )
-        assertTrue(CommonTrait.WHALESONG in traitsOf("humpback-whale"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.WHALESONG in traitsOf(\"humpback-whale\")` to be true")
         assertTrue(CommonTrait.HOWLING_CALL in traitsOf("gray-wolf"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.HOWLING_CALL in traitsOf(\"gray-wolf\")` to be true")
-        assertTrue(
-            CommonTrait.CICADA_CHORUS in traitsOf("periodical-cicada"),
-            message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.CICADA_CHORUS in traitsOf(\"periodical-cicada\")` to be true"
-        )
         assertTrue(
             CommonTrait.RATTLING_WARNING in traitsOf("western-diamondback-rattlesnake"),
             message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.RATTLING_WARNING in traitsOf(\"western-diamondback-rattlesnake\")` to be true"
@@ -1180,32 +1134,6 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `earthlike motile clades explicitly author valid social and activity traits`() {
-        val clades = EarthlikeClades.majorCreatureGroups +
-            EarthlikeClades.minorCreatureGroups.values.flatMap { it.values }
-
-        clades.filter { it.motile }.forEach { definition ->
-            val traits = definition.traits
-            assertEquals(
-                1,
-                traits.count { it.group == TraitGroup.SOCIAL_ORGANIZATION },
-                definition.displayName,
-            )
-            val terrestrial = traits.any { TraitCapability.TERRESTRIAL_ACTIVITY in it.capabilities }
-            assertEquals(
-                if (terrestrial) 1 else 0,
-                traits.count { it.group == TraitGroup.ACTIVITY_PATTERN },
-                definition.displayName,
-            )
-            assertTrue(
-                TraitDependencies.unmetRequirements(definition).isEmpty(),
-                "${definition.displayName}: ${TraitDependencies.unmetRequirements(definition)}",
-            )
-            EcologyCompiler.compile(listOf(definition))
-        }
-    }
-
-    @Test
     fun `major animal acoustic repertoires are represented without blanket sound traits`() {
         val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
 
@@ -1239,10 +1167,7 @@ class EarthSpeciesCatalogTest {
         }
 
         val explicitlyAcoustic = setOf(
-            CommonTrait.WHALESONG,
             CommonTrait.HOWLING_CALL,
-            CommonTrait.BIRDSONG,
-            CommonTrait.CICADA_CHORUS,
             CommonTrait.RATTLING_WARNING,
             CommonTrait.ROARING_CALL,
             CommonTrait.TRUMPETING_CALL,

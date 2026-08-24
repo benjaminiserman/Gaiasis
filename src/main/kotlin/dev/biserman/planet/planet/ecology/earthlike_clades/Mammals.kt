@@ -13,6 +13,9 @@ val mammal = EarthSpeciesCatalog.animal(
     CommonTrait.ENDOTHERMY,
     CommonTrait.WALKING_LIMBS,
     CommonTrait.FUR,
+    CommonTrait.EYES,
+    CommonTrait.LUNGS,
+    CommonTrait.TEETH,
     CommonTrait.MAMMARY_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.NOCTURNAL,
@@ -53,7 +56,7 @@ val marmot = rodent.descend(
     SizeClass.SMALL,
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.GROUP_LIVING,
-    CommonTrait.BULKY_BODY,
+    CommonTrait.BULKY_PHYSIQUE,
     CommonTrait.WHISTLING_CALL
 )
 val squirrel = rodent.descend(
@@ -308,9 +311,9 @@ val giraffe = ruminant.descend(
 val cetacean = ungulate.descend(
     "cetaceans",
     SizeClass.LARGE,
-    CommonTrait.AQUATIC_FLIPPERS,
+    CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
-    CommonTrait.STREAMLINED_BODY,
+    CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.BLUBBER,
     CommonTrait.LONG_MIGRATION,
     CommonTrait.KEEN_HEARING,
@@ -329,11 +332,13 @@ val whale = cetacean.descend(
     SizeClass.COLOSSAL,
     CommonTrait.BALEEN,
     CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+    CommonTrait.SONG_CALL
 )
 val dolphin = cetacean.descend(
     "dolphin",
     SizeClass.MEDIUM,
     CommonTrait.COOPERATIVE_HUNTING,
+    CommonTrait.CLICKING_CALL
 )
 
 // carnivores
@@ -341,6 +346,7 @@ val carnivore = mammal.descend(
     "carnivores",
     SizeClass.MEDIUM,
     CommonTrait.AMBUSH_MUSCULATURE,
+    CommonTrait.TEETH,
     CommonTrait.FANGS
 )
 val bear = mammal.descend(
@@ -352,7 +358,7 @@ val bear = mammal.descend(
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.FAT_RESERVES,
     CommonTrait.GROWLING_CALL,
-    CommonTrait.BULKY_BODY,
+    CommonTrait.BULKY_PHYSIQUE,
     CommonTrait.DIURNAL
 )
 val raccoon = carnivore.descend(
@@ -365,7 +371,7 @@ val raccoon = carnivore.descend(
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.INTELLIGENT,
     CommonTrait.TOOL_MANIPULATION,
-    CommonTrait.CAMOUFLAGE_PATTERN,
+    CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.CATHEMERAL,
     ColorTrait.PALE_CAMOUFLAGE,
 )
@@ -373,9 +379,9 @@ val raccoon = carnivore.descend(
 val seal = carnivore.descend(
     "seal",
     SizeClass.MEDIUM,
-    CommonTrait.AQUATIC_FLIPPERS,
+    CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
-    CommonTrait.STROKE_AND_GLIDE_SWIMMING,
+    CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.BLUBBER,
     CommonTrait.BARKING_CALL,
@@ -385,7 +391,7 @@ val seal = carnivore.descend(
 val felid = carnivore.descend(
     "felids",
     SizeClass.MEDIUM,
-    CommonTrait.CAMOUFLAGE_PATTERN,
+    CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.FOOD_DERIVED_WATER,
     CommonTrait.RETRACTABLE_CLAWS,
     CommonTrait.FLEXIBLE_SPINE,
@@ -401,7 +407,7 @@ val cat = felid.descend(
     "cat",
     SizeClass.SMALL,
     CommonTrait.CLIMBING_LIMBS,
-    CommonTrait.SLENDER_BODY,
+    CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.MEOWING_CALL,
     CommonTrait.CHIRPING_CALL,
     CommonTrait.PURRING_CALL,
@@ -432,7 +438,7 @@ val fox = canid.descend(
     "fox",
     SizeClass.SMALL,
     CommonTrait.CACHED_FOOD,
-    CommonTrait.SLENDER_BODY,
+    CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.HIGH_POUNCING,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
@@ -442,7 +448,7 @@ val mustelid = carnivore.descend(
     "mustelid",
     SizeClass.SMALL,
     CommonTrait.DENSE_UNDERCOAT,
-    CommonTrait.SLENDER_BODY,
+    CommonTrait.SLENDER_PHYSIQUE,
 )
 val badger = mustelid.descend(
     "badger",
@@ -452,14 +458,15 @@ val badger = mustelid.descend(
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.KEEN_SCENT_SENSE,
-    minus = listOf(CommonTrait.SLENDER_BODY)
+    minus = listOf(CommonTrait.SLENDER_PHYSIQUE)
 )
 val otter = mustelid.descend(
     "otter",
     SizeClass.SMALL,
     CommonTrait.GROUP_LIVING,
-    CommonTrait.AQUATIC_FLIPPERS,
+    CommonTrait.AQUATIC_LIMBS,
     CommonTrait.TOOL_MANIPULATION,
+    CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.INTELLIGENT,
     CommonTrait.CHIRPING_CALL,
 )
@@ -467,7 +474,7 @@ val weasel = mustelid.descend(
     "weasel",
     SizeClass.SMALL,
     CommonTrait.BURROW_BORROWER,
-    minus = listOf(CommonTrait.SLENDER_BODY)
+    minus = listOf(CommonTrait.SLENDER_PHYSIQUE)
 )
 
 // other

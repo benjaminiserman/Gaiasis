@@ -11,6 +11,8 @@ val bird = EarthSpeciesCatalog.animal(
     CommonTrait.ENDOTHERMY,
     CommonTrait.FEATHERS,
     CommonTrait.WINGS,
+    CommonTrait.TAIL,
+    CommonTrait.EYES,
     CommonTrait.BEAK,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.OVOSPORE_NEST,
@@ -80,7 +82,7 @@ val hummingbird = bird.descend(
 val penguin = bird.descend(
     "penguin",
     SizeClass.SMALL,
-    CommonTrait.AQUATIC_FLIPPERS,
+    CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.SEA_ICE_ROOKERY,
     CommonTrait.MOTION_TRACKING_SENSES,

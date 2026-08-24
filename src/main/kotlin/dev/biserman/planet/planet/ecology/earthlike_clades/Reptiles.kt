@@ -14,6 +14,11 @@ val reptile = EarthSpeciesCatalog.animal(
     CommonTrait.BEHAVIORAL_THERMOREGULATION,
     CommonTrait.DIURNAL,
     CommonTrait.SOLITARY,
+    CommonTrait.SCALES,
+    CommonTrait.TEETH,
+    CommonTrait.EYES,
+    CommonTrait.LUNGS,
+    CommonTrait.TAIL,
     ColorTrait.GREEN_CAMOUFLAGE
 )
 val crocodile = reptile.extend(
@@ -49,7 +54,7 @@ val lizard = reptile.descend(
     SizeClass.SMALL,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.SLENDER_BODY,
+    CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.CLAWS
 )
 val gecko = lizard.descend(
@@ -81,17 +86,17 @@ val chameleon = lizard.extend(
     "chameleon",
     SizeClass.SMALL,
     CommonTrait.PROJECTILE_TONGUE,
-    CommonTrait.CAMOUFLAGE_PATTERN,
+    CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.SLOW_METABOLISM,
     ColorTrait.ADAPTIVE_CAMOUFLAGE,
-    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_BODY)
+    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )
 val iguana = lizard.extend(
     "iguana",
     SizeClass.SMALL,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.BROWSING_MOUTHPARTS,
-    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_BODY)
+    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )
 
 // snakes
@@ -100,7 +105,7 @@ val serpent = reptile.descend(
     SizeClass.SMALL,
     CommonTrait.KEEN_SCENT_SENSE,
     CommonTrait.UNDULATING_BODY,
-    CommonTrait.SLENDER_BODY,
+    CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.NOCTURNAL,
     ColorTrait.BROWN_CAMOUFLAGE
@@ -153,7 +158,7 @@ val turtle = testudines.extend(
 val seaTurtle = testudines.extend(
     "sea turtle",
     SizeClass.MEDIUM,
-    CommonTrait.AQUATIC_FLIPPERS,
+    CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.LONG_MIGRATION,
     minus = listOf(CommonTrait.WALKING_LIMBS)

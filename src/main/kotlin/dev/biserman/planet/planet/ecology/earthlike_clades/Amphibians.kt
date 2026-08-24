@@ -16,7 +16,10 @@ val amphibian = EarthSpeciesCatalog.animal(
     CommonTrait.SOLITARY,
     CommonTrait.SLIMY_SKIN,
     CommonTrait.AMBUSH_MUSCULATURE,
+    CommonTrait.LUNGS,
+    CommonTrait.PASSIVE_RESPIRATION,
     CommonTrait.TAIL,
+    CommonTrait.TEETH,
     ColorTrait.GREEN_CAMOUFLAGE
 )
 
@@ -43,7 +46,7 @@ val treeFrog = anura.descend(
 val bullFrog = anura.descend(
     "bull frog",
     SizeClass.SMALL,
-    CommonTrait.BULKY_BODY,
+    CommonTrait.BULKY_PHYSIQUE,
 )
 val toad = anura.descend(
     "toad",
@@ -65,7 +68,8 @@ val moleSalamander = caudata.extend(
     SizeClass.TINY,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
-    CommonTrait.SEASONAL_TORPOR
+    CommonTrait.SEASONAL_TORPOR,
+    CommonTrait.GILLS
 )
 val newt = caudata.extend(
     "newt",
@@ -79,9 +83,10 @@ val newt = caudata.extend(
 val giantSalamander = caudata.extend(
     "giant salamander",
     SizeClass.MEDIUM,
-    CommonTrait.BULKY_BODY,
+    CommonTrait.BULKY_PHYSIQUE,
     CommonTrait.POOR_VISION,
-    CommonTrait.BENTHIC_SUCTION_FEEDING,
+    CommonTrait.JAW,
+    CommonTrait.SUCTION_FEEDING,
     CommonTrait.SLOW_METABOLISM
 )
 

@@ -338,7 +338,7 @@ sealed interface TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.requireAdjacentLand()
     }
     data class MaintenanceCost(val fraction: Double) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.addMaintenanceCost(fraction)
+        override fun applyTo(context: SpeciesCompilationContext) = context.addMaintenanceCost(fraction * 0.1)
     }
 }
 
