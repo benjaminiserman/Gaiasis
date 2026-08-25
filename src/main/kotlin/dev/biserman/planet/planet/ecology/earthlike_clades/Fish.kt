@@ -22,7 +22,7 @@ val fish = EarthSpeciesCatalog.animal(
     CommonTrait.CATHEMERAL,
     CommonTrait.LIMBED_BODY,
     CommonTrait.VASCULAR_SYSTEM,
-    ColorTrait.COUNTERSHADE_CAMOUFLAGE
+    ColorTrait.COUNTERSHADE_COLORATION
 )
 
 // cartilaginous fish
@@ -96,7 +96,7 @@ val eel = teleostei.descend(
     CommonTrait.UNDULATING_BODY,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SOLITARY,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
     minus = listOf(CommonTrait.AQUATIC_LIMBS)
 )
 val herring = teleostei.descend(
@@ -139,7 +139,7 @@ val piranha = otophysa.descend(
     CommonTrait.COOPERATIVE_HUNTING,
     CommonTrait.SERRATED_TEETH,
     CommonTrait.STRONG_JAWS,
-    ColorTrait.RED_CAMOUFLAGE
+    ColorTrait.RED_COLORATION
 )
 val catfish = otophysa.descend(
     "catfish",
@@ -149,7 +149,7 @@ val catfish = otophysa.descend(
     CommonTrait.KEEN_SCENT_SENSE,
     CommonTrait.SPINES,
     CommonTrait.VENOM_DELIVERY,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
 )
 
 val protacanthopterygii = teleostei.descend(
@@ -166,7 +166,7 @@ val pike = protacanthopterygii.descend(
     "pike",
     SizeClass.MEDIUM,
     CommonTrait.SOLITARY,
-    ColorTrait.GREEN_CAMOUFLAGE
+    ColorTrait.GREEN_COLORATION
 )
 val salmon = protacanthopterygii.descend(
     "salmon",
@@ -187,7 +187,7 @@ val gobie = percomorpha.descend(
     CommonTrait.BURROW_BUILDER,
     CommonTrait.SOLITARY,
     CommonTrait.TERRITORIAL,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val seahorse = percomorpha.descend(
     "seahorse",
@@ -197,7 +197,7 @@ val seahorse = percomorpha.descend(
     CommonTrait.VIVIPARITY,
     CommonTrait.REEF_CAMOUFLAGE,
     CommonTrait.BUOYANCY_BLADDER,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val tuna = percomorpha.descend(
     "tuna",
@@ -214,7 +214,7 @@ val flatfish = percomorpha.descend(
     CommonTrait.FLATTENED_PHYSIQUE,
     CommonTrait.SOLITARY,
     CommonTrait.EURYHALINE_OSMOREGULATION,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
 )
 val flyingfish = percomorpha.descend(
     "flying fish",
@@ -246,6 +246,7 @@ val wrasse = percomorpha.descend(
     CommonTrait.REEF_CAMOUFLAGE,
     CommonTrait.REEF_NESTING,
     CommonTrait.TERRITORIAL,
+    ColorTrait.RAINBOW_COLORATION
 )
 
 // tetrapoda (descended elsewhere)
@@ -255,5 +256,5 @@ val tetrapoda = bonyFish.descend(
     CommonTrait.WALKING_LIMBS,
     CommonTrait.LUNGS,
     CommonTrait.SOLITARY,
-    minus = listOf(CommonTrait.AQUATIC_LIMBS, CommonTrait.GILLS, ColorTrait.COUNTERSHADE_CAMOUFLAGE)
+    minus = listOf(CommonTrait.AQUATIC_LIMBS, CommonTrait.GILLS, ColorTrait.COUNTERSHADE_COLORATION)
 )

@@ -13,5 +13,5 @@ val gastropod = EarthSpeciesCatalog.animal(
     CommonTrait.SLOW_METABOLISM,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.SOLITARY,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )

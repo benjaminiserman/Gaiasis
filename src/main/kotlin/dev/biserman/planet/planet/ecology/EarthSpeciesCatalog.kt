@@ -50,7 +50,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_NECK,
             CommonTrait.RUMINANT_STOMACH,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -73,7 +73,7 @@ object EarthSpeciesCatalog {
             CommonTrait.REGIONAL_MIGRATION,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             CommonTrait.BRAYING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -95,7 +95,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HORNS,
             CommonTrait.BELLOWING_CALL,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -118,7 +118,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.HORNS,
             CommonTrait.BLEATING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -145,7 +145,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FLEXIBLE_SPINE,
             CommonTrait.ROARING_CALL,
             CommonTrait.EXTENDED_PARENTAL_CARE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -174,7 +174,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CHIRPING_CALL,
             CommonTrait.MEOWING_CALL,
             CommonTrait.PURRING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -196,7 +196,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.STRONG_JAWS,
             CommonTrait.WHOOPING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -259,7 +259,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INTELLIGENT,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -281,7 +281,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INTELLIGENT,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -302,7 +302,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INTELLIGENT,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -324,9 +324,13 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
+            CommonTrait.TEETH,
+            CommonTrait.STRONG_JAWS,
+            CommonTrait.CLAWS,
+            CommonTrait.FANGS,
             CommonTrait.MAMMARY_GLANDS,
             CommonTrait.FUR
         ),
@@ -340,6 +344,11 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.BROWSING_MOUTHPARTS,
+            CommonTrait.FRUIT_EATING_MOUTHPARTS,
+            CommonTrait.TEETH,
+            CommonTrait.STRONG_JAWS,
+            CommonTrait.FANGS,
+            CommonTrait.CLAWS,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.FAT_RESERVES,
             CommonTrait.SEASONAL_TORPOR,
@@ -347,7 +356,7 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_SCENT_SENSE,
             CommonTrait.GROWLING_CALL,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -372,7 +381,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HOWLING_CALL,
             CommonTrait.BARKING_CALL,
             CommonTrait.INTELLIGENT,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -395,7 +404,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.BURROW_BUILDER,
             CommonTrait.BARKING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -415,7 +424,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LEAPING_LEGS,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SEASONAL_WINTER_COAT,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -434,7 +443,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.CACHED_FOOD,
             CommonTrait.DAM_BUILDING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -451,7 +460,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEED_CRACKING_MOUTHPARTS,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.CACHED_FOOD,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -468,7 +477,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.CACHED_FOOD,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -485,7 +494,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.DIGGING_LIMBS,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -508,7 +517,7 @@ object EarthSpeciesCatalog {
             CommonTrait.OPEN_COUNTRY_PREFERENCE,
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.BROOD_POUCH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -531,7 +540,7 @@ object EarthSpeciesCatalog {
                 displayName = "eucalyptus leaf specialization",
             ),
             CommonTrait.BELLOWING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -556,7 +565,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BLEATING_CALL,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -581,7 +590,7 @@ object EarthSpeciesCatalog {
             CommonTrait.RETRACTABLE_CLAWS,
             CommonTrait.FLEXIBLE_SPINE,
             CommonTrait.ROARING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -612,7 +621,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FLEXIBLE_SPINE,
             CommonTrait.MEOWING_CALL,
             CommonTrait.PURRING_CALL,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -636,7 +645,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PURRING_CALL,
             CommonTrait.SOUND_LURES,
             CommonTrait.SILENT_MOVEMENT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -662,7 +671,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SEASONAL_WINTER_COAT,
             CommonTrait.SILENT_MOVEMENT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -681,7 +690,7 @@ object EarthSpeciesCatalog {
             CommonTrait.RUMINANT_STOMACH,
             CommonTrait.SEASONAL_WINTER_COAT,
             CommonTrait.ANTLERS,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -703,7 +712,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HORNS,
             CommonTrait.BELLOWING_CALL,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -724,7 +733,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.CONCENTRATED_URINE,
             CommonTrait.GRUNTING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -745,7 +754,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_TUSKS,
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.GRUNTING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -772,7 +781,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INTELLIGENT,
-            ColorTrait.BLUE_CAMOUFLAGE,
+            ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -797,7 +806,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COMPLEX_VOCALIZATIONS,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INTELLIGENT,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -824,7 +833,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COMPLEX_VOCALIZATIONS,
             CommonTrait.STRONG_JAWS,
             CommonTrait.INTELLIGENT,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -847,7 +856,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BLUBBER,
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.INTELLIGENT,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.CLICKING_CALL,
             CommonTrait.VIVIPARITY,
@@ -866,7 +875,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.BLUBBER,
             CommonTrait.BARKING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -887,7 +896,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.BLUBBER,
             CommonTrait.TRILLING_CALL,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -906,7 +915,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TEETH,
             CommonTrait.SIEVING_TEETH,
             CommonTrait.BLUBBER,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -926,7 +935,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SLENDER_PHYSIQUE,
             CommonTrait.CHIRPING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -949,7 +958,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_TUSKS,
             CommonTrait.BELLOWING_CALL,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -968,7 +977,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CHIRPING_CALL,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -987,7 +996,7 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_HEARING,
             CommonTrait.ECHOLOCATION,
             CommonTrait.SEASONAL_TORPOR,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1004,7 +1013,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.SCREECHING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1023,7 +1032,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ELECTRORECEPTION,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.TERRESTRIAL_OVOSPORE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.MAMMARY_GLANDS,
             CommonTrait.FUR
@@ -1039,7 +1048,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BROWSING_MOUTHPARTS,
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.SLOW_METABOLISM,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1055,7 +1064,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.COLONY_PROBING_TONGUE,
             CommonTrait.DIGGING_LIMBS,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1075,7 +1084,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLENDER_PHYSIQUE,
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.BROOD_POUCH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1095,7 +1104,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TOOL_MANIPULATION,
             CommonTrait.INTELLIGENT,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1114,7 +1123,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.SLENDER_PHYSIQUE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1131,7 +1140,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
             CommonTrait.NECTAR_SIPPING_TONGUE,
             CommonTrait.SLENDER_PHYSIQUE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1153,7 +1162,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEASONAL_WINTER_COAT,
             CommonTrait.SCAVENGING_SENSES,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1172,7 +1181,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.BULKY_PHYSIQUE,
             CommonTrait.DENSE_UNDERCOAT,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1190,7 +1199,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.REINFORCED_HIDE,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1208,7 +1217,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLENDER_PHYSIQUE,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SEASONAL_WINTER_COAT,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1228,7 +1237,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SLENDER_PHYSIQUE,
             CommonTrait.CHIRPING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1247,7 +1256,7 @@ object EarthSpeciesCatalog {
             CommonTrait.RUMINANT_STOMACH,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.SEASONAL_WINTER_COAT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1265,7 +1274,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.CACHED_FOOD,
             CommonTrait.SLENDER_PHYSIQUE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1291,7 +1300,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HORNS,
             CommonTrait.BELLOWING_CALL,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1313,7 +1322,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HYPOXIA_RESPONSIVE_METABOLISM,
             CommonTrait.BURROW_BORROWER,
             CommonTrait.CACHED_FOOD,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1336,7 +1345,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ANTLERS,
             CommonTrait.BUGLING_CALL,
             CommonTrait.SHORT_MIGRATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1359,7 +1368,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.HORNS,
             CommonTrait.BLEATING_CALL,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1380,7 +1389,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HIGH_AFFINITY_BLOOD,
             CommonTrait.OPEN_COUNTRY_PREFERENCE,
             CommonTrait.HERDING_BEHAVIOR,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1404,7 +1413,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HORNS,
             CommonTrait.BLEATING_CALL,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1430,7 +1439,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.BARKING_CALL,
             CommonTrait.SAND_ADAPTATION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1450,7 +1459,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BURROW_BORROWER,
             CommonTrait.SAND_ADAPTATION,
             CommonTrait.CACHED_FOOD,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1473,7 +1482,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.ANTLERS,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1495,7 +1504,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FLEXIBLE_SPINE,
             CommonTrait.MEOWING_CALL,
             CommonTrait.PURRING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS,
@@ -1517,7 +1526,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.STRONG_JAWS,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1534,7 +1543,7 @@ object EarthSpeciesCatalog {
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.COOPERATIVE_HUNTING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING
         ),
         animal(
@@ -1549,7 +1558,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.ARMORED_HIDE,
             CommonTrait.HORNS,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1563,7 +1572,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.ARMORED_HIDE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1576,7 +1585,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.ARMORED_HIDE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1590,7 +1599,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BROWSING_MOUTHPARTS,
             CommonTrait.LONG_NECK,
             CommonTrait.FERMENTING_HINDGUT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1604,7 +1613,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BROWSING_MOUTHPARTS,
             CommonTrait.LONG_NECK,
             CommonTrait.FERMENTING_HINDGUT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1617,7 +1626,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.LONG_MIGRATION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1637,7 +1646,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEASONAL_WINTER_COAT,
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.TRUMPETING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -1655,7 +1664,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COOPERATIVE_HUNTING,
             CommonTrait.RETRACTABLE_CLAWS,
             CommonTrait.FLEXIBLE_SPINE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
             CommonTrait.MAMMARY_GLANDS
@@ -1671,7 +1680,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FEATHERS,
             CommonTrait.SEED_CRACKING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1687,7 +1696,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ELECTRORECEPTION,
             CommonTrait.STRONG_JAWS,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1699,7 +1708,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GILLS,
             CommonTrait.MARINE_SNOW_COLLECTORS,
             CommonTrait.ARMORED_HIDE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -1711,7 +1720,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GILLS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.PROTECTIVE_SHELL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
     )
@@ -1729,7 +1738,7 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_EYESIGHT,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1748,7 +1757,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.HOOTING_CALL,
             CommonTrait.SILENT_MOVEMENT,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1765,7 +1774,7 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_EYESIGHT,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1784,7 +1793,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.CHIRPING_CALL,
             CommonTrait.COMPLEX_VOCALIZATIONS,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1801,7 +1810,7 @@ object EarthSpeciesCatalog {
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.SCREECHING_CALL,
             CommonTrait.IMITATIVE_VOCALIZATION,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1820,7 +1829,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INTELLIGENT,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.CROAKING_CALL,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1842,7 +1851,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.GROUP_HUDDLING,
             CommonTrait.TRUMPETING_CALL,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK,
@@ -1863,7 +1872,7 @@ object EarthSpeciesCatalog {
             CommonTrait.OPEN_COUNTRY_PREFERENCE,
             CommonTrait.HERDING_BEHAVIOR,
             CommonTrait.BOOMING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK,
@@ -1882,7 +1891,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SIEVING_TEETH,
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.HONKING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1898,7 +1907,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMPHIBIOUS_LIMBS,
             CommonTrait.EURYHALINE_OSMOREGULATION,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK,
@@ -1918,7 +1927,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.REGIONAL_MIGRATION,
             CommonTrait.QUACKING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1937,7 +1946,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.HONKING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1955,7 +1964,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.TRUMPETING_CALL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1971,7 +1980,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SEED_CRACKING_MOUTHPARTS,
             CommonTrait.CROWING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -1987,7 +1996,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SEED_CRACKING_MOUTHPARTS,
             CommonTrait.SCREECHING_CALL,
-            ColorTrait.BLUE_CAMOUFLAGE,
+            ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2005,7 +2014,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.BURROW_BUILDER,
             CommonTrait.DRUMMING_DISPLAY,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2025,7 +2034,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2040,7 +2049,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WINGS,
             CommonTrait.SCAVENGING_SENSES,
             CommonTrait.RESILIENT_DIGESTION,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2057,7 +2066,7 @@ object EarthSpeciesCatalog {
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.IMITATIVE_VOCALIZATION,
             CommonTrait.INTELLIGENT,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2073,7 +2082,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.SPEAR_BILL,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.BLUE_CAMOUFLAGE,
+            ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2092,7 +2101,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.HYPOXIA_RESPONSIVE_METABOLISM,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2113,7 +2122,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.HOOTING_CALL,
             CommonTrait.SILENT_MOVEMENT,
-            ColorTrait.WHITE_CAMOUFLAGE,
+            ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2131,7 +2140,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SPEAR_BILL,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.BLUE_CAMOUFLAGE,
+            ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2151,7 +2160,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.TRUMPETING_CALL,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2172,7 +2181,7 @@ object EarthSpeciesCatalog {
             CommonTrait.REGIONAL_MIGRATION,
             CommonTrait.TRUMPETING_CALL,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2191,7 +2200,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.WATERPROOF_PLUMAGE,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2209,7 +2218,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.BOOMING_CALL,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK,
@@ -2228,7 +2237,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.FAT_RESERVES,
             CommonTrait.CROAKING_CALL,
-            ColorTrait.ADAPTIVE_CAMOUFLAGE,
+            ColorTrait.ADAPTIVE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2245,7 +2254,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
             CommonTrait.EXTENDED_PARENTAL_CARE,
             CommonTrait.CROAKING_CALL,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2262,7 +2271,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SWIFT_LEGS,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.MOTION_TRACKING_SENSES,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2280,7 +2289,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CHIRPING_CALL,
             CommonTrait.COMPLEX_VOCALIZATIONS,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2298,7 +2307,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CHIRPING_CALL,
             CommonTrait.COMPLEX_VOCALIZATIONS,
             CommonTrait.SOUND_LURES,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.FEATHERS,
             CommonTrait.BEAK
@@ -2321,7 +2330,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.SEASONAL_TORPOR,
             CommonTrait.BELLOWING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2339,7 +2348,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.SEASONAL_TORPOR,
             CommonTrait.BELLOWING_CALL,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2354,7 +2363,7 @@ object EarthSpeciesCatalog {
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.FAT_RESERVES,
             CommonTrait.HISSING_WARNING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2373,7 +2382,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             CommonTrait.CHIRPING_CALL,
             CommonTrait.NOCTURNAL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2390,7 +2399,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AUTOTOMY,
             CommonTrait.CHIRPING_CALL,
             CommonTrait.NOCTURNAL,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2405,7 +2414,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.TAIL,
             CommonTrait.AUTOTOMY,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2419,7 +2428,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             CommonTrait.PROJECTILE_TONGUE,
             CommonTrait.SLOW_METABOLISM,
-            ColorTrait.ADAPTIVE_CAMOUFLAGE,
+            ColorTrait.ADAPTIVE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2432,7 +2441,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.CONSTRICTING_BODY,
             CommonTrait.HISSING_WARNING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2447,7 +2456,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FANGS,
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.HISSING_WARNING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2467,7 +2476,7 @@ object EarthSpeciesCatalog {
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.RATTLING_WARNING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2483,7 +2492,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PROTECTIVE_SHELL,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.GRAZING_MOUTHPARTS,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2498,7 +2507,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PROTECTIVE_SHELL,
             CommonTrait.FAT_RESERVES,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2513,7 +2522,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PROJECTILE_TONGUE,
             CommonTrait.LEAPING_LEGS,
             CommonTrait.CROAKING_CALL,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2530,7 +2539,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CROAKING_CALL,
             CommonTrait.TOXIC_SKIN,
             CommonTrait.APOSEMATIC_COLORATION,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2544,7 +2553,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.LIMB_REGROWTH,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2558,7 +2567,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.LIMB_REGROWTH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2576,7 +2585,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEASONAL_TORPOR,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2596,7 +2605,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SCALES,
             CommonTrait.WATER_RETENTIVE_SCALES,
             CommonTrait.SAND_ADAPTATION,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2612,7 +2621,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BEHAVIORAL_THERMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.PROTECTIVE_SHELL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2630,7 +2639,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COASTAL_BREEDING_SITE,
             CommonTrait.FAT_RESERVES,
             CommonTrait.LONG_MIGRATION,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2647,7 +2656,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WATER_RETENTIVE_SCALES,
             CommonTrait.TAIL,
             CommonTrait.AUTOTOMY,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2662,7 +2671,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LUNGS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.LIMB_REGROWTH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -2675,7 +2684,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FOSSORIAL_LIVING,
             CommonTrait.BURROW_BUILDER,
             CommonTrait.AMBUSH_MUSCULATURE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
     )
@@ -2696,7 +2705,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FAT_RESERVES,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2713,7 +2722,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GILL_RAKERS,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2731,7 +2740,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_MIGRATION,
             CommonTrait.SLOW_GROWTH,
             CommonTrait.INFREQUENT_REPRODUCTION,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2747,7 +2756,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.STREAMLINED_PHYSIQUE,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2763,7 +2772,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.LONG_MIGRATION,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2778,7 +2787,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.GILL_RAKERS,
             CommonTrait.REEF_NESTING,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2795,7 +2804,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.BODY_CARRIED_OVOSPORES,
             CommonTrait.REEF_CAMOUFLAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2811,7 +2820,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.ELECTRORECEPTION,
             CommonTrait.ELECTRIC_ORGAN,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2828,7 +2837,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.BIOLUMINESCENT_LURE,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2845,7 +2854,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SPINES,
             CommonTrait.REEF_NESTING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE
         ),
@@ -2860,7 +2869,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.STREAMLINED_PHYSIQUE,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2875,7 +2884,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2892,7 +2901,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.JAW,
             CommonTrait.SUCTION_FEEDING,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2906,7 +2915,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.GILL_RAKERS,
             CommonTrait.SCHOOLING,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2922,7 +2931,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.REEF_CAMOUFLAGE,
             CommonTrait.REEF_SHELTER_DEPENDENCE,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2937,7 +2946,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.REEF_BORING,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2951,7 +2960,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.AMBUSH_MUSCULATURE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2968,7 +2977,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -2986,7 +2995,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3002,7 +3011,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.REEF_CAMOUFLAGE,
             CommonTrait.REEF_SHELTER_DEPENDENCE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3017,7 +3026,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FLATTENED_PHYSIQUE,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.AQUATIC_CAMOUFLAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3031,7 +3040,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.GILL_RAKERS,
             CommonTrait.SCHOOLING,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3048,7 +3057,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3065,7 +3074,7 @@ object EarthSpeciesCatalog {
             CommonTrait.STREAMLINED_PHYSIQUE,
             CommonTrait.GLIDING_MEMBRANE,
             CommonTrait.SCHOOLING,
-            ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+            ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3080,7 +3089,7 @@ object EarthSpeciesCatalog {
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
             CommonTrait.BIOLUMINESCENT_LURE,
             CommonTrait.SCHOOLING,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.AQUATIC_OVOSPORE,
@@ -3098,7 +3107,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.REEF_CAMOUFLAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.GILLS
@@ -3121,7 +3130,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INK_CLOUD,
             CommonTrait.LIMB_REGROWTH,
             CommonTrait.INTELLIGENT,
-            ColorTrait.ADAPTIVE_CAMOUFLAGE,
+            ColorTrait.ADAPTIVE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3137,7 +3146,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SUCTION_CUPS,
             CommonTrait.INK_CLOUD,
             CommonTrait.LIMB_REGROWTH,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3151,7 +3160,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TENTACLES,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3169,7 +3178,7 @@ object EarthSpeciesCatalog {
             CommonTrait.APOSEMATIC_COLORATION,
             CommonTrait.LIMB_REGROWTH,
             CommonTrait.AUTOTOMY,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3187,7 +3196,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.LIMB_REGROWTH,
             CommonTrait.AUTOTOMY,
-            ColorTrait.BLUE_CAMOUFLAGE,
+            ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3205,7 +3214,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SLOW_GROWTH,
             CommonTrait.LIMB_REGROWTH,
             CommonTrait.AUTOTOMY,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3222,7 +3231,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.LIMB_REGROWTH,
             CommonTrait.AUTOTOMY,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         sessile(
@@ -3265,7 +3274,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.PROTECTIVE_SHELL,
             CommonTrait.SLOW_METABOLISM,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3277,7 +3286,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MUSCULAR_FOOT,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SLOW_METABOLISM,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3285,12 +3294,13 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
-            CommonTrait.LUNGS,
+            CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.UNDULATING_BODY,
             CommonTrait.DECOMPOSING_ENZYMES,
             CommonTrait.FOSSORIAL_LIVING,
-            CommonTrait.BURROW_BUILDER,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            CommonTrait.POOR_SCENT_SENSE,
+            CommonTrait.POOR_HEARING,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3307,7 +3317,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TOXIC_SKIN,
             CommonTrait.LONG_MIGRATION,
             CommonTrait.APOSEMATIC_COLORATION,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3329,7 +3339,7 @@ object EarthSpeciesCatalog {
             CommonTrait.STINGER,
             CommonTrait.HONEY_STORES,
             CommonTrait.APOSEMATIC_COLORATION,
-            ColorTrait.BROWN_CAMOUFLAGE
+            ColorTrait.BROWN_COLORATION
         ),
         animal(
             "leafcutter ant",
@@ -3343,7 +3353,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.EUSOCIAL_COLONY,
             CommonTrait.OVOSPORE_NEST,
-            ColorTrait.BROWN_CAMOUFLAGE
+            ColorTrait.BROWN_COLORATION
         ),
         animal(
             "termite",
@@ -3360,7 +3370,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FOSSORIAL_LIVING,
             CommonTrait.BURROW_BUILDER,
             CommonTrait.OVOSPORE_NEST,
-            ColorTrait.PALE_CAMOUFLAGE
+            ColorTrait.PALE_COLORATION
         ),
         animal(
             "desert locust",
@@ -3376,7 +3386,7 @@ object EarthSpeciesCatalog {
             CommonTrait.REGIONAL_MIGRATION,
             CommonTrait.BURROW_BORROWER,
             CommonTrait.SAND_ADAPTATION,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3389,7 +3399,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.RED_CAMOUFLAGE,
+            ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3403,7 +3413,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WEB_SILK,
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3420,7 +3430,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.HEAT_STABLE_ENZYMES,
             CommonTrait.SAND_ADAPTATION,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3435,7 +3445,7 @@ object EarthSpeciesCatalog {
             CommonTrait.KEEN_EYESIGHT,
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.REGIONAL_MIGRATION,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3450,7 +3460,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.OVIPOSITOR,
             CommonTrait.BURROWING_EGGS,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3464,7 +3474,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         sessile(
@@ -3490,7 +3500,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SUSPENSION_FEEDING_TENTACLES,
             CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.RED_CAMOUFLAGE
+            ColorTrait.RED_COLORATION
         ),
         sessile(
             "giant green anemone",
@@ -3509,7 +3519,7 @@ object EarthSpeciesCatalog {
             CommonTrait.POLYP_BODY,
             CommonTrait.SUSPENSION_FEEDING_TENTACLES,
             CommonTrait.SLOW_GROWTH,
-            ColorTrait.PALE_CAMOUFLAGE
+            ColorTrait.PALE_COLORATION
         ),
         animal(
             "sea wasp",
@@ -3522,7 +3532,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GELATINOUS_BODY,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.VENOM_DELIVERY,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3537,7 +3547,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3552,7 +3562,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WASTE_FEEDING_MOUTHPARTS,
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3566,7 +3576,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SUCKING_PROBOSCIS,
             CommonTrait.VIVIPARITY,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.GREEN_CAMOUFLAGE,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3582,7 +3592,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BURROW_BUILDER,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.MOLTING_EXOSKELETON,
-            ColorTrait.PALE_CAMOUFLAGE,
+            ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3597,7 +3607,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.LIMB_REGROWTH,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
         animal(
@@ -3613,7 +3623,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PROLONGED_JUVENILE_DORMANCY,
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.SCREECHING_CALL,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
         ),
     )
@@ -4156,13 +4166,13 @@ object EarthSpeciesCatalog {
     private fun defaultOvosporeTrait(adaptations: Array<out SpeciesTrait>): CommonTrait {
         val supportedHabitats = adaptations
             .flatMap { it.effects }
-            .filterIsInstance<TraitEffect.HabitatSupport>()
-            .filter { it.amount > 0.0 }
-            .mapTo(mutableSetOf()) { it.habitat }
+            .filterIsInstance<TraitEffect.HabitatAccess>()
+            .flatMapTo(mutableSetOf()) { it.habitatSelection.habitats.map { kvp -> kvp.first } }
         val aquatic = supportedHabitats.any {
             it == Habitat.COASTAL ||
                 it == Habitat.FRESHWATER ||
-                it == Habitat.SUNLIT_WATER ||
+                it == Habitat.SHALLOW_OCEAN ||
+                it == Habitat.OPEN_OCEAN ||
                 it == Habitat.DARK_WATER
         }
         val terrestrial = supportedHabitats.any {

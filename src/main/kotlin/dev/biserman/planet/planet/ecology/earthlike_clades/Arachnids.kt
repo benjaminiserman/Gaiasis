@@ -15,5 +15,5 @@ val arachnid = EarthSpeciesCatalog.animal(
     CommonTrait.MOLTING_EXOSKELETON,
     CommonTrait.NOCTURNAL,
     CommonTrait.SOLITARY,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )

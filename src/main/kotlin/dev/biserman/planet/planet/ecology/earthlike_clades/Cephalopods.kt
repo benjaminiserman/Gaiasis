@@ -15,5 +15,5 @@ val cephalopod = EarthSpeciesCatalog.animal(
     CommonTrait.INK_CLOUD,
     CommonTrait.SOLITARY,
     CommonTrait.NOCTURNAL,
-    ColorTrait.ADAPTIVE_CAMOUFLAGE
+    ColorTrait.ADAPTIVE_COLORATION
 )

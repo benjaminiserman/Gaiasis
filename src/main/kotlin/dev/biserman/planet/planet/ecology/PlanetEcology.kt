@@ -308,7 +308,12 @@ object PlanetEcology {
             add(compiled.species[compiled.speciesIndex(InvariantSpecies.SMALL_AQUATIC_LIFE.id)])
         }
         val photosyntheticWaterAvailable = annualEnvironments.any { environment ->
-            listOf(Habitat.FRESHWATER, Habitat.COASTAL, Habitat.SUNLIT_WATER).any {
+            listOf(
+                Habitat.FRESHWATER,
+                Habitat.COASTAL,
+                Habitat.SHALLOW_OCEAN,
+                Habitat.OPEN_OCEAN,
+            ).any {
                 environment.habitatAvailability(it) > 0.0
             }
         }
@@ -396,7 +401,7 @@ object PlanetEcology {
     ): Boolean {
         val cacheIndex = tileIndex * compiled.species.size + speciesIndex
         val habitatBit = HabitatCacheMask.bit(habitat)
-        val knownMask = cache.knownSuitabilityHabitats[cacheIndex].toInt() and 0xFF
+        val knownMask = cache.knownSuitabilityHabitats[cacheIndex].toInt() and 0xFFFF
         if (knownMask and habitatBit == 0) {
             val tile = cache.tiles[tileIndex]
             val climate = tile.planet.climateMap.getValue(tile.tileId)
@@ -411,16 +416,16 @@ object PlanetEcology {
                 habitat = habitat,
             )
             cache.knownSuitabilityHabitats[cacheIndex] =
-                (knownMask or habitatBit).toByte()
+                (knownMask or habitatBit).toShort()
             if (result.suitable) {
                 val suitableMask =
-                    cache.suitableHabitats[cacheIndex].toInt() and 0xFF
+                    cache.suitableHabitats[cacheIndex].toInt() and 0xFFFF
                 cache.suitableHabitats[cacheIndex] =
-                    (suitableMask or habitatBit).toByte()
+                    (suitableMask or habitatBit).toShort()
             }
         }
         return (
-            cache.suitableHabitats[cacheIndex].toInt() and 0xFF and habitatBit
+            cache.suitableHabitats[cacheIndex].toInt() and 0xFFFF and habitatBit
             ) != 0
     }
 
@@ -464,9 +469,9 @@ object PlanetEcology {
             context = PlanetEcologyEnvironment.context(planet),
             neighbors = neighbors,
             knownSuitabilityHabitats =
-            ByteArray(tiles.size * compiled.species.size),
+            ShortArray(tiles.size * compiled.species.size),
             suitableHabitats =
-            ByteArray(tiles.size * compiled.species.size),
+            ShortArray(tiles.size * compiled.species.size),
         ).also {
             cachedPlanet = planet
             cachedWorld = it
@@ -480,8 +485,8 @@ object PlanetEcology {
         val tiles: List<PlanetTile>,
         val context: PlanetEcologyEnvironmentContext,
         val neighbors: Array<IntArray>,
-        val knownSuitabilityHabitats: ByteArray,
-        val suitableHabitats: ByteArray,
+        val knownSuitabilityHabitats: ShortArray,
+        val suitableHabitats: ShortArray,
     )
 
     private const val RANDOMIZATION_PROCESS = 0x2C71_4A19
@@ -489,9 +494,9 @@ object PlanetEcology {
 
 internal object HabitatCacheMask {
     fun validateCapacity() {
-        require(Habitat.entries.size <= Byte.SIZE_BITS) {
-            "The suitability cache uses one byte per species/tile and supports at most " +
-                "${Byte.SIZE_BITS} habitats"
+        require(Habitat.entries.size <= Short.SIZE_BITS) {
+            "The suitability cache uses one short per species/tile and supports at most " +
+                "${Short.SIZE_BITS} habitats"
         }
     }
 

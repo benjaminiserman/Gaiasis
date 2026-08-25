@@ -45,7 +45,7 @@ object LightColorModel {
         purple: Double,
         pale: Double,
         white: Double = pale,
-        countershade: Double = pale,
+        rainbow: Double = pale,
     ) = PhotosyntheticCompatibility(
         mapOf(
             BiologicalColor.BLACK to black,
@@ -56,7 +56,8 @@ object LightColorModel {
             BiologicalColor.PURPLE to purple,
             BiologicalColor.PALE to pale,
             BiologicalColor.WHITE to white,
-            BiologicalColor.COUNTERSHADE to countershade,
+            BiologicalColor.COUNTERSHADE to 0.0,
+            BiologicalColor.RAINBOW to rainbow,
         ).let { it.plus(BiologicalColor.ADAPTIVE to it.values.max()) },
     )
 }

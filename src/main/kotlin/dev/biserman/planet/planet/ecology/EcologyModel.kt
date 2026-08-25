@@ -18,7 +18,8 @@ enum class BiologicalColor {
     PALE,
     WHITE,
     COUNTERSHADE,
-    ADAPTIVE
+    ADAPTIVE,
+    RAINBOW
 }
 
 enum class ThermalStrategy {
@@ -96,8 +97,20 @@ data class SpeciesDefinition(
 sealed interface TraitEffect {
     fun applyTo(context: SpeciesCompilationContext)
 
-    data class HabitatSupport(val habitat: Habitat, val amount: Double) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.supportHabitat(habitat, amount)
+    data class HabitatAccess(val habitatSelection: HabitatSelection, val amount: Double = 0.0) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) {
+            habitatSelection.habitats.forEach { (habitat, factor) ->
+                context.accessHabitat(habitat)
+                context.adjustHabitatAffinity(habitat, amount * factor)
+            }
+        }
+    }
+    data class HabitatAffinity(val habitatSelection: HabitatSelection, val amount: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) {
+            habitatSelection.habitats.forEach { (habitat, factor) ->
+                context.adjustHabitatAffinity(habitat, amount * factor)
+            }
+        }
     }
     data class StrategySupport(val strategy: EcoStrategy, val amount: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.supportStrategy(strategy, amount)

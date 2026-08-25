@@ -10,10 +10,11 @@ val crustacean = EarthSpeciesCatalog.animal(
     SizeClass.SMALL,
     CommonTrait.ECTOTHERMY,
     CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.PINCERS,
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.ARMORED_HIDE,
     CommonTrait.CRUSHING_PINCERS,
     CommonTrait.NOCTURNAL,
     CommonTrait.SOLITARY,
-    ColorTrait.RED_CAMOUFLAGE
+    ColorTrait.RED_COLORATION
 )

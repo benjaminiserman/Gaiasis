@@ -10,7 +10,7 @@ val reptile = tetrapoda.descend(
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.BEHAVIORAL_THERMOREGULATION,
     CommonTrait.DIURNAL,
-    ColorTrait.GREEN_CAMOUFLAGE
+    ColorTrait.GREEN_COLORATION
 )
 val crocodile = reptile.extend(
     "crocodile",
@@ -62,7 +62,7 @@ val monitorLizard = lizard.descend(
     CommonTrait.ARMORED_HIDE,
     CommonTrait.VENOM_DELIVERY,
     CommonTrait.KEEN_SCENT_SENSE,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val wormLizard = lizard.descend(
     "worm lizard",
@@ -70,7 +70,7 @@ val wormLizard = lizard.descend(
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.UNDULATING_BODY,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.CLIMBING_LIMBS)
 )
 val chameleon = lizard.extend(
@@ -79,7 +79,7 @@ val chameleon = lizard.extend(
     CommonTrait.PROJECTILE_TONGUE,
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.SLOW_METABOLISM,
-    ColorTrait.ADAPTIVE_CAMOUFLAGE,
+    ColorTrait.ADAPTIVE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )
 val iguana = lizard.extend(
@@ -99,7 +99,7 @@ val serpent = reptile.descend(
     CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.NOCTURNAL,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val snake = serpent.descend(
     "snake",
@@ -109,14 +109,14 @@ val python = serpent.descend(
     "python",
     SizeClass.MEDIUM,
     CommonTrait.CONSTRICTING_BODY,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val boa = serpent.descend(
     "boa",
     SizeClass.MEDIUM,
     CommonTrait.CONSTRICTING_BODY,
     CommonTrait.VIVIPARITY,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )
 val viper = serpent.descend(
     "viper",

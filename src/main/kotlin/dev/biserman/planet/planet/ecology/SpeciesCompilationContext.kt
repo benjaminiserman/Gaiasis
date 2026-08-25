@@ -14,7 +14,8 @@ class SpeciesCompilationContext internal constructor(
     private val speciesDisplayName: String,
     sizeTemperatureTolerance: Double,
 ) {
-    private val habitatSupport = DoubleArray(Habitat.entries.size)
+    private val habitatAccess = BooleanArray(Habitat.entries.size)
+    private val habitatAffinity = DoubleArray(Habitat.entries.size)
     private val strategySupport = DoubleArray(EcoStrategy.entries.size)
     private val camouflage = DoubleArray(Habitat.entries.size)
     private var camouflageColor: BiologicalColor? = null
@@ -93,35 +94,41 @@ class SpeciesCompilationContext internal constructor(
     ) {
         when (compiledSalinityTolerance()) {
             AquaticSalinityTolerance.SALTWATER_ONLY ->
-                habitatSupport[Habitat.FRESHWATER.ordinal] = 0.0
+                habitatAccess[Habitat.FRESHWATER.ordinal] = false
 
             AquaticSalinityTolerance.FRESHWATER_ONLY -> {
-                habitatSupport[Habitat.COASTAL.ordinal] = 0.0
-                habitatSupport[Habitat.SUNLIT_WATER.ordinal] = 0.0
-                habitatSupport[Habitat.DARK_WATER.ordinal] = 0.0
+                habitatAccess[Habitat.COASTAL.ordinal] = false
+                habitatAccess[Habitat.SHALLOW_OCEAN.ordinal] = false
+                habitatAccess[Habitat.OPEN_OCEAN.ordinal] = false
+                habitatAccess[Habitat.DARK_WATER.ordinal] = false
             }
 
             AquaticSalinityTolerance.BROAD -> Unit
         }
         if (commonTraits.any { TraitCapability.LOCOMOTION in it.capabilities }) {
             if (sizeClass.ordinal >= SizeClass.HUGE.ordinal) {
-                habitatSupport[Habitat.FRESHWATER.ordinal] = 0.0
+                habitatAccess[Habitat.FRESHWATER.ordinal] = false
             }
             if (sizeClass >= SizeClass.LARGE) {
-                habitatSupport[Habitat.CANOPY.ordinal] = 0.0
+                habitatAccess[Habitat.CANOPY.ordinal] = false
             }
             if (!underwaterBreathing && !prolongedBreathHolding) {
-                habitatSupport[Habitat.SUNLIT_WATER.ordinal] = 0.0
-                habitatSupport[Habitat.DARK_WATER.ordinal] = 0.0
+                habitatAccess[Habitat.SHALLOW_OCEAN.ordinal] = false
+                habitatAccess[Habitat.OPEN_OCEAN.ordinal] = false
+                habitatAccess[Habitat.DARK_WATER.ordinal] = false
                 reefUse = 0.0
             }
         }
         obligateResidentHabitat?.let { requiredHabitat ->
-            habitatSupport.indices.forEach { habitatIndex ->
+            habitatAccess.indices.forEach { habitatIndex ->
                 if (habitatIndex != requiredHabitat.ordinal) {
-                    habitatSupport[habitatIndex] = 0.0
+                    habitatAccess[habitatIndex] = false
                 }
             }
+        }
+
+        if (!darkWaterAdapted) {
+            habitatAccess[Habitat.DARK_WATER.ordinal] = false
         }
 
         val grazingSupport = strategySupport[EcoStrategy.GRAZING.ordinal]
@@ -145,8 +152,12 @@ class SpeciesCompilationContext internal constructor(
         niches: List<NicheDefinition>,
         commonTraits: Set<CommonTrait>,
     ): CompiledSpecies {
-        habitatSupport.indices.forEach {
-            habitatSupport[it] = habitatSupport[it].coerceIn(0.0, 1.0)
+        val habitatSupport = DoubleArray(Habitat.entries.size) { habitatIndex ->
+            if (habitatAccess[habitatIndex]) {
+                habitatAffinity[habitatIndex].coerceIn(0.0, 1.0)
+            } else {
+                0.0
+            }
         }
         strategySupport.indices.forEach {
             strategySupport[it] = strategySupport[it].coerceIn(0.0, 1.0)
@@ -279,6 +290,7 @@ class SpeciesCompilationContext internal constructor(
                 },
                 photosyntheticColor = photosyntheticColor,
                 camouflageColor = camouflageColor,
+                habitatAccess = habitatAccess,
                 habitatSupport = habitatSupport,
                 strategySupport = strategySupport,
                 camouflage = camouflage,
@@ -293,8 +305,12 @@ class SpeciesCompilationContext internal constructor(
         else -> AquaticSalinityTolerance.SALTWATER_ONLY
     }
 
-    fun supportHabitat(habitat: Habitat, amount: Double) {
-        habitatSupport[habitat.ordinal] += amount
+    fun accessHabitat(habitat: Habitat) {
+        habitatAccess[habitat.ordinal] = true
+    }
+
+    fun adjustHabitatAffinity(habitat: Habitat, amount: Double) {
+        habitatAffinity[habitat.ordinal] += amount
     }
 
     fun supportStrategy(strategy: EcoStrategy, amount: Double) {

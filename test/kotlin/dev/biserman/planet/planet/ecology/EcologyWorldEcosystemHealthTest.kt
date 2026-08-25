@@ -428,7 +428,7 @@ class EcologyWorldEcosystemHealthTest {
             adjacentToOcean = tile.adjacentToOcean,
             adjacentToLand = tile.adjacentToLand,
             adjacentToMajorRiver = tile.adjacentToMajorRiver,
-            elevationM = tile.elevationM,
+            elevationM = if (tile.isLand) tile.elevationM else -tile.waterDepthM,
             waterDepthM = tile.waterDepthM,
             usefulSunlightReachesWater = tile.usefulSunlightReachesWater,
             canopyCover = tile.canopyCover,

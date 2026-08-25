@@ -19,17 +19,17 @@ class EcologyHabitatConstraintTest {
 
         assertEquals(
             1.0,
-            EcologyFitness.habitat(coral, shallow, Habitat.SUNLIT_WATER),
-            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, shallow, Habitat.SUNLIT_WATER)` to match `1.0`",
+            EcologyFitness.habitat(coral, shallow, Habitat.SHALLOW_OCEAN),
+            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, shallow, Habitat.SHALLOW_OCEAN)` to match `1.0`",
         )
         assertTrue(
-            EcologyFitness.habitat(coral, marginal, Habitat.SUNLIT_WATER) in 0.0..1.0,
-            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, marginal, Habitat.SUNLIT_WATER) in 0.0..1.0` to be true",
+            EcologyFitness.habitat(coral, marginal, Habitat.SHALLOW_OCEAN) in 0.0..1.0,
+            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, marginal, Habitat.SHALLOW_OCEAN) in 0.0..1.0` to be true",
         )
         assertEquals(
             0.0,
-            EcologyFitness.habitat(coral, deep, Habitat.SUNLIT_WATER),
-            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, deep, Habitat.SUNLIT_WATER)` to match `0.0`",
+            EcologyFitness.habitat(coral, deep, Habitat.SHALLOW_OCEAN),
+            message = "Light-dependent coral loses habitat fit with depth: expected `EcologyFitness.habitat(coral, deep, Habitat.SHALLOW_OCEAN)` to match `0.0`",
         )
         assertTrue(NicheSelection.choose(coral, catalogEcology, shallow) >= 0, message = "Light-dependent coral loses habitat fit with depth: expected `NicheSelection.choose(coral, catalogEcology, shallow) >= 0` to be true")
         assertEquals(-1, NicheSelection.choose(coral, catalogEcology, deep), message = "Light-dependent coral loses habitat fit with depth: expected `NicheSelection.choose(coral, catalogEcology, deep)` to match `-1`")
@@ -54,7 +54,7 @@ class EcologyHabitatConstraintTest {
         )
 
         assertTrue(polarBear.niche.supportFor(Habitat.SEA_ICE) > 0.0, message = "Permanent sea ice is a distinct coastal surface habitat: expected `polarBear.niche.supportFor(Habitat.SEA_ICE) > 0.0` to be true")
-        assertEquals(0.0, polarBear.niche.supportFor(Habitat.SUNLIT_WATER), message = "Permanent sea ice is a distinct coastal surface habitat: expected `polarBear.niche.supportFor(Habitat.SUNLIT_WATER)` to match `0.0`")
+        assertEquals(0.0, polarBear.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Permanent sea ice is a distinct coastal surface habitat: expected `polarBear.niche.supportFor(Habitat.SHALLOW_OCEAN)` to match `0.0`")
         assertEquals(0.0, polarBear.niche.supportFor(Habitat.DARK_WATER), message = "Permanent sea ice is a distinct coastal surface habitat: expected `polarBear.niche.supportFor(Habitat.DARK_WATER)` to match `0.0`")
     }
 
@@ -86,17 +86,17 @@ class EcologyHabitatConstraintTest {
 
         assertTrue(blueWhale.physiology.respiration.prolongedBreathHolding, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.physiology.respiration.prolongedBreathHolding` to be true")
         assertFalse(blueWhale.physiology.respiration.underwaterBreathing, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.physiology.respiration.underwaterBreathing` to be false")
-        assertTrue(blueWhale.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(blueWhale.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
 
         assertTrue(greatWhiteShark.physiology.respiration.underwaterBreathing, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `greatWhiteShark.physiology.respiration.underwaterBreathing` to be true")
         assertFalse(greatWhiteShark.physiology.respiration.prolongedBreathHolding, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `greatWhiteShark.physiology.respiration.prolongedBreathHolding` to be false")
-        assertTrue(greatWhiteShark.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `greatWhiteShark.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(greatWhiteShark.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `greatWhiteShark.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
 
         for (coastalDiver in listOf(manatee, seaOtter)) {
             assertFalse(coastalDiver.physiology.respiration.underwaterBreathing, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.physiology.respiration.underwaterBreathing` to be false")
             assertFalse(coastalDiver.physiology.respiration.prolongedBreathHolding, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.physiology.respiration.prolongedBreathHolding` to be false")
             assertTrue(coastalDiver.niche.supportFor(Habitat.COASTAL) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.COASTAL) > 0.0` to be true")
-            assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.SUNLIT_WATER), message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.SUNLIT_WATER)` to match `0.0`")
+            assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.SHALLOW_OCEAN)` to match `0.0`")
             assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.DARK_WATER), message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.DARK_WATER)` to match `0.0`")
             assertEquals(
                 -1,
@@ -114,7 +114,8 @@ class EcologyHabitatConstraintTest {
     fun `every species with open-ocean habitat support can respire there`() {
         for (species in catalogEcology.species) {
             val hasOpenOceanSupport =
-                species.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0 ||
+                species.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0 ||
+                    species.niche.supportFor(Habitat.OPEN_OCEAN) > 0.0 ||
                     species.niche.supportFor(Habitat.DARK_WATER) > 0.0
             if (hasOpenOceanSupport) {
                 assertTrue(

@@ -223,7 +223,7 @@ class EcologyExperimentsTest {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
         ) + extraTraits,
     )
 
@@ -243,7 +243,7 @@ class EcologyExperimentsTest {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
         ),
     )
 
@@ -262,7 +262,7 @@ class EcologyExperimentsTest {
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
         ),
     )
 

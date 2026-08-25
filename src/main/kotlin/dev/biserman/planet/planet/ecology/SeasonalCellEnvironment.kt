@@ -151,7 +151,13 @@ class SeasonalCellEnvironment private constructor(
                     habitats[Habitat.SEA_ICE.ordinal] = 0.80
                 }
                 if (usefulSunlightReachesWater) {
-                    habitats[Habitat.SUNLIT_WATER.ordinal] = 1.0
+                    val illuminatedOcean =
+                        if (elevationM >= SHALLOW_OCEAN_MINIMUM_ELEVATION_M) {
+                            Habitat.SHALLOW_OCEAN
+                        } else {
+                            Habitat.OPEN_OCEAN
+                        }
+                    habitats[illuminatedOcean.ordinal] = 1.0
                 }
                 if (!usefulSunlightReachesWater || waterDepthM >= 180.0) {
                     habitats[Habitat.DARK_WATER.ordinal] = if (usefulSunlightReachesWater) 0.75 else 1.0
@@ -185,5 +191,7 @@ class SeasonalCellEnvironment private constructor(
                 habitatAvailability = habitats,
             )
         }
+
+        private const val SHALLOW_OCEAN_MINIMUM_ELEVATION_M = -250.0
     }
 }

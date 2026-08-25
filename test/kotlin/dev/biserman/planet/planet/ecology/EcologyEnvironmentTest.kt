@@ -96,8 +96,13 @@ class EcologyEnvironmentTest {
         val darkSurface = ocean(waterDepthM = 40.0, usefulSunlightReachesWater = false)
 
         assertTrue(
-            shallow.habitatAvailability(Habitat.SUNLIT_WATER) > 0.0,
-            "A shallow illuminated ocean should expose sunlit-water habitat",
+            shallow.habitatAvailability(Habitat.SHALLOW_OCEAN) > 0.0,
+            "An illuminated ocean above -250 m should expose shallow-ocean habitat",
+        )
+        assertEquals(
+            0.0,
+            shallow.habitatAvailability(Habitat.OPEN_OCEAN),
+            "A shallow-ocean tile should not simultaneously expose open ocean",
         )
         assertEquals(
             0.0,
@@ -105,12 +110,21 @@ class EcologyEnvironmentTest {
             "A shallow ocean should not expose dark-water habitat",
         )
         assertTrue(
+            deep.habitatAvailability(Habitat.OPEN_OCEAN) > 0.0,
+            "An illuminated ocean below -250 m should expose open-ocean habitat",
+        )
+        assertEquals(
+            0.0,
+            deep.habitatAvailability(Habitat.SHALLOW_OCEAN),
+            "An open-ocean tile should not simultaneously expose shallow ocean",
+        )
+        assertTrue(
             deep.habitatAvailability(Habitat.DARK_WATER) > 0.0,
             "A 900 m ocean should expose dark-water habitat",
         )
         assertEquals(
             0.0,
-            darkSurface.habitatAvailability(Habitat.SUNLIT_WATER),
+            darkSurface.habitatAvailability(Habitat.SHALLOW_OCEAN),
             "Water receiving no useful starlight should not expose sunlit-water habitat",
         )
         assertTrue(
@@ -208,13 +222,13 @@ class EcologyEnvironmentTest {
 
     @Test
     fun `countershading matches sunlit water but not dark water`() {
-        val countershadedSunlit = Habitat.SUNLIT_WATER.camouflageMatch(
+        val countershadedSunlit = Habitat.SHALLOW_OCEAN.camouflageMatch(
             BiologicalColor.COUNTERSHADE,
             snowOrIce = false,
             canopyCover = 0.0,
             reefCover = 0.0,
         )
-        val blueGreenSunlit = Habitat.SUNLIT_WATER.camouflageMatch(
+        val blueGreenSunlit = Habitat.SHALLOW_OCEAN.camouflageMatch(
             BiologicalColor.BLUE,
             snowOrIce = false,
             canopyCover = 0.0,
@@ -668,11 +682,6 @@ class EcologyEnvironmentTest {
             ecology.niches[nicheIndex].strategy,
             "The obligate scavenger should establish as a scavenger, not ${ecology.niches[nicheIndex].strategy}",
         )
-        assertEquals(
-            Habitat.AERIAL,
-            ecology.niches[nicheIndex].habitat,
-            "The winged scavenger should establish in the aerial habitat, not ${ecology.niches[nicheIndex].habitat}",
-        )
     }
 
     @Test
@@ -768,6 +777,7 @@ class EcologyEnvironmentTest {
         insolation = 0.8,
         precipitationMm = 60.0,
         isLand = false,
+        elevationM = -waterDepthM,
         waterDepthM = waterDepthM,
         usefulSunlightReachesWater = usefulSunlightReachesWater,
     )

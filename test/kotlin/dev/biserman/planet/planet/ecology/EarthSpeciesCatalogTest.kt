@@ -175,7 +175,7 @@ class EarthSpeciesCatalogTest {
         assertTrue(seaFan.niche.supportFor(EcoStrategy.FILTER_FEEDING) > 0.0, message = "Cnidarian body plans compile into distinct ecological roles: expected `seaFan.niche.supportFor(EcoStrategy.FILTER_FEEDING) > 0.0` to be true")
         assertEquals(0.0, seaFan.interactions.reefBuilding, message = "Cnidarian body plans compile into distinct ecological roles: expected `seaFan.interactions.reefBuilding` to match `0.0`")
         assertTrue(anemone.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0, message = "Cnidarian body plans compile into distinct ecological roles: expected `anemone.niche.supportFor(EcoStrategy.AMBUSH_PREDATION) > 0.0` to be true")
-        assertTrue(seaWasp.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Cnidarian body plans compile into distinct ecological roles: expected `seaWasp.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(seaWasp.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Cnidarian body plans compile into distinct ecological roles: expected `seaWasp.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
         assertTrue(
             CommonTrait.PULSING_BELL in definitions.getValue("sea-wasp").traits,
             message = "Cnidarian body plans compile into distinct ecological roles: expected `CommonTrait.PULSING_BELL in definitions.getValue(\"sea-wasp\").traits` to be true"
@@ -1221,7 +1221,7 @@ class EarthSpeciesCatalogTest {
             message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `blueWhale.physiology.respiration.salinityTolerance` to match `AquaticSalinityTolerance.SALTWATER_ONLY`"
         )
         assertEquals(0.0, blueWhale.niche.supportFor(Habitat.FRESHWATER), message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `blueWhale.niche.supportFor(Habitat.FRESHWATER)` to match `0.0`")
-        assertTrue(blueWhale.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `blueWhale.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(blueWhale.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `blueWhale.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
 
         assertEquals(
             AquaticSalinityTolerance.FRESHWATER_ONLY,
@@ -1229,7 +1229,7 @@ class EarthSpeciesCatalogTest {
             message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `carp.physiology.respiration.salinityTolerance` to match `AquaticSalinityTolerance.FRESHWATER_ONLY`"
         )
         assertTrue(carp.niche.supportFor(Habitat.FRESHWATER) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `carp.niche.supportFor(Habitat.FRESHWATER) > 0.0` to be true")
-        assertEquals(0.0, carp.niche.supportFor(Habitat.SUNLIT_WATER), message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `carp.niche.supportFor(Habitat.SUNLIT_WATER)` to match `0.0`")
+        assertEquals(0.0, carp.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `carp.niche.supportFor(Habitat.SHALLOW_OCEAN)` to match `0.0`")
 
         assertEquals(
             AquaticSalinityTolerance.BROAD,
@@ -1237,7 +1237,7 @@ class EarthSpeciesCatalogTest {
             message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `salmon.physiology.respiration.salinityTolerance` to match `AquaticSalinityTolerance.BROAD`"
         )
         assertTrue(salmon.niche.supportFor(Habitat.FRESHWATER) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `salmon.niche.supportFor(Habitat.FRESHWATER) > 0.0` to be true")
-        assertTrue(salmon.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `salmon.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(salmon.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Marine freshwater and euryhaline species compile to distinct water chemistry: expected `salmon.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
     }
 
     @Test
@@ -1398,11 +1398,11 @@ class EarthSpeciesCatalogTest {
         val baobab = ecology.species.single { it.id == "african-baobab" }
         val kelp = ecology.species.single { it.id == "giant-kelp" }
 
-        assertEquals(0.0, baobab.niche.supportFor(Habitat.SUNLIT_WATER), message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `baobab.niche.supportFor(Habitat.SUNLIT_WATER)` to match `0.0`")
+        assertEquals(0.0, baobab.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `baobab.niche.supportFor(Habitat.SHALLOW_OCEAN)` to match `0.0`")
         assertEquals(0.0, baobab.niche.supportFor(Habitat.DARK_WATER), message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `baobab.niche.supportFor(Habitat.DARK_WATER)` to match `0.0`")
         assertEquals(0.0, kelp.niche.supportFor(Habitat.LAND_SURFACE), message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `kelp.niche.supportFor(Habitat.LAND_SURFACE)` to match `0.0`")
         assertEquals(0.0, kelp.niche.supportFor(Habitat.CANOPY), message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `kelp.niche.supportFor(Habitat.CANOPY)` to match `0.0`")
-        assertTrue(kelp.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0, message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `kelp.niche.supportFor(Habitat.SUNLIT_WATER) > 0.0` to be true")
+        assertTrue(kelp.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0, message = "Photosynthetic method does not make land plants aquatic or kelp terrestrial: expected `kelp.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0` to be true")
     }
 
     private fun predationRate(

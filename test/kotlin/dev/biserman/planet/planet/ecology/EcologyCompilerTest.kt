@@ -16,6 +16,40 @@ private val selfCrowdingTestTrait = EffectTrait(
 
 class EcologyCompilerTest {
     @Test
+    fun `habitat access gates independently authored affinity`() {
+        val canopyAffinity = EffectTrait(
+            displayName = "canopy affinity",
+            description = "Improves performance in a canopy without providing a way to enter it.",
+            effects = listOf(TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.80)),
+        )
+        val canopyAccess = EffectTrait(
+            displayName = "canopy access",
+            description = "Provides a physical means of entering and operating in a canopy.",
+            effects = listOf(TraitEffect.HabitatAccess(Habitat.CANOPY)),
+        )
+        val affinityOnly = terrestrialPrey("affinity-only", SizeClass.SMALL).let { species ->
+            species.copy(traits = species.traits + canopyAffinity)
+        }
+        val accessible = terrestrialPrey("accessible", SizeClass.SMALL).let { species ->
+            species.copy(traits = species.traits + canopyAffinity + canopyAccess)
+        }
+
+        val compiled = EcologyCompiler.compile(listOf(affinityOnly, accessible)).species
+
+        assertEquals(
+            0.0,
+            compiled.single { it.id == affinityOnly.id }.niche.supportFor(Habitat.CANOPY),
+            message = "Canopy affinity alone must not grant physical access to the canopy",
+        )
+        assertEquals(
+            0.80,
+            compiled.single { it.id == accessible.id }.niche.supportFor(Habitat.CANOPY),
+            absoluteTolerance = 1e-12,
+            message = "An accessible habitat should retain its independently compiled affinity",
+        )
+    }
+
+    @Test
     fun `self crowding traits compile independently of niche competition`() {
         val ordinary = predator("ordinary-self-crowding")
         val crowdingSensitive = ordinary.copy(
@@ -63,10 +97,14 @@ class EcologyCompilerTest {
             it[Habitat.LAND_SURFACE.ordinal] = 0.40
         }
         val nicheFit = doubleArrayOf(0.45)
+        val habitatAccess = BooleanArray(Habitat.entries.size).also {
+            it[Habitat.LAND_SURFACE.ordinal] = true
+        }
         val profile = NicheProfile(
             producerCompetitionLayer = ProducerCompetitionLayer.NONE,
             photosyntheticColor = null,
             camouflageColor = BiologicalColor.BROWN,
+            habitatAccess = habitatAccess,
             habitatSupport = habitatSupport,
             strategySupport = strategySupport,
             camouflage = camouflage,
@@ -74,11 +112,13 @@ class EcologyCompilerTest {
         )
 
         habitatSupport[Habitat.LAND_SURFACE.ordinal] = 0.0
+        habitatAccess[Habitat.LAND_SURFACE.ordinal] = false
         strategySupport[EcoStrategy.GRAZING.ordinal] = 0.0
         camouflage[Habitat.LAND_SURFACE.ordinal] = 0.0
         nicheFit[0] = 0.0
 
         assertEquals(0.75, profile.supportFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(Habitat.LAND_SURFACE)` to match `0.75`")
+        assertTrue(profile.accesses(Habitat.LAND_SURFACE), message = "Compiled niche profile should own its habitat-access array independently of the compiler's mutable working array")
         assertEquals(0.60, profile.supportFor(EcoStrategy.GRAZING), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(EcoStrategy.GRAZING)` to match `0.60`")
         assertEquals(0.40, profile.camouflageFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.camouflageFor(Habitat.LAND_SURFACE)` to match `0.40`")
         assertEquals(0.45, profile.fitFor(0), message = "Compiled niche profile owns its optimized arrays: expected `profile.fitFor(0)` to match `0.45`")
@@ -404,8 +444,8 @@ class EcologyCompilerTest {
             brownPredator.copy(
                 id = "adaptive-predator",
                 traits =
-                brownPredator.traits - ColorTrait.BROWN_CAMOUFLAGE +
-                    ColorTrait.ADAPTIVE_CAMOUFLAGE,
+                brownPredator.traits - ColorTrait.BROWN_COLORATION +
+                    ColorTrait.ADAPTIVE_COLORATION,
             )
         val adaptiveCompiled = EcologyCompiler.compile(listOf(adaptivePredator)).species.single()
         assertTrue(
@@ -414,7 +454,7 @@ class EcologyCompilerTest {
         )
 
         val conflicting = brownPredator.copy(
-            traits = brownPredator.traits + ColorTrait.WHITE_CAMOUFLAGE,
+            traits = brownPredator.traits + ColorTrait.WHITE_COLORATION,
         )
         val failure = assertFailsWith<IllegalArgumentException> {
             EcologyCompiler.compile(listOf(conflicting))
@@ -1582,7 +1622,7 @@ class EcologyCompilerTest {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
             CommonTrait.AMBUSH_MUSCULATURE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
         ),
     )
 

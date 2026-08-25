@@ -13,7 +13,7 @@ val bird = reptile.descend(
     CommonTrait.OVOSPORE_NEST,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.REGIONAL_MIGRATION,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
 )
 
 val ratite = bird.descend(
@@ -55,7 +55,7 @@ val crane = bird.descend(
     CommonTrait.SPEAR_BILL,
     CommonTrait.REGIONAL_MIGRATION,
     CommonTrait.WATERPROOF_PLUMAGE,
-    ColorTrait.WHITE_CAMOUFLAGE,
+    ColorTrait.WHITE_COLORATION,
 )
 val gull = bird.descend(
     "gull",
@@ -63,7 +63,7 @@ val gull = bird.descend(
     CommonTrait.WADING_LIMBS,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.WATERPROOF_PLUMAGE,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
 )
 val hummingbird = bird.descend(
     "hummingbird",
@@ -74,6 +74,7 @@ val hummingbird = bird.descend(
     CommonTrait.LONG_MIGRATION,
     CommonTrait.CHIRPING_CALL,
     CommonTrait.COMPLEX_VOCALIZATIONS,
+    ColorTrait.RAINBOW_COLORATION
 )
 val penguin = bird.descend(
     "penguin",
@@ -86,7 +87,7 @@ val penguin = bird.descend(
     CommonTrait.WATERPROOF_PLUMAGE,
     CommonTrait.FAT_RESERVES,
     CommonTrait.TRUMPETING_CALL,
-    ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+    ColorTrait.COUNTERSHADE_COLORATION,
 )
 val owl = bird.descend(
     "owl",
@@ -120,7 +121,7 @@ val hornbill = bird.descend(
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.CROAKING_CALL,
-    ColorTrait.BLACK_CAMOUFLAGE,
+    ColorTrait.BLACK_COLORATION,
 )
 val woodpecker = bird.descend(
     "woodpecker",
@@ -147,6 +148,7 @@ val parrot = bird.descend(
     CommonTrait.EXTENDED_PARENTAL_CARE,
     CommonTrait.IMITATIVE_VOCALIZATION,
     CommonTrait.INTELLIGENT,
+    ColorTrait.RAINBOW_COLORATION
 )
 val corvid = bird.descend(
     "corvid",
@@ -156,5 +158,5 @@ val corvid = bird.descend(
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.INTELLIGENT,
     CommonTrait.CROAKING_CALL,
-    ColorTrait.BLACK_CAMOUFLAGE,
+    ColorTrait.BLACK_COLORATION,
 )

@@ -8,5 +8,5 @@ import dev.biserman.planet.planet.ecology.SizeClass
 val insect = EarthSpeciesCatalog.animal(
     "insect",
     SizeClass.TINY,
-    CommonTrait.ECTOTHERMY, CommonTrait.CLIMBING_LIMBS, CommonTrait.TERRESTRIAL_OVOSPORE, CommonTrait.WINGS, CommonTrait.MOLTING_EXOSKELETON, CommonTrait.SOLITARY, ColorTrait.BROWN_CAMOUFLAGE
+    CommonTrait.ECTOTHERMY, CommonTrait.CLIMBING_LIMBS, CommonTrait.TERRESTRIAL_OVOSPORE, CommonTrait.WINGS, CommonTrait.MOLTING_EXOSKELETON, CommonTrait.SOLITARY, ColorTrait.BROWN_COLORATION
 )

@@ -15,7 +15,7 @@ val amphibian = EarthSpeciesCatalog.animal(
     CommonTrait.SLIMY_SKIN,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.PASSIVE_RESPIRATION,
-    ColorTrait.GREEN_CAMOUFLAGE
+    ColorTrait.GREEN_COLORATION
 )
 
 // frogs -- doing a non-taxonomic breakdown of anura for cultural reasons
@@ -35,11 +35,11 @@ val treeFrog = anura.descend(
     "tree frog",
     SizeClass.TINY,
     CommonTrait.CLIMBING_LIMBS,
-    ColorTrait.GREEN_CAMOUFLAGE,
+    ColorTrait.GREEN_COLORATION,
     minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS)
 )
-val bullFrog = anura.descend(
-    "bull frog",
+val bullfrog = anura.descend(
+    "bullfrog",
     SizeClass.SMALL,
     CommonTrait.BULKY_PHYSIQUE,
 )
@@ -47,7 +47,7 @@ val toad = anura.descend(
     "toad",
     SizeClass.TINY,
     CommonTrait.TOXIC_SKIN,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
     minus = listOf(CommonTrait.SLIMY_SKIN)
 )
 
@@ -72,7 +72,7 @@ val newt = caudata.extend(
     CommonTrait.TOXIC_SKIN,
     CommonTrait.APOSEMATIC_COLORATION,
     CommonTrait.DIURNAL,
-    ColorTrait.RED_CAMOUFLAGE,
+    ColorTrait.RED_COLORATION,
     minus = listOf(CommonTrait.SLIMY_SKIN)
 )
 val giantSalamander = caudata.extend(
@@ -94,6 +94,6 @@ val caecilian = amphibian.extend(
     CommonTrait.MAMMARY_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.POOR_VISION,
-    ColorTrait.BLACK_CAMOUFLAGE,
+    ColorTrait.BLACK_COLORATION,
     minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS)
 )

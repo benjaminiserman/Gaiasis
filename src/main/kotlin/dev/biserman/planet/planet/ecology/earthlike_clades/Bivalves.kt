@@ -16,5 +16,5 @@ val bivalve = EarthSpeciesCatalog.sessile(
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.CATHEMERAL,
     CommonTrait.SOLITARY,
-    ColorTrait.BROWN_CAMOUFLAGE
+    ColorTrait.BROWN_COLORATION
 )

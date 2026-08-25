@@ -151,7 +151,7 @@ class EcologyRuntimeTest {
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.AMBUSH_MUSCULATURE,
-                ColorTrait.BROWN_CAMOUFLAGE,
+                ColorTrait.BROWN_COLORATION,
             ),
         )
         val dangerousRedModel = prey("dangerous-red-model", BiologicalColor.RED, dangerous = true)
@@ -262,7 +262,7 @@ class EcologyRuntimeTest {
             extraTraits = listOf(CommonTrait.WHOLE_BODY_ANHYDROBIOSIS),
         )
         val ecology = EcologyCompiler.compile(listOf(species))
-        val niche = nicheFor(ecology, 0, Habitat.SUNLIT_WATER, EcoStrategy.PHOTOSYNTHESIS)
+        val niche = nicheFor(ecology, 0, Habitat.SHALLOW_OCEAN, EcoStrategy.PHOTOSYNTHESIS)
         val community = TileCommunity().also { it.add(0, niche, activeBiomass = 1_000.0) }
 
         EcologyRuntime(ecology).advanceSeason(community, oceanEnvironment(temperatureC = 105.0))
@@ -424,7 +424,7 @@ class EcologyRuntimeTest {
             ),
         )
         val ecology = EcologyCompiler.compile(listOf(species))
-        val niche = nicheFor(ecology, 0, Habitat.SUNLIT_WATER, EcoStrategy.PHOTOSYNTHESIS)
+        val niche = nicheFor(ecology, 0, Habitat.SHALLOW_OCEAN, EcoStrategy.PHOTOSYNTHESIS)
         val community = TileCommunity().also { it.add(0, niche, activeBiomass = 250_000.0) }
         val fluxes = CellTurnFluxes()
 
@@ -759,7 +759,7 @@ class EcologyRuntimeTest {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
         ),
     )
 
@@ -779,7 +779,7 @@ class EcologyRuntimeTest {
             CommonTrait.WALKING_LIMBS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
-            ColorTrait.BROWN_CAMOUFLAGE,
+            ColorTrait.BROWN_COLORATION,
         ),
     )
 
@@ -798,7 +798,7 @@ class EcologyRuntimeTest {
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SCAVENGING_SENSES,
-            ColorTrait.BLACK_CAMOUFLAGE,
+            ColorTrait.BLACK_COLORATION,
         ),
     )
 

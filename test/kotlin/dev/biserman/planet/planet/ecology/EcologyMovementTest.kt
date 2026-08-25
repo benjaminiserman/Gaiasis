@@ -258,6 +258,7 @@ class EcologyMovementTest {
             CommonTrait.SOLITARY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.FRESHWATER_OSMOREGULATION,
+            CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.GILLS,
             CommonTrait.GILL_RAKERS,
         ),

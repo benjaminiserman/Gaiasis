@@ -17,7 +17,7 @@ val mammal = tetrapoda.descend(
     CommonTrait.NOCTURNAL,
     CommonTrait.CLAWS,
     CommonTrait.TAIL,
-    ColorTrait.BROWN_CAMOUFLAGE,
+    ColorTrait.BROWN_COLORATION,
 )
 
 // glires
@@ -268,7 +268,7 @@ val goat = ruminant.descend(
     CommonTrait.HIGH_AFFINITY_BLOOD,
     CommonTrait.BLEATING_CALL,
     CommonTrait.GROUP_LIVING,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.HERDING_BEHAVIOR)
 )
 val deer = ruminant.descend(
@@ -316,7 +316,7 @@ val cetacean = ungulate.descend(
     CommonTrait.COMPLEX_VOCALIZATIONS,
     CommonTrait.INTELLIGENT,
     CommonTrait.GROUP_LIVING,
-    ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+    ColorTrait.COUNTERSHADE_COLORATION,
     minus = listOf(
         CommonTrait.GRAZING_MOUTHPARTS,
         CommonTrait.OPEN_COUNTRY_PREFERENCE,
@@ -368,7 +368,7 @@ val raccoon = carnivore.descend(
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.CATHEMERAL,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
 )
 
 val seal = carnivore.descend(
@@ -380,7 +380,7 @@ val seal = carnivore.descend(
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.BLUBBER,
     CommonTrait.BARKING_CALL,
-    ColorTrait.COUNTERSHADE_CAMOUFLAGE,
+    ColorTrait.COUNTERSHADE_COLORATION,
 )
 
 val felid = carnivore.descend(
@@ -426,7 +426,7 @@ val wolf = canid.descend(
     CommonTrait.SEASONAL_WINTER_COAT,
     CommonTrait.HOWLING_CALL,
     CommonTrait.INTELLIGENT,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE)
 )
 val fox = canid.descend(
@@ -449,7 +449,7 @@ val badger = mustelid.descend(
     "badger",
     SizeClass.SMALL,
     CommonTrait.GRAZING_MOUTHPARTS,
-    ColorTrait.PALE_CAMOUFLAGE,
+    ColorTrait.PALE_COLORATION,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.KEEN_SCENT_SENSE,

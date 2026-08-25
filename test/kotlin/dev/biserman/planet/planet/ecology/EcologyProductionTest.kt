@@ -14,14 +14,26 @@ class EcologyProductionTest {
     )
 
     @Test
-    fun `every current habitat has a distinct byte cache bit`() {
+    fun `every current habitat has a distinct short cache bit`() {
         HabitatCacheMask.validateCapacity()
         val roundTrippedBits = Habitat.entries.map { habitat ->
-            HabitatCacheMask.bit(habitat).toByte().toInt() and 0xFF
+            HabitatCacheMask.bit(habitat).toShort().toInt() and 0xFFFF
         }
 
-        assertEquals(Habitat.entries.size, roundTrippedBits.toSet().size, message = "Every current habitat has a distinct byte cache bit: expected `roundTrippedBits.toSet().size` to match `Habitat.entries.size`")
-        assertTrue(roundTrippedBits.none { it == 0 }, message = "Every current habitat has a distinct byte cache bit: expected `roundTrippedBits.none { it == 0 }` to be true")
+        assertEquals(Habitat.entries.size, roundTrippedBits.toSet().size, message = "Every current habitat has a distinct short cache bit: expected `roundTrippedBits.toSet().size` to match `Habitat.entries.size`")
+        assertTrue(roundTrippedBits.none { it == 0 }, message = "Every current habitat has a distinct short cache bit: expected `roundTrippedBits.none { it == 0 }` to be true")
+    }
+
+    @Test
+    fun `shallow ocean habitat round trips through serialization`() {
+        val encoded = Serialization.objectMapper.writeValueAsString(Habitat.SHALLOW_OCEAN)
+        val habitat = Serialization.objectMapper.readValue(encoded, Habitat::class.java)
+
+        assertEquals(
+            Habitat.SHALLOW_OCEAN,
+            habitat,
+            message = "The current shallow-ocean habitat should retain its identity after serialization",
+        )
     }
 
     @Test
