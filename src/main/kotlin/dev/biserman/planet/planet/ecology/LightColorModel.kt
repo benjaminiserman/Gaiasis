@@ -11,11 +11,11 @@ object LightColorModel {
     }
 
     val authoredCompatibility: Map<StarLight, PhotosyntheticCompatibility> = mapOf(
-        StarLight.BLUE_WHITE to compatibility(0.84, 0.64, 0.76, 0.94, 0.58, 0.82, 0.38),
-        StarLight.WHITE to compatibility(0.90, 0.70, 0.88, 0.90, 0.72, 0.86, 0.42),
-        StarLight.YELLOW to compatibility(0.90, 0.72, 1.00, 0.86, 0.78, 0.84, 0.42),
-        StarLight.ORANGE to compatibility(0.88, 0.76, 0.90, 0.74, 0.94, 0.82, 0.40),
-        StarLight.RED to compatibility(0.82, 0.74, 0.66, 0.54, 1.00, 0.88, 0.36),
+        StarLight.BLUE_WHITE to compatibility(0.84, 0.64, 0.76, 0.6, 0.94, 0.58, 0.82, 0.38),
+        StarLight.WHITE to compatibility(0.90, 0.70, 0.88, 0.87, 0.90, 0.72, 0.86, 0.42),
+        StarLight.YELLOW to compatibility(0.90, 0.72, 1.00, 0.8, 0.86, 0.78, 0.84, 0.42),
+        StarLight.ORANGE to compatibility(0.88, 0.76, 0.90, 0.92, 0.74, 0.94, 0.82, 0.40),
+        StarLight.RED to compatibility(0.82, 0.74, 0.66, 0.75, 0.54, 1.00, 0.88, 0.36),
     )
 
     private val compiledCompatibility: Array<DoubleArray> by lazy {
@@ -40,6 +40,7 @@ object LightColorModel {
         black: Double,
         brown: Double,
         green: Double,
+        yellow: Double,
         blueGreen: Double,
         red: Double,
         purple: Double,
@@ -51,6 +52,7 @@ object LightColorModel {
             BiologicalColor.BLACK to black,
             BiologicalColor.BROWN to brown,
             BiologicalColor.GREEN to green,
+            BiologicalColor.YELLOW to yellow,
             BiologicalColor.BLUE to blueGreen,
             BiologicalColor.RED to red,
             BiologicalColor.PURPLE to purple,

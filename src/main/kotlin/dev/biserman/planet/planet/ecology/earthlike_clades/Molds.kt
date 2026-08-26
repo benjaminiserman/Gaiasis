@@ -9,7 +9,6 @@ val mold = EarthSpeciesCatalog.sessile(
     SizeClass.TINY,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.SURFACE_HOLDFAST,
-    CommonTrait.ABSORPTIVE_FILAMENTS,
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
     CommonTrait.DESICCATION_RESISTANT_PROPAGULES,

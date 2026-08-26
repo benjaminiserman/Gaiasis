@@ -17,6 +17,7 @@ enum class BiologicalColor {
     PURPLE,
     PALE,
     WHITE,
+    YELLOW,
     COUNTERSHADE,
     ADAPTIVE,
     RAINBOW
@@ -112,8 +113,18 @@ sealed interface TraitEffect {
             }
         }
     }
-    data class StrategySupport(val strategy: EcoStrategy, val amount: Double) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.supportStrategy(strategy, amount)
+
+    /** Enables a feeding strategy and optionally contributes its baseline affinity. */
+    data class StrategyAccess(val strategy: EcoStrategy, val amount: Double = 0.0) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) {
+            context.accessStrategy(strategy)
+            context.adjustStrategyAffinity(strategy, amount)
+        }
+    }
+
+    /** Changes aptitude without granting the anatomy needed to use a strategy. */
+    data class StrategyAffinity(val strategy: EcoStrategy, val amount: Double) : TraitEffect {
+        override fun applyTo(context: SpeciesCompilationContext) = context.adjustStrategyAffinity(strategy, amount)
     }
     data class TemperatureShift(val degreesC: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.shiftTemperature(degreesC)

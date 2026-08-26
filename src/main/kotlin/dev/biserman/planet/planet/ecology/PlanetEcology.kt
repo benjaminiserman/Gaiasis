@@ -163,7 +163,7 @@ object PlanetEcology {
             val carryingCapacity =
                 initialCarryingCapacityKg(species, niche, annualEnvironments)
             val capacityFraction = when (niche.strategy) {
-                EcoStrategy.PHOTOSYNTHESIS, EcoStrategy.ABSORPTION ->
+                EcoStrategy.PHOTOSYNTHESIS ->
                     random.nextDouble(0.45, 0.75)
                 EcoStrategy.FILTER_FEEDING,
                 EcoStrategy.GRAZING,

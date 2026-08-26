@@ -8,6 +8,7 @@ import dev.biserman.planet.planet.ecology.SizeClass
 val cephalopod = EarthSpeciesCatalog.animal(
     "cephalopod",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.ECTOTHERMY,
     CommonTrait.JET_PROPULSION,
     CommonTrait.GRASPING_TENTACLES,

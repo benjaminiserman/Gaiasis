@@ -16,6 +16,97 @@ private val selfCrowdingTestTrait = EffectTrait(
 
 class EcologyCompilerTest {
     @Test
+    fun `strategy access gates affinity regardless of trait order`() {
+        val base = predator("strategy-foundation").let { species ->
+            species.copy(traits = species.traits - CommonTrait.MEAT_EATING_MOUTHPARTS - CommonTrait.AMBUSH_MUSCULATURE)
+        }
+        EcoStrategy.entries.forEach { strategy ->
+            fun effect(name: String, effect: TraitEffect) = EffectTrait(name, name, listOf(effect))
+            val access = effect("strategy access", TraitEffect.StrategyAccess(strategy, 0.25))
+            val affinity = effect("strategy affinity", TraitEffect.StrategyAffinity(strategy, 0.50))
+            val penalty = effect("strategy penalty", TraitEffect.StrategyAffinity(strategy, -2.0))
+            val bonus = effect("strategy bonus", TraitEffect.StrategyAffinity(strategy, 2.0))
+            fun compiled(vararg traits: SpeciesTrait) = EcologyCompiler.compile(
+                listOf(base.copy(traits = base.traits + traits)),
+            ).species.single()
+
+            val inaccessible = compiled(affinity)
+            assertTrue(!inaccessible.niche.accesses(strategy), "$strategy affinity must not grant access")
+            assertEquals(0.0, inaccessible.niche.supportFor(strategy))
+            assertTrue(!inaccessible.niche.hasViableNiche())
+            assertEquals(compiled().physiology.maintenanceDemand, inaccessible.physiology.maintenanceDemand)
+            assertEquals(0.75, compiled(access, affinity).niche.supportFor(strategy))
+            assertEquals(0.75, compiled(affinity, access).niche.supportFor(strategy))
+            assertTrue(compiled(access, affinity).niche.supports(strategy))
+            assertEquals(1.0, compiled(access, bonus).niche.supportFor(strategy))
+            val suppressed = compiled(access, penalty)
+            assertTrue(suppressed.niche.accesses(strategy), "A penalty does not remove anatomy")
+            assertTrue(!suppressed.niche.supports(strategy))
+            assertEquals(0.0, suppressed.niche.supportFor(strategy))
+        }
+    }
+
+    @Test
+    fun `hunting and scavenging affinities cannot give herbivores a meat diet`() {
+        val hunter = predator("hunter")
+        val herbivore = hunter.copy(
+            id = "agile-camouflaged-herbivore",
+            traits = hunter.traits - CommonTrait.MEAT_EATING_MOUTHPARTS + listOf(
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.SWIFT_LIMBS,
+                CommonTrait.MOTION_TRACKING_SENSES,
+                CommonTrait.TERRESTRIAL_CAMOUFLAGE,
+                CommonTrait.SCAVENGING_SENSES,
+                CommonTrait.RESILIENT_DIGESTION,
+            ),
+        )
+        val ecology = EcologyCompiler.compile(listOf(hunter, herbivore))
+        val prey = ecology.species[ecology.speciesIndex(herbivore.id)]
+        listOf(
+            EcoStrategy.AMBUSH_PREDATION,
+            EcoStrategy.PURSUIT_PREDATION,
+            EcoStrategy.SCAVENGING,
+            EcoStrategy.GENERALIST_FORAGING,
+        ).forEach { strategy ->
+            assertTrue(!prey.niche.accesses(strategy), "Herbivore must not gain $strategy access")
+            assertEquals(0.0, prey.niche.supportFor(strategy))
+        }
+        assertEquals(InteractionKind.NONE, ecology.interactions.get(prey.index, ecology.speciesIndex(hunter.id)).kind)
+        assertEquals(InteractionKind.PREDATION, ecology.interactions.get(ecology.speciesIndex(hunter.id), prey.index).kind)
+    }
+
+    @Test
+    fun `meat eating mouthparts enable predation and scavenging without hunting specializations`() {
+        val species = predator("meat-eater").let { it.copy(traits = it.traits - CommonTrait.AMBUSH_MUSCULATURE) }
+        val profile = EcologyCompiler.compile(listOf(species)).species.single().niche
+        listOf(EcoStrategy.AMBUSH_PREDATION, EcoStrategy.PURSUIT_PREDATION, EcoStrategy.SCAVENGING).forEach { strategy ->
+            assertTrue(profile.supports(strategy), "Meat-eating mouthparts enable $strategy")
+        }
+        assertTrue(!profile.accesses(EcoStrategy.GRAZING))
+        assertTrue(!profile.accesses(EcoStrategy.GENERALIST_FORAGING))
+    }
+
+    @Test
+    fun `derived generalist access respects independently authored affinity`() {
+        val omnivore = predator("omnivore").let {
+            it.copy(traits = it.traits + CommonTrait.GRAZING_MOUTHPARTS)
+        }
+        val penalty = EffectTrait(
+            "generalist penalty",
+            "Reduces performance while combining plant and animal feeding.",
+            listOf(TraitEffect.StrategyAffinity(EcoStrategy.GENERALIST_FORAGING, -0.25)),
+        )
+        val penalized = omnivore.copy(id = "penalized", traits = omnivore.traits + penalty)
+        val compiled = EcologyCompiler.compile(listOf(omnivore, penalized)).species
+        assertTrue(compiled[1].niche.accesses(EcoStrategy.GENERALIST_FORAGING))
+        assertEquals(
+            compiled[0].niche.supportFor(EcoStrategy.GENERALIST_FORAGING) - 0.25,
+            compiled[1].niche.supportFor(EcoStrategy.GENERALIST_FORAGING),
+            1.0e-12,
+        )
+    }
+
+    @Test
     fun `habitat access gates independently authored affinity`() {
         val canopyAffinity = EffectTrait(
             displayName = "canopy affinity",
@@ -93,6 +184,9 @@ class EcologyCompilerTest {
         val strategySupport = DoubleArray(EcoStrategy.entries.size).also {
             it[EcoStrategy.GRAZING.ordinal] = 0.60
         }
+        val strategyAccess = BooleanArray(EcoStrategy.entries.size).also {
+            it[EcoStrategy.GRAZING.ordinal] = true
+        }
         val camouflage = DoubleArray(Habitat.entries.size).also {
             it[Habitat.LAND_SURFACE.ordinal] = 0.40
         }
@@ -106,6 +200,7 @@ class EcologyCompilerTest {
             camouflageColor = BiologicalColor.BROWN,
             habitatAccess = habitatAccess,
             habitatSupport = habitatSupport,
+            strategyAccess = strategyAccess,
             strategySupport = strategySupport,
             camouflage = camouflage,
             nicheFit = nicheFit,
@@ -114,12 +209,14 @@ class EcologyCompilerTest {
         habitatSupport[Habitat.LAND_SURFACE.ordinal] = 0.0
         habitatAccess[Habitat.LAND_SURFACE.ordinal] = false
         strategySupport[EcoStrategy.GRAZING.ordinal] = 0.0
+        strategyAccess[EcoStrategy.GRAZING.ordinal] = false
         camouflage[Habitat.LAND_SURFACE.ordinal] = 0.0
         nicheFit[0] = 0.0
 
         assertEquals(0.75, profile.supportFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(Habitat.LAND_SURFACE)` to match `0.75`")
         assertTrue(profile.accesses(Habitat.LAND_SURFACE), message = "Compiled niche profile should own its habitat-access array independently of the compiler's mutable working array")
         assertEquals(0.60, profile.supportFor(EcoStrategy.GRAZING), message = "Compiled niche profile owns its optimized arrays: expected `profile.supportFor(EcoStrategy.GRAZING)` to match `0.60`")
+        assertTrue(profile.accesses(EcoStrategy.GRAZING), "Compiled niche profile owns its strategy-access array")
         assertEquals(0.40, profile.camouflageFor(Habitat.LAND_SURFACE), message = "Compiled niche profile owns its optimized arrays: expected `profile.camouflageFor(Habitat.LAND_SURFACE)` to match `0.40`")
         assertEquals(0.45, profile.fitFor(0), message = "Compiled niche profile owns its optimized arrays: expected `profile.fitFor(0)` to match `0.45`")
     }
@@ -128,7 +225,7 @@ class EcologyCompilerTest {
     fun `traits compile into climate and niche parameters`() {
         val producer = producer(
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
@@ -214,14 +311,15 @@ class EcologyCompilerTest {
     @Test
     fun `specialized senses compile distinct hunting and reproductive benefits`() {
         val ordinary = predator("ordinary-senses").copy(
-            traits = predator("ordinary-senses").traits + CommonTrait.MOTION_TRACKING_SENSES,
+            traits = predator("ordinary-senses").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                CommonTrait.MOTION_TRACKING_SENSES,
         )
         val scent = predator("scent-specialist").copy(
-            traits = predator("scent-specialist").traits +
+            traits = predator("scent-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
                 listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.KEEN_SCENT_SENSE),
         )
         val sight = predator("sight-specialist").copy(
-            traits = predator("sight-specialist").traits +
+            traits = predator("sight-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
                 listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.KEEN_EYESIGHT),
         )
         val prey = predator("sensory-prey", SizeClass.SMALL)
@@ -385,7 +483,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.BUOYANCY_BLADDER,
@@ -498,7 +596,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.VASCULAR_SYSTEM,
@@ -566,7 +664,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.MINUSCULE,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -604,7 +702,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.CLONAL_PROPAGATION,
@@ -627,7 +725,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -655,7 +753,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.AQUATIC_OVOSPORE,
@@ -711,16 +809,16 @@ class EcologyCompilerTest {
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
-                base.copy(traits = base.traits + CommonTrait.SWIFT_LEGS),
+                base.copy(traits = base.traits + CommonTrait.SWIFT_LIMBS),
             ).isEmpty(),
-            message = "Specialized anatomy requires its underlying structure: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.SWIFT_LEGS), ).isEmpty()` to be true",
+            message = "Specialized anatomy requires its underlying structure: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.SWIFT_LIMBS), ).isEmpty()` to be true",
         )
         assertTrue(
             TraitDependencies.unmetRequirements(
                 base.copy(
                     traits = base.traits
-                        .filterNot { it == CommonTrait.WALKING_LIMBS } +
-                        CommonTrait.SWIFT_LEGS,
+                        .filterNot { it == CommonTrait.WALKING_LIMBS || it == CommonTrait.LIMBED_BODY } +
+                        CommonTrait.SWIFT_LIMBS,
                 ),
             ).isNotEmpty(),
             message = "Assertion failed",
@@ -753,7 +851,6 @@ class EcologyCompilerTest {
 
         assertTrue(unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.BEHAVIORAL_THERMOREGULATION).isNotEmpty()` to be true")
         assertTrue(unmet(CommonTrait.SCHOOLING).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.SCHOOLING).isNotEmpty()` to be true")
-        assertTrue(unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.HOST_PENETRATING_FILAMENTS).isNotEmpty()` to be true")
         assertTrue(unmet(CommonTrait.REEF_BUILDING).isNotEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.REEF_BUILDING).isNotEmpty()` to be true")
 
         val ectotherm = terrestrial.copy(
@@ -763,10 +860,6 @@ class EcologyCompilerTest {
                 CommonTrait.BEHAVIORAL_THERMOREGULATION,
         )
         assertTrue(TraitDependencies.unmetRequirements(ectotherm).isEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `TraitDependencies.unmetRequirements(ectotherm).isEmpty()` to be true")
-        assertTrue(
-            unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty(),
-            message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.ABSORPTIVE_FILAMENTS, CommonTrait.HOST_PENETRATING_FILAMENTS).isEmpty()` to be true"
-        )
         assertTrue(
             unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty(),
             message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty()` to be true"
@@ -828,7 +921,7 @@ class EcologyCompilerTest {
         val mismatched = activePredator("mismatched", CommonTrait.NOCTURNAL)
         val prey = predator("day-prey", SizeClass.SMALL).copy(
             traits = predator("day-prey", SizeClass.SMALL).traits
-                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE || it == CommonTrait.MEAT_EATING_MOUTHPARTS } +
                 CommonTrait.GRAZING_MOUTHPARTS +
                 CommonTrait.DIURNAL,
         )
@@ -867,7 +960,7 @@ class EcologyCompilerTest {
         val surfaceAttached = producer(
             "surface-attached-producer",
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.SURFACE_HOLDFAST,
@@ -897,7 +990,7 @@ class EcologyCompilerTest {
             val definition = producer(
                 "${structure.name.lowercase()}-producer",
                 traits = listOf(
-                    CommonTrait.LUNGS,
+                    CommonTrait.TRACHEA,
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     structure,
                     CommonTrait.ROOTED_BODY,
@@ -918,7 +1011,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -946,7 +1039,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -966,6 +1059,7 @@ class EcologyCompilerTest {
         val strongest = ecology.niches[compiled.niche.bestNicheIndex()]
 
         assertEquals(Habitat.LAND_SURFACE, strongest.habitat, message = "Plant and animal feeding adaptations derive a generalist niche: expected `strongest.habitat` to match `Habitat.LAND_SURFACE`")
+        assertTrue(compiled.niche.accesses(EcoStrategy.GENERALIST_FORAGING))
         assertEquals(EcoStrategy.GENERALIST_FORAGING, strongest.strategy, message = "Plant and animal feeding adaptations derive a generalist niche: expected `strongest.strategy` to match `EcoStrategy.GENERALIST_FORAGING`")
         assertEquals(
             InteractionKind.GRAZING,
@@ -1034,7 +1128,7 @@ class EcologyCompilerTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -1215,7 +1309,7 @@ class EcologyCompilerTest {
         val mediumPredator = predator("medium-predator", SizeClass.MEDIUM)
         val smallPrey = predator("small-prey", SizeClass.SMALL).copy(
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -1332,7 +1426,7 @@ class EcologyCompilerTest {
     fun `terrestrial grazers consume the modeled carpet plant population`() {
         val grazer = predator("grazer", SizeClass.SMALL).copy(
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -1399,7 +1493,7 @@ class EcologyCompilerTest {
         )
         val surfacePrey = predator("surface-prey", SizeClass.SMALL).copy(
             traits = predator("surface-prey", SizeClass.SMALL).traits
-                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE || it == CommonTrait.MEAT_EATING_MOUTHPARTS } +
                 CommonTrait.GRAZING_MOUTHPARTS,
         )
         val burrowingPrey = surfacePrey.copy(
@@ -1430,7 +1524,7 @@ class EcologyCompilerTest {
         )
         val borrower = predator("burrow-borrower", SizeClass.SMALL).copy(
             traits = predator("burrow-borrower", SizeClass.SMALL).traits
-                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE || it == CommonTrait.MEAT_EATING_MOUTHPARTS } +
                 CommonTrait.GRAZING_MOUTHPARTS +
                 CommonTrait.BURROW_BORROWER,
         )
@@ -1453,7 +1547,7 @@ class EcologyCompilerTest {
         )
         val preyBase = predator("prey-base", SizeClass.SMALL).copy(
             traits = predator("prey-base", SizeClass.SMALL).traits
-                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE || it == CommonTrait.MEAT_EATING_MOUTHPARTS } +
                 CommonTrait.GRAZING_MOUTHPARTS,
         )
         val chirpingPrey = preyBase.copy(
@@ -1613,7 +1707,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -1621,6 +1715,7 @@ class EcologyCompilerTest {
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,
             ColorTrait.BROWN_COLORATION,
         ),
@@ -1635,7 +1730,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
@@ -1657,7 +1752,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
@@ -1675,7 +1770,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.VIVIPARITY,
@@ -1696,7 +1791,7 @@ class EcologyCompilerTest {
         sizeClass = sizeClass,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
@@ -1704,6 +1799,7 @@ class EcologyCompilerTest {
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SOLITARY,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,
         ),
     )

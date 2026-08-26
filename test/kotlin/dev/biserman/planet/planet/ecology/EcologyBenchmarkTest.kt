@@ -102,7 +102,7 @@ private class BenchmarkScenario(
                         sizeClass = SizeClass.entries[index % 4],
                         motile = false,
                         traits = listOf(
-                            CommonTrait.LUNGS,
+                            CommonTrait.TRACHEA,
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
                             CommonTrait.TERRESTRIAL_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -162,7 +162,7 @@ private class BenchmarkScenario(
                 EcoStrategy.GRAZING -> CommonTrait.GRAZING_MOUTHPARTS
                 EcoStrategy.AMBUSH_PREDATION -> CommonTrait.AMBUSH_MUSCULATURE
                 EcoStrategy.SCAVENGING -> CommonTrait.SCAVENGING_SENSES
-                EcoStrategy.DECOMPOSITION -> CommonTrait.DETRITUS_DIGESTIVE_TRACT
+                EcoStrategy.DECOMPOSITION -> CommonTrait.DECOMPOSING_ENZYMES
                 EcoStrategy.COPROPHAGY -> CommonTrait.WASTE_FEEDING_MOUTHPARTS
                 else -> error("Unsupported land benchmark strategy")
             }
@@ -172,7 +172,7 @@ private class BenchmarkScenario(
                 sizeClass = SizeClass.entries[2 + index % 4],
                 motile = true,
                 traits = listOf(
-                    CommonTrait.LUNGS,
+                    CommonTrait.TRACHEA,
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     if (index % 2 == 0) CommonTrait.ECTOTHERMY else CommonTrait.ENDOTHERMY,
                     CommonTrait.SOLITARY,
@@ -182,7 +182,11 @@ private class BenchmarkScenario(
                     CommonTrait.WALKING_LIMBS,
                     strategyTrait,
                     ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
-                ),
+                ) + if (strategy == EcoStrategy.AMBUSH_PREDATION || strategy == EcoStrategy.SCAVENGING) {
+                    listOf(CommonTrait.MEAT_EATING_MOUTHPARTS)
+                } else {
+                    emptyList()
+                },
             )
         }
 
@@ -192,7 +196,7 @@ private class BenchmarkScenario(
                 EcoStrategy.GRAZING -> CommonTrait.GRAZING_MOUTHPARTS
                 EcoStrategy.AMBUSH_PREDATION -> CommonTrait.AMBUSH_MUSCULATURE
                 EcoStrategy.DEPOSIT_FEEDING -> CommonTrait.MARINE_SNOW_COLLECTORS
-                EcoStrategy.DECOMPOSITION -> CommonTrait.DETRITUS_DIGESTIVE_TRACT
+                EcoStrategy.DECOMPOSITION -> CommonTrait.DECOMPOSING_ENZYMES
                 else -> error("Unsupported ocean benchmark strategy")
             }
             return SpeciesDefinition(
@@ -209,7 +213,11 @@ private class BenchmarkScenario(
                     CommonTrait.GILLS,
                     strategyTrait,
                     ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
-                ),
+                ) + if (strategy == EcoStrategy.AMBUSH_PREDATION || strategy == EcoStrategy.SCAVENGING) {
+                    listOf(CommonTrait.MEAT_EATING_MOUTHPARTS)
+                } else {
+                    emptyList()
+                },
             )
         }
 

@@ -36,7 +36,7 @@ enum class EcoStrategy(
     ),
     GENERALIST_FORAGING(
         "generalist-foraging",
-        setOf(Habitat.LAND_SURFACE, Habitat.CANOPY, Habitat.FRESHWATER, Habitat.COASTAL, Habitat.SHALLOW_OCEAN, Habitat.OPEN_OCEAN),
+        setOf(Habitat.LAND_SURFACE, Habitat.CANOPY, Habitat.FRESHWATER, Habitat.COASTAL, Habitat.SHALLOW_OCEAN, Habitat.DARK_WATER),
     ),
     AMBUSH_PREDATION(
         "ambush-predation",
@@ -98,13 +98,8 @@ enum class EcoStrategy(
         setOf(Habitat.COASTAL, Habitat.SHALLOW_OCEAN, Habitat.DARK_WATER),
     ),
     PARASITISM("parasitism", Habitat.entries.toSet()),
-    ABSORPTION(
-        "absorption",
-        setOf(Habitat.LAND_SURFACE, Habitat.FRESHWATER, Habitat.COASTAL, Habitat.DARK_WATER),
-    ),
 
-    // Keep new strategies at the end: niche indices are persisted in saved
-    // tile communities and therefore depend on enum order.
+    // Saves identify strategies by name; compiled niche indices are rebuilt on load.
     NECTAR_FEEDING(
         "nectar-feeding",
         setOf(Habitat.LAND_SURFACE, Habitat.CANOPY, Habitat.AERIAL),
@@ -156,6 +151,5 @@ enum class EcoStrategy(
         COPROPHAGY -> environment.resources.waste
         DEPOSIT_FEEDING -> environment.resources.marineSnow
         PARASITISM -> 0.15
-        ABSORPTION -> environment.fertility * environment.waterAvailability
     }.coerceIn(0.0, 1.0)
 }

@@ -195,7 +195,7 @@ class EcologyExperimentsTest {
         sizeClass = SizeClass.SMALL,
         motile = false,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -213,7 +213,7 @@ class EcologyExperimentsTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.HETEROTHERMY,
             CommonTrait.SOLITARY,
@@ -233,7 +233,7 @@ class EcologyExperimentsTest {
         sizeClass = SizeClass.LARGE,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
@@ -241,6 +241,7 @@ class EcologyExperimentsTest {
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             ColorTrait.BROWN_COLORATION,
@@ -253,7 +254,7 @@ class EcologyExperimentsTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
@@ -261,6 +262,7 @@ class EcologyExperimentsTest {
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.SCAVENGING_SENSES,
             ColorTrait.BLACK_COLORATION,
         ),

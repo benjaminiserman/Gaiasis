@@ -8,6 +8,7 @@ import dev.biserman.planet.planet.ecology.SizeClass
 val amphibian = EarthSpeciesCatalog.animal(
     "amphibian",
     SizeClass.TINY,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.ECTOTHERMY,
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.FRESHWATER_OSMOREGULATION,

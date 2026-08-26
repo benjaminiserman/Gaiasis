@@ -15,7 +15,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = buildList {
-                add(CommonTrait.LUNGS)
+                add(CommonTrait.TRACHEA)
                 add(CommonTrait.VASCULAR_SYSTEM)
                 add(CommonTrait.LIMBED_BODY)
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
@@ -122,7 +122,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.TINY,
             motile = true,
             traits = listOfNotNull(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -142,7 +142,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -150,6 +150,7 @@ class EcologyRuntimeTest {
                 CommonTrait.VASCULAR_SYSTEM,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
+                CommonTrait.MEAT_EATING_MOUTHPARTS,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 ColorTrait.BROWN_COLORATION,
             ),
@@ -488,7 +489,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = false,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.ROOTED_BODY,
@@ -501,7 +502,7 @@ class EcologyRuntimeTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -534,6 +535,25 @@ class EcologyRuntimeTest {
 
         assertTrue(fluxes.detritusConsumedBiomass > 0.0, message = "Recyclers emit consumption flux for detritus and waste: expected `fluxes.detritusConsumedBiomass > 0.0` to be true")
         assertTrue(fluxes.wasteConsumedBiomass > 0.0, message = "Recyclers emit consumption flux for detritus and waste: expected `fluxes.wasteConsumedBiomass > 0.0` to be true")
+    }
+
+    @Test
+    fun `fungi need detritus rather than fertile wet soil alone`() {
+        val fungus = EarthSpeciesCatalog.ALL.single { it.id == "field-mushroom" }
+        val ecology = EcologyCompiler.compile(listOf(fungus))
+        fun survives(detritus: Double): Boolean {
+            val environment = landEnvironment().withResources(FunctionalResources(detritus = detritus))
+            val niche = NicheSelection.choose(ecology.species.single(), ecology, environment)
+            assertTrue(niche >= 0)
+            assertEquals(EcoStrategy.DECOMPOSITION, ecology.niches[niche].strategy)
+            val community = TileCommunity().also { it.add(0, niche, activeBiomass = 100_000.0) }
+            val runtime = EcologyRuntime(ecology)
+            repeat(400) { runtime.advanceSeason(community, environment) }
+            return community.find(0) >= 0
+        }
+
+        assertFalse(survives(0.0), "Fertility and water alone must not sustain a decomposer")
+        assertTrue(survives(0.80), "An organic food source should sustain the decomposer")
     }
 
     @Test
@@ -645,21 +665,23 @@ class EcologyRuntimeTest {
     }
 
     @Test
-    fun `large predator becomes locally extinct after its last modeled prey disappears`() {
+    fun `large predator needs modeled prey or carrion to persist`() {
         val ecology = EcologyCompiler.compile(listOf(landProducer(), grazer(), predator()))
-        val community = community(ecology, listOf(0, 1, 2))
-        val runtime = EcologyRuntime(ecology)
-        val environment = landEnvironment()
-
-        val grazerIndex = community.find(1)
-        assertTrue(grazerIndex >= 0, message = "Large predator becomes locally extinct after its last modeled prey disappears: expected `grazerIndex >= 0` to be true")
-        community.removeAt(grazerIndex)
-
-        repeat(400) {
-            runtime.advanceSeason(community, environment)
+        fun survives(carrion: Double): Boolean {
+            val community = community(ecology, listOf(0, 1, 2))
+            val runtime = EcologyRuntime(ecology)
+            val environment = landEnvironment(carrion = carrion)
+            val grazerIndex = community.find(1)
+            assertTrue(grazerIndex >= 0)
+            community.removeAt(grazerIndex)
+            repeat(400) {
+                runtime.advanceSeason(community, environment)
+            }
+            return community.find(2) >= 0
         }
 
-        assertEquals(-1, community.find(2), message = "Large predator becomes locally extinct after its last modeled prey disappears: expected `community.find(2)` to match `-1`")
+        assertFalse(survives(0.0), "Without modeled prey or carrion the predator must starve")
+        assertTrue(survives(0.30), "Meat-eating mouthparts permit scavenging after modeled prey disappears")
     }
 
     @Test
@@ -717,7 +739,7 @@ class EcologyRuntimeTest {
         sizeClass = sizeClass,
         motile = false,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -749,7 +771,7 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
@@ -769,7 +791,7 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.LARGE,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
@@ -777,6 +799,7 @@ class EcologyRuntimeTest {
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
             ColorTrait.BROWN_COLORATION,
@@ -789,7 +812,7 @@ class EcologyRuntimeTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,
@@ -797,6 +820,7 @@ class EcologyRuntimeTest {
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.SCAVENGING_SENSES,
             ColorTrait.BLACK_COLORATION,
         ),
@@ -805,6 +829,7 @@ class EcologyRuntimeTest {
     private fun landEnvironment(
         temperatureC: Double = 21.0,
         elevationM: Double = 0.0,
+        carrion: Double = 0.30,
     ) =
         SeasonalCellEnvironment.create(
             areaKm2 = 40_000.0,
@@ -816,7 +841,7 @@ class EcologyRuntimeTest {
             surfaceFertilityModifier = 0.7,
             isLand = true,
             resources = FunctionalResources(
-                carrion = 0.30,
+                carrion = carrion,
             ),
         )
 

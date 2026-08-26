@@ -218,7 +218,7 @@ class EcologyMovementTest {
         sizeClass = SizeClass.SMALL,
         motile = false,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -234,7 +234,7 @@ class EcologyMovementTest {
         sizeClass = SizeClass.MEDIUM,
         motile = true,
         traits = listOf(
-            CommonTrait.LUNGS,
+            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SOLITARY,

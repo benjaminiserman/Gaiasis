@@ -100,12 +100,14 @@ class NicheProfile internal constructor(
     val camouflageColor: BiologicalColor?,
     habitatAccess: BooleanArray,
     habitatSupport: DoubleArray,
+    strategyAccess: BooleanArray,
     strategySupport: DoubleArray,
     camouflage: DoubleArray,
     nicheFit: DoubleArray,
 ) {
     private val habitatAccess = habitatAccess.copyOf()
     private val habitatSupport = habitatSupport.copyOf()
+    private val strategyAccess = strategyAccess.copyOf()
     private val strategySupport = strategySupport.copyOf()
     private val camouflage = camouflage.copyOf()
     private val nicheFit = nicheFit.copyOf()
@@ -120,6 +122,10 @@ class NicheProfile internal constructor(
     fun supports(habitat: Habitat): Boolean = accesses(habitat) && supportFor(habitat) > 0.0
 
     fun supportFor(strategy: EcoStrategy): Double = strategySupport[strategy.ordinal]
+
+    fun accesses(strategy: EcoStrategy): Boolean = strategyAccess[strategy.ordinal]
+
+    fun supports(strategy: EcoStrategy): Boolean = accesses(strategy) && supportFor(strategy) > 0.0
 
     fun camouflageFor(habitat: Habitat): Double = camouflage[habitat.ordinal]
 

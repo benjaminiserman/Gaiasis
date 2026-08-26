@@ -44,6 +44,34 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
+    fun `feeding anatomy preserves prey identity and their predator food links`() {
+        fun compiled(id: String) = compiledCatalog.species[compiledCatalog.speciesIndex(id)]
+        val definitions = EarthSpeciesCatalog.ALL.associateBy { it.id }
+        listOf("thomsons-gazelle", "blue-wildebeest", "plains-zebra", "crabeater-seal").forEach { id ->
+            assertTrue(CommonTrait.MEAT_EATING_MOUTHPARTS !in definitions.getValue(id).traits)
+            listOf(EcoStrategy.AMBUSH_PREDATION, EcoStrategy.PURSUIT_PREDATION).forEach { strategy ->
+                assertTrue(!compiled(id).niche.accesses(strategy), "$id must remain prey despite speed or camouflage")
+                assertEquals(0.0, compiled(id).niche.supportFor(strategy))
+            }
+        }
+        listOf("african-lion", "cheetah", "weddell-seal", "turkey-vulture").forEach { id ->
+            assertTrue(CommonTrait.MEAT_EATING_MOUTHPARTS in definitions.getValue(id).traits)
+            assertTrue(compiled(id).niche.supports(EcoStrategy.SCAVENGING))
+        }
+        listOf(
+            "african-lion" to "blue-wildebeest",
+            "african-lion" to "plains-zebra",
+            "weddell-seal" to "crabeater-seal",
+        ).forEach { (hunter, prey) ->
+            assertEquals(
+                InteractionKind.PREDATION,
+                compiledCatalog.interactions.get(compiled(hunter).index, compiled(prey).index).kind,
+                "$hunter retains its modeled food link to $prey",
+            )
+        }
+    }
+
+    @Test
     fun `catalog assigns structural anatomy rather than generic locomotion outcomes`() {
         val species = (EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES).associateBy { it.id }
 
@@ -85,7 +113,7 @@ class EarthSpeciesCatalogTest {
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WALKING_LIMBS in species.getValue(\"cheetah\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.SWIFT_LEGS in species.getValue("cheetah").traits,
+            CommonTrait.SWIFT_LIMBS in species.getValue("cheetah").traits,
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.SWIFT_LEGS in species.getValue(\"cheetah\").traits` to be true"
         )
         assertTrue(
@@ -864,9 +892,9 @@ class EarthSpeciesCatalogTest {
         val cheetah = EarthSpeciesCatalog.ALL.single { it.id == "cheetah" }
         val gazelle = EarthSpeciesCatalog.ALL.single { it.id == "thomsons-gazelle" }
 
-        assertTrue(CommonTrait.SWIFT_LEGS in cheetah.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in cheetah.traits` to be true")
+        assertTrue(CommonTrait.SWIFT_LIMBS in cheetah.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in cheetah.traits` to be true")
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES in cheetah.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.MOTION_TRACKING_SENSES in cheetah.traits` to be true")
-        assertTrue(CommonTrait.SWIFT_LEGS in gazelle.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in gazelle.traits` to be true")
+        assertTrue(CommonTrait.SWIFT_LIMBS in gazelle.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in gazelle.traits` to be true")
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES !in gazelle.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.MOTION_TRACKING_SENSES !in gazelle.traits` to be true")
 
         val compiledGazelle = EcologyCompiler.compile(listOf(gazelle)).species.single()
@@ -878,11 +906,11 @@ class EarthSpeciesCatalogTest {
 
         val slowCheetah = cheetah.copy(
             id = "slow-cheetah",
-            traits = cheetah.traits - CommonTrait.SWIFT_LEGS,
+            traits = cheetah.traits - CommonTrait.SWIFT_LIMBS,
         )
         val slowGazelle = gazelle.copy(
             id = "slow-gazelle",
-            traits = gazelle.traits - CommonTrait.SWIFT_LEGS,
+            traits = gazelle.traits - CommonTrait.SWIFT_LIMBS,
         )
         val swiftHunterAgainstSlowPrey = predationRate(cheetah, slowGazelle)
         val slowHunterAgainstSlowPrey = predationRate(slowCheetah, slowGazelle)

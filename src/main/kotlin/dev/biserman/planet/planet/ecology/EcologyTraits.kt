@@ -88,6 +88,7 @@ enum class AcousticSignal {
     TRILL,
     WHISTLE,
     CLICK,
+    BUZZ,
     CHIRP,
     MEOW,
     PURR,
@@ -308,6 +309,7 @@ enum class ColorTrait(
     BLUE_COLORATION("blue coloration", "Blue pigments conceal the body in blue-lit environments.", TraitEffect.CamouflageColor(BiologicalColor.BLUE)),
     RED_COLORATION("red coloration", "Red pigments conceal or signal where longer wavelengths dominate.", TraitEffect.CamouflageColor(BiologicalColor.RED)),
     PURPLE_COLORATION("purple coloration", "Purple pigments conceal or signal against similarly colored surroundings.", TraitEffect.CamouflageColor(BiologicalColor.PURPLE)),
+    YELLOW_COLORATION("yellow coloration", "High-saturation yellow pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.YELLOW)),
     PALE_COLORATION("pale coloration", "Low-saturation pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.PALE), maintenanceCost = -0.06),
     WHITE_COLORATION("white coloration", "White tissues, hairs, or feathers conceal the body against snow and ice.", TraitEffect.CamouflageColor(BiologicalColor.WHITE)),
     COUNTERSHADE_COLORATION("countershading", "A dark upper surface and light underside reduce contrast in sunlit water.", TraitEffect.CamouflageColor(BiologicalColor.COUNTERSHADE)),
@@ -328,6 +330,7 @@ enum class ColorTrait(
     BLUE_PHOTOSYNTHETIC_PIGMENTS("blue photosynthetic pigments", "Blue photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.BLUE)),
     RED_PHOTOSYNTHETIC_PIGMENTS("red photosynthetic pigments", "Red photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.RED)),
     PURPLE_PHOTOSYNTHETIC_PIGMENTS("purple photosynthetic pigments", "Purple photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PURPLE)),
+    YELLOW_PHOTOSYNTHETIC_PIGMENTS("yellow photosynthetic pigments", "Yellow photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.YELLOW)),
     PALE_PHOTOSYNTHETIC_PIGMENTS("pale photosynthetic pigments", "Sparse photosynthetic pigments trade light capture for lower tissue investment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PALE)),
     WHITE_PHOTOSYNTHETIC_PIGMENTS("white photosynthetic pigments", "Reflective photosynthetic tissues limit excess light absorption.", TraitEffect.PhotosyntheticColor(BiologicalColor.WHITE)),
     ADAPTIVE_PHOTOSYNTHETIC_PIGMENTS("adaptive photosynthetic pigments", "Pigment concentrations shift to match changing light spectra.", TraitEffect.PhotosyntheticColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.24),
@@ -593,7 +596,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06)
         ),
         group = TraitGroup.BODY_TYPE,
-        capabilities = setOf(TraitCapability.LOCOMOTION),
         requirements = listOf(TraitRequirement.anyOf(VASCULAR_SYSTEM))
     ),
     UNDULATING_BODY(
@@ -606,7 +608,6 @@ enum class CommonTrait(
         group = TraitGroup.BODY_TYPE,
         capabilities = setOf(
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-            TraitCapability.BURROW_EXCAVATION,
         ),
     ),
     GELATINOUS_BODY(
@@ -625,7 +626,7 @@ enum class CommonTrait(
         "A mouth surrounded by flexible feeding structures projects from an attached body that can withdraw or contract when disturbed.",
         listOf(
             TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.3),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.24),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.24),
             TraitEffect.CaptureAbility(0.06),
             TraitEffect.MaintenanceCost(0.15),
         ),
@@ -637,7 +638,6 @@ enum class CommonTrait(
         "True roots penetrate terrestrial substrate, anchoring the body while gathering water and dissolved nutrients.",
         listOf(
             TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.65),
-            TraitEffect.StrategySupport(EcoStrategy.ABSORPTION, 0.25),
             TraitEffect.MaintenanceCost(0.09),
         ),
         group = TraitGroup.BODY_TYPE,
@@ -761,7 +761,7 @@ enum class CommonTrait(
         "drought-deciduous leaves",
         "Photosynthetic surfaces are shed during dry seasons and regrown when water becomes available.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.0),
+            TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.0),
             TraitEffect.WaterRequirement(-0.12),
             TraitEffect.Dormancy(DormancyKind.DROUGHT_DECIDUOUS, 0.999),
             TraitEffect.ReproductionMultiplier(0.92),
@@ -875,8 +875,8 @@ enum class CommonTrait(
     ),
 
     // Respiration
-    LUNGS(
-        "lungs",
+    TRACHEA(
+        "trachea",
         "Internal air-filled exchange surfaces extract respiratory gases from the atmosphere and deliver them to the body.",
         listOf(
             TraitEffect.MaintenanceCost(0.09),
@@ -1235,7 +1235,7 @@ enum class CommonTrait(
         "Reinforced limbs rapidly excavate soil, tear apart nests, and expose concealed food.",
         listOf(
             TraitEffect.HabitatAccess(Habitat.UNDERGROUND, 0.15),
-            TraitEffect.StrategySupport(EcoStrategy.COLONY_RAIDING, 0.15),
+            TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.15),
             TraitEffect.CaptureAbility(0.05),
             TraitEffect.MaintenanceCost(0.15),
         ),
@@ -1361,7 +1361,20 @@ enum class CommonTrait(
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
-            TraitCapability.TERRESTRIAL_LOCOMOTION,
+        ),
+    ),
+    WEAK_WINGS(
+        "weak wings",
+        "Paired aerodynamic surfaces weakly generate lift and thrust through active wingbeats.",
+        listOf(
+            TraitEffect.HabitatAccess(HabitatGroup.FLYING, 0.2),
+            TraitEffect.PursuitSpeed(0.15),
+            TraitEffect.CaptureAbility(0.08),
+            TraitEffect.MaintenanceCost(0.3),
+        ),
+        group = TraitGroup.FLIGHT_STRUCTURE,
+        capabilities = setOf(
+            TraitCapability.LOCOMOTION,
         ),
     ),
     FLIGHTLESS_WINGS(
@@ -1448,13 +1461,18 @@ enum class CommonTrait(
     ),
     STREAMLINED_PHYSIQUE(
         "streamlined physique",
-        "A smooth tapered profile reduces drag during sustained swimming, helping hunters close distance and prey escape pursuit.",
+        "A smooth tapered profile reduces drag during sustained swimming or flying, helping hunters close distance and prey escape pursuit.",
         listOf(
             TraitEffect.PursuitSpeed(0.18),
             TraitEffect.MaintenanceCost(0.09),
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.AERIAL, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, -0.2)
         ),
         requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION),
+            TraitRequirement.anyOf(TraitCapability.AQUATIC_LOCOMOTION, WINGS),
+            TraitRequirement.sizeClassAtLeast(SizeClass.SMALL)
         ),
         group = TraitGroup.BODY_PHYSIQUE,
     ),
@@ -1472,6 +1490,18 @@ enum class CommonTrait(
         ),
         group = TraitGroup.BODY_PHYSIQUE,
     ),
+    SEGMENTED_PHYSIQUE(
+        "segmented physique",
+        "A body with a distinctive, narrow, or thin segmented structure can easily adapt its length and aid in digging.",
+        listOf(
+            TraitEffect.BodyMassMultiplier(0.5),
+            TraitEffect.PursuitSpeed(-0.1),
+            TraitEffect.HabitatAccess(Habitat.UNDERGROUND, 0.25),
+            TraitEffect.MaintenanceCost(0.075),
+        ),
+        capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
+        group = TraitGroup.BODY_PHYSIQUE
+    ),
 
     // Basic structural traits
     SURFACE_HOLDFAST(
@@ -1480,7 +1510,6 @@ enum class CommonTrait(
         listOf(
             TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.6),
             TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
-            TraitEffect.StrategySupport(EcoStrategy.ABSORPTION, 0.22),
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.075),
         ),
@@ -1552,7 +1581,18 @@ enum class CommonTrait(
     EYES(
         "eyes",
         "Light-sensitive visual organs detect shapes, movement, brightness, and color in the surrounding environment.",
-        listOf(TraitEffect.MaintenanceCost(0.06)),
+        listOf(
+            TraitEffect.Sensing(0.01),
+            TraitEffect.MaintenanceCost(0.06)
+        ),
+    ),
+    ANTENNAE(
+        "antennae",
+        "Large, specialized, or highly specialized antennae provide a wide range of information about the environment and the animal's surroundings.",
+        listOf(
+            TraitEffect.Sensing(0.02),
+            TraitEffect.MaintenanceCost(0.05)
+        ),
     ),
     BEAK(
         "beak",
@@ -1585,7 +1625,6 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.08),
             TraitEffect.MaintenanceCost(0.06)
         ),
-        requirements = listOf(TraitRequirement.allOf(TEETH)),
     ),
     SERRATED_TEETH(
         "serrated teeth",
@@ -1610,7 +1649,7 @@ enum class CommonTrait(
         "protrusible jaw",
         "The jaws project rapidly away from the skull, extending reach and drawing nearby prey into the mouth.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.18),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.18),
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.15),
         ),
@@ -1657,8 +1696,8 @@ enum class CommonTrait(
         "crushing pincers",
         "Opposed hardened pincers crack shells, cut plant tissue, and restrain struggling prey.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.10),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.12),
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.10),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.12),
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.21),
         ),
@@ -1911,7 +1950,7 @@ enum class CommonTrait(
             TraitEffect.ElevationToleranceShift(2_500.0),
             TraitEffect.MaintenanceCost(0.27),
         ),
-        requirements = listOf(TraitRequirement.anyOf(LUNGS))
+        requirements = listOf(TraitRequirement.anyOf(TRACHEA))
     ),
     HIGH_AFFINITY_BLOOD(
         "high-affinity blood",
@@ -1932,12 +1971,1008 @@ enum class CommonTrait(
         ),
     ),
 
+    // Sense traits
+    MOTION_TRACKING_SENSES(
+        "motion-tracking senses",
+        "Vision, hearing, scent, vibration detection, or equivalent senses allow a hunter to follow moving prey through a sustained chase.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.2),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.1),
+            TraitEffect.Sensing(0.06),
+            TraitEffect.CaptureAbility(0.06),
+            TraitEffect.MaintenanceCost(0.25),
+        ),
+    ),
+    KEEN_SCENT_SENSE(
+        "keen sense of smell",
+        "A large, sensitive chemical-sensing system follows faint trails, detects concealed threats, and helps individuals locate distant mates.",
+        listOf(
+            TraitEffect.Sensing(0.08),
+            TraitEffect.ReproductionMultiplier(1.05),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.SCENT_ACUITY,
+    ),
+    POOR_SCENT_SENSE(
+        "poor sense of smell",
+        "Reduced chemical sensitivity makes it harder to follow faint trails, detect concealed threats, and locate distant mates.",
+        listOf(
+            TraitEffect.Sensing(-0.12),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(-0.15),
+        ),
+        group = TraitGroup.SCENT_ACUITY,
+    ),
+    KEEN_HEARING(
+        "keen hearing",
+        "Sensitive auditory organs and neural processing locate faint or distant sounds, including concealed threats, and distinguish them from background noise.",
+        listOf(
+            TraitEffect.Sensing(0.08),
+            TraitEffect.CaptureAbility(0.03),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        group = TraitGroup.HEARING_ACUITY,
+    ),
+    POOR_HEARING(
+        "poor hearing",
+        "Reduced auditory sensitivity makes it harder to detect faint sounds and to distinguish useful signals from background noise.",
+        listOf(
+            TraitEffect.Sensing(-0.08),
+            TraitEffect.CaptureAbility(-0.03),
+            TraitEffect.MaintenanceCost(-0.12),
+        ),
+        group = TraitGroup.HEARING_ACUITY,
+    ),
+    KEEN_EYESIGHT(
+        "keen eyesight",
+        "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
+        listOf(
+            TraitEffect.Sensing(0.08),
+            TraitEffect.CaptureAbility(0.05),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.VISION_ACUITY,
+    ),
+    POOR_VISION(
+        "poor vision",
+        "Low-resolution visual organs make it harder to recognize prey and other important targets at range or against cluttered backgrounds.",
+        listOf(
+            TraitEffect.Sensing(-0.08),
+            TraitEffect.CaptureAbility(-0.05),
+            TraitEffect.MaintenanceCost(-0.15),
+        ),
+        group = TraitGroup.VISION_ACUITY,
+    ),
+    ECHOLOCATION(
+        "echolocation",
+        "The organism emits sound and reconstructs nearby surfaces and moving prey from returning echoes.",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.15),
+            TraitEffect.CaptureAbility(0.20),
+            TraitEffect.MaintenanceCost(0.27),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(KEEN_HEARING),
+        ),
+    ),
+    ELECTRORECEPTION(
+        "electroreception",
+        "Sensitive organs detect the weak electrical fields produced by hidden or moving organisms in water.",
+        listOf(
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.1),
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, 0.2),
+            TraitEffect.CaptureAbility(0.18),
+            TraitEffect.MaintenanceCost(0.21),
+            TraitEffect.Sensing(0.1)
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
+        )
+    ),
+
+    // Sonic traits
+    HOWLING_CALL(
+        "howling call",
+        "Long-range group calls coordinate dispersed pack members and advertise an occupied range.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.05),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        acousticSignal = AcousticSignal.HOWL,
+    ),
+    SONG_CALL(
+        "song call",
+        "Long, patterned vocalizations carry identity, contact, and reproductive information through open water.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.SONG,
+    ),
+    RATTLING_WARNING(
+        "rattling warning",
+        "A specialized vibrating structure produces a conspicuous warning that discourages accidental encounters with large animals.",
+        listOf(
+            TraitEffect.Defense(0.10),
+            TraitEffect.ReproductionMultiplier(0.98),
+            TraitEffect.MaintenanceCost(0.09),
+        ),
+        acousticSignal = AcousticSignal.RATTLE,
+    ),
+    ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.ROAR),
+    TRUMPETING_CALL("trumpeting call", "A loud trumpet communicates alarm, excitement, and identity between social group members.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRUMPET),
+    BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BELLOW),
+    BLEATING_CALL("bleating call", "A nasal bleat maintains contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BLEAT),
+    GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GRUNT),
+    HONKING_CALL("honking call", "A loud honk maintains contact within a flock and during coordinated flight.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HONK),
+    BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUGLE),
+    CROAKING_CALL("croaking call", "Repeated croaks advertise identity and reproductive readiness near breeding sites.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROAK),
+    BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BRAY),
+    HOOTING_CALL("hooting call", "Resonant hoots carry identity and location through forests or darkness.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HOOT),
+    BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BARK),
+    GROWLING_CALL("growling call", "A low rough vocal warning signals agitation and readiness for close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GROWL),
+    SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.SCREECH),
+    QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
+    CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
+    TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
+    WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.WHISTLE),
+    CLICKING_CALL("clicking call", "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CLICK),
+    BUZZING_CALL("buzzing call", "A sustained buzzing signal communicates presence, contact, or reproductive readiness at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUZZ),
+    CHIRPING_CALL(
+        "chirping call",
+        "Short high-pitched calls maintain contact between companions, parents, and young.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.CHIRP,
+    ),
+    MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
+    PURRING_CALL("purring call", "A quiet rhythmic vibration communicates close-range social state and contentment.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.PURR),
+    HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
+    IMITATIVE_VOCALIZATION("imitative vocalization", "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.", emptyList(), isCosmetic = true),
+    BOOMING_CALL(
+        "booming call",
+        "A resonant low-frequency display call carries between widely separated potential mates.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.04),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        acousticSignal = AcousticSignal.BOOM,
+    ),
+    DRUMMING_DISPLAY(
+        "drumming display",
+        "Repeated impacts against a resonant surface create a long-range territorial and courtship signal.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+    ),
+    WHOOPING_CALL(
+        "whooping call",
+        "Long-range whoops recruit and coordinate members of a dispersed social hunting group.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.03),
+            TraitEffect.Defense(0.02),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        acousticSignal = AcousticSignal.WHOOP,
+    ),
+    COMPLEX_VOCALIZATIONS(
+        "complex vocalizations",
+        "A diverse repertoire of individually distinctive calls coordinates a complex mobile social group.",
+        listOf(
+            TraitEffect.Defense(0.03),
+            TraitEffect.ReproductionMultiplier(1.02),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(TraitRequirement.HasAcousticSignal),
+    ),
+    SOUND_LURES(
+        "sound lures",
+        "Familiar calls are imitated or repurposed to draw acoustically responsive prey into striking distance.",
+        listOf(
+            TraitEffect.SoundLureCaptureBonus(0.22),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(TraitRequirement.HasAcousticSignal),
+    ),
+
+    // Defensive traits
+    SILENT_MOVEMENT(
+        "silent movement",
+        "Silent movement allows creatures to avoid being noticed, and also improves the ability to ambush and capture prey.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.5),
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.Defense(0.04),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        requirements = listOf(TraitRequirement.SizeClassAtLeast(SizeClass.SMALL))
+    ),
+    TERRESTRIAL_CAMOUFLAGE(
+        "terrestrial camouflage",
+        "Body colors and markings break up the organism's outline against soil, vegetation, bark, or other terrestrial backgrounds.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.36),
+            TraitEffect.Camouflage(Habitat.LAND_SURFACE, 0.20),
+            TraitEffect.Camouflage(Habitat.CANOPY, 0.18),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    AQUATIC_CAMOUFLAGE(
+        "aquatic camouflage",
+        "Body colors and markings obscure the organism against open water, reefs, vegetation, or the dim seafloor.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.36),
+            TraitEffect.Camouflage(Habitat.COASTAL, 0.20),
+            TraitEffect.Camouflage(Habitat.SHALLOW_OCEAN, 0.18),
+            TraitEffect.Camouflage(Habitat.OPEN_OCEAN, 0.18),
+            TraitEffect.Camouflage(Habitat.DARK_WATER, 0.16),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    APOSEMATIC_COLORATION(
+        "aposematic coloration",
+        "Conspicuous colors advertise a dangerous or distasteful organism—or mimic another local organism carrying the same warning colors.",
+        listOf(
+            TraitEffect.AposematicColoration,
+            TraitEffect.MaintenanceCost(0.09),
+        ),
+    ),
+    AUTOTOMY(
+        "autotomy",
+        "The organism deliberately sheds a trapped or attacked appendage, escaping at the cost of lost tissue and function.",
+        listOf(
+            TraitEffect.Defense(0.12),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION))
+    ),
+    INFLATABLE_BODY(
+        "inflatable body",
+        "The body rapidly expands with water or air, making the organism harder to swallow while temporarily limiting movement.",
+        listOf(
+            TraitEffect.Defense(0.24),
+            TraitEffect.PursuitSpeed(-0.10),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
+    ARMORED_HIDE(
+        "armored hide",
+        "Thick skin reinforced with plates or embedded bone resists bites, claws, and impacts.",
+        listOf(
+            TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
+            TraitEffect.Defense(0.34),
+            TraitEffect.CaptureAbility(-0.07),
+            TraitEffect.ReproductionMultiplier(0.92),
+            TraitEffect.MaintenanceCost(0.24),
+            TraitEffect.BodyMassMultiplier(1.2)
+        ),
+    ),
+    REINFORCED_HIDE(
+        "reinforced hide",
+        "Dense, unusually tough skin beneath a fur coat resists tearing, punctures, and twisting bites without forming rigid armor.",
+        listOf(
+            TraitEffect.Defense(0.18),
+            TraitEffect.CaptureAbility(-0.02),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.BodyMassMultiplier(1.1)
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(FUR),
+        ),
+    ),
+    PROTECTIVE_SHELL(
+        "protective shell",
+        "A rigid external shell encloses vulnerable tissues and can withstand crushing or abrasion.",
+        listOf(
+            TraitEffect.Defense(0.46),
+            TraitEffect.CaptureAbility(-0.14),
+            TraitEffect.ReproductionMultiplier(0.86),
+            TraitEffect.MaintenanceCost(0.3),
+        ),
+    ),
+    SPINES(
+        "defensive quills",
+        "Long rigid hairs or spines make biting and grappling dangerous.",
+        listOf(
+            TraitEffect.Defense(0.32),
+            TraitEffect.CaptureAbility(-0.08),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
+    TOXIC_SKIN(
+        "toxic skin",
+        "Skin glands or accumulated compounds make the organism poisonous or intensely distasteful.",
+        listOf(
+            TraitEffect.Defense(0.28),
+            TraitEffect.ReproductionMultiplier(0.93),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+    ),
+    SLIMY_SKIN(
+        "slimy skin",
+        "Skin glands or accumulated compounds make the organism moderately distasteful or difficult to grasp.",
+        listOf(
+            TraitEffect.Defense(0.06),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.09),
+        ),
+    ),
+    INK_CLOUD(
+        "defensive ink cloud",
+        "A released cloud obscures vision and confuses chemical senses during escape.",
+        listOf(
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.20),
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, -0.20),
+            TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.20),
+            TraitEffect.Defense(0.22),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+
+    // Offensive traits
+    MEAT_EATING_MOUTHPARTS(
+        "meat-eating mouthparts",
+        "Biting, piercing, tearing, or engulfing feeding structures process animal tissue from captured prey or carrion.",
+        listOf(
+            // Feeding anatomy permits basic hunting; specialized traits supply most of its affinity.
+            TraitEffect.StrategyAccess(EcoStrategy.AMBUSH_PREDATION, 0.10),
+            TraitEffect.StrategyAccess(EcoStrategy.PURSUIT_PREDATION, 0.10),
+            TraitEffect.StrategyAccess(EcoStrategy.SCAVENGING, 0.10),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    BALEEN(
+        "baleen",
+        "Dense flexible plates that strain suspended organisms from water passing through the mouth.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.88),
+            TraitEffect.CaptureAbility(0.06),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.FILTERING_APPARATUS,
+        requirements = listOf(TraitRequirement.allOf(JAW))
+    ),
+    SIEVING_TEETH(
+        "sieving teeth",
+        "Interlocking teeth or baleen form a sieve that retains minuscule swimming prey as water is expelled from the mouth.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.82),
+            TraitEffect.CaptureAbility(0.1),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.FILTERING_APPARATUS,
+        requirements = listOf(TraitRequirement.allOf(TEETH))
+    ),
+    GILL_RAKERS(
+        "gill rakers",
+        "Stiff projections along the gill arches retain small suspended food while water passes over the gills.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.82),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        group = TraitGroup.FILTERING_APPARATUS,
+        requirements = listOf(TraitRequirement.allOf(GILLS)),
+    ),
+    SUSPENSION_FEEDING_TENTACLES(
+        "suspension-feeding tentacles",
+        "Many slender tentacles, pinnules, or comparable appendages intercept minuscule organisms carried past the body by water.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.82),
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.FILTERING_APPARATUS,
+    ),
+    SUCTION_FEEDING(
+        "suction-feeding mouth",
+        "A muscular tongue, sealed lips, and a vaulted mouth expose and suction soft-bodied prey.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.25),
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(TraitRequirement.allOf(JAW)),
+    ),
+    AMBUSH_MUSCULATURE(
+        "burst ambush musculature",
+        "Muscles specialized for short, explosive attacks launched from concealment or stillness.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.58),
+            TraitEffect.CaptureAbility(0.20),
+            TraitEffect.MaintenanceCost(0.39),
+        ),
+    ),
+    SWIFT_LIMBS(
+        "swift limbs",
+        "Long, powerful, or rapidly cycling limbs increase speed, helping hunters close distance and prey escape pursuit.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.2),
+            TraitEffect.PursuitSpeed(0.18),
+            TraitEffect.WaterRequirement(0.03),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(
+                TraitCapability.LOCOMOTION,
+                LIMBED_BODY
+            )
+        ),
+    ),
+    LONG_TUSKS(
+        "long tusks",
+        "Elongated exposed teeth serve as weapons, display structures, digging tools, or levers during contests and movement.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.Defense(0.14),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    STRONG_JAWS(
+        "strong jaws",
+        "Deep jaw muscles and reinforced skull structures generate unusually forceful bites for seizing, crushing, or dismembering food.",
+        listOf(
+            TraitEffect.CaptureAbility(0.12),
+            TraitEffect.Defense(0.04),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    RETRACTABLE_CLAWS(
+        "retractable claws",
+        "Claws are protected while traveling and extended for traction, climbing, grappling, and close-range prey capture.",
+        listOf(
+            TraitEffect.CaptureAbility(0.11),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(
+                TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+                CLIMBING_LIMBS,
+            ),
+        ),
+    ),
+    HIGH_POUNCING(
+        "high pouncing",
+        "A high arcing leap uses sound and precise impact to pin prey hidden in shallow burrows, snow, or dense ground cover.",
+        listOf(
+            TraitEffect.BurrowerCaptureBonus(0.24),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE),
+        ),
+    ),
+    SPEAR_BILL(
+        "spear bill",
+        "A long pointed bill rapidly stabs or seizes small aquatic prey",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, -0.2),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.34),
+            TraitEffect.CaptureAbility(0.15),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    SCOOP_MOUTH(
+        "expandable scoop pouch",
+        "A long bill and distensible throat pouch rapidly engulf small fish and drain excess water before swallowing.",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, -0.2),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.14),
+            TraitEffect.CaptureAbility(0.14),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
+    WEB_SILK(
+        "prey-catching silk web",
+        "Strong adhesive fibers are arranged into traps that intercept moving prey.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.58),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
+            TraitEffect.CaptureAbility(0.24),
+            TraitEffect.ReproductionMultiplier(0.94),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+    ),
+    VENOM_DELIVERY(
+        "venom delivery",
+        "Fangs, stingers, spines, or saliva introduce toxins that rapidly disable prey.",
+        listOf(
+            TraitEffect.CaptureAbility(0.24),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.21),
+            TraitEffect.Defense(0.45)
+        ),
+    ),
+    CONSTRICTING_BODY(
+        "constricting body",
+        "A long muscular body coils around captured prey and prevents breathing or circulation.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.24),
+            TraitEffect.CaptureAbility(0.20),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+    ),
+    HOOKED_TALONS(
+        "hooked talons",
+        "Curved claws seize, carry, and kill struggling prey.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.12),
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.12),
+            TraitEffect.HabitatAffinity(HabitatGroup.AERIAL, 0.1),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, -0.1),
+            TraitEffect.CaptureAbility(0.18),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
+    STINGER(
+        "stinger",
+        "A sharp specialized appendage punctures another organism during attack or defense.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.Defense(0.06),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION)),
+    ),
+    ELECTRIC_ORGAN(
+        "electric organ",
+        "Stacks of specialized cells release coordinated electrical discharges that can stun prey, discourage predators, or communicate through opaque water.",
+        listOf(
+            TraitEffect.CaptureAbility(0.20),
+            TraitEffect.Defense(0.20),
+            TraitEffect.MaintenanceCost(0.36),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
+        )
+    ),
+    GRASPING_TENTACLES(
+        "grasping tentacles",
+        "Flexible muscular appendages explore crevices and restrain several prey items at once.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.16),
+            TraitEffect.CaptureAbility(0.18),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        capabilities = setOf(TraitCapability.LOCOMOTION),
+    ),
+    BIOLUMINESCENT_LURE(
+        "bioluminescent lure",
+        "A controlled light organ attracts curious prey in otherwise dark water.",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.2),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.24),
+            TraitEffect.CaptureAbility(0.18),
+            TraitEffect.MaintenanceCost(0.27),
+        ),
+    ),
+    PARASITIC_PROBOSCIS(
+        "parasitic proboscis",
+        "A piercing or anchoring feeding organ that extracts resources from a living host.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.PARASITISM, 0.82),
+            TraitEffect.ReproductionMultiplier(1.10),
+            TraitEffect.MaintenanceCost(0.3),
+        ),
+    ),
+    COLONY_PROBING_TONGUE(
+        "colony-probing tongue",
+        "An extremely elongated adhesive tongue reaches minuscule colonial prey through narrow passages in opened nests.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.7),
+            TraitEffect.CaptureAbility(0.28),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
+    ),
+    PROJECTILE_TONGUE(
+        "projectile tongue",
+        "A rapidly projected adhesive tongue lets a stationary hunter seize small moving prey before it can escape.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.35),
+            TraitEffect.CaptureAbility(0.22),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
+    ),
+    SUCKING_PROBOSCIS(
+        "sucking proboscis",
+        "A narrow piercing mouthpart taps fluids from the living tissues of a host organism.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.PARASITISM, 0.58),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+
+    // Herbivory traits
+    GRAZING_MOUTHPARTS(
+        "grazing mouthparts",
+        "Scraping, cropping, grinding, or rasping structures for repeatedly harvesting attached or rooted food.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.GRAZING, 0.82),
+            TraitEffect.CaptureAbility(-0.06),
+            TraitEffect.MaintenanceCost(0.09),
+        ),
+    ),
+    BROWSING_MOUTHPARTS(
+        "browsing mouthparts",
+        "Lips, teeth, beaks, or cutting jaws specialized for selectively cropping leaves and twigs above ground level.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.GRAZING, 0.74),
+            TraitEffect.StrategyAccess(EcoStrategy.FRUGIVORY, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    FRUIT_EATING_MOUTHPARTS(
+        "fruit-eating mouthparts and digestion",
+        "Grasping, biting, crushing, or swallowing structures and digestion suited to energy-rich fruits.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.FRUGIVORY, 0.78),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.15),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    RUMINANT_STOMACH(
+        "ruminant stomach",
+        "Several fermentation chambers and repeated chewing extract energy from fibrous photosynthetic tissue.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.20),
+            TraitEffect.ReserveCapacity(0.10),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.GUT_FERMENTATION,
+    ),
+    FERMENTING_HINDGUT(
+        "fermenting hindgut",
+        "A large microbe-rich hindgut digests cellulose after food has passed through the stomach.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.16),
+            TraitEffect.ReserveCapacity(0.07),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.GUT_FERMENTATION,
+    ),
+    SEED_CRACKING_MOUTHPARTS(
+        "seed-cracking mouthparts",
+        "Deep reinforced jaws or a stout beak crush hard seeds and nuts from ground and canopy producers.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.GRAZING, 0.54),
+            TraitEffect.StrategyAccess(EcoStrategy.FRUGIVORY, 0.33),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.15),
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    LONG_NECK(
+        "long browsing neck",
+        "An elongated neck reaches foliage beyond the feeding height of most ground animals.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.3),
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.10),
+            TraitEffect.WaterRequirement(0.04),
+            TraitEffect.MaintenanceCost(0.27),
+        ),
+    ),
+    PREHENSILE_TRUNK(
+        "prehensile trunk",
+        "A muscular mobile appendage manipulates branches, uproots food, and draws water without lowering the whole body.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.18),
+            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.WaterRequirement(0.03),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+    ),
+    NECTAR_SIPPING_TONGUE(
+        "nectar-sipping tongue",
+        "An elongated tongue or proboscis reaches energy-rich secretions within elevated reproductive structures.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.NECTAR_FEEDING, 1.0),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.MaintenanceCost(-0.09),
+        ),
+        group = TraitGroup.SPECIALIZED_TONGUE,
+    ),
+
+    // Intelligence and tool use
+    INTELLIGENT(
+        "advanced intelligence",
+        "A large, flexible nervous system supports learning, memory, planning, social inference, and novel solutions across many situations.",
+        listOf(
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.Sensing(0.08),
+            TraitEffect.Defense(0.06),
+            TraitEffect.ReserveCapacity(0.05),
+            TraitEffect.NicheCompetitionSensitivity(0.94),
+            TraitEffect.ReproductionMultiplier(1.08),
+            TraitEffect.MaintenanceCost(1.05),
+        ),
+        group = TraitGroup.COGNITIVE_COMPLEXITY,
+    ),
+    SAPIENT(
+        "sapient intelligence",
+        "Exceptional abstraction, cumulative culture, symbolic communication, and deliberate long-term planning reshape how the organism solves ecological problems.",
+        listOf(
+            TraitEffect.CaptureAbility(0.10),
+            TraitEffect.Sensing(0.08),
+            TraitEffect.Defense(0.08),
+            TraitEffect.ReserveCapacity(0.08),
+            TraitEffect.NicheCompetitionSensitivity(0.90),
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.MaintenanceCost(1.65),
+        ),
+        group = TraitGroup.COGNITIVE_COMPLEXITY,
+        requirements = listOf(
+            TraitRequirement.allOf(SLOW_GROWTH),
+        ),
+    ),
+    TOOL_MANIPULATION(
+        "tool manipulation",
+        "Dexterous appendages manipulate stones, sticks, containers, or other objects to obtain defended food.",
+        listOf(
+            TraitEffect.CaptureAbility(0.14),
+            TraitEffect.Defense(0.03),
+            TraitEffect.MaintenanceCost(0.3),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitGroup.COGNITIVE_COMPLEXITY),
+        ),
+    ),
+
+    // Scavenger and decomposer traits
+    SCAVENGING_SENSES(
+        "long-range carrion senses",
+        "Sensory organs capable of locating dead organisms across a broad area.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.SCAVENGING, 0.6),
+            TraitEffect.MaintenanceCost(0.27),
+        ),
+    ),
+    RESILIENT_DIGESTION(
+        "resilient digestion",
+        "A robust digestive system handles large, irregular meals and extracts nutrition from food of inconsistent quality.",
+        listOf(
+            TraitEffect.StrategyAffinity(EcoStrategy.SCAVENGING, 0.4),
+            TraitEffect.MetabolicDemandMultiplier(0.8),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
+    DECOMPOSING_ENZYMES(
+        "external decomposing enzymes",
+        "Secreted enzymes break down dead sessile tissue outside the body so its nutrients can be absorbed.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.DECOMPOSITION, 0.86),
+            TraitEffect.ReproductionMultiplier(0.96),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    WASTE_FEEDING_MOUTHPARTS(
+        "waste-feeding mouthparts",
+        "Mouthparts and chemical senses are specialized for locating and consuming nutrient-rich animal waste.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.COPROPHAGY, 0.84),
+            TraitEffect.CaptureAbility(-0.05),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    MARINE_SNOW_COLLECTORS(
+        "marine-snow collectors",
+        "Fine collecting surfaces or appendages gather sinking organic particles from dark or deep water.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.DEPOSIT_FEEDING, 0.84),
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.30),
+            TraitEffect.DarkWaterAdaptation,
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+
+    // Reef-related traits
+    RIGID_COLONY_FRAMEWORK(
+        "rigid colony framework",
+        "The organism secretes or assembles a durable supporting framework that protects soft feeding bodies and persists after portions of the colony die.",
+        listOf(
+            TraitEffect.Defense(0.18),
+            TraitEffect.ReproductionMultiplier(0.94),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+    ),
+    REEF_BUILDING(
+        "reef-building growth",
+        "Successive generations extend and bind a rigid colony framework until it becomes persistent three-dimensional aquatic habitat.",
+        listOf(
+            TraitEffect.ReefBuilding(0.08),
+            TraitEffect.ReproductionMultiplier(0.90),
+            TraitEffect.MaintenanceCost(0.27),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(RIGID_COLONY_FRAMEWORK),
+        ),
+    ),
+    SHALLOW_WATER_PHOTOSYMBIOSIS(
+        "shallow-water photosymbiosis",
+        "Light-dependent symbionts nourish a sessile host anchored close to the illuminated seafloor.",
+        listOf(
+            TraitEffect.WaterDepthTolerance(
+                optimalMaximumM = 30.0,
+                absoluteMaximumM = 80.0,
+            ),
+            TraitEffect.ReproductionMultiplier(0.96),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    REEF_NESTING(
+        "reef nesting",
+        "Reproduction or shelter depends on cavities and protected surfaces within an aquatic reef.",
+        listOf(
+            TraitEffect.ReefUse(0.75),
+            TraitEffect.Defense(0.08),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    REEF_CAMOUFLAGE(
+        "reef camouflage",
+        "Color, texture, and body outline resemble the varied surfaces of an aquatic reef.",
+        listOf(
+            TraitEffect.ReefUse(0.33),
+            TraitEffect.Camouflage(Habitat.COASTAL, 0.18),
+            TraitEffect.Camouflage(Habitat.SHALLOW_OCEAN, 0.18),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    REEF_SHELTER_DEPENDENCE(
+        "reef shelter dependence",
+        "Feeding, refuge, and daily activity depend on the dense cavities and broken sight-lines of a living reef.",
+        listOf(
+            TraitEffect.ReefUse(1.0),
+            TraitEffect.ReproductionMultiplier(0.96),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    REEF_BORING(
+        "reef-boring mouthparts",
+        "Hard scraping or drilling structures open cavities and expose food within reef material.",
+        listOf(
+            TraitEffect.ReefUse(0.75),
+            TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.28),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+
+    // Photosynthetic traits
+    PHOTOSYNTHETIC_SURFACE(
+        "photosynthetic surface",
+        "A broad light-harvesting body surface containing photosynthetic pigments.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.0),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
+    ),
+    LARGE_EVERGREEN_LEAVES(
+        "large evergreen leaves",
+        "Large, long-lived leaves maintain a broad light-harvesting canopy throughout the year rather than being replaced as a seasonal cohort.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.06),
+            TraitEffect.CanopyLightEfficiency(0.10),
+            TraitEffect.WaterRequirement(0.12),
+            TraitEffect.TemperatureTolerance(colderC = -4.0),
+            TraitEffect.MaintenanceCost(0.33),
+        ),
+        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
+    ),
+    NEEDLE_LEAVES(
+        "needle leaves",
+        "Narrow, tough leaves expose little surface area to freezing air and water loss, trading peak light capture for persistence in cold or dry climates.",
+        listOf(
+            TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 0.90),
+            TraitEffect.WaterRequirement(-0.08),
+            TraitEffect.TemperatureTolerance(colderC = 4.0),
+            TraitEffect.ReproductionMultiplier(0.97),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
+    ),
+    CANOPY_GROWTH(
+        "canopy growth",
+        "A tall or climbing growth form that places much of the organism within an elevated living canopy.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.8),
+            TraitEffect.CanopyLightEfficiency(0.22),
+            TraitEffect.WaterRequirement(0.08),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+    ),
+    SHADE_FRONDS(
+        "broad shade fronds",
+        "Wide light-catching surfaces specialized for dim conditions beneath other organisms.",
+        listOf(
+            TraitEffect.CanopyLightEfficiency(0.38),
+            TraitEffect.InsolationOptimum(-0.22),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE),
+        ),
+    ),
+    EPIPHYTIC_ROOTS(
+        "epiphytic roots",
+        "Roots or analogous anchors cling to another organism above the ground and rapidly absorb intermittent rain, mist, and trapped debris without parasitizing the support.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.66),
+            TraitEffect.CanopyLightEfficiency(0.10),
+            TraitEffect.WaterRequirement(0.12),
+            TraitEffect.Defense(-0.04),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
+                    TraitCapability.SUBSTRATE_ANCHORING,
+                ),
+            ),
+        ),
+    ),
+    CUSHION_GROWTH(
+        "cushion growth",
+        "Many short, tightly packed shoots form a low rounded surface that traps heat and moisture while resisting wind and abrasive particles.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.5),
+            TraitEffect.TemperatureOptimalTolerance(colderC = 5.0),
+            TraitEffect.WaterRequirement(-0.04),
+            TraitEffect.ReproductionMultiplier(0.92),
+            TraitEffect.Defense(0.05),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(
+                    TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
+                    TraitCapability.SUBSTRATE_ANCHORING,
+                ),
+            ),
+        ),
+    ),
+    FLOATING_FRONDS(
+        "floating fronds",
+        "Long buoyant photosynthetic blades rise from an aquatic anchor into well-lit surface water.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.4),
+            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.4),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.2),
+            TraitEffect.InsolationOptimum(-0.06),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE),
+        ),
+    ),
+
     // Behavioral traits
     FOSSORIAL_LIVING(
         "fossorial living",
         "Anatomy and behavior for excavating, navigating, and sheltering within soil or soft substrate.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 3.0, hotterC = 3.0),
+            TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.15),
             TraitEffect.WaterRequirement(-0.06),
             TraitEffect.MaintenanceCost(0.15),
         ),
@@ -1948,6 +2983,23 @@ enum class CommonTrait(
                 BURROW_BORROWER,
             ),
         ),
+    ),
+    BALL_ROLLING(
+        "ball rolling",
+        "The organism can roll up into a ball to protect vital organs.",
+        listOf(
+            TraitEffect.Defense(0.1),
+            TraitEffect.PursuitSpeed(-0.1),
+            TraitEffect.MaintenanceCost(0.1),
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(
+                ARMORED_HIDE,
+                BONY_SCALES,
+                REINFORCED_HIDE,
+                SPINES
+            )
+        )
     ),
     UNDULATING_CLIMBING(
         "undulating climbing",
@@ -1988,8 +3040,8 @@ enum class CommonTrait(
         "cooperative hunting",
         "Several individuals coordinate pursuit, encirclement, or ambush rather than attacking independently.",
         listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.12),
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.18),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.12),
+            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.18),
             TraitEffect.CaptureAbility(0.18),
             TraitEffect.LargerPreySizeClasses(1),
             TraitEffect.ReproductionMultiplier(0.96),
@@ -2103,6 +3155,20 @@ enum class CommonTrait(
             ),
         ),
     ),
+    HONEY_STORES(
+        "communal honey stores",
+        "Workers concentrate floral sugars into stable comb stores that feed the colony through winter or other seasonal shortages.",
+        listOf(
+            TraitEffect.ReserveCapacity(0.90),
+            TraitEffect.ReproductionMultiplier(0.93),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(
+                setOf(EUSOCIAL_COLONY, NECTAR_SIPPING_TONGUE),
+            ),
+        ),
+    ),
 
     // Daily activity patterns
     DIURNAL(
@@ -2114,9 +3180,6 @@ enum class CommonTrait(
             TraitEffect.TemperatureShift(-2.0)
         ),
         group = TraitGroup.ACTIVITY_PATTERN,
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_LOCOMOTION),
-        ),
     ),
     NOCTURNAL(
         "nocturnal activity",
@@ -2127,9 +3190,6 @@ enum class CommonTrait(
             TraitEffect.TemperatureShift(2.0)
         ),
         group = TraitGroup.ACTIVITY_PATTERN,
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_LOCOMOTION),
-        ),
     ),
     VESPERTINE(
         "vespertine activity",
@@ -2139,9 +3199,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.045),
         ),
         group = TraitGroup.ACTIVITY_PATTERN,
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_LOCOMOTION),
-        ),
     ),
     CATHEMERAL(
         "cathemeral activity",
@@ -2149,12 +3206,9 @@ enum class CommonTrait(
         listOf(
             TraitEffect.ActivityPatternEffect(ActivityPattern.CATHEMERAL),
             TraitEffect.MaintenanceCost(0.03),
-            TraitEffect.TemperatureTolerance(1.0, 1.0)
+            TraitEffect.TemperatureTolerance(hotterC = 1.0, colderC = 1.0)
         ),
         group = TraitGroup.ACTIVITY_PATTERN,
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.TERRESTRIAL_LOCOMOTION),
-        ),
     ),
 
     // Dispersal and migration patterns
@@ -2206,1023 +3260,5 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.18),
         ),
         requirements = listOf(TraitRequirement.anyOf(REGIONAL_MIGRATION, LONG_MIGRATION))
-    ),
-
-    // Sense traits
-    MOTION_TRACKING_SENSES(
-        "motion-tracking senses",
-        "Vision, hearing, scent, vibration detection, or equivalent senses allow a hunter to follow moving prey through a sustained chase.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.70),
-            TraitEffect.Sensing(0.12),
-            TraitEffect.MaintenanceCost(0.39),
-        ),
-    ),
-    KEEN_SCENT_SENSE(
-        "keen sense of smell",
-        "A large, sensitive chemical-sensing system follows faint trails, detects concealed threats, and helps individuals locate distant mates.",
-        listOf(
-            TraitEffect.Sensing(0.12),
-            TraitEffect.ReproductionMultiplier(1.05),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.SCENT_ACUITY,
-    ),
-    POOR_SCENT_SENSE(
-        "poor sense of smell",
-        "Reduced chemical sensitivity makes it harder to follow faint trails, detect concealed threats, and locate distant mates.",
-        listOf(
-            TraitEffect.Sensing(-0.12),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(-0.15),
-        ),
-        group = TraitGroup.SCENT_ACUITY,
-    ),
-    KEEN_HEARING(
-        "keen hearing",
-        "Sensitive auditory organs and neural processing locate faint or distant sounds, including concealed threats, and distinguish them from background noise.",
-        listOf(
-            TraitEffect.Sensing(0.08),
-            TraitEffect.CaptureAbility(0.03),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        group = TraitGroup.HEARING_ACUITY,
-    ),
-    POOR_HEARING(
-        "poor hearing",
-        "Reduced auditory sensitivity makes it harder to detect faint sounds and to distinguish useful signals from background noise.",
-        listOf(
-            TraitEffect.Sensing(-0.08),
-            TraitEffect.CaptureAbility(-0.03),
-            TraitEffect.MaintenanceCost(-0.12),
-        ),
-        group = TraitGroup.HEARING_ACUITY,
-    ),
-    KEEN_EYESIGHT(
-        "keen eyesight",
-        "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
-        listOf(
-            TraitEffect.Sensing(0.08),
-            TraitEffect.CaptureAbility(0.05),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.VISION_ACUITY,
-    ),
-    POOR_VISION(
-        "poor vision",
-        "Low-resolution visual organs make it harder to recognize prey and other important targets at range or against cluttered backgrounds.",
-        listOf(
-            TraitEffect.Sensing(-0.08),
-            TraitEffect.CaptureAbility(-0.05),
-            TraitEffect.MaintenanceCost(-0.15),
-        ),
-        group = TraitGroup.VISION_ACUITY,
-    ),
-    ECHOLOCATION(
-        "echolocation",
-        "The organism emits sound and reconstructs nearby surfaces and moving prey from returning echoes.",
-        listOf(
-            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.15),
-            TraitEffect.CaptureAbility(0.20),
-            TraitEffect.MaintenanceCost(0.27),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(KEEN_HEARING),
-        ),
-    ),
-    ELECTRORECEPTION(
-        "electroreception",
-        "Sensitive organs detect the weak electrical fields produced by hidden or moving organisms in water.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.1),
-            TraitEffect.HabitatAffinity(HabitatGroup.DARK, 0.2),
-            TraitEffect.CaptureAbility(0.18),
-            TraitEffect.MaintenanceCost(0.21),
-            TraitEffect.Sensing(0.1)
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
-        )
-    ),
-
-    // Sonic traits
-    HOWLING_CALL(
-        "howling call",
-        "Long-range group calls coordinate dispersed pack members and advertise an occupied range.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.05),
-            TraitEffect.Defense(0.03),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        acousticSignal = AcousticSignal.HOWL,
-    ),
-    SONG_CALL(
-        "song call",
-        "Long, patterned vocalizations carry identity, contact, and reproductive information through open water.",
-        emptyList(),
-        isCosmetic = true,
-        acousticSignal = AcousticSignal.SONG,
-    ),
-    RATTLING_WARNING(
-        "rattling warning",
-        "A specialized vibrating structure produces a conspicuous warning that discourages accidental encounters with large animals.",
-        listOf(
-            TraitEffect.Defense(0.10),
-            TraitEffect.ReproductionMultiplier(0.98),
-            TraitEffect.MaintenanceCost(0.09),
-        ),
-        acousticSignal = AcousticSignal.RATTLE,
-    ),
-    ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.ROAR),
-    TRUMPETING_CALL("trumpeting call", "A loud trumpet communicates alarm, excitement, and identity between social group members.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRUMPET),
-    BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BELLOW),
-    BLEATING_CALL("bleating call", "A nasal bleat maintains contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BLEAT),
-    GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GRUNT),
-    HONKING_CALL("honking call", "A loud honk maintains contact within a flock and during coordinated flight.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HONK),
-    BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUGLE),
-    CROAKING_CALL("croaking call", "Repeated croaks advertise identity and reproductive readiness near breeding sites.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROAK),
-    BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BRAY),
-    HOOTING_CALL("hooting call", "Resonant hoots carry identity and location through forests or darkness.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HOOT),
-    BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BARK),
-    GROWLING_CALL("growling call", "A low rough vocal warning signals agitation and readiness for close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GROWL),
-    SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.SCREECH),
-    QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
-    CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
-    TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
-    WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.WHISTLE),
-    CLICKING_CALL("clicking call", "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CLICK),
-    CHIRPING_CALL(
-        "chirping call",
-        "Short high-pitched calls maintain contact between companions, parents, and young.",
-        emptyList(),
-        isCosmetic = true,
-        acousticSignal = AcousticSignal.CHIRP,
-    ),
-    MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
-    PURRING_CALL("purring call", "A quiet rhythmic vibration communicates close-range social state and contentment.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.PURR),
-    HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
-    IMITATIVE_VOCALIZATION("imitative vocalization", "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.", emptyList(), isCosmetic = true),
-    BOOMING_CALL(
-        "booming call",
-        "A resonant low-frequency display call carries between widely separated potential mates.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.04),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        acousticSignal = AcousticSignal.BOOM,
-    ),
-    DRUMMING_DISPLAY(
-        "drumming display",
-        "Repeated impacts against a resonant surface create a long-range territorial and courtship signal.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.02),
-            TraitEffect.MaintenanceCost(0.06),
-        ),
-    ),
-    WHOOPING_CALL(
-        "whooping call",
-        "Long-range whoops recruit and coordinate members of a dispersed social hunting group.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PURSUIT_PREDATION, 0.03),
-            TraitEffect.Defense(0.02),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        acousticSignal = AcousticSignal.WHOOP,
-    ),
-    COMPLEX_VOCALIZATIONS(
-        "complex vocalizations",
-        "A diverse repertoire of individually distinctive calls coordinates a complex mobile social group.",
-        listOf(
-            TraitEffect.Defense(0.03),
-            TraitEffect.ReproductionMultiplier(1.02),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        requirements = listOf(TraitRequirement.HasAcousticSignal),
-    ),
-    SOUND_LURES(
-        "sound lures",
-        "Familiar calls are imitated or repurposed to draw acoustically responsive prey into striking distance.",
-        listOf(
-            TraitEffect.SoundLureCaptureBonus(0.22),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(TraitRequirement.HasAcousticSignal),
-    ),
-
-    // Defensive traits
-    SILENT_MOVEMENT(
-        "silent movement",
-        "Silent movement allows creatures to avoid being noticed, and also improves the ability to ambush and capture prey.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.5),
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.Defense(0.04),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        requirements = listOf(TraitRequirement.SizeClassAtLeast(SizeClass.SMALL))
-    ),
-    TERRESTRIAL_CAMOUFLAGE(
-        "terrestrial camouflage",
-        "Body colors and markings break up the organism's outline against soil, vegetation, bark, or other terrestrial backgrounds.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.36),
-            TraitEffect.Camouflage(Habitat.LAND_SURFACE, 0.20),
-            TraitEffect.Camouflage(Habitat.CANOPY, 0.18),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    AQUATIC_CAMOUFLAGE(
-        "aquatic camouflage",
-        "Body colors and markings obscure the organism against open water, reefs, vegetation, or the dim seafloor.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.36),
-            TraitEffect.Camouflage(Habitat.COASTAL, 0.20),
-            TraitEffect.Camouflage(Habitat.SHALLOW_OCEAN, 0.18),
-            TraitEffect.Camouflage(Habitat.OPEN_OCEAN, 0.18),
-            TraitEffect.Camouflage(Habitat.DARK_WATER, 0.16),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    APOSEMATIC_COLORATION(
-        "aposematic coloration",
-        "Conspicuous colors advertise a dangerous or distasteful organism—or mimic another local organism carrying the same warning colors.",
-        listOf(
-            TraitEffect.AposematicColoration,
-            TraitEffect.MaintenanceCost(0.09),
-        ),
-    ),
-    AUTOTOMY(
-        "autotomy",
-        "The organism deliberately sheds a trapped or attacked appendage, escaping at the cost of lost tissue and function.",
-        listOf(
-            TraitEffect.Defense(0.12),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION))
-    ),
-    INFLATABLE_BODY(
-        "inflatable body",
-        "The body rapidly expands with water or air, making the organism harder to swallow while temporarily limiting movement.",
-        listOf(
-            TraitEffect.Defense(0.24),
-            TraitEffect.PursuitSpeed(-0.10),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-    ),
-    ARMORED_HIDE(
-        "armored hide",
-        "Thick skin reinforced with plates or embedded bone resists bites, claws, and impacts.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
-            TraitEffect.Defense(0.34),
-            TraitEffect.CaptureAbility(-0.07),
-            TraitEffect.ReproductionMultiplier(0.92),
-            TraitEffect.MaintenanceCost(0.24),
-            TraitEffect.BodyMassMultiplier(1.2)
-        ),
-        group = TraitGroup.DOMINANT_BODY_COVERING
-    ),
-    REINFORCED_HIDE(
-        "reinforced hide",
-        "Dense, unusually tough skin beneath a fur coat resists tearing, punctures, and twisting bites without forming rigid armor.",
-        listOf(
-            TraitEffect.Defense(0.18),
-            TraitEffect.CaptureAbility(-0.02),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.15),
-            TraitEffect.BodyMassMultiplier(1.1)
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(FUR),
-        ),
-    ),
-    PROTECTIVE_SHELL(
-        "protective shell",
-        "A rigid external shell encloses vulnerable tissues and can withstand crushing or abrasion.",
-        listOf(
-            TraitEffect.Defense(0.46),
-            TraitEffect.CaptureAbility(-0.14),
-            TraitEffect.ReproductionMultiplier(0.86),
-            TraitEffect.MaintenanceCost(0.3),
-        ),
-    ),
-    SPINES(
-        "defensive quills",
-        "Long rigid hairs or spines make biting and grappling dangerous.",
-        listOf(
-            TraitEffect.Defense(0.32),
-            TraitEffect.CaptureAbility(-0.08),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-    ),
-    TOXIC_SKIN(
-        "toxic skin",
-        "Skin glands or accumulated compounds make the organism poisonous or intensely distasteful.",
-        listOf(
-            TraitEffect.Defense(0.28),
-            TraitEffect.ReproductionMultiplier(0.93),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-    ),
-    SLIMY_SKIN(
-        "slimy skin",
-        "Skin glands or accumulated compounds make the organism moderately distasteful or difficult to grasp.",
-        listOf(
-            TraitEffect.Defense(0.06),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.09),
-        ),
-    ),
-    INK_CLOUD(
-        "defensive ink cloud",
-        "A released cloud obscures vision and confuses chemical senses during escape.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.20),
-            TraitEffect.HabitatAffinity(HabitatGroup.DARK, -0.20),
-            TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.20),
-            TraitEffect.Defense(0.22),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-
-    // Offensive traits
-    BALEEN(
-        "baleen",
-        "Dense flexible plates that strain suspended organisms from water passing through the mouth.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.88),
-            TraitEffect.CaptureAbility(0.06),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.FILTERING_APPARATUS,
-        requirements = listOf(TraitRequirement.allOf(JAW))
-    ),
-    SIEVING_TEETH(
-        "sieving teeth",
-        "Interlocking teeth or baleen form a sieve that retains minuscule swimming prey as water is expelled from the mouth.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.82),
-            TraitEffect.CaptureAbility(0.1),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.FILTERING_APPARATUS,
-        requirements = listOf(TraitRequirement.allOf(TEETH))
-    ),
-    GILL_RAKERS(
-        "gill rakers",
-        "Stiff projections along the gill arches retain small suspended food while water passes over the gills.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.82),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        group = TraitGroup.FILTERING_APPARATUS,
-        requirements = listOf(TraitRequirement.allOf(GILLS)),
-    ),
-    SUSPENSION_FEEDING_TENTACLES(
-        "suspension-feeding tentacles",
-        "Many slender tentacles, pinnules, or comparable appendages intercept minuscule organisms carried past the body by water.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FILTER_FEEDING, 0.82),
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.FILTERING_APPARATUS,
-    ),
-    SUCTION_FEEDING(
-        "suction-feeding mouth",
-        "A muscular tongue, sealed lips, and a vaulted mouth expose and suction soft-bodied prey.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.52),
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(TraitRequirement.allOf(JAW)),
-    ),
-    AMBUSH_MUSCULATURE(
-        "burst ambush musculature",
-        "Muscles specialized for short, explosive attacks launched from concealment or stillness.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.58),
-            TraitEffect.CaptureAbility(0.20),
-            TraitEffect.MaintenanceCost(0.39),
-        ),
-    ),
-    SWIFT_LEGS(
-        "swift legs",
-        "Long, powerful, or rapidly cycling walking limbs increase running speed, helping hunters close distance and prey escape pursuit.",
-        listOf(
-            TraitEffect.PursuitSpeed(0.18),
-            TraitEffect.WaterRequirement(0.03),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        requirements = listOf(TraitRequirement.allOf(TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE)),
-    ),
-    LONG_TUSKS(
-        "long tusks",
-        "Elongated exposed teeth serve as weapons, display structures, digging tools, or levers during contests and movement.",
-        listOf(
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.Defense(0.14),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    STRONG_JAWS(
-        "strong jaws",
-        "Deep jaw muscles and reinforced skull structures generate unusually forceful bites for seizing, crushing, or dismembering food.",
-        listOf(
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.Defense(0.04),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    RETRACTABLE_CLAWS(
-        "retractable claws",
-        "Claws are protected while traveling and extended for traction, climbing, grappling, and close-range prey capture.",
-        listOf(
-            TraitEffect.CaptureAbility(0.11),
-            TraitEffect.Defense(0.03),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(
-            TraitRequirement.anyOf(
-                TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
-                CLIMBING_LIMBS,
-            ),
-        ),
-    ),
-    HIGH_POUNCING(
-        "high pouncing",
-        "A high arcing leap uses sound and precise impact to pin prey hidden in shallow burrows, snow, or dense ground cover.",
-        listOf(
-            TraitEffect.BurrowerCaptureBonus(0.24),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE),
-        ),
-    ),
-    SPEAR_BILL(
-        "spear bill",
-        "A long pointed bill rapidly stabs or seizes small aquatic prey",
-        listOf(
-            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.2),
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, -0.2),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.34),
-            TraitEffect.CaptureAbility(0.15),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    SCOOP_MOUTH(
-        "expandable scoop pouch",
-        "A long bill and distensible throat pouch rapidly engulf small fish and drain excess water before swallowing.",
-        listOf(
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.2),
-            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, -0.2),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.14),
-            TraitEffect.CaptureAbility(0.14),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-    ),
-    WEB_SILK(
-        "prey-catching silk web",
-        "Strong adhesive fibers are arranged into traps that intercept moving prey.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.58),
-            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
-            TraitEffect.CaptureAbility(0.24),
-            TraitEffect.ReproductionMultiplier(0.94),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-    ),
-    VENOM_DELIVERY(
-        "venom delivery",
-        "Fangs, stingers, spines, or saliva introduce toxins that rapidly disable prey.",
-        listOf(
-            TraitEffect.CaptureAbility(0.24),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(0.21),
-            TraitEffect.Defense(0.45)
-        ),
-    ),
-    CONSTRICTING_BODY(
-        "constricting body",
-        "A long muscular body coils around captured prey and prevents breathing or circulation.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.24),
-            TraitEffect.CaptureAbility(0.20),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-    ),
-    HOOKED_TALONS(
-        "hooked talons",
-        "Curved claws seize, carry, and kill struggling prey.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.12),
-            TraitEffect.CaptureAbility(0.18),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-    ),
-    STINGER(
-        "stinger",
-        "A sharp specialized appendage punctures another organism during attack or defense.",
-        listOf(
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.Defense(0.06),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION)),
-    ),
-    ELECTRIC_ORGAN(
-        "electric organ",
-        "Stacks of specialized cells release coordinated electrical discharges that can stun prey, discourage predators, or communicate through opaque water.",
-        listOf(
-            TraitEffect.CaptureAbility(0.20),
-            TraitEffect.Defense(0.20),
-            TraitEffect.MaintenanceCost(0.36),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitCapability.AQUATIC_LOCOMOTION)
-        )
-    ),
-    GRASPING_TENTACLES(
-        "grasping tentacles",
-        "Flexible muscular appendages explore crevices and restrain several prey items at once.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.16),
-            TraitEffect.CaptureAbility(0.18),
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        capabilities = setOf(TraitCapability.LOCOMOTION),
-    ),
-    BIOLUMINESCENT_LURE(
-        "bioluminescent lure",
-        "A controlled light organ attracts curious prey in otherwise dark water.",
-        listOf(
-            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.2),
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.24),
-            TraitEffect.CaptureAbility(0.18),
-            TraitEffect.MaintenanceCost(0.27),
-        ),
-    ),
-    PARASITIC_PROBOSCIS(
-        "parasitic proboscis",
-        "A piercing or anchoring feeding organ that extracts resources from a living host.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PARASITISM, 0.82),
-            TraitEffect.ReproductionMultiplier(1.10),
-            TraitEffect.MaintenanceCost(0.3),
-        ),
-    ),
-    ABSORPTIVE_FILAMENTS(
-        "absorptive filaments",
-        "A branching external network that digests or absorbs dissolved nutrients across a large surface.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.ABSORPTION, 0.82),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    HOST_PENETRATING_FILAMENTS(
-        "host-penetrating filaments",
-        "Fine invasive growth enters living tissues and draws resources directly from a host while remaining difficult to remove.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PARASITISM, 0.76),
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.3),
-            TraitEffect.ReproductionMultiplier(1.08),
-            TraitEffect.Defense(-0.05),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(ABSORPTIVE_FILAMENTS),
-        ),
-    ),
-    COLONY_PROBING_TONGUE(
-        "colony-probing tongue",
-        "An extremely elongated adhesive tongue reaches minuscule colonial prey through narrow passages in opened nests.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.COLONY_RAIDING, 0.7),
-            TraitEffect.CaptureAbility(0.28),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        group = TraitGroup.SPECIALIZED_TONGUE,
-    ),
-    PROJECTILE_TONGUE(
-        "projectile tongue",
-        "A rapidly projected adhesive tongue lets a stationary hunter seize small moving prey before it can escape.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.AMBUSH_PREDATION, 0.62),
-            TraitEffect.CaptureAbility(0.22),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-        group = TraitGroup.SPECIALIZED_TONGUE,
-    ),
-    SUCKING_PROBOSCIS(
-        "sucking proboscis",
-        "A narrow piercing mouthpart taps fluids from the living tissues of a host organism.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PARASITISM, 0.58),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-
-    // Herbivory traits
-    GRAZING_MOUTHPARTS(
-        "grazing mouthparts",
-        "Scraping, cropping, grinding, or rasping structures for repeatedly harvesting attached or rooted food.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.82),
-            TraitEffect.CaptureAbility(-0.06),
-            TraitEffect.MaintenanceCost(0.09),
-        ),
-    ),
-    BROWSING_MOUTHPARTS(
-        "browsing mouthparts",
-        "Lips, teeth, beaks, or cutting jaws specialized for selectively cropping leaves and twigs above ground level.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.74),
-            TraitEffect.StrategySupport(EcoStrategy.FRUGIVORY, 0.25),
-            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    FRUIT_EATING_MOUTHPARTS(
-        "fruit-eating mouthparts and digestion",
-        "Grasping, biting, crushing, or swallowing structures and digestion suited to energy-rich fruits.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.FRUGIVORY, 0.78),
-            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.15),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    RUMINANT_STOMACH(
-        "ruminant stomach",
-        "Several fermentation chambers and repeated chewing extract energy from fibrous photosynthetic tissue.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.20),
-            TraitEffect.ReserveCapacity(0.10),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.GUT_FERMENTATION,
-    ),
-    FERMENTING_HINDGUT(
-        "fermenting hindgut",
-        "A large microbe-rich hindgut digests cellulose after food has passed through the stomach.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.16),
-            TraitEffect.ReserveCapacity(0.07),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.GUT_FERMENTATION,
-    ),
-    SEED_CRACKING_MOUTHPARTS(
-        "seed-cracking mouthparts",
-        "Deep reinforced jaws or a stout beak crush hard seeds and nuts from ground and canopy producers.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.54),
-            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.15),
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    LONG_NECK(
-        "long browsing neck",
-        "An elongated neck reaches foliage beyond the feeding height of most ground animals.",
-        listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.3),
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.10),
-            TraitEffect.WaterRequirement(0.04),
-            TraitEffect.MaintenanceCost(0.27),
-        ),
-    ),
-    PREHENSILE_TRUNK(
-        "prehensile trunk",
-        "A muscular mobile appendage manipulates branches, uproots food, and draws water without lowering the whole body.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.18),
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.WaterRequirement(0.03),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-    ),
-    NECTAR_SIPPING_TONGUE(
-        "nectar-sipping tongue",
-        "An elongated tongue or proboscis reaches energy-rich secretions within elevated reproductive structures.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.NECTAR_FEEDING, 1.0),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(-0.09),
-        ),
-        group = TraitGroup.SPECIALIZED_TONGUE,
-    ),
-    HONEY_STORES(
-        "communal honey stores",
-        "Workers concentrate floral sugars into stable comb stores that feed the colony through winter or other seasonal shortages.",
-        listOf(
-            TraitEffect.ReserveCapacity(0.90),
-            TraitEffect.ReproductionMultiplier(0.93),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        requirements = listOf(
-            TraitRequirement.AllOf(
-                setOf(EUSOCIAL_COLONY, NECTAR_SIPPING_TONGUE),
-            ),
-        ),
-    ),
-
-    // Intelligence and tool use
-    INTELLIGENT(
-        "advanced intelligence",
-        "A large, flexible nervous system supports learning, memory, planning, social inference, and novel solutions across many situations.",
-        listOf(
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.Sensing(0.08),
-            TraitEffect.Defense(0.06),
-            TraitEffect.ReserveCapacity(0.05),
-            TraitEffect.NicheCompetitionSensitivity(0.94),
-            TraitEffect.ReproductionMultiplier(1.08),
-            TraitEffect.MaintenanceCost(1.05),
-        ),
-        group = TraitGroup.COGNITIVE_COMPLEXITY,
-    ),
-    SAPIENT(
-        "sapient intelligence",
-        "Exceptional abstraction, cumulative culture, symbolic communication, and deliberate long-term planning reshape how the organism solves ecological problems.",
-        listOf(
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.Sensing(0.08),
-            TraitEffect.Defense(0.08),
-            TraitEffect.ReserveCapacity(0.08),
-            TraitEffect.NicheCompetitionSensitivity(0.90),
-            TraitEffect.ReproductionMultiplier(1.12),
-            TraitEffect.MaintenanceCost(1.65),
-        ),
-        group = TraitGroup.COGNITIVE_COMPLEXITY,
-        requirements = listOf(
-            TraitRequirement.allOf(SLOW_GROWTH),
-        ),
-    ),
-    TOOL_MANIPULATION(
-        "tool manipulation",
-        "Dexterous appendages manipulate stones, sticks, containers, or other objects to obtain defended food.",
-        listOf(
-            TraitEffect.CaptureAbility(0.14),
-            TraitEffect.Defense(0.03),
-            TraitEffect.MaintenanceCost(0.3),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitGroup.COGNITIVE_COMPLEXITY),
-        ),
-    ),
-
-    // Scavenger and decomposer traits
-    SCAVENGING_SENSES(
-        "long-range carrion senses",
-        "Sensory organs capable of locating dead organisms across a broad area.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.6),
-            TraitEffect.MaintenanceCost(0.27),
-        ),
-    ),
-    RESILIENT_DIGESTION(
-        "resilient digestion",
-        "A robust digestive system handles large, irregular meals and extracts nutrition from food of inconsistent quality.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.SCAVENGING, 0.4),
-            TraitEffect.MetabolicDemandMultiplier(0.8),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-    ),
-    DECOMPOSING_ENZYMES(
-        "external decomposing enzymes",
-        "Secreted enzymes break down dead sessile tissue outside the body so its nutrients can be absorbed.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.DECOMPOSITION, 0.86),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    DETRITUS_DIGESTIVE_TRACT(
-        "detritus-digesting gut",
-        "A long digestive tract and microbial community extract energy from fragments of dead sessile organisms.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.DECOMPOSITION, 0.78),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    WASTE_FEEDING_MOUTHPARTS(
-        "waste-feeding mouthparts",
-        "Mouthparts and chemical senses are specialized for locating and consuming nutrient-rich animal waste.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.COPROPHAGY, 0.84),
-            TraitEffect.CaptureAbility(-0.05),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    MARINE_SNOW_COLLECTORS(
-        "marine-snow collectors",
-        "Fine collecting surfaces or appendages gather sinking organic particles from dark or deep water.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.DEPOSIT_FEEDING, 0.84),
-            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.30),
-            TraitEffect.DarkWaterAdaptation,
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-
-    // Reef-related traits
-    RIGID_COLONY_FRAMEWORK(
-        "rigid colony framework",
-        "The organism secretes or assembles a durable supporting framework that protects soft feeding bodies and persists after portions of the colony die.",
-        listOf(
-            TraitEffect.Defense(0.18),
-            TraitEffect.ReproductionMultiplier(0.94),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-    ),
-    REEF_BUILDING(
-        "reef-building growth",
-        "Successive generations extend and bind a rigid colony framework until it becomes persistent three-dimensional aquatic habitat.",
-        listOf(
-            TraitEffect.ReefBuilding(0.08),
-            TraitEffect.ReproductionMultiplier(0.90),
-            TraitEffect.MaintenanceCost(0.27),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(RIGID_COLONY_FRAMEWORK),
-        ),
-    ),
-    SHALLOW_WATER_PHOTOSYMBIOSIS(
-        "shallow-water photosymbiosis",
-        "Light-dependent symbionts nourish a sessile host anchored close to the illuminated seafloor.",
-        listOf(
-            TraitEffect.WaterDepthTolerance(
-                optimalMaximumM = 30.0,
-                absoluteMaximumM = 80.0,
-            ),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    REEF_NESTING(
-        "reef nesting",
-        "Reproduction or shelter depends on cavities and protected surfaces within an aquatic reef.",
-        listOf(
-            TraitEffect.ReefUse(0.75),
-            TraitEffect.Defense(0.08),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    REEF_CAMOUFLAGE(
-        "reef camouflage",
-        "Color, texture, and body outline resemble the varied surfaces of an aquatic reef.",
-        listOf(
-            TraitEffect.ReefUse(0.33),
-            TraitEffect.Camouflage(Habitat.COASTAL, 0.18),
-            TraitEffect.Camouflage(Habitat.SHALLOW_OCEAN, 0.18),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-    ),
-    REEF_SHELTER_DEPENDENCE(
-        "reef shelter dependence",
-        "Feeding, refuge, and daily activity depend on the dense cavities and broken sight-lines of a living reef.",
-        listOf(
-            TraitEffect.ReefUse(1.0),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-    REEF_BORING(
-        "reef-boring mouthparts",
-        "Hard scraping or drilling structures open cavities and expose food within reef material.",
-        listOf(
-            TraitEffect.ReefUse(0.75),
-            TraitEffect.StrategySupport(EcoStrategy.GRAZING, 0.28),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-    ),
-
-    // Photosynthetic traits
-    PHOTOSYNTHETIC_SURFACE(
-        "photosynthetic surface",
-        "A broad light-harvesting body surface containing photosynthetic pigments.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.0),
-            TraitEffect.MaintenanceCost(0.24),
-        ),
-        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
-    ),
-    LARGE_EVERGREEN_LEAVES(
-        "large evergreen leaves",
-        "Large, long-lived leaves maintain a broad light-harvesting canopy throughout the year rather than being replaced as a seasonal cohort.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 1.06),
-            TraitEffect.CanopyLightEfficiency(0.10),
-            TraitEffect.WaterRequirement(0.12),
-            TraitEffect.TemperatureTolerance(colderC = -4.0),
-            TraitEffect.MaintenanceCost(0.33),
-        ),
-        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
-    ),
-    NEEDLE_LEAVES(
-        "needle leaves",
-        "Narrow, tough leaves expose little surface area to freezing air and water loss, trading peak light capture for persistence in cold or dry climates.",
-        listOf(
-            TraitEffect.StrategySupport(EcoStrategy.PHOTOSYNTHESIS, 0.90),
-            TraitEffect.WaterRequirement(-0.08),
-            TraitEffect.TemperatureTolerance(colderC = 4.0),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-        group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
-    ),
-    CANOPY_GROWTH(
-        "canopy growth",
-        "A tall or climbing growth form that places much of the organism within an elevated living canopy.",
-        listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.8),
-            TraitEffect.CanopyLightEfficiency(0.22),
-            TraitEffect.WaterRequirement(0.08),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-    ),
-    SHADE_FRONDS(
-        "broad shade fronds",
-        "Wide light-catching surfaces specialized for dim conditions beneath other organisms.",
-        listOf(
-            TraitEffect.CanopyLightEfficiency(0.38),
-            TraitEffect.InsolationOptimum(-0.22),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE),
-        ),
-    ),
-    EPIPHYTIC_ROOTS(
-        "epiphytic roots",
-        "Roots or analogous anchors cling to another organism above the ground and rapidly absorb intermittent rain, mist, and trapped debris without parasitizing the support.",
-        listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.66),
-            TraitEffect.CanopyLightEfficiency(0.10),
-            TraitEffect.WaterRequirement(0.12),
-            TraitEffect.Defense(-0.04),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(
-            TraitRequirement.AllOf(
-                setOf(
-                    TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
-                    TraitCapability.SUBSTRATE_ANCHORING,
-                ),
-            ),
-        ),
-    ),
-    CUSHION_GROWTH(
-        "cushion growth",
-        "Many short, tightly packed shoots form a low rounded surface that traps heat and moisture while resisting wind and abrasive particles.",
-        listOf(
-            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.5),
-            TraitEffect.TemperatureOptimalTolerance(colderC = 5.0),
-            TraitEffect.WaterRequirement(-0.04),
-            TraitEffect.ReproductionMultiplier(0.92),
-            TraitEffect.Defense(0.05),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        requirements = listOf(
-            TraitRequirement.AllOf(
-                setOf(
-                    TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
-                    TraitCapability.SUBSTRATE_ANCHORING,
-                ),
-            ),
-        ),
-    ),
-    FLOATING_FRONDS(
-        "floating fronds",
-        "Long buoyant photosynthetic blades rise from an aquatic anchor into well-lit surface water.",
-        listOf(
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.4),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.4),
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.2),
-            TraitEffect.InsolationOptimum(-0.06),
-            TraitEffect.MaintenanceCost(0.21),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE),
-        ),
     ),
 }

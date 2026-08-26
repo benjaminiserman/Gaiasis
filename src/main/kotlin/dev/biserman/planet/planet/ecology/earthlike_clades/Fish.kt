@@ -29,6 +29,7 @@ val fish = EarthSpeciesCatalog.animal(
 val cartilaginousFish = fish.descend(
     "cartilaginous fish",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.CARTILAGINOUS_SKELETON,
     CommonTrait.PLACOID_SCALES,
     CommonTrait.GROUP_LIVING
@@ -64,6 +65,7 @@ val bonyFish = fish.descend(
 val gar = bonyFish.descend(
     "gar",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.BONY_SCALES,
     CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.SOLITARY,
@@ -73,6 +75,7 @@ val gar = bonyFish.descend(
 val sturgeon = bonyFish.descend(
     "sturgeon",
     SizeClass.LARGE,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.BONY_SCALES,
     CommonTrait.GROUP_LIVING,
     CommonTrait.ELECTRORECEPTION,
@@ -93,6 +96,7 @@ val teleostei = bonyFish.descend(
 val eel = teleostei.descend(
     "eel",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.UNDULATING_BODY,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SOLITARY,
@@ -109,9 +113,11 @@ val herring = teleostei.descend(
 val swordfish = teleostei.descend(
     "swordfish",
     SizeClass.LARGE,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.SPEAR_BILL,
     CommonTrait.LONG_MIGRATION,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.ECTOTHERMY,
     CommonTrait.GROUP_LIVING
 )
@@ -129,6 +135,7 @@ val minnow = otophysa.descend(
 val carp = otophysa.descend(
     "carp",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SUCTION_FEEDING,
     CommonTrait.COLD_ACTIVE_ENZYMES,
@@ -136,6 +143,7 @@ val carp = otophysa.descend(
 val piranha = otophysa.descend(
     "piranha",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.COOPERATIVE_HUNTING,
     CommonTrait.SERRATED_TEETH,
     CommonTrait.STRONG_JAWS,
@@ -144,6 +152,7 @@ val piranha = otophysa.descend(
 val catfish = otophysa.descend(
     "catfish",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SOLITARY,
     CommonTrait.SUCTION_FEEDING,
     CommonTrait.KEEN_SCENT_SENSE,
@@ -155,6 +164,7 @@ val catfish = otophysa.descend(
 val protacanthopterygii = teleostei.descend(
     "protacanthopterygii",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.REGIONAL_MIGRATION,
     CommonTrait.NATAL_HOMING,
     CommonTrait.AMBUSH_MUSCULATURE,
@@ -183,6 +193,7 @@ val percomorpha = teleostei.descend(
 val gobie = percomorpha.descend(
     "gobie",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.SOLITARY,
@@ -192,6 +203,7 @@ val gobie = percomorpha.descend(
 val seahorse = percomorpha.descend(
     "seahorse",
     SizeClass.TINY,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.REDUCED_LIMBS,
     CommonTrait.PREHENSILE_TAIL,
     CommonTrait.VIVIPARITY,
@@ -202,6 +214,7 @@ val seahorse = percomorpha.descend(
 val tuna = percomorpha.descend(
     "tuna",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.ECTOTHERMY,
     CommonTrait.SCHOOLING,
@@ -211,6 +224,7 @@ val tuna = percomorpha.descend(
 val flatfish = percomorpha.descend(
     "flatfish",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FLATTENED_PHYSIQUE,
     CommonTrait.SOLITARY,
     CommonTrait.EURYHALINE_OSMOREGULATION,
@@ -226,6 +240,7 @@ val flyingfish = percomorpha.descend(
 val perch = percomorpha.descend(
     "perch",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SUCTION_FEEDING,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.COLD_ACTIVE_ENZYMES,
@@ -234,6 +249,7 @@ val perch = percomorpha.descend(
 val pufferfish = percomorpha.descend(
     "pufferfish",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.INFLATABLE_BODY,
     CommonTrait.TOXIC_SKIN,
     CommonTrait.SPINES,
@@ -243,6 +259,7 @@ val pufferfish = percomorpha.descend(
 val wrasse = percomorpha.descend(
     "wrasse",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.REEF_CAMOUFLAGE,
     CommonTrait.REEF_NESTING,
     CommonTrait.TERRITORIAL,
@@ -254,7 +271,7 @@ val tetrapoda = bonyFish.descend(
     "tetrapoda",
     SizeClass.SMALL,
     CommonTrait.WALKING_LIMBS,
-    CommonTrait.LUNGS,
+    CommonTrait.TRACHEA,
     CommonTrait.SOLITARY,
     minus = listOf(CommonTrait.AQUATIC_LIMBS, CommonTrait.GILLS, ColorTrait.COUNTERSHADE_COLORATION)
 )

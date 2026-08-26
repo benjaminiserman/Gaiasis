@@ -16,7 +16,8 @@ class SpeciesCompilationContext internal constructor(
 ) {
     private val habitatAccess = BooleanArray(Habitat.entries.size)
     private val habitatAffinity = DoubleArray(Habitat.entries.size)
-    private val strategySupport = DoubleArray(EcoStrategy.entries.size)
+    private val strategyAccess = BooleanArray(EcoStrategy.entries.size)
+    private val strategyAffinity = DoubleArray(EcoStrategy.entries.size)
     private val camouflage = DoubleArray(Habitat.entries.size)
     private var camouflageColor: BiologicalColor? = null
     private var photosyntheticColor: BiologicalColor? = null
@@ -131,18 +132,18 @@ class SpeciesCompilationContext internal constructor(
             habitatAccess[Habitat.DARK_WATER.ordinal] = false
         }
 
-        val grazingSupport = strategySupport[EcoStrategy.GRAZING.ordinal]
+        val grazingSupport = effectiveStrategySupport(EcoStrategy.GRAZING)
         val predationSupport = max(
-            strategySupport[EcoStrategy.AMBUSH_PREDATION.ordinal],
-            strategySupport[EcoStrategy.PURSUIT_PREDATION.ordinal],
+            effectiveStrategySupport(EcoStrategy.AMBUSH_PREDATION),
+            effectiveStrategySupport(EcoStrategy.PURSUIT_PREDATION),
         )
         if (
             grazingSupport >= GENERALIST_MINIMUM_METHOD_SUPPORT &&
             predationSupport >= GENERALIST_MINIMUM_METHOD_SUPPORT
         ) {
-            strategySupport[EcoStrategy.GENERALIST_FORAGING.ordinal] =
-                (max(grazingSupport, predationSupport) + GENERALIST_BREADTH_BONUS)
-                    .coerceAtMost(1.0)
+            accessStrategy(EcoStrategy.GENERALIST_FORAGING)
+            strategyAffinity[EcoStrategy.GENERALIST_FORAGING.ordinal] +=
+                max(grazingSupport, predationSupport) + GENERALIST_BREADTH_BONUS
         }
     }
 
@@ -159,8 +160,8 @@ class SpeciesCompilationContext internal constructor(
                 0.0
             }
         }
-        strategySupport.indices.forEach {
-            strategySupport[it] = strategySupport[it].coerceIn(0.0, 1.0)
+        val strategySupport = DoubleArray(EcoStrategy.entries.size) {
+            effectiveStrategySupport(EcoStrategy.entries[it])
         }
 
         val nicheFit = DoubleArray(niches.size) { nicheIndex ->
@@ -292,6 +293,7 @@ class SpeciesCompilationContext internal constructor(
                 camouflageColor = camouflageColor,
                 habitatAccess = habitatAccess,
                 habitatSupport = habitatSupport,
+                strategyAccess = strategyAccess,
                 strategySupport = strategySupport,
                 camouflage = camouflage,
                 nicheFit = nicheFit,
@@ -313,9 +315,16 @@ class SpeciesCompilationContext internal constructor(
         habitatAffinity[habitat.ordinal] += amount
     }
 
-    fun supportStrategy(strategy: EcoStrategy, amount: Double) {
-        strategySupport[strategy.ordinal] += amount
+    fun accessStrategy(strategy: EcoStrategy) {
+        strategyAccess[strategy.ordinal] = true
     }
+
+    fun adjustStrategyAffinity(strategy: EcoStrategy, amount: Double) {
+        strategyAffinity[strategy.ordinal] += amount
+    }
+
+    private fun effectiveStrategySupport(strategy: EcoStrategy): Double =
+        if (strategyAccess[strategy.ordinal]) strategyAffinity[strategy.ordinal].coerceIn(0.0, 1.0) else 0.0
 
     fun shiftTemperature(degreesC: Double) {
         temperatureShift += degreesC

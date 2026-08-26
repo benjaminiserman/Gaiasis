@@ -22,6 +22,7 @@ val ratite = bird.descend(
     CommonTrait.WALKING_LIMBS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.LONG_NECK,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.NEIGHBOR_DISPERSAL,
@@ -33,13 +34,26 @@ val fowl = bird.descend(
     CommonTrait.WALKING_LIMBS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FREQUENT_REPRODUCTION,
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
+    CommonTrait.WEAK_WINGS
+)
+val waterfowl = bird.descend(
+    "waterfowl",
+    SizeClass.SMALL,
+    CommonTrait.GRAZING_MOUTHPARTS,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.GROUP_LIVING,
+    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.WATERPROOF_PLUMAGE,
+    CommonTrait.LONG_MIGRATION
 )
 val grebe = bird.descend(
     "grebe",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.AMPHIBIOUS_LIMBS,
@@ -50,6 +64,7 @@ val grebe = bird.descend(
 val crane = bird.descend(
     "crane",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.WADING_LIMBS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.SPEAR_BILL,
@@ -60,6 +75,7 @@ val crane = bird.descend(
 val gull = bird.descend(
     "gull",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.WADING_LIMBS,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.WATERPROOF_PLUMAGE,
@@ -73,13 +89,15 @@ val hummingbird = bird.descend(
     CommonTrait.POLLEN_CARRYING_SURFACES,
     CommonTrait.LONG_MIGRATION,
     CommonTrait.CHIRPING_CALL,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.COMPLEX_VOCALIZATIONS,
     ColorTrait.RAINBOW_COLORATION
 )
 val penguin = bird.descend(
     "penguin",
     SizeClass.SMALL,
-    CommonTrait.AQUATIC_LIMBS,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.SEA_ICE_ROOKERY,
     CommonTrait.MOTION_TRACKING_SENSES,
@@ -87,11 +105,13 @@ val penguin = bird.descend(
     CommonTrait.WATERPROOF_PLUMAGE,
     CommonTrait.FAT_RESERVES,
     CommonTrait.TRUMPETING_CALL,
+    CommonTrait.STREAMLINED_PHYSIQUE,
     ColorTrait.COUNTERSHADE_COLORATION,
 )
 val owl = bird.descend(
     "owl",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.HOOKED_TALONS,
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.KEEN_HEARING,
@@ -103,14 +123,18 @@ val owl = bird.descend(
 val hawk = bird.descend(
     "hawk",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.KEEN_EYESIGHT,
     CommonTrait.MOTION_TRACKING_SENSES,
+    CommonTrait.SWIFT_LIMBS,
+    CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.HOOKED_TALONS,
 )
 val vulture = bird.descend(
     "vulture",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.RESILIENT_DIGESTION,
     CommonTrait.LONG_MIGRATION,
@@ -126,6 +150,7 @@ val hornbill = bird.descend(
 val woodpecker = bird.descend(
     "woodpecker",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.DIGGING_LIMBS,
@@ -135,8 +160,10 @@ val woodpecker = bird.descend(
 val songbird = bird.descend(
     "songbird",
     SizeClass.TINY,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
+    CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.CHIRPING_CALL,
     CommonTrait.REGIONAL_MIGRATION,
 )
@@ -144,6 +171,7 @@ val parrot = bird.descend(
     "parrot",
     SizeClass.SMALL,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
+    CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.EXTENDED_PARENTAL_CARE,
     CommonTrait.IMITATIVE_VOCALIZATION,
@@ -153,6 +181,7 @@ val parrot = bird.descend(
 val corvid = bird.descend(
     "corvid",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.TOOL_MANIPULATION,

@@ -387,7 +387,7 @@ class EcologyWorldEcosystemHealthTest {
             else -> 100.0
         }
         val trophicSeedFraction = when (niche.strategy) {
-            EcoStrategy.PHOTOSYNTHESIS, EcoStrategy.ABSORPTION -> 0.65
+            EcoStrategy.PHOTOSYNTHESIS -> 0.65
             EcoStrategy.FILTER_FEEDING,
             EcoStrategy.GRAZING,
             EcoStrategy.FRUGIVORY,

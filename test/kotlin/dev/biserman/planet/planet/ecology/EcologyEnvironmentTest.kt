@@ -309,7 +309,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.SMALL,
             motile = true,
             traits = listOfNotNull(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
@@ -318,6 +318,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.DIGGING_LIMBS,
                 CommonTrait.FOSSORIAL_LIVING,
+                CommonTrait.MEAT_EATING_MOUTHPARTS,
                 CommonTrait.AMBUSH_MUSCULATURE,
                 CommonTrait.BURROW_BUILDER.takeIf { buildsBurrow },
             ),
@@ -355,7 +356,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.MEDIUM,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 thermalTrait,
                 CommonTrait.SOLITARY,
@@ -397,7 +398,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.MEDIUM,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -472,7 +473,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.MEDIUM,
             motile = motile,
             traits = listOfNotNull(
-                if (motile) CommonTrait.LUNGS else CommonTrait.PASSIVE_RESPIRATION,
+                if (motile) CommonTrait.TRACHEA else CommonTrait.PASSIVE_RESPIRATION,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.ENDOTHERMY.takeIf { motile },
@@ -575,7 +576,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.SMALL,
             motile = false,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -614,7 +615,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.SMALL,
             motile = false,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
@@ -655,7 +656,7 @@ class EcologyEnvironmentTest {
             sizeClass = SizeClass.MEDIUM,
             motile = true,
             traits = listOf(
-                CommonTrait.LUNGS,
+                CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ENDOTHERMY,
                 CommonTrait.SOLITARY,
@@ -663,6 +664,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.VASCULAR_SYSTEM,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WINGS,
+                CommonTrait.MEAT_EATING_MOUTHPARTS,
                 CommonTrait.SCAVENGING_SENSES,
             ),
         )

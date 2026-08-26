@@ -15,6 +15,7 @@ val reptile = tetrapoda.descend(
 val crocodile = reptile.extend(
     "crocodile",
     SizeClass.LARGE,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.STRONG_JAWS,
@@ -28,6 +29,7 @@ val crocodile = reptile.extend(
 val tuatara = reptile.extend(
     "tuatara",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SLOW_GROWTH,
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.AMBUSH_MUSCULATURE,
@@ -43,6 +45,7 @@ val tuatara = reptile.extend(
 val lizard = reptile.descend(
     "lizard",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SLENDER_PHYSIQUE,
@@ -87,13 +90,14 @@ val iguana = lizard.extend(
     SizeClass.SMALL,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.BROWSING_MOUTHPARTS,
-    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
+    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE, CommonTrait.MEAT_EATING_MOUTHPARTS)
 )
 
 // snakes
 val serpent = reptile.descend(
     "serpent",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.KEEN_SCENT_SENSE,
     CommonTrait.UNDULATING_BODY,
     CommonTrait.SLENDER_PHYSIQUE,

@@ -37,9 +37,16 @@ val rodent = glires.descend(
 )
 val mouse = rodent.descend(
     "mouse",
-    SizeClass.SMALL,
+    SizeClass.TINY,
     CommonTrait.GROUP_LIVING,
     CommonTrait.CATHEMERAL
+)
+val rat = rodent.descend(
+    "mouse",
+    SizeClass.SMALL,
+    CommonTrait.GROUP_LIVING,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.NOCTURNAL
 )
 val porcupine = rodent.descend(
     "porcupine",
@@ -57,6 +64,7 @@ val marmot = rodent.descend(
 val squirrel = rodent.descend(
     "squirrel",
     SizeClass.SMALL,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
@@ -84,7 +92,7 @@ val rabbit = leporid.descend(
 val hare = leporid.descend(
     "hare",
     SizeClass.SMALL,
-    CommonTrait.SWIFT_LEGS,
+    CommonTrait.SWIFT_LIMBS,
     minus = listOf(CommonTrait.BURROW_BUILDER, CommonTrait.DIGGING_LIMBS)
 )
 val pika = lagomorph.descend(
@@ -114,6 +122,7 @@ val megabat = bat.descend(
 val microbat = bat.descend(
     "microbat",
     SizeClass.TINY,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.WOOLLY_UNDERCOAT,
     CommonTrait.KEEN_HEARING,
@@ -126,6 +135,7 @@ val trueInsectivore = mammal.descend(
     SizeClass.SMALL,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.TERRITORIAL
 )
 val hedgehog = trueInsectivore.descend(
@@ -159,6 +169,8 @@ val shrew = trueInsectivore.descend(
 val gymnure = trueInsectivore.descend(
     "gymnure",
     SizeClass.SMALL,
+    CommonTrait.AMBUSH_MUSCULATURE,
+    CommonTrait.FRUIT_EATING_MOUTHPARTS
 )
 
 // primates
@@ -177,6 +189,7 @@ val primate = mammal.descend(
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.NAILS,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     minus = listOf(CommonTrait.CLAWS)
 )
 val monkey = primate.descend(
@@ -196,7 +209,10 @@ val ape = primate.descend(
     SizeClass.MEDIUM,
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.SLOW_GROWTH,
-    minus = listOf(CommonTrait.GRAZING_MOUTHPARTS, CommonTrait.TAIL)
+    minus = listOf(
+        CommonTrait.GRAZING_MOUTHPARTS,
+        CommonTrait.TAIL,
+    )
 )
 
 // ungulates
@@ -213,7 +229,7 @@ val ungulate = mammal.descend(
 val horse = ungulate.descend(
     "horse",
     SizeClass.LARGE,
-    CommonTrait.SWIFT_LEGS,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.FERMENTING_HINDGUT,
     CommonTrait.SWEAT_GLANDS,
@@ -276,7 +292,7 @@ val deer = ruminant.descend(
     SizeClass.MEDIUM,
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.DENSE_UNDERCOAT,
-    CommonTrait.SWIFT_LEGS,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.SEASONAL_WINTER_COAT,
     CommonTrait.GROUP_LIVING,
     CommonTrait.VESPERTINE,
@@ -290,7 +306,7 @@ val deer = ruminant.descend(
 val antelope = ruminant.descend(
     "antelope",
     SizeClass.MEDIUM,
-    CommonTrait.SWIFT_LEGS,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
     CommonTrait.BLEATING_CALL,
 )
@@ -340,11 +356,12 @@ val dolphin = cetacean.descend(
 val carnivore = mammal.descend(
     "carnivores",
     SizeClass.MEDIUM,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.TEETH,
     CommonTrait.FANGS
 )
-val bear = mammal.descend(
+val bear = carnivore.descend(
     "bear",
     SizeClass.LARGE,
     CommonTrait.HETEROTHERMY,
@@ -354,7 +371,8 @@ val bear = mammal.descend(
     CommonTrait.FAT_RESERVES,
     CommonTrait.GROWLING_CALL,
     CommonTrait.BULKY_PHYSIQUE,
-    CommonTrait.DIURNAL
+    CommonTrait.DIURNAL,
+    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE)
 )
 val raccoon = carnivore.descend(
     "raccoon",
@@ -369,6 +387,7 @@ val raccoon = carnivore.descend(
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.CATHEMERAL,
     ColorTrait.PALE_COLORATION,
+    minus = listOf(CommonTrait.AMBUSH_MUSCULATURE)
 )
 
 val seal = carnivore.descend(
@@ -418,7 +437,7 @@ val canid = carnivore.descend(
 val wolf = canid.descend(
     "wolf",
     SizeClass.MEDIUM,
-    CommonTrait.SWIFT_LEGS,
+    CommonTrait.SWIFT_LIMBS,
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.COOPERATIVE_HUNTING,
     CommonTrait.GROUP_LIVING,
@@ -453,7 +472,7 @@ val badger = mustelid.descend(
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.KEEN_SCENT_SENSE,
-    minus = listOf(CommonTrait.SLENDER_PHYSIQUE)
+    minus = listOf(CommonTrait.SLENDER_PHYSIQUE, CommonTrait.AMBUSH_MUSCULATURE)
 )
 val otter = mustelid.descend(
     "otter",

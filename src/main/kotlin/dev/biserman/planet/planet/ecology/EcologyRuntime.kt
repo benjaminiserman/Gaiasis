@@ -788,8 +788,7 @@ class EcologyRuntime(
             val habitat = environment.habitatAvailability(niche.habitat)
             val baseResource = environment.resourceSupport(niche, species.sizeClass)
             val canUseWasteAsFertilizer =
-                species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0 ||
-                    species.niche.supportFor(EcoStrategy.ABSORPTION) > 0.0
+                species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
             val resource =
                 if (canUseWasteAsFertilizer && species.interactions.wasteFertilization > 0.0) {
                     (
