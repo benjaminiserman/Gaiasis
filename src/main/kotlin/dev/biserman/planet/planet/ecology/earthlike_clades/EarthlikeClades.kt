@@ -22,7 +22,6 @@ object EarthlikeClades {
         gastropod,
         crustacean,
         bivalve,
-        cephalopod,
         moss,
         fern,
         conifer,
