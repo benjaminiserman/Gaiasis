@@ -5,6 +5,7 @@ import dev.biserman.planet.gui.Gui.Mode
 import dev.biserman.planet.planet.Planet
 import dev.biserman.planet.planet.climate.ClimateSimulation
 import dev.biserman.planet.planet.ecology.PlanetEcology
+import dev.biserman.planet.planet.tectonics.Erosion
 import dev.biserman.planet.planet.tectonics.Tectonics
 import dev.biserman.planet.rendering.PlanetRenderer
 import godot.annotation.RegisterClass
@@ -157,7 +158,7 @@ class Main : Node() {
         val simulations = mapOf(
             "tectonics" to { planet: Planet -> Tectonics.stepTectonicsSimulation(planet) },
             "climate" to { planet: Planet -> ClimateSimulation.stepClimateSimulation(planet) },
-            "erosion" to { planet: Planet -> Tectonics.performErosion(planet) }
+            "erosion" to { planet: Planet -> Erosion.performErosion(planet) }
         )
     }
 }

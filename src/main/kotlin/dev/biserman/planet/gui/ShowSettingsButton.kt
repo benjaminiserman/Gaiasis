@@ -99,6 +99,7 @@ class ShowSettingsButton : OptionButton() {
             "tectonics",
             "debug",
             "ecology",
+            "biota_distributions",
             "animal_ranges",
             "sessile_ranges",
         ).forEachIndexed { index, category ->

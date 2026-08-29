@@ -307,6 +307,17 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
             )
         }
 
+        (0..<planet.biotaDistributions.size).forEach { id ->
+            val mode = SimpleColorMode(
+                this@PlanetRenderer,
+                "biota_distribution_$id",
+                categories = listOf("biota_distributions"),
+            ) { tile ->
+                if (tile in planet.biotaDistributions[id].region) Color.white else Color.black
+            }
+            add(mode)
+        }
+
         EarthSpeciesCatalog.ALL.filter { it.motile }.sortedBy { it.id }.forEach { species ->
             val mode = SimpleDoubleColorMode(
                 this@PlanetRenderer,
@@ -565,7 +576,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
         SimpleColorMode(
             this,
             "erosion",
-            categories = listOf("erosion", "overlay"),
+            categories = listOf("tectonics", "overlay"),
         ) {
             val scaled = it.erosionDelta.scaleAndCoerceIn(-50.0..50.0, -1.0..1.0).absoluteValue
             when {
@@ -577,12 +588,12 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
         SimpleColorMode(
             this,
             "deposit_flow",
-            categories = listOf("erosion", "overlay"),
+            categories = listOf("tectonics", "overlay"),
         ) { Color.green * it.depositFlow.scaleAndCoerceIn(0.0..250.0, 0.0..1.0) },
         SimpleColorMode(
             this,
             "water_flow",
-            categories = listOf("erosion", "overlay"),
+            categories = listOf("tectonics", "overlay"),
         ) { Color.blue * it.waterFlow.scaleAndCoerceIn(0.0..50.0, 0.0..1.0) },
         SimpleColorMode(
             this,

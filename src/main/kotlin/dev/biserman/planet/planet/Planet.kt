@@ -247,8 +247,8 @@ class Planet(val seed: Int, val size: Int) {
     fun makeTopology(degree: Int): Topology {
         val icosahedron = makeIcosahedron()
         val sub = icosahedron.subdivideIcosahedron(degree)
-        sub.distortTriangles(0.5)
-        sub.relaxRepeatedly(500)
+        sub.distortTriangles(1.0)
+//        sub.relaxRepeatedly(500)
         sub.reorderVerts()
         return sub.toTopology()
     }

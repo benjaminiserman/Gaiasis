@@ -3,11 +3,7 @@ package dev.biserman.planet.planet.tectonics
 import dev.biserman.planet.Main
 import dev.biserman.planet.geometry.*
 import dev.biserman.planet.gui.Gui
-import dev.biserman.planet.planet.BiotaDistribution
-import dev.biserman.planet.planet.Planet
-import dev.biserman.planet.planet.PlanetRegion
-import dev.biserman.planet.planet.PlanetTile
-import dev.biserman.planet.planet.PointForce
+import dev.biserman.planet.planet.*
 import dev.biserman.planet.planet.tectonics.Meteor.impactMeteor
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.boundarySmoothingMinSamePlateNeighbors
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.boundarySmoothingPasses
@@ -15,32 +11,23 @@ import dev.biserman.planet.planet.tectonics.TectonicGlobals.continentSpringDampi
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.continentSpringSearchRadius
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.continentSpringStiffness
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.convergenceSearchRadius
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositLoss
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositMultiplier
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositStrength
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.depositionStartHeight
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.desiredLandScalePow
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.divergenceContinuityStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.edgeInteractionStrength
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.elevationErosion
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.guardrailStrictness
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.mantleConvectionStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.maxAverageContinentalHeightGuardrail
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.maxElevation
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.maxErosionProportion
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.minAverageContinentalHeightGuardrail
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.minElevation
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.minPlateSize
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.oceanicSubsidence
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.plateMergeCutoff
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.plateTorqueScalar
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.prominenceErosion
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.searchMaxResults
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.springPlateContributionStrength
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.tectonicElevationVariogram
+import dev.biserman.planet.planet.tectonics.TectonicGlobals.tectonicElevationShepardDegree
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.tectonicSimulationStop
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.tryHotspotEruption
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.waterErosion
 import dev.biserman.planet.topology.Border
 import dev.biserman.planet.topology.Tile
 import dev.biserman.planet.utils.UtilityExtensions.formatDigits
@@ -50,16 +37,8 @@ import godot.common.util.lerp
 import godot.core.Color
 import godot.core.Vector3
 import godot.global.GD
-import kotlin.collections.associateWith
-import kotlin.collections.filter
-import kotlin.collections.iterator
-import kotlin.collections.map
-import kotlin.collections.mapValues
-import kotlin.collections.withIndex
-import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.pow
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
@@ -533,15 +512,11 @@ object Tectonics {
                 val nearestMovedTilesForPlate =
                     nearestMovedTiles.filter { it.tile.tectonicPlate == overridingPlate.key }
                 newTileMap[tile] = nearestMovedTile.tile.copy().apply {
-                    val goalElevation = Kriging.interpolate(
+                    this.elevation = Shepard.interpolate(
                         nearestMovedTilesForPlate.map { it.newPosition to it.tile.elevation },
                         tile.position,
-                        tectonicElevationVariogram
+                        tectonicElevationShepardDegree,
                     )
-                    val closestElevation = nearestMovedTilesForPlate
-                        .minBy { (it.tile.elevation - goalElevation).absoluteValue }
-                        .tile.elevation
-                    this.elevation = lerp(goalElevation, closestElevation, 0.5)
 
                     this.tile = tile
                     this.movement += (tile.position - nearestMovedTile.newPosition)
@@ -687,89 +662,6 @@ object Tectonics {
         }
     }
 
-    fun performErosion(planet: Planet) {
-        val deposits = planet.planetTiles.values.associateWith { 0.0 }.toMutableMap()
-        val waterFlow = planet.planetTiles.values.associateWith { 1.0 }.toMutableMap()
-        val currentLandPercent =
-            planet.planetTiles.values.count { it.isAboveWater }.toDouble() / planet.planetTiles.size
-        val landPercentDepositScale =
-            (TectonicRuntimeConfig.desiredLandPercent.coerceIn(0.0, 1.0) / currentLandPercent.coerceIn(0.01, 1.0))
-                .pow(desiredLandScalePow)
-                .coerceIn(0.25, 4.0)
-        val effectiveDepositMultiplier = depositMultiplier * landPercentDepositScale
-
-        for (planetTile in planet.planetTiles.values.sortedByDescending { it.elevation }) {
-            val originalElevation = planetTile.elevation
-            val prominenceScale = planetTile.prominence.scaleAndCoerceIn(0.0..1000.0, 0.0..1.0)
-            val surroundingAverageElevation = planetTile.neighbors.map { it.elevation }.average()
-            val deposit = deposits[planetTile]!!
-            val water = waterFlow[planetTile]!!
-            val depositTaken =
-                if (planetTile.elevation <= depositionStartHeight) {
-                    deposit * depositStrength * (1 - prominenceScale).pow(3)
-                } else {
-                    0.0
-                }
-            planetTile.elevation += (depositTaken * (1 - depositLoss))
-                .coerceIn(
-                    0.0..max(
-                        0.0,
-                        (surroundingAverageElevation - planetTile.elevation)
-                    )
-                )
-
-            val downhillTiles = planetTile.neighbors.mapNotNull { neighbor ->
-                val decline = planetTile.elevation - neighbor.elevation
-                if (decline.isFinite() && decline > 0.0) neighbor to decline else null
-            }
-            val sumDecline = downhillTiles.sumOf { (_, decline) -> decline }
-            val erosion = max(
-                0.0,
-                min(
-                    planetTile.prominence,
-                    min(
-                        planetTile.elevation * maxErosionProportion,
-                        planetTile.prominence.pow(0.5) * prominenceErosion +
-                            planetTile.elevation.pow(2) * elevationErosion +
-                            water * waterErosion
-                    )
-                )
-            )
-            val totalDepositAvailable = max(0.0, (erosion + deposit - depositTaken) * effectiveDepositMultiplier)
-
-            planetTile.elevation -= erosion
-
-            // deposit water
-            if (sumDecline > 0.0 && planetTile.isAboveWater && water.isFinite()) {
-                downhillTiles.forEach { (depositeeTile, decline) ->
-                    val waterSent = water * decline / sumDecline
-                    waterFlow[depositeeTile] = (waterFlow[depositeeTile] ?: 0.0) + waterSent
-                }
-            }
-
-            // deposit sediment
-            if (sumDecline > 0.0 && totalDepositAvailable >= 0.1 && totalDepositAvailable.isFinite()) {
-                downhillTiles.forEach { (depositeeTile, decline) ->
-                    val depositSent = totalDepositAvailable * decline / sumDecline
-                    deposits[depositeeTile] = (deposits[depositeeTile] ?: 0.0) + depositSent
-                }
-            } else {
-                planetTile.elevation += max(
-                    0.0,
-                    min(
-                        totalDepositAvailable,
-                        surroundingAverageElevation - planetTile.elevation
-                    )
-                )
-            }
-
-            planetTile.erosionDelta = planetTile.elevation - originalElevation
-            planetTile.accruedDeposit += planetTile.erosionDelta
-            planetTile.depositFlow = deposits[planetTile]!!
-            planetTile.waterFlow = waterFlow[planetTile]!!
-        }
-    }
-
     fun wrapMeasureTime(name: String, block: () -> Unit): Pair<String, Duration> = name to measureTime(block)
 
     fun stepTectonicsSimulation(planet: Planet) {
@@ -778,7 +670,7 @@ object Tectonics {
             wrapMeasureTime("simulateGeology") { Geology.simulateGeology(planet) },
             wrapMeasureTime("impactMeteor") { impactMeteor(planet) },
             wrapMeasureTime("stepTectonicPlateForces") { stepTectonicPlateForces(planet) },
-            wrapMeasureTime("performErosion") { performErosion(planet) },
+            wrapMeasureTime("performErosion") { Erosion.performErosion(planet) },
             wrapMeasureTime("runGuardrails") {
                 planet.planetTiles.values.forEach {
                     it.elevation = it.elevation.coerceIn(minElevation..maxElevation)

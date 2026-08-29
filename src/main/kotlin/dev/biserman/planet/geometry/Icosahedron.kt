@@ -117,7 +117,7 @@ fun (MutMesh).distortTriangles(distortionRate: Double = 0.5, iterations: Int = 6
         totalDistortion -= iterationDistortion
 
         this.distortMesh(iterationDistortion)
-        this.relaxMesh(0.5)
+        this.relaxMesh(0.075)
     }
 }
 
@@ -203,7 +203,6 @@ fun (MutMesh).distortMesh(degree: Int): Boolean {
 }
 
 fun (MutMesh).relaxMesh(multiplier: Double): Double {
-    return 0.0
     val totalSurfaceArea = 4 * PI
     val idealTriArea = totalSurfaceArea / this.tris.size
     val idealEdgeLength = sqrt(idealTriArea * 4 / sqrt(3.0))

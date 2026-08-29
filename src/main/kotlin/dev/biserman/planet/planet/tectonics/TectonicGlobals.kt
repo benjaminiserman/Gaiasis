@@ -34,7 +34,7 @@ object TectonicGlobals {
     // Least-squares fit of corrected degree-35 tile inertia tensors to the legacy area
     // calculation across representative 10-14 plate partitions. Apply it to every
     // area-weighted tectonic term so forces and inertia remain in the same calibrated units.
-    var tectonicAreaScale = 0.11513827487177024
+    var tectonicAreaScale = 0.0973323650562418
     var riftCutoff = 0.25
     var riftSeparationStrength = 0.1
     var minElevation = -12000.0
@@ -53,6 +53,7 @@ object TectonicGlobals {
     var divergenceFullSeparationSpeed = 0.5 // tile radii per step
     var divergenceMinNormalMotion = 0.5 // reject boundaries dominated by transform motion
     var searchMaxResults = 7
+    var tectonicElevationShepardDegree = 2.0
     var divergencePatchUplift = -1000
 
     var continentSpringStiffness = 1.0
@@ -60,7 +61,7 @@ object TectonicGlobals {
     var continentSpringSearchRadius = 2.0 // multiple of average tile radius
 
     var overridingElevationStrengthScale = 1600.0
-    var subductingElevationStrengthScale = -1200.0
+    var subductingElevationStrengthScale = -7500.0
     var convergingElevationStrengthScale = 1800.0
     var subductionDensityThreshold = 0.5
     var oceanOceanArcElevationStrength = 30000.0
@@ -82,6 +83,14 @@ object TectonicGlobals {
     var waterErosion = 2.0
     var depositionStartHeight = 1000
     var maxErosionProportion = 1.0
+
+    var oceanicErosion = 10.0
+    var oceanSubsidenceFloor = -5000.0
+    var oceanSubsidenceFloorCurve = 0.003
+    var oceanSubsidenceFloorScale = 100.0
+    var oceanSubsidenceCeiling = -1400.0
+    var oceanSubsidenceCeilingCurve = 0.005
+    var oceanSubsidenceCeilingScale = 100.0
 
     var accruedDepositThreshold = 800.0
     var accruedErosionThreshold = -400.0
@@ -108,9 +117,10 @@ object TectonicGlobals {
     @JsonIgnore
     val tectonicElevationVariogram = Kriging.variogram(estimatedAverageRadius * 0.001, 10.0, 1000.0)
 
-    // desmos: f\left(x\right)\ =\ \frac{110}{1+e^{0.005\left(x+1400\right)}}-\frac{100}{1+e^{0.003\left(x+5500\right)}}
+    // desmos: f\left(x\right)\ =\ \frac{100}{1+e^{0.005\left(x+1400\right)}}-\frac{100}{1+e^{0.003\left(x+5500\right)}}
     fun oceanicSubsidence(elevation: Double) =
-        110 * sigmoid(elevation, 0.005, 1400.0) - 100 * sigmoid(elevation, 0.003, 5500.0)
+        oceanSubsidenceCeilingScale * sigmoid(elevation, oceanSubsidenceCeilingCurve, -oceanSubsidenceCeiling) -
+            oceanSubsidenceFloorScale * sigmoid(elevation, oceanSubsidenceFloorCurve, -oceanSubsidenceFloor)
 
     var hotspotEruptionChance = 0.45
     var hotspotStrength = 7500f.pow(2)
