@@ -283,7 +283,7 @@ fun broodParasitismOf(
     TargetedRelationshipTrait(
         displayName = "$hostDisplayName brood host",
         description =
-            "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+        "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
         relationships = listOf(
             RelationshipEffect.RequiresTarget(
                 SpeciesSelector.ExactSpecies(hostSpeciesId),
