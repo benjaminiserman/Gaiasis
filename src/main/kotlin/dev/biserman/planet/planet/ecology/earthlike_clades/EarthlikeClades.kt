@@ -11,26 +11,6 @@ import dev.biserman.planet.planet.ecology.SpeciesTrait
  * Similar to EarthSpeciesCatalog, but a bit less specific to Earth
  */
 object EarthlikeClades {
-    val majorCreatureGroups = listOf(
-        mammal,
-        reptile,
-        amphibian,
-        fish,
-        bird,
-        insect,
-        arachnid,
-        mollusc,
-        crustacean,
-        cnidarian,
-        bivalve,
-        moss,
-        fern,
-        conifer,
-        angiosperm,
-        mold,
-        mushroom,
-    )
-
     val forb = EarthSpeciesCatalog.sessile(
         "forb",
         SizeClass.SMALL,
