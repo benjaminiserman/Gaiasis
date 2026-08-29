@@ -178,6 +178,7 @@ private class BenchmarkScenario(
                     CommonTrait.SOLITARY,
                     CommonTrait.TERRESTRIAL_OVOSPORE,
                     CommonTrait.VASCULAR_SYSTEM,
+                    CommonTrait.BONY_SKELETON,
                     CommonTrait.LIMBED_BODY,
                     CommonTrait.WALKING_LIMBS,
                     strategyTrait,

@@ -240,6 +240,7 @@ class EcologyMovementTest {
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,

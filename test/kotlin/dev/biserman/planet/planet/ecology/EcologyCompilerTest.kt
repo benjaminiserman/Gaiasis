@@ -262,8 +262,10 @@ class EcologyCompilerTest {
         val small = EcologyCompiler.compile(listOf(predator("small", SizeClass.SMALL))).species.single()
         val huge = EcologyCompiler.compile(listOf(predator("huge", SizeClass.HUGE))).species.single()
 
-        assertEquals(SizeClass.SMALL.typicalMassKg, small.physiology.massKg, message = "Size foundation establishes mass and slightly widens temperature range: expected `small.physiology.massKg` to match `SizeClass.SMALL.typicalMassKg`")
-        assertEquals(SizeClass.HUGE.typicalMassKg, huge.physiology.massKg, message = "Size foundation establishes mass and slightly widens temperature range: expected `huge.physiology.massKg` to match `SizeClass.HUGE.typicalMassKg`")
+        assertEquals(
+            small.physiology.massKg / SizeClass.SMALL.typicalMassKg,
+            huge.physiology.massKg / SizeClass.HUGE.typicalMassKg,
+        )
         assertTrue(
             huge.physiology.thermal.outerLowC < small.physiology.thermal.outerLowC,
             message = "Size foundation establishes mass and slightly widens temperature range: expected `huge.physiology.thermal.outerLowC < small.physiology.thermal.outerLowC` to be true"
@@ -289,20 +291,14 @@ class EcologyCompilerTest {
 
         fun compiled(id: String) = ecology.species[ecology.speciesIndex(id)]
 
+        val ordinaryMass = compiled(ordinary.id).physiology.massKg
         assertEquals(
-            SizeClass.MEDIUM.typicalMassKg,
-            compiled(ordinary.id).physiology.massKg,
-            message = "Body build adjusts mass without changing size class: expected `compiled(ordinary.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg`"
-        )
-        assertEquals(
-            SizeClass.MEDIUM.typicalMassKg * 0.5,
+            ordinaryMass * 0.5,
             compiled(slender.id).physiology.massKg,
-            message = "Body build adjusts mass without changing size class: expected `compiled(slender.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg * 0.5`"
         )
         assertEquals(
-            SizeClass.MEDIUM.typicalMassKg * 2.0,
+            ordinaryMass * 2.0,
             compiled(bulky.id).physiology.massKg,
-            message = "Body build adjusts mass without changing size class: expected `compiled(bulky.id).physiology.massKg` to match `SizeClass.MEDIUM.typicalMassKg * 2.0`"
         )
         assertEquals(SizeClass.MEDIUM, compiled(slender.id).sizeClass, message = "Body build adjusts mass without changing size class: expected `compiled(slender.id).sizeClass` to match `SizeClass.MEDIUM`")
         assertEquals(SizeClass.MEDIUM, compiled(bulky.id).sizeClass, message = "Body build adjusts mass without changing size class: expected `compiled(bulky.id).sizeClass` to match `SizeClass.MEDIUM`")
@@ -600,6 +596,7 @@ class EcologyCompilerTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
             ),
@@ -758,6 +755,7 @@ class EcologyCompilerTest {
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.AQUATIC_LIMBS,
                 CommonTrait.DEEP_DIVING_PHYSIOLOGY,
@@ -1017,6 +1015,7 @@ class EcologyCompilerTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WINGS,
                 CommonTrait.SUSPENSION_FEEDING_TENTACLES,
@@ -1045,6 +1044,7 @@ class EcologyCompilerTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1134,6 +1134,7 @@ class EcologyCompilerTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1315,6 +1316,7 @@ class EcologyCompilerTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1432,6 +1434,7 @@ class EcologyCompilerTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -1712,6 +1715,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
@@ -1735,6 +1739,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SOLITARY,
@@ -1775,6 +1780,7 @@ class EcologyCompilerTest {
             CommonTrait.ENDOTHERMY,
             CommonTrait.VIVIPARITY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.SOLITARY,
@@ -1796,6 +1802,7 @@ class EcologyCompilerTest {
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.SOLITARY,

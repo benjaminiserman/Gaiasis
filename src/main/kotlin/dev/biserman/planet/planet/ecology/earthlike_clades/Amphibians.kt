@@ -92,6 +92,7 @@ val caecilian = amphibian.descend(
     SizeClass.TINY,
     CommonTrait.BODY_UNDULATION,
     CommonTrait.FOSSORIAL_LIVING,
+    CommonTrait.SEGMENTED_PHYSIQUE,
     CommonTrait.MAMMARY_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.POOR_VISION,

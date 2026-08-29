@@ -1863,6 +1863,7 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.25),
         ),
+        requirements = listOf(TraitRequirement.anyOf(LIMBED_BODY, TENTACLES)),
     ),
     BODY_REGENERATION(
         "body regeneration",

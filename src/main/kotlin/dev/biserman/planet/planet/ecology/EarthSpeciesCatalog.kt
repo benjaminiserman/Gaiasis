@@ -1740,6 +1740,7 @@ object EarthSpeciesCatalog {
             SizeClass.SMALL,
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.LIMBED_BODY,
             CommonTrait.COASTAL_CLINGING_FEET,
             CommonTrait.GILLS,
             CommonTrait.MARINE_SNOW_COLLECTORS,
@@ -1888,6 +1889,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEA_ICE_ROOKERY,
             CommonTrait.BODY_CARRIED_OVOSPORES,
             CommonTrait.MOTION_TRACKING_SENSES,
+            CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.WATERPROOF_PLUMAGE,
             CommonTrait.FAT_RESERVES,
@@ -2756,9 +2758,6 @@ object EarthSpeciesCatalog {
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.TRACHEA,
             CommonTrait.BODY_UNDULATION,
-            CommonTrait.SEGMENTED_PHYSIQUE,
-            CommonTrait.FOSSORIAL_LIVING,
-            CommonTrait.BURROW_BUILDER,
             CommonTrait.AMBUSH_MUSCULATURE,
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY
@@ -2772,6 +2771,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.CARTILAGINOUS_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
@@ -2792,6 +2792,7 @@ object EarthSpeciesCatalog {
             SizeClass.HUGE,
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.CARTILAGINOUS_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.AQUATIC_LIMBS,
@@ -2809,6 +2810,7 @@ object EarthSpeciesCatalog {
             SizeClass.LARGE,
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.CARTILAGINOUS_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
@@ -3215,7 +3217,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.VASCULAR_SYSTEM,
-            CommonTrait.LIMBED_BODY,
+            CommonTrait.MANTLED_BODY,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.GILLS,
             CommonTrait.JET_PROPULSION,
@@ -3250,7 +3252,6 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
-            CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.PULSING_BELL,
             CommonTrait.GELATINOUS_BODY,
@@ -3264,6 +3265,7 @@ object EarthSpeciesCatalog {
             "crown-of-thorns starfish",
             SizeClass.SMALL,
             CommonTrait.ECTOTHERMY,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.WARM_WATER_ENZYMES,
@@ -3369,6 +3371,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.TRACHEA,
+            CommonTrait.MANTLED_BODY,
             CommonTrait.MUSCULAR_FOOT,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.PROTECTIVE_SHELL,
@@ -3382,6 +3385,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.TRACHEA,
+            CommonTrait.MANTLED_BODY,
             CommonTrait.MUSCULAR_FOOT,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.SLOW_METABOLISM,
@@ -3394,6 +3398,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ECTOTHERMY,
             CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.PASSIVE_RESPIRATION,
+            CommonTrait.PRIMITIVE_BODY,
             CommonTrait.SEGMENTED_PHYSIQUE,
             CommonTrait.BODY_UNDULATION,
             CommonTrait.DECOMPOSING_ENZYMES,
@@ -3634,7 +3639,6 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
-            CommonTrait.VASCULAR_SYSTEM,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.PULSING_BELL,
@@ -4235,6 +4239,15 @@ object EarthSpeciesCatalog {
         vararg adaptations: SpeciesTrait,
         biochemistry: CommonTrait = CommonTrait.TEMPERATE_BIOCHEMISTRY,
     ): SpeciesDefinition {
+        val structuralFoundation =
+            if (
+                CommonTrait.LIMBED_BODY in adaptations &&
+                adaptations.none { it.group == TraitGroup.SKELETON }
+            ) {
+                listOf(CommonTrait.BONY_SKELETON)
+            } else {
+                emptyList()
+            }
         val reproduction =
             if (adaptations.any { TraitCapability.REPRODUCTION in it.capabilities }) {
                 emptyList()
@@ -4246,7 +4259,7 @@ object EarthSpeciesCatalog {
             displayName = name,
             sizeClass = sizeClass,
             motile = true,
-            traits = listOf(biochemistry, thermalStrategy) + reproduction + adaptations,
+            traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + reproduction + adaptations,
         )
     }
 

@@ -17,6 +17,7 @@ class EcologyRuntimeTest {
             traits = buildList {
                 add(CommonTrait.TRACHEA)
                 add(CommonTrait.VASCULAR_SYSTEM)
+                add(CommonTrait.BONY_SKELETON)
                 add(CommonTrait.LIMBED_BODY)
                 add(CommonTrait.TEMPERATE_BIOCHEMISTRY)
                 add(CommonTrait.ECTOTHERMY)
@@ -128,6 +129,7 @@ class EcologyRuntimeTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.GRAZING_MOUTHPARTS,
@@ -148,6 +150,7 @@ class EcologyRuntimeTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.VIVIPARITY,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -508,6 +511,7 @@ class EcologyRuntimeTest {
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
                 CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.WALKING_LIMBS,
                 CommonTrait.WASTE_FEEDING_MOUTHPARTS,
@@ -777,6 +781,7 @@ class EcologyRuntimeTest {
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.GRAZING_MOUTHPARTS,
@@ -797,6 +802,7 @@ class EcologyRuntimeTest {
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -818,6 +824,7 @@ class EcologyRuntimeTest {
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
             CommonTrait.VASCULAR_SYSTEM,
+            CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.WALKING_LIMBS,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
