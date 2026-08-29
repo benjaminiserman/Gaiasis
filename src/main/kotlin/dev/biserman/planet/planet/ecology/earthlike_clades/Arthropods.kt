@@ -23,7 +23,7 @@ val arthropod = EarthSpeciesCatalog.animal(
 )
 
 // arachnids
-val arachnid = arthropod.extend(
+val arachnid = arthropod.descend(
     "arachnid",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -35,21 +35,21 @@ val arachnid = arthropod.extend(
     ColorTrait.BROWN_COLORATION,
     minus = listOf(CommonTrait.GILLS)
 )
-val spider = arachnid.extend(
+val spider = arachnid.descend(
     "spider",
     SizeClass.TINY,
     CommonTrait.VENOM_DELIVERY,
     CommonTrait.FANGS,
     CommonTrait.WEB_SILK
 )
-val scorpion = arachnid.extend(
+val scorpion = arachnid.descend(
     "scorpion",
     SizeClass.TINY,
     CommonTrait.VENOM_DELIVERY,
     CommonTrait.PINCERS,
     CommonTrait.STINGER,
 )
-val tick = arachnid.extend(
+val tick = arachnid.descend(
     "tick",
     SizeClass.MINUSCULE,
     CommonTrait.PARASITIC_PROBOSCIS,
@@ -57,7 +57,7 @@ val tick = arachnid.extend(
 )
 
 // myriapoda
-val myriapoda = arthropod.extend(
+val myriapoda = arthropod.descend(
     "myriapoda",
     SizeClass.TINY,
     CommonTrait.NOCTURNAL,
@@ -67,7 +67,7 @@ val myriapoda = arthropod.extend(
     ColorTrait.BROWN_COLORATION,
     minus = listOf(CommonTrait.GILLS)
 )
-val centipede = myriapoda.extend(
+val centipede = myriapoda.descend(
     "centipede",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -75,7 +75,7 @@ val centipede = myriapoda.extend(
     CommonTrait.FANGS,
     CommonTrait.VENOM_DELIVERY
 )
-val millipede = myriapoda.extend(
+val millipede = myriapoda.descend(
     "millipede",
     SizeClass.TINY,
     CommonTrait.DECOMPOSING_ENZYMES,

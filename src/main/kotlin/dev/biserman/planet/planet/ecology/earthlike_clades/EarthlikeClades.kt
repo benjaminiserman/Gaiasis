@@ -21,6 +21,7 @@ object EarthlikeClades {
         arachnid,
         mollusc,
         crustacean,
+        cnidarian,
         bivalve,
         moss,
         fern,
@@ -93,3 +94,28 @@ fun SpeciesDefinition.extend(
         inheritedTraits.filter { it.group !in replacedGroups && it !in minus } + adaptations
     },
 )
+
+fun SpeciesDefinition.descend(
+    name: String,
+    sizeClass: SizeClass,
+    vararg adaptations: SpeciesTrait,
+    minus: List<SpeciesTrait> = listOf(),
+    motile: Boolean = this.motile,
+): SpeciesDefinition {
+    val descendant = copy(
+        id = EarthSpeciesCatalog.idFromName(name),
+        displayName = name,
+        sizeClass = sizeClass,
+        motile = motile,
+        traits = traits.let { inheritedTraits ->
+            val replacedGroups = inheritedTraits.mapNotNull { it.group }
+                .toSet()
+                .intersect(adaptations.mapNotNull { it.group }.toSet())
+
+            inheritedTraits.filter { it.group !in replacedGroups && it !in minus } + adaptations
+        },
+        ancestorSpeciesId = id,
+    )
+    descendants.add(descendant)
+    return descendant
+}

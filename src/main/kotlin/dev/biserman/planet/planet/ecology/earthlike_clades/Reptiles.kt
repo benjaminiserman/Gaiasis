@@ -12,7 +12,7 @@ val reptile = tetrapoda.descend(
     CommonTrait.DIURNAL,
     ColorTrait.GREEN_COLORATION
 )
-val crocodile = reptile.extend(
+val crocodile = reptile.descend(
     "crocodile",
     SizeClass.LARGE,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -26,7 +26,7 @@ val crocodile = reptile.extend(
     CommonTrait.BELLOWING_CALL,
     CommonTrait.NOCTURNAL
 )
-val tuatara = reptile.extend(
+val tuatara = reptile.descend(
     "tuatara",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -72,11 +72,11 @@ val wormLizard = lizard.descend(
     SizeClass.TINY,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.BURROW_BUILDER,
-    CommonTrait.UNDULATING_BODY,
+    CommonTrait.BODY_UNDULATION,
     ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.CLIMBING_LIMBS)
 )
-val chameleon = lizard.extend(
+val chameleon = lizard.descend(
     "chameleon",
     SizeClass.SMALL,
     CommonTrait.PROJECTILE_TONGUE,
@@ -85,7 +85,7 @@ val chameleon = lizard.extend(
     ColorTrait.ADAPTIVE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )
-val iguana = lizard.extend(
+val iguana = lizard.descend(
     "iguana",
     SizeClass.SMALL,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
@@ -99,7 +99,7 @@ val serpent = reptile.descend(
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.KEEN_SCENT_SENSE,
-    CommonTrait.UNDULATING_BODY,
+    CommonTrait.BODY_UNDULATION,
     CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.NOCTURNAL,
@@ -137,20 +137,20 @@ val cobra = serpent.descend(
     CommonTrait.VESPERTINE
 )
 
-val testudines = reptile.extend(
+val testudines = reptile.descend(
     "testudines",
     SizeClass.SMALL,
     CommonTrait.PROTECTIVE_SHELL,
     CommonTrait.POOR_HEARING
 )
-val turtle = testudines.extend(
+val turtle = testudines.descend(
     "turtle",
     SizeClass.SMALL,
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.SLOW_GROWTH
 )
-val seaTurtle = testudines.extend(
+val seaTurtle = testudines.descend(
     "sea turtle",
     SizeClass.MEDIUM,
     CommonTrait.AQUATIC_LIMBS,
@@ -158,7 +158,7 @@ val seaTurtle = testudines.extend(
     CommonTrait.LONG_MIGRATION,
     minus = listOf(CommonTrait.WALKING_LIMBS)
 )
-val tortoise = testudines.extend(
+val tortoise = testudines.descend(
     "tortoise",
     SizeClass.MEDIUM,
     CommonTrait.GRAZING_MOUTHPARTS,

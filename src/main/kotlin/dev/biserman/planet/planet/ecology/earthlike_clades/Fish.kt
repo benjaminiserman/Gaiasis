@@ -97,7 +97,7 @@ val eel = teleostei.descend(
     "eel",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.UNDULATING_BODY,
+    CommonTrait.BODY_UNDULATION,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SOLITARY,
     ColorTrait.BROWN_COLORATION,

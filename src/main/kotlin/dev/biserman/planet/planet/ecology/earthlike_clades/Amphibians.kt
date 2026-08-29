@@ -53,13 +53,13 @@ val toad = anura.descend(
 )
 
 // salamanders
-val caudata = amphibian.extend(
+val caudata = amphibian.descend(
     "caudata",
     SizeClass.SMALL,
     CommonTrait.LIMB_REGROWTH,
     CommonTrait.AMBUSH_MUSCULATURE
 )
-val moleSalamander = caudata.extend(
+val moleSalamander = caudata.descend(
     "mole salamander",
     SizeClass.TINY,
     CommonTrait.DIGGING_LIMBS,
@@ -67,7 +67,7 @@ val moleSalamander = caudata.extend(
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.GILLS
 )
-val newt = caudata.extend(
+val newt = caudata.descend(
     "newt",
     SizeClass.TINY,
     CommonTrait.TOXIC_SKIN,
@@ -76,7 +76,7 @@ val newt = caudata.extend(
     ColorTrait.RED_COLORATION,
     minus = listOf(CommonTrait.SLIMY_SKIN)
 )
-val giantSalamander = caudata.extend(
+val giantSalamander = caudata.descend(
     "giant salamander",
     SizeClass.MEDIUM,
     CommonTrait.BULKY_PHYSIQUE,
@@ -87,10 +87,10 @@ val giantSalamander = caudata.extend(
 )
 
 // caecilians
-val caecilian = amphibian.extend(
+val caecilian = amphibian.descend(
     "caecilian",
     SizeClass.TINY,
-    CommonTrait.UNDULATING_BODY,
+    CommonTrait.BODY_UNDULATION,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.MAMMARY_GLANDS,
     CommonTrait.VIVIPARITY,

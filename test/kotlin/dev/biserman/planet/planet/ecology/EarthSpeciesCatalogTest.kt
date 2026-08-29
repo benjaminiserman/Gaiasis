@@ -97,7 +97,7 @@ class EarthSpeciesCatalogTest {
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WINGS in species.getValue(\"western-honey-bee\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.UNDULATING_BODY in species.getValue("king-cobra").traits,
+            CommonTrait.BODY_UNDULATION in species.getValue("king-cobra").traits,
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.UNDULATING_BODY in species.getValue(\"king-cobra\").traits` to be true"
         )
         assertTrue(

@@ -283,7 +283,7 @@ fun broodParasitismOf(
     TargetedRelationshipTrait(
         displayName = "$hostDisplayName brood host",
         description =
-        "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+            "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
         relationships = listOf(
             RelationshipEffect.RequiresTarget(
                 SpeciesSelector.ExactSpecies(hostSpeciesId),
@@ -588,6 +588,38 @@ enum class CommonTrait(
         group = TraitGroup.DORMANCY_MODE,
     ),
 
+    // skeleton
+    CARTILAGINOUS_SKELETON(
+        "cartilaginous skeleton",
+        "A skeleton dominated by cartilage provides flexible support with less mineralized tissue, at the cost of reduced rigid protection.",
+        listOf(
+            TraitEffect.BodyMassMultiplier(0.98),
+            TraitEffect.Defense(-0.015),
+            TraitEffect.MaintenanceCost(-0.06),
+        ),
+        group = TraitGroup.SKELETON,
+    ),
+    BONY_SKELETON(
+        "bony skeleton",
+        "A rigid mineralized internal skeleton supports powerful movement and protects internal organs at a modest construction cost.",
+        listOf(
+            TraitEffect.BodyMassMultiplier(1.02),
+            TraitEffect.Defense(0.015),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        group = TraitGroup.SKELETON,
+    ),
+    MOLTING_EXOSKELETON(
+        "molting exoskeleton",
+        "A segmented external skeleton supports the body and resists injury but must periodically be shed and rebuilt as the organism grows.",
+        listOf(
+            TraitEffect.Defense(0.14),
+            TraitEffect.ReproductionMultiplier(0.96),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        group = TraitGroup.SKELETON,
+    ),
+
     // Body plan
     LIMBED_BODY(
         "limbed body",
@@ -596,63 +628,89 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06)
         ),
         group = TraitGroup.BODY_TYPE,
-        requirements = listOf(TraitRequirement.anyOf(VASCULAR_SYSTEM))
+        requirements = listOf(
+            TraitRequirement.anyOf(VASCULAR_SYSTEM),
+            TraitRequirement.anyOf(TraitGroup.SKELETON)
+        )
     ),
-    UNDULATING_BODY(
-        "undulating body",
-        "Alternating muscular waves push an elongated body across the ground without weight-bearing limbs.",
+    MANTLED_BODY(
+        "mantled body",
+        "An unsegmented body organized around a muscular mantle and visceral mass permits flexible growth and movement but leaves soft tissues vulnerable without additional protection.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.LAND, 0.2),
-            TraitEffect.MaintenanceCost(-0.12),
+            TraitEffect.WaterRequirement(0.06),
+            TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.BODY_TYPE,
-        capabilities = setOf(
-            TraitCapability.TERRESTRIAL_LOCOMOTION,
+        requirements = listOf(
+            TraitRequirement.anyOf(VASCULAR_SYSTEM),
         ),
+    ),
+    PRIMITIVE_BODY(
+        "primitive body",
+        "A simple body with little regional specialization or structural reinforcement requires little additional upkeep but provides poor protection and limited leverage for rapid movement.",
+        listOf(
+            TraitEffect.PursuitSpeed(-0.5),
+            TraitEffect.Defense(-0.2),
+            TraitEffect.MaintenanceCost(0.01),
+        ),
+        group = TraitGroup.BODY_TYPE,
+        requirements = listOf(
+            TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
+        )
     ),
     GELATINOUS_BODY(
         "gelatinous body",
         "A mostly water-filled body achieves large volume and buoyancy with little metabolically expensive tissue, at the cost of poor resistance to attack.",
         listOf(
+            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.2),
             TraitEffect.MetabolicDemandMultiplier(0.72),
             TraitEffect.Defense(-0.14),
             TraitEffect.ReproductionMultiplier(1.08),
-            TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.MaintenanceCost(0.02),
         ),
         group = TraitGroup.BODY_TYPE,
+        requirements = listOf(
+            TraitRequirement.noneOf(VASCULAR_SYSTEM)
+        )
     ),
     POLYP_BODY(
         "anchored polyp body",
         "A mouth surrounded by flexible feeding structures projects from an attached body that can withdraw or contract when disturbed.",
         listOf(
             TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.3),
-            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.24),
+            TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.2),
+            TraitEffect.StrategyAffinity(EcoStrategy.FILTER_FEEDING, 0.05),
+            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.05),
             TraitEffect.CaptureAbility(0.06),
-            TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.BODY_TYPE,
         capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        requirements = listOf(
+            TraitRequirement.noneOf(VASCULAR_SYSTEM)
+        )
     ),
     ROOTED_BODY(
         "rooted body",
         "True roots penetrate terrestrial substrate, anchoring the body while gathering water and dissolved nutrients.",
         listOf(
             TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.65),
-            TraitEffect.MaintenanceCost(0.09),
+            TraitEffect.MaintenanceCost(0.02),
         ),
         group = TraitGroup.BODY_TYPE,
         capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
         requirements = listOf(TraitRequirement.noneOf(TraitCapability.LOCOMOTION))
     ),
-    FLOATING_BODY(
-        "floating body",
+    AERIAL_FLOATING_BODY(
+        "aerial floating body",
         "A minuscule, low-density body with drag-producing surfaces or buoyant chambers that remains suspended in atmospheric currents.",
         listOf(
             TraitEffect.HabitatAccess(HabitatGroup.AERIAL, 0.3),
             TraitEffect.PelagicAerialResidency,
             TraitEffect.WaterRequirement(-0.15),
             TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.MaintenanceCost(0.12),
+            TraitEffect.MaintenanceCost(0.02),
         ),
         group = TraitGroup.BODY_TYPE,
         requirements = listOf(TraitRequirement.SizeClassIs(SizeClass.MINUSCULE)),
@@ -715,6 +773,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.TemperatureTolerance(colderC = -3.0, hotterC = 6.0),
             TraitEffect.Defense(-0.04),
+            TraitEffect.Sensing(0.01),
             TraitEffect.MaintenanceCost(0.15),
         ),
     ),
@@ -1189,6 +1248,19 @@ enum class CommonTrait(
         ),
         requirements = listOf(TraitRequirement.anyOf(LIMBED_BODY))
     ),
+    BODY_UNDULATION(
+        "body undulation",
+        "Alternating muscular waves push an elongated body across the ground without weight-bearing limbs.",
+        listOf(
+            TraitEffect.HabitatAccess(HabitatGroup.LAND, 0.2),
+            TraitEffect.MaintenanceCost(-0.12),
+        ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(
+            TraitCapability.LOCOMOTION,
+            TraitCapability.TERRESTRIAL_LOCOMOTION,
+        ),
+    ),
     MUSCULAR_FOOT(
         "muscular foot",
         "A broad contractile foot produces slow, stable movement across soil, rock, plants, or other firm surfaces.",
@@ -1199,7 +1271,13 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.04),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
-        capabilities = setOf(TraitCapability.TERRESTRIAL_LOCOMOTION),
+        capabilities = setOf(
+            TraitCapability.LOCOMOTION,
+            TraitCapability.TERRESTRIAL_LOCOMOTION
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(MANTLED_BODY, PRIMITIVE_BODY)
+        )
     ),
     CRAWLING_APPENDAGES(
         "crawling appendages",
@@ -1218,7 +1296,10 @@ enum class CommonTrait(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
         ),
-        requirements = listOf(TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM))
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY),
+            TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM)
+        )
     ),
     LEAPING_LEGS(
         "powerful leaping legs",
@@ -1229,6 +1310,10 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.08),
             TraitEffect.MaintenanceCost(0.20),
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY),
+            TraitRequirement.sizeClassAtLeast(SizeClass.TINY)
+        )
     ),
     DIGGING_LIMBS(
         "digging limbs",
@@ -1240,6 +1325,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.15),
         ),
         capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     AQUATIC_LIMBS(
         "aquatic limbs",
@@ -1252,6 +1340,9 @@ enum class CommonTrait(
             TraitCapability.AQUATIC_LOCOMOTION,
             TraitCapability.LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY, MANTLED_BODY)
+        )
     ),
     AMPHIBIOUS_LIMBS(
         "amphibious limbs",
@@ -1266,6 +1357,9 @@ enum class CommonTrait(
             TraitCapability.AQUATIC_LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     WADING_LIMBS(
         "wading limbs",
@@ -1282,6 +1376,9 @@ enum class CommonTrait(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     CLIMBING_LIMBS(
         "climbing limbs",
@@ -1295,6 +1392,9 @@ enum class CommonTrait(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     PULSING_BELL(
         "pulsing bell",
@@ -1306,6 +1406,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.03),
         ),
         capabilities = setOf(TraitCapability.AQUATIC_LOCOMOTION),
+        requirements = listOf(
+            TraitRequirement.anyOf(GELATINOUS_BODY)
+        )
     ),
     DEEP_DIVING_PHYSIOLOGY(
         "deep-diving physiology",
@@ -1332,7 +1435,7 @@ enum class CommonTrait(
         "sticky feet",
         "Specialized toe pads use microscopic dry-adhesive structures, soft wet-contact surfaces, or analogous mechanisms to grip smooth and steep surfaces.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
+            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.2),
             TraitEffect.MaintenanceCost(0.12),
         ),
         requirements = listOf(
@@ -1348,6 +1451,9 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.09),
         ),
         capabilities = setOf(TraitCapability.LOCOMOTION),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     WINGS(
         "wings",
@@ -1362,6 +1468,9 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     WEAK_WINGS(
         "weak wings",
@@ -1376,6 +1485,9 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     FLIGHTLESS_WINGS(
         "flightless wings",
@@ -1389,6 +1501,9 @@ enum class CommonTrait(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
         ),
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY)
+        )
     ),
     PELAGIC_SOARING(
         "pelagic soaring",
@@ -1500,7 +1615,10 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.075),
         ),
         capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
-        group = TraitGroup.BODY_PHYSIQUE
+        group = TraitGroup.BODY_PHYSIQUE,
+        requirements = listOf(
+            TraitRequirement.anyOf(LIMBED_BODY, PRIMITIVE_BODY, GELATINOUS_BODY)
+        )
     ),
 
     // Basic structural traits
@@ -1548,26 +1666,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.12),
         ),
         capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
-    ),
-    CARTILAGINOUS_SKELETON(
-        "cartilaginous skeleton",
-        "A skeleton dominated by cartilage provides flexible support with less mineralized tissue, at the cost of reduced rigid protection.",
-        listOf(
-            TraitEffect.BodyMassMultiplier(0.98),
-            TraitEffect.Defense(-0.015),
-            TraitEffect.MaintenanceCost(-0.06),
-        ),
-        group = TraitGroup.SKELETON,
-    ),
-    BONY_SKELETON(
-        "bony skeleton",
-        "A rigid mineralized internal skeleton supports powerful movement and protects internal organs at a modest construction cost.",
-        listOf(
-            TraitEffect.BodyMassMultiplier(1.02),
-            TraitEffect.Defense(0.015),
-            TraitEffect.MaintenanceCost(0.06),
-        ),
-        group = TraitGroup.SKELETON,
     ),
     FLEXIBLE_SPINE(
         "flexible spine",
@@ -1765,9 +1863,15 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.25),
         ),
-        requirements = listOf(
-            TraitRequirement.anyOf(LIMBED_BODY, TENTACLES),
-        ),
+    ),
+    BODY_REGENERATION(
+        "body regeneration",
+        "Distributed regenerative tissues rebuild extensive damaged regions, while viable fragments can sometimes restore a complete body or develop into new individuals at a substantial energetic cost.",
+        listOf(
+            TraitEffect.Defense(0.1),
+            TraitEffect.ReproductionMultiplier(1.1),
+            TraitEffect.MaintenanceCost(0.3)
+        )
     ),
     DEEP_ROOT_SYSTEM(
         "deep root system",
@@ -1824,18 +1928,8 @@ enum class CommonTrait(
         "feathers",
         "Branching keratinous filaments form a light protective body covering that can support specialized insulation, display, waterproofing, or flight.",
         listOf(
-            TraitEffect.MaintenanceCost(0.06),
-            TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = 0.0),
-        ),
-        group = TraitGroup.DOMINANT_BODY_COVERING,
-    ),
-    MOLTING_EXOSKELETON(
-        "molting exoskeleton",
-        "A segmented external skeleton supports the body and resists injury but must periodically be shed and rebuilt as the organism grows.",
-        listOf(
-            TraitEffect.Defense(0.14),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.MaintenanceCost(0.12),
+            TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = 1.0),
         ),
         group = TraitGroup.DOMINANT_BODY_COVERING,
     ),
@@ -2814,8 +2908,8 @@ enum class CommonTrait(
                 optimalMaximumM = 30.0,
                 absoluteMaximumM = 80.0,
             ),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.12),
+            TraitEffect.ReproductionMultiplier(1.2),
+            TraitEffect.MaintenanceCost(-0.4),
         ),
     ),
     REEF_NESTING(
@@ -2862,6 +2956,7 @@ enum class CommonTrait(
         "A broad light-harvesting body surface containing photosynthetic pigments.",
         listOf(
             TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.0),
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, -0.3),
             TraitEffect.MaintenanceCost(0.24),
         ),
         group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
@@ -3009,7 +3104,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.15)
         ),
         requirements = listOf(
-            TraitRequirement.anyOf(UNDULATING_BODY)
+            TraitRequirement.anyOf(BODY_UNDULATION)
         )
     ),
     OPEN_COUNTRY_PREFERENCE(

@@ -102,7 +102,7 @@ object InvariantSpecies {
             CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.ECTOTHERMY,
             CommonTrait.COLLECTIVE_LIVING,
-            CommonTrait.FLOATING_BODY,
+            CommonTrait.AERIAL_FLOATING_BODY,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
         ),

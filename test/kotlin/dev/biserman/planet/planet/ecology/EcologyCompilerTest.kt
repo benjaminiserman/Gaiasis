@@ -669,7 +669,7 @@ class EcologyCompilerTest {
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.CLONAL_PROPAGATION,
-                CommonTrait.FLOATING_BODY,
+                CommonTrait.AERIAL_FLOATING_BODY,
             ),
         )
         val photosynthetic = floating.copy(
@@ -706,7 +706,7 @@ class EcologyCompilerTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.CLONAL_PROPAGATION,
-                CommonTrait.FLOATING_BODY,
+                CommonTrait.AERIAL_FLOATING_BODY,
             ),
         )
 
@@ -730,7 +730,7 @@ class EcologyCompilerTest {
                 CommonTrait.ECTOTHERMY,
                 CommonTrait.SOLITARY,
                 CommonTrait.TERRESTRIAL_OVOSPORE,
-                CommonTrait.UNDULATING_BODY,
+                CommonTrait.BODY_UNDULATION,
                 CommonTrait.LIMB_REGROWTH,
             ),
         )
