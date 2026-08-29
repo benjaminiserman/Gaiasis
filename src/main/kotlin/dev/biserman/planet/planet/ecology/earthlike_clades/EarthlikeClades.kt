@@ -19,7 +19,7 @@ object EarthlikeClades {
         bird,
         insect,
         arachnid,
-        gastropod,
+        mollusc,
         crustacean,
         bivalve,
         moss,
