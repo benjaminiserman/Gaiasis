@@ -58,7 +58,7 @@ val stonyCoral = anthozoan.descend(
     CommonTrait.WARM_WATER_ENZYMES,
 )
 val seaFan = anthozoan.descend(
-    "octocoral",
+    "sea fan",
     SizeClass.SMALL,
     CommonTrait.SUSPENSION_FEEDING_TENTACLES,
     CommonTrait.SLOW_GROWTH,

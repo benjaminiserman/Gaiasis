@@ -658,6 +658,21 @@ enum class CommonTrait(
             TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
         )
     ),
+    MYCELIAL_BODY(
+        "mycelial body",
+        "A branching network of absorptive filaments spreads through soil, dead tissue, or another substrate, exchanging rapid outward growth for little resistance to physical disturbance.",
+        listOf(
+            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.45),
+            TraitEffect.HabitatAccess(Habitat.UNDERGROUND, 0.30),
+            TraitEffect.Defense(-0.08),
+            TraitEffect.MaintenanceCost(0.03),
+        ),
+        group = TraitGroup.BODY_TYPE,
+        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        requirements = listOf(
+            TraitRequirement.noneOf(TraitCapability.LOCOMOTION),
+        ),
+    ),
     GELATINOUS_BODY(
         "gelatinous body",
         "A mostly water-filled body achieves large volume and buoyancy with little metabolically expensive tissue, at the cost of poor resistance to attack.",
@@ -1069,6 +1084,18 @@ enum class CommonTrait(
         listOf(
             TraitEffect.RadiationRange(8),
             TraitEffect.MaintenanceCost(0.24),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.OVOSPORE_REPRODUCTION),
+        ),
+    ),
+    FRUITING_BODY(
+        "elevated fruiting body",
+        "A temporary reproductive structure raises spore-producing tissue above the substrate, improving aerial dispersal at a substantial construction cost.",
+        listOf(
+            TraitEffect.RadiationRange(3),
+            TraitEffect.ReproductionMultiplier(1.12),
+            TraitEffect.MaintenanceCost(0.18),
         ),
         requirements = listOf(
             TraitRequirement.allOf(TraitCapability.OVOSPORE_REPRODUCTION),
