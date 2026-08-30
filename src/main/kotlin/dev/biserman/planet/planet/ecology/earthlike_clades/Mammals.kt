@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val mammal = tetrapoda.descend(
     "mammal",
@@ -149,7 +150,7 @@ val mole = trueInsectivore.descend(
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.BURROW_BUILDER,
-    CommonTrait.POOR_VISION,
+    CommonTrait.EYES.atLevel(1),
     CommonTrait.FAST_METABOLISM,
     CommonTrait.CATHEMERAL
 )
@@ -159,7 +160,7 @@ val shrew = trueInsectivore.descend(
     CommonTrait.KEEN_HEARING,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
-    CommonTrait.POOR_VISION,
+    CommonTrait.EYES.atLevel(1),
     CommonTrait.FAST_METABOLISM,
     CommonTrait.CATHEMERAL
 )
@@ -407,6 +408,7 @@ val felid = carnivore.descend(
     CommonTrait.RETRACTABLE_CLAWS,
     CommonTrait.FLEXIBLE_SPINE,
     CommonTrait.SILENT_MOVEMENT,
+    CommonTrait.EYES.atLevel(4),
 )
 val panther = felid.descend(
     "panther",

@@ -165,7 +165,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SWIFT_LIMBS,
             CommonTrait.SLENDER_PHYSIQUE,
             CommonTrait.MOTION_TRACKING_SENSES,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
             CommonTrait.TEETH,
@@ -1225,6 +1225,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.DIGGING_LIMBS,
             CommonTrait.REINFORCED_HIDE,
+            CommonTrait.VENOM_RESISTANCE,
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
@@ -1774,7 +1775,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TRACHEA,
             CommonTrait.WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             ColorTrait.BROWN_COLORATION,
@@ -1792,7 +1793,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TRACHEA,
             CommonTrait.WINGS,
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.HOOTING_CALL,
@@ -1812,7 +1813,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TRACHEA,
             CommonTrait.WINGS,
             CommonTrait.MOTION_TRACKING_SENSES,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.HOOKED_TALONS,
             CommonTrait.INSULATING_PLUMAGE,
             ColorTrait.PALE_COLORATION,
@@ -2168,7 +2169,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NOCTURNAL,
             CommonTrait.HOOKED_TALONS,
             CommonTrait.MOTION_TRACKING_SENSES,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.INSULATING_PLUMAGE,
             CommonTrait.FAT_RESERVES,
             CommonTrait.HOOTING_CALL,
@@ -3559,7 +3560,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TRACHEA,
             CommonTrait.WINGS,
             CommonTrait.MOTION_TRACKING_SENSES,
-            CommonTrait.KEEN_EYESIGHT,
+            CommonTrait.EYES.atLevel(5),
             CommonTrait.MOLTING_EXOSKELETON,
             CommonTrait.REGIONAL_MIGRATION,
             ColorTrait.GREEN_COLORATION,
@@ -4275,7 +4276,10 @@ object EarthSpeciesCatalog {
                 emptyList()
             }
         val reproduction =
-            if (adaptations.any { TraitCapability.REPRODUCTION in it.capabilities }) {
+            if (adaptations.any {
+                    TraitCapability.REPRODUCTION in it.baseTrait.capabilitiesAt(it.authoredLevel)
+                }
+            ) {
                 emptyList()
             } else {
                 listOf(defaultOvosporeTrait(adaptations))
@@ -4296,7 +4300,10 @@ object EarthSpeciesCatalog {
         vararg adaptations: SpeciesTrait,
     ): SpeciesDefinition {
         val reproduction =
-            if (adaptations.any { TraitCapability.REPRODUCTION in it.capabilities }) {
+            if (adaptations.any {
+                    TraitCapability.REPRODUCTION in it.baseTrait.capabilitiesAt(it.authoredLevel)
+                }
+            ) {
                 emptyList()
             } else {
                 listOf(defaultOvosporeTrait(adaptations))
@@ -4344,7 +4351,7 @@ object EarthSpeciesCatalog {
     }
 
     private fun supportedHabitats(adaptations: Array<out SpeciesTrait>): Set<Habitat> = adaptations
-        .flatMap { it.effects }
+        .flatMap { it.baseTrait.effectsAt(it.authoredLevel) }
         .filterIsInstance<TraitEffect.HabitatAccess>()
         .flatMapTo(mutableSetOf()) { it.habitatSelection.habitats.map { kvp -> kvp.first } }
 

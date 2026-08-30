@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val arthropod = EarthSpeciesCatalog.animal(
     "arthropod",
@@ -16,7 +17,7 @@ val arthropod = EarthSpeciesCatalog.animal(
     CommonTrait.MOLTING_EXOSKELETON,
     CommonTrait.LIMBED_BODY,
     CommonTrait.VASCULAR_SYSTEM,
-    CommonTrait.EYES,
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.GILLS,
     CommonTrait.POOR_HEARING,
     ColorTrait.PALE_COLORATION,
@@ -81,7 +82,7 @@ val millipede = myriapoda.descend(
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.ARMORED_HIDE,
-    CommonTrait.POOR_VISION,
+    CommonTrait.EYES.atLevel(1),
 )
 
 // crustaceans
@@ -160,7 +161,7 @@ val dragonfly = insect.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SWIFT_LIMBS,
-    CommonTrait.KEEN_EYESIGHT,
+    CommonTrait.EYES.atLevel(5),
     CommonTrait.DIURNAL,
     ColorTrait.RAINBOW_COLORATION
 )
@@ -178,7 +179,7 @@ val mantis = insect.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.KEEN_EYESIGHT,
+    CommonTrait.EYES.atLevel(5),
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.DIURNAL,
     ColorTrait.GREEN_COLORATION,

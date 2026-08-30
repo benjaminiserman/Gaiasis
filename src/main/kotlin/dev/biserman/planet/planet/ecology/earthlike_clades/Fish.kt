@@ -4,13 +4,14 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val fish = EarthSpeciesCatalog.animal(
     "fish",
     SizeClass.SMALL,
     CommonTrait.ECTOTHERMY,
     CommonTrait.GILLS,
-    CommonTrait.EYES,
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.TEETH,
     CommonTrait.SCALES,
     CommonTrait.JAW,
@@ -40,6 +41,8 @@ val shark = cartilaginousFish.descend(
     SizeClass.MEDIUM,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.TEETH_REGROWTH,
+    CommonTrait.MOTION_TRACKING_SENSES,
+    CommonTrait.KEEN_HEARING,
     CommonTrait.STRONG_JAWS
 )
 val skate = cartilaginousFish.descend(

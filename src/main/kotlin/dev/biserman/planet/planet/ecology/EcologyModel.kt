@@ -89,9 +89,7 @@ data class SpeciesDefinition(
     init {
         require(id.isNotBlank())
         require(displayName.isNotBlank())
-        require(traits.distinct().size == traits.size) {
-            "$displayName repeats a trait"
-        }
+        TraitProfile.from(traits)
     }
 }
 

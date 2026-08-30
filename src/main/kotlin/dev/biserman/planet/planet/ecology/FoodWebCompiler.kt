@@ -121,6 +121,7 @@ private class InteractionMatrixBuilder(
 private data class SpeciesPair(
     val consumer: CompiledSpecies,
     val target: CompiledSpecies,
+    val consumerDefinition: SpeciesDefinition,
     val targetDefinition: SpeciesDefinition,
 ) {
     val sizeRatio: Double = consumer.physiology.massKg / target.physiology.massKg
@@ -138,7 +139,51 @@ private data class SpeciesPair(
     }
 
     private fun sharesSeaIceMarineInterface(): Boolean = (consumer.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(target::supports)) || (target.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(consumer::supports))
+
+    fun predationModifiers(): PredationModifiers {
+        var captureBonusMultiplier = 1.0
+        var defenseBonusMultiplier = 1.0
+
+        fun applyFrom(
+            bearer: CompiledSpecies,
+            opponent: CompiledSpecies,
+            opponentDefinition: SpeciesDefinition,
+            bearerIsConsumer: Boolean,
+        ) {
+            bearer.traits.entries.forEach { (trait, level) ->
+                trait.interactionEffectsAt(level)
+                    .filter { it.opponentCondition.matches(opponentDefinition, opponent.traits) }
+                    .flatMap { it.effects }
+                    .forEach { effect ->
+                        when (effect) {
+                            is InteractionEffect.CaptureBonusMultiplier -> {
+                                val affectsConsumer =
+                                    (effect.subject == InteractionEffectSubject.BEARER && bearerIsConsumer) ||
+                                        (effect.subject == InteractionEffectSubject.OPPONENT && !bearerIsConsumer)
+                                if (affectsConsumer) captureBonusMultiplier *= effect.multiplier
+                            }
+
+                            is InteractionEffect.DefenseBonusMultiplier -> {
+                                val affectsTarget =
+                                    (effect.subject == InteractionEffectSubject.BEARER && !bearerIsConsumer) ||
+                                        (effect.subject == InteractionEffectSubject.OPPONENT && bearerIsConsumer)
+                                if (affectsTarget) defenseBonusMultiplier *= effect.multiplier
+                            }
+                        }
+                    }
+            }
+        }
+
+        applyFrom(consumer, target, targetDefinition, bearerIsConsumer = true)
+        applyFrom(target, consumer, consumerDefinition, bearerIsConsumer = false)
+        return PredationModifiers(captureBonusMultiplier, defenseBonusMultiplier)
+    }
 }
+
+private data class PredationModifiers(
+    val captureBonusMultiplier: Double,
+    val defenseBonusMultiplier: Double,
+)
 
 private class PredationGraph(
     private val potentialPredation: Array<BooleanArray>,
@@ -166,7 +211,12 @@ internal object FoodWebCompiler {
             if (obligateFoodConsumers[consumer.index]) continue
             for (target in species) {
                 if (consumer.index == target.index) continue
-                val pair = SpeciesPair(consumer, target, definitions[target.index])
+                val pair = SpeciesPair(
+                    consumer,
+                    target,
+                    definitions[consumer.index],
+                    definitions[target.index],
+                )
                 val interaction = filterFeedingInteraction(pair)
                     ?: grazingInteraction(pair)
                     ?: colonyRaidingInteraction(pair)
@@ -213,7 +263,7 @@ internal object FoodWebCompiler {
 
     private fun colonyRaidingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.COLONY_RAIDING)
-        val targetColonial = CommonTrait.EUSOCIAL_COLONY in pair.targetDefinition.traits
+        val targetColonial = pair.target.traits.has(CommonTrait.EUSOCIAL_COLONY)
         if (!pair.target.motile ||
             pair.target.sizeClass != SizeClass.MINUSCULE ||
             !targetColonial ||
@@ -254,7 +304,7 @@ internal object FoodWebCompiler {
             1.0
         }
         val pursuitInteraction = pursuitSupport > ambushSupport
-        val burrowerCaptureBonus = if (CommonTrait.FOSSORIAL_LIVING in pair.targetDefinition.traits) {
+        val burrowerCaptureBonus = if (pair.target.traits.has(CommonTrait.FOSSORIAL_LIVING)) {
             pair.consumer.interactions.burrowerCaptureBonus
         } else {
             0.0
@@ -264,14 +314,23 @@ internal object FoodWebCompiler {
         } else {
             0.0
         }
-        val effectiveCapture = pair.consumer.interactions.captureAbility + (
+        val modifiers = pair.predationModifiers()
+        val effectiveCapture = adjustedPositiveBonus(
+            pair.consumer.interactions.captureAbility,
+            InteractionBaselines.CAPTURE_ABILITY,
+            modifiers.captureBonusMultiplier,
+        ) + (
             if (pursuitInteraction) {
                 pair.consumer.interactions.pursuitSpeed + pair.consumer.interactions.sensing
             } else {
                 0.0
             }
             ) + burrowerCaptureBonus + soundLureCaptureBonus
-        val effectiveDefense = pair.target.interactions.defense + if (pursuitInteraction) {
+        val effectiveDefense = adjustedPositiveBonus(
+            pair.target.interactions.defense,
+            InteractionBaselines.DEFENSE,
+            modifiers.defenseBonusMultiplier,
+        ) + if (pursuitInteraction) {
             pair.target.interactions.pursuitSpeed
         } else {
             pair.target.interactions.sensing
@@ -288,6 +347,11 @@ internal object FoodWebCompiler {
             consumerGainRate = attack * 1.30,
             targetLossRate = attack,
         )
+    }
+
+    private fun adjustedPositiveBonus(value: Double, baseline: Double, multiplier: Double): Double {
+        val change = value - baseline
+        return baseline + minOf(0.0, change) + max(0.0, change) * multiplier
     }
 
     private fun activityOverlapMultiplier(
@@ -319,7 +383,12 @@ internal object FoodWebCompiler {
             )
             if (predatorSupport <= 0.0 || obligateFoodConsumers[consumer.index]) continue
             for (target in species) {
-                val pair = SpeciesPair(consumer, target, definitions[target.index])
+                val pair = SpeciesPair(
+                    consumer,
+                    target,
+                    definitions[consumer.index],
+                    definitions[target.index],
+                )
                 potentialPredation[consumer.index][target.index] = consumer.index != target.index && target.motile && pair.sharedFeedingHabitat && sizeCompatiblePredation(pair)
             }
         }
@@ -329,7 +398,13 @@ internal object FoodWebCompiler {
     private fun sizeCompatiblePredation(pair: SpeciesPair): Boolean {
         val largerPreySizeClasses = pair.target.sizeClass.ordinal - pair.consumer.sizeClass.ordinal
         val cooperativeLargerPreyCompatible = largerPreySizeClasses in 1..pair.consumer.interactions.largerPreySizeClasses
-        val aquaticTinyPreyCompatible = pair.sharedAquaticHabitat && pair.consumer.sizeClass == SizeClass.MEDIUM && pair.target.sizeClass == SizeClass.TINY && pair.sizeRatio <= 1_000_000.0
+        val aquaticTinyPreyCompatible =
+            pair.sharedAquaticHabitat &&
+                TraitCapability.AQUATIC_LOCOMOTION in pair.consumer.traits.capabilities &&
+                TraitCapability.AQUATIC_LOCOMOTION in pair.target.traits.capabilities &&
+                pair.consumer.sizeClass == SizeClass.MEDIUM &&
+                pair.target.sizeClass == SizeClass.TINY &&
+                pair.sizeRatio <= 1_000_000.0
         return pair.sizeRatio in 0.25..1_000.0 || (pair.target.sizeClass == SizeClass.SMALL && pair.sizeRatio <= 10_000.0) || cooperativeLargerPreyCompatible || aquaticTinyPreyCompatible
     }
 
@@ -387,7 +462,7 @@ internal object FoodWebCompiler {
         }
 
         is SpeciesSelector.HasTrait -> definitions.indices.filter { index ->
-            index != consumerIndex && selector.trait in definitions[index].traits
+            index != consumerIndex && definitions[index].hasTrait(selector.trait)
         }
     }
 

@@ -8,8 +8,9 @@ data class UnmetTraitRequirement(
 /** Shared validation used by compilation now and by evolutionary mutation later. */
 object TraitDependencies {
     fun unmetRequirements(definition: SpeciesDefinition): List<UnmetTraitRequirement> {
-        val capabilities = definition.traits.flatMapTo(linkedSetOf()) { it.capabilities }
-        return definition.traits.flatMap { trait ->
+        val profile = definition.traitProfile()
+        val capabilities = profile.capabilities
+        return profile.entries.flatMap { (trait, _) ->
             trait.requirements
                 .filterNot { it.isSatisfiedBy(definition, capabilities) }
                 .map { UnmetTraitRequirement(trait, it) }

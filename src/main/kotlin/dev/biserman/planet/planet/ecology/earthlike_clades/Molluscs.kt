@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val mollusc = EarthSpeciesCatalog.animal(
     "mollusc",
@@ -17,7 +18,7 @@ val mollusc = EarthSpeciesCatalog.animal(
     CommonTrait.GILLS,
     CommonTrait.CATHEMERAL,
     CommonTrait.POOR_HEARING,
-    CommonTrait.EYES,
+    CommonTrait.EYES.atLevel(3),
     ColorTrait.BROWN_COLORATION,
     CommonTrait.SALTWATER_OSMOREGULATION,
 )

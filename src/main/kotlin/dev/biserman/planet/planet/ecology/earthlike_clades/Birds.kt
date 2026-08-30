@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val bird = reptile.descend(
     "bird",
@@ -115,6 +116,8 @@ val owl = bird.descend(
     CommonTrait.HOOKED_TALONS,
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.KEEN_HEARING,
+    CommonTrait.AMBUSH_MUSCULATURE,
+    CommonTrait.EYES.atLevel(5),
     CommonTrait.SILENT_MOVEMENT,
     CommonTrait.INSULATING_PLUMAGE,
     CommonTrait.HOOTING_CALL,
@@ -125,7 +128,7 @@ val hawk = bird.descend(
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.KEEN_EYESIGHT,
+    CommonTrait.EYES.atLevel(5),
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.SWIFT_LIMBS,
     CommonTrait.STREAMLINED_PHYSIQUE,

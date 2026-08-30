@@ -1,5 +1,10 @@
 package dev.biserman.planet.planet.ecology
 
+internal object InteractionBaselines {
+    const val CAPTURE_ABILITY = 0.5
+    const val DEFENSE = 0.25
+}
+
 class CompiledSpecies(
     val index: Int,
     val id: String,
@@ -8,6 +13,7 @@ class CompiledSpecies(
     val motile: Boolean,
     val kind: SpeciesKind,
     val ancestorSpeciesId: String?,
+    val traits: TraitProfile,
     val physiology: PhysiologyProfile,
     val environment: EnvironmentalProfile,
     val lifeHistory: LifeHistoryProfile,

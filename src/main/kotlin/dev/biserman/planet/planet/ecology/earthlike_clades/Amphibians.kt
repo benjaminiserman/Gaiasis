@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val amphibian = EarthSpeciesCatalog.animal(
     "amphibian",
@@ -80,7 +81,7 @@ val giantSalamander = caudata.descend(
     "giant salamander",
     SizeClass.MEDIUM,
     CommonTrait.BULKY_PHYSIQUE,
-    CommonTrait.POOR_VISION,
+    CommonTrait.EYES.atLevel(1),
     CommonTrait.JAW,
     CommonTrait.SUCTION_FEEDING,
     CommonTrait.SLOW_METABOLISM
@@ -95,7 +96,7 @@ val caecilian = amphibian.descend(
     CommonTrait.SEGMENTED_PHYSIQUE,
     CommonTrait.LACTATION_GLANDS,
     CommonTrait.VIVIPARITY,
-    CommonTrait.POOR_VISION,
+    CommonTrait.EYES.atLevel(1),
     ColorTrait.BLACK_COLORATION,
     minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS)
 )

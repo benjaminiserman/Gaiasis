@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val reptile = tetrapoda.descend(
     "reptile",
@@ -73,6 +74,7 @@ val wormLizard = lizard.descend(
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.BODY_UNDULATION,
+    CommonTrait.EYES.atLevel(1),
     ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.CLIMBING_LIMBS)
 )
@@ -82,6 +84,7 @@ val chameleon = lizard.descend(
     CommonTrait.PROJECTILE_TONGUE,
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.SLOW_METABOLISM,
+    CommonTrait.EYES.atLevel(5),
     ColorTrait.ADAPTIVE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )

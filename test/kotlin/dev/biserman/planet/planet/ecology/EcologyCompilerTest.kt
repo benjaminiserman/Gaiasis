@@ -316,7 +316,7 @@ class EcologyCompilerTest {
         )
         val sight = predator("sight-specialist").copy(
             traits = predator("sight-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } +
-                listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.KEEN_EYESIGHT),
+                listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.EYES.atLevel(5)),
         )
         val prey = predator("sensory-prey", SizeClass.SMALL)
         val ecology = EcologyCompiler.compile(listOf(ordinary, scent, sight, prey))
@@ -347,9 +347,8 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `keen and poor sensory traits are mutually exclusive`() {
+    fun `keen and poor hearing and scent traits are mutually exclusive`() {
         listOf(
-            CommonTrait.KEEN_EYESIGHT to CommonTrait.POOR_VISION,
             CommonTrait.KEEN_HEARING to CommonTrait.POOR_HEARING,
             CommonTrait.KEEN_SCENT_SENSE to CommonTrait.POOR_SCENT_SENSE,
         ).forEach { (keen, poor) ->
@@ -361,6 +360,98 @@ class EcologyCompilerTest {
                 EcologyCompiler.compile(listOf(conflicting))
             }
         }
+    }
+
+    @Test
+    fun `scaled eyes increase benefits linearly and costs increasingly`() {
+        fun withEyes(id: String, level: Int) = predator(id).copy(
+            traits = predator(id).traits + CommonTrait.EYES.atLevel(level),
+        )
+
+        val definitions = (1..5).map { withEyes("eyes-$it", it) }
+        val compiled = EcologyCompiler.compile(definitions).species
+
+        compiled.forEachIndexed { index, species ->
+            assertEquals(index + 1, species.traits.levelOf(CommonTrait.EYES))
+        }
+        assertEquals("rudimentary eyes", CommonTrait.EYES.displayNameAt(1))
+        assertEquals("exceptional eyes", CommonTrait.EYES.displayNameAt(5))
+        assertEquals(listOf(1), CommonTrait.EYES.adjacentLevelsFrom(0))
+        assertEquals(listOf(2, 4), CommonTrait.EYES.adjacentLevelsFrom(3))
+        assertEquals(listOf(4), CommonTrait.EYES.adjacentLevelsFrom(5))
+        assertEquals(0.02, compiled[1].interactions.sensing - compiled[0].interactions.sensing, 0.000_001)
+        assertEquals(0.02, compiled[4].interactions.sensing - compiled[3].interactions.sensing, 0.000_001)
+        assertTrue(compiled[4].interactions.captureAbility > compiled[0].interactions.captureAbility)
+        assertTrue(compiled[4].physiology.maintenanceDemand > compiled[0].physiology.maintenanceDemand)
+        val lowCostStep = compiled[1].physiology.maintenanceDemand - compiled[0].physiology.maintenanceDemand
+        val highCostStep = compiled[4].physiology.maintenanceDemand - compiled[3].physiology.maintenanceDemand
+        assertTrue(highCostStep > lowCostStep)
+    }
+
+    @Test
+    fun `trait requirements can require a scaled trait level`() {
+        val visualSpecialization = EffectTrait(
+            displayName = "visual specialization",
+            description = "A specialization that requires developed vision.",
+            effects = listOf(TraitEffect.Sensing(0.01)),
+            requirements = listOf(TraitRequirement.traitLevelAtLeast(CommonTrait.EYES, 3)),
+        )
+        fun definition(id: String, eyeLevel: Int) = predator(id).copy(
+            traits = predator(id).traits + listOf(CommonTrait.EYES.atLevel(eyeLevel), visualSpecialization),
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(definition("rudimentary-vision", 1)))
+        }
+        EcologyCompiler.compile(listOf(definition("developed-vision", 3)))
+    }
+
+    @Test
+    fun `contextual effects inspect the bearer's complete trait profile`() {
+        val clawCoordination = EffectTrait(
+            displayName = "claw coordination",
+            description = "Sensory coordination is useful when grasping claws are present.",
+            effects = listOf(TraitEffect.MaintenanceCost(0.02)),
+            conditionalEffects = listOf(
+                ConditionalTraitEffect(
+                    condition = TraitCondition.HasTrait(CommonTrait.CLAWS),
+                    effects = listOf(TraitEffect.Sensing(0.20)),
+                ),
+            ),
+        )
+        val withoutClaws = predator("context-without-claws").copy(
+            traits = predator("context-without-claws").traits + clawCoordination,
+        )
+        val withClaws = predator("context-with-claws").copy(
+            traits = predator("context-with-claws").traits + listOf(CommonTrait.CLAWS, clawCoordination),
+        )
+        val compiled = EcologyCompiler.compile(listOf(withoutClaws, withClaws))
+
+        assertEquals(0.0, compiled.species[0].interactions.sensing)
+        assertEquals(0.20, compiled.species[1].interactions.sensing)
+    }
+
+    @Test
+    fun `venom resistance conditionally counters a venomous predator's capture bonus`() {
+        fun hunter(id: String, venomous: Boolean) = predator(id).copy(
+            traits = predator(id).traits +
+                listOfNotNull(CommonTrait.CLAWS, CommonTrait.VENOM_DELIVERY.takeIf { venomous }),
+        )
+        val venomous = hunter("venomous-hunter", venomous = true)
+        val ordinary = hunter("ordinary-hunter", venomous = false)
+        val prey = predator("ordinary-venom-prey", SizeClass.SMALL)
+        val resistantPrey = predator("resistant-venom-prey", SizeClass.SMALL).copy(
+            traits = predator("resistant-venom-prey", SizeClass.SMALL).traits + CommonTrait.VENOM_RESISTANCE,
+        )
+        val ecology = EcologyCompiler.compile(listOf(venomous, ordinary, prey, resistantPrey))
+
+        fun loss(predator: SpeciesDefinition, target: SpeciesDefinition) = ecology.interactions.get(
+            ecology.speciesIndex(predator.id),
+            ecology.speciesIndex(target.id),
+        ).targetLossRate
+
+        assertTrue(loss(venomous, resistantPrey) < loss(venomous, prey))
+        assertEquals(loss(ordinary, prey), loss(ordinary, resistantPrey), 0.000_001)
     }
 
     @Test
@@ -1834,7 +1925,11 @@ class EcologyCompilerTest {
                 return@forEach
             }
             assertTrue(
-                trait.effects.isNotEmpty() || trait.relationships.isNotEmpty(),
+                trait.effects.isNotEmpty() ||
+                    trait.conditionalEffects.isNotEmpty() ||
+                    trait.interactionEffects.isNotEmpty() ||
+                    trait.scale != null ||
+                    trait.relationships.isNotEmpty(),
                 "${trait.displayName} has no effect or relationship",
             )
         }

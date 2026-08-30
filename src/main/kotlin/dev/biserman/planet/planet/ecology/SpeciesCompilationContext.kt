@@ -54,7 +54,7 @@ class SpeciesCompilationContext internal constructor(
     private var metabolicDemandMultiplier = 1.0
     private var bodyMassMultiplier = 1.0
     private var maintenanceCost = 0.0
-    private var captureAbility = 0.5
+    private var captureAbility = InteractionBaselines.CAPTURE_ABILITY
     private var largerPreySizeClasses = 0
     private var burrowerCaptureBonus = 0.0
     private var acousticSignalMask = 0L
@@ -62,7 +62,7 @@ class SpeciesCompilationContext internal constructor(
     private var pursuitSpeed = 0.0
     private var sensing = 0.0
     private var activityPattern: ActivityPattern? = null
-    private var defense = 0.25
+    private var defense = InteractionBaselines.DEFENSE
     private var aposematicColoration = false
     private var reefUse = 0.0
     private var reefBuilding = 0.0
@@ -80,13 +80,15 @@ class SpeciesCompilationContext internal constructor(
     private var obligateResidentHabitat: Habitat? = null
     private var requiresAdjacentLand = false
 
-    internal fun apply(trait: SpeciesTrait) {
+    internal fun apply(trait: SpeciesTrait, level: Int) {
         trait.acousticSignal?.let { signal ->
             require(signal.ordinal < Long.SIZE_BITS)
             acousticSignalMask = acousticSignalMask or (1L shl signal.ordinal)
         }
-        trait.effects.forEach { it.applyTo(this) }
+        apply(trait.effectsAt(level))
     }
+
+    internal fun apply(effects: Iterable<TraitEffect>) = effects.forEach { it.applyTo(this) }
 
     /** Applies phenotype rules that emerge from combinations of authored traits. */
     internal fun applyCrossTraitRules(
@@ -152,6 +154,7 @@ class SpeciesCompilationContext internal constructor(
         definition: SpeciesDefinition,
         niches: List<NicheDefinition>,
         commonTraits: Set<CommonTrait>,
+        traitProfile: TraitProfile,
     ): CompiledSpecies {
         val optimalLowC = 15.0 + temperatureShift - colderOptimalTolerance
         val optimalHighC = 25.0 + temperatureShift + hotterOptimalTolerance
@@ -213,6 +216,7 @@ class SpeciesCompilationContext internal constructor(
             motile = definition.motile,
             kind = definition.kind,
             ancestorSpeciesId = definition.ancestorSpeciesId,
+            traits = traitProfile,
             physiology = PhysiologyProfile(
                 massKg = massKg,
                 maintenanceDemand = maintenanceDemand,

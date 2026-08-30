@@ -40,7 +40,6 @@ enum class TraitGroup : FulfillsTraitRequirement {
     ACTIVITY_PATTERN,
     COGNITIVE_COMPLEXITY,
     SOCIAL_ORGANIZATION,
-    VISION_ACUITY,
     HEARING_ACUITY,
     SCENT_ACUITY,
     BURROW_REFUGE,
@@ -122,9 +121,9 @@ sealed interface TraitRequirement {
             capabilities: Set<FulfillsTraitRequirement>,
         ): Boolean = this.requirements.all {
             when (it) {
-                is SpeciesTrait -> it in definition.traits
+                is SpeciesTrait -> definition.hasTrait(it)
                 is TraitCapability -> it in capabilities
-                is TraitGroup -> definition.traits.any { trait -> it == trait.group }
+                is TraitGroup -> definition.traits.any { trait -> it == trait.baseTrait.group }
                 else -> throw IllegalArgumentException("Unexpected requirement type: $it")
             }
         }
@@ -143,9 +142,9 @@ sealed interface TraitRequirement {
             capabilities: Set<FulfillsTraitRequirement>,
         ): Boolean = this.requirements.any {
             when (it) {
-                is SpeciesTrait -> it in definition.traits
+                is SpeciesTrait -> definition.hasTrait(it)
                 is TraitCapability -> it in capabilities
-                is TraitGroup -> definition.traits.any { trait -> it == trait.group }
+                is TraitGroup -> definition.traits.any { trait -> it == trait.baseTrait.group }
                 else -> throw IllegalArgumentException("Unexpected requirement type: $it")
             }
         }
@@ -160,9 +159,9 @@ sealed interface TraitRequirement {
             capabilities: Set<FulfillsTraitRequirement>,
         ): Boolean = this.requirements.none {
             when (it) {
-                is SpeciesTrait -> it in definition.traits
+                is SpeciesTrait -> definition.hasTrait(it)
                 is TraitCapability -> it in capabilities
-                is TraitGroup -> definition.traits.any { trait -> it == trait.group }
+                is TraitGroup -> definition.traits.any { trait -> it == trait.baseTrait.group }
                 else -> throw IllegalArgumentException("Unexpected requirement type: $it")
             }
         }
@@ -212,9 +211,26 @@ sealed interface TraitRequirement {
         override fun isSatisfiedBy(
             definition: SpeciesDefinition,
             capabilities: Set<FulfillsTraitRequirement>,
-        ): Boolean = definition.traits.any { it.acousticSignal != null }
+        ): Boolean = definition.traits.any { it.baseTrait.acousticSignal != null }
 
         override fun describe(): String = "requires an acoustic call"
+    }
+
+    data class TraitLevelAtLeast(
+        val trait: SpeciesTrait,
+        val level: Int,
+    ) : TraitRequirement {
+        init {
+            require(level >= 1)
+        }
+
+        override fun isSatisfiedBy(
+            definition: SpeciesDefinition,
+            capabilities: Set<FulfillsTraitRequirement>,
+        ): Boolean = definition.traitLevel(trait) >= level
+
+        override fun describe(): String =
+            "requires ${trait.displayName} at level $level or higher"
     }
 
     companion object {
@@ -227,6 +243,7 @@ sealed interface TraitRequirement {
         fun sizeClassAtMost(sizeClass: SizeClass) = SizeClassAtMost(sizeClass)
         fun motile() = MotilityIs(true)
         fun sessile() = MotilityIs(false)
+        fun traitLevelAtLeast(trait: SpeciesTrait, level: Int) = TraitLevelAtLeast(trait, level)
     }
 }
 
@@ -234,6 +251,14 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
     val displayName: String
     val description: String
     val effects: List<TraitEffect>
+    val conditionalEffects: List<ConditionalTraitEffect>
+        get() = emptyList()
+    val interactionEffects: List<ConditionalInteractionEffect>
+        get() = emptyList()
+    val scale: TraitScale?
+        get() = null
+    val maxLevel: Int
+        get() = scale?.maximumLevel ?: 1
     val relationships: List<RelationshipEffect>
         get() = emptyList()
     val invariantOnly: Boolean
@@ -250,6 +275,18 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
         get() = emptySet()
     val requirements: List<TraitRequirement>
         get() = emptyList()
+
+    fun effectsAt(level: Int): List<TraitEffect> =
+        scale?.definitionAt(level)?.effects ?: effects.also { require(level == 1) }
+
+    fun conditionalEffectsAt(level: Int): List<ConditionalTraitEffect> =
+        scale?.definitionAt(level)?.conditionalEffects ?: conditionalEffects.also { require(level == 1) }
+
+    fun interactionEffectsAt(level: Int): List<ConditionalInteractionEffect> =
+        scale?.definitionAt(level)?.interactionEffects ?: interactionEffects.also { require(level == 1) }
+
+    fun capabilitiesAt(level: Int): Set<TraitCapability> =
+        scale?.definitionAt(level)?.capabilities ?: capabilities.also { require(level == 1) }
 }
 
 /**
@@ -260,6 +297,8 @@ data class EffectTrait(
     override val displayName: String,
     override val description: String,
     override val effects: List<TraitEffect>,
+    override val conditionalEffects: List<ConditionalTraitEffect> = emptyList(),
+    override val interactionEffects: List<ConditionalInteractionEffect> = emptyList(),
     override val group: TraitGroup? = null,
     override val capabilities: Set<TraitCapability> = emptySet(),
     override val requirements: List<TraitRequirement> = emptyList(),
@@ -267,7 +306,7 @@ data class EffectTrait(
     init {
         require(displayName.isNotBlank())
         require(description.isNotBlank())
-        require(effects.isNotEmpty())
+        require(effects.isNotEmpty() || conditionalEffects.isNotEmpty() || interactionEffects.isNotEmpty())
     }
 }
 
@@ -376,6 +415,9 @@ enum class CommonTrait(
     override val displayName: String,
     override val description: String,
     override val effects: List<TraitEffect>,
+    override val conditionalEffects: List<ConditionalTraitEffect> = emptyList(),
+    override val interactionEffects: List<ConditionalInteractionEffect> = emptyList(),
+    override val scale: TraitScale? = null,
     override val invariantOnly: Boolean = false,
     override val isCosmetic: Boolean = false,
     override val acousticSignal: AcousticSignal? = null,
@@ -1812,10 +1854,27 @@ enum class CommonTrait(
     ),
     EYES(
         "eyes",
-        "Light-sensitive visual organs detect shapes, movement, brightness, and color in the surrounding environment.",
-        listOf(
-            TraitEffect.Sensing(0.01),
-            TraitEffect.MaintenanceCost(0.06)
+        "Light-sensitive visual organs range from rudimentary direction-and-motion detectors to high-resolution systems that distinguish distant targets.",
+        emptyList(),
+        scale = TraitScale(
+            (1..5).map { level ->
+                TraitLevelDefinition(
+                    description = listOf(
+                        "Simple visual organs detect light direction and nearby movement.",
+                        "Low-resolution visual organs distinguish broad shapes and movement at short range.",
+                        "Developed visual organs recognize shapes, movement, brightness, and color across useful distances.",
+                        "Acute visual organs resolve small or partially concealed targets at long range.",
+                        "Exceptionally high-resolution visual organs distinguish distant targets and fine detail against cluttered backgrounds.",
+                    )[level - 1],
+                    effects = listOf(
+                        TraitEffect.Sensing(0.02 * level),
+                        TraitEffect.CaptureAbility(0.01 * level),
+                        TraitEffect.MaintenanceCost(
+                            listOf(0.01, 0.028, 0.060, 0.118, 0.224)[level - 1],
+                        ),
+                    ),
+                )
+            },
         ),
     ),
     ANTENNAE(
@@ -2262,26 +2321,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(-0.12),
         ),
         group = TraitGroup.HEARING_ACUITY,
-    ),
-    KEEN_EYESIGHT(
-        "keen eyesight",
-        "High-resolution visual organs distinguish prey and other important targets at long range or against cluttered backgrounds.",
-        listOf(
-            TraitEffect.Sensing(0.08),
-            TraitEffect.CaptureAbility(0.05),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        group = TraitGroup.VISION_ACUITY,
-    ),
-    POOR_VISION(
-        "poor vision",
-        "Low-resolution visual organs make it harder to recognize prey and other important targets at range or against cluttered backgrounds.",
-        listOf(
-            TraitEffect.Sensing(-0.08),
-            TraitEffect.CaptureAbility(-0.05),
-            TraitEffect.MaintenanceCost(-0.15),
-        ),
-        group = TraitGroup.VISION_ACUITY,
     ),
     ECHOLOCATION(
         "echolocation",
@@ -2754,6 +2793,25 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.21),
             TraitEffect.Defense(0.45)
+        ),
+    ),
+    VENOM_RESISTANCE(
+        "venom resistance",
+        "Altered molecular targets, detoxification pathways, or protective blood chemistry reduce the disabling effects of venom delivered by predators.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(0.98),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        interactionEffects = listOf(
+            ConditionalInteractionEffect(
+                opponentCondition = TraitCondition.HasTrait(VENOM_DELIVERY),
+                effects = listOf(
+                    InteractionEffect.CaptureBonusMultiplier(
+                        subject = InteractionEffectSubject.OPPONENT,
+                        multiplier = 0.5,
+                    ),
+                ),
+            ),
         ),
     ),
     SAW_STRUCTURES(

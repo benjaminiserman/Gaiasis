@@ -39,8 +39,9 @@ object EcologyCompiler {
         definition: SpeciesDefinition,
         niches: List<NicheDefinition>,
     ): CompiledSpecies {
-        val commonTraits = definition.traits.filterIsInstance<CommonTrait>().toSet()
-        val traitsByGroup = definition.traits
+        val traitProfile = definition.traitProfile()
+        val commonTraits = traitProfile.traits.filterIsInstance<CommonTrait>().toSet()
+        val traitsByGroup = traitProfile.traits
             .mapNotNull { trait -> trait.group?.let { group -> group to trait } }
             .groupBy({ it.first }, { it.second })
         traitsByGroup.forEach { (group, traits) ->
@@ -50,7 +51,7 @@ object EcologyCompiler {
             }
         }
         TraitDependencies.requireSatisfied(definition)
-        val capabilities = definition.traits.flatMapTo(mutableSetOf()) { it.capabilities }
+        val capabilities = traitProfile.capabilities
         require(TraitCapability.REPRODUCTION in capabilities) {
             "${definition.displayName} must have at least one reproductive strategy"
         }
@@ -59,7 +60,7 @@ object EcologyCompiler {
         }
         require(
             definition.kind == SpeciesKind.INVARIANT ||
-                definition.traits.none { it.invariantOnly },
+                traitProfile.traits.none { it.invariantOnly },
         ) {
             "${definition.displayName} uses a trait reserved for invariant aggregate guilds"
         }
@@ -92,9 +93,14 @@ object EcologyCompiler {
             speciesDisplayName = definition.displayName,
             sizeTemperatureTolerance = sizeTemperatureTolerance(definition.sizeClass),
         )
-        definition.traits.forEach(context::apply)
+        traitProfile.entries.forEach { (trait, level) -> context.apply(trait, level) }
+        traitProfile.entries.forEach { (trait, level) ->
+            trait.conditionalEffectsAt(level)
+                .filter { it.condition.matches(definition, traitProfile) }
+                .forEach { context.apply(it.effects) }
+        }
         context.applyCrossTraitRules(definition.sizeClass, commonTraits)
-        return context.finish(index, definition, niches, commonTraits)
+        return context.finish(index, definition, niches, commonTraits, traitProfile)
     }
 
     private fun sizeTemperatureTolerance(sizeClass: SizeClass): Double = when (sizeClass) {
