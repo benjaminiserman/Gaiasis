@@ -36,7 +36,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "giraffe",
@@ -53,7 +53,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -76,7 +76,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -98,7 +98,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -121,7 +121,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -149,7 +149,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -179,7 +179,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -202,7 +202,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -224,7 +224,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GRUNTING_CALL,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "white rhinoceros",
@@ -243,7 +243,7 @@ object EarthSpeciesCatalog {
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "western gorilla",
@@ -265,7 +265,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -287,7 +287,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BLACK_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -308,7 +308,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -335,7 +335,7 @@ object EarthSpeciesCatalog {
             CommonTrait.STRONG_JAWS,
             CommonTrait.CLAWS,
             CommonTrait.FANGS,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -364,7 +364,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -390,7 +390,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -414,7 +414,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -434,7 +434,7 @@ object EarthSpeciesCatalog {
             ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -453,7 +453,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -470,7 +470,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -487,7 +487,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -505,7 +505,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -528,7 +528,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -551,7 +551,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -576,7 +576,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -602,7 +602,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -634,7 +634,7 @@ object EarthSpeciesCatalog {
             ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -659,7 +659,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -686,7 +686,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -705,7 +705,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -727,7 +727,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -748,7 +748,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -770,7 +770,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -797,7 +797,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BLUE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "humpback whale",
@@ -822,7 +822,7 @@ object EarthSpeciesCatalog {
             ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "orca",
@@ -850,7 +850,7 @@ object EarthSpeciesCatalog {
             ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "bottlenose dolphin",
@@ -875,7 +875,7 @@ object EarthSpeciesCatalog {
             CommonTrait.GROUP_LIVING,
             CommonTrait.CLICKING_CALL,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "harbor seal",
@@ -894,7 +894,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -916,7 +916,7 @@ object EarthSpeciesCatalog {
             ColorTrait.COUNTERSHADE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -935,7 +935,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -956,7 +956,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -980,7 +980,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -999,7 +999,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "little brown bat",
@@ -1019,7 +1019,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1036,7 +1036,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1055,7 +1055,7 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_OVOSPORE,
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1072,7 +1072,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1088,7 +1088,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1108,7 +1108,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Procyonids
@@ -1129,7 +1129,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1149,7 +1149,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1166,7 +1166,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Mustelids
@@ -1189,7 +1189,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1209,7 +1209,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1228,7 +1228,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1247,7 +1247,7 @@ object EarthSpeciesCatalog {
             ColorTrait.WHITE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1268,7 +1268,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Siberian boreal forest and taiga
@@ -1287,7 +1287,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1306,7 +1306,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Himalayan and Tibetan alpine plateau
@@ -1332,7 +1332,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BLACK_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1354,7 +1354,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Rocky Mountains
@@ -1377,7 +1377,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1400,7 +1400,7 @@ object EarthSpeciesCatalog {
             ColorTrait.WHITE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // High Andes
@@ -1421,7 +1421,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Sahara
@@ -1445,7 +1445,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1472,7 +1472,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1492,7 +1492,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         // Canadian Shield boreal forest
@@ -1515,7 +1515,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
         animal(
@@ -1538,7 +1538,7 @@ object EarthSpeciesCatalog {
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS,
+            CommonTrait.LACTATION_GLANDS,
             CommonTrait.FUR
         ),
     )
@@ -1683,7 +1683,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "saber-toothed cat",
@@ -1702,7 +1702,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.GROUP_LIVING,
             CommonTrait.VIVIPARITY,
-            CommonTrait.MAMMARY_GLANDS
+            CommonTrait.LACTATION_GLANDS
         ),
         animal(
             "dodo",
@@ -3338,7 +3338,6 @@ object EarthSpeciesCatalog {
             "staghorn coral",
             SizeClass.MEDIUM,
             ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.POLYP_BODY,
@@ -3346,7 +3345,7 @@ object EarthSpeciesCatalog {
             CommonTrait.RIGID_COLONY_FRAMEWORK,
             CommonTrait.REEF_BUILDING,
             CommonTrait.CLONAL_PROPAGATION,
-            CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
+            CommonTrait.INTERNAL_PHOTOSYMBIONTS,
             CommonTrait.WARM_WATER_ENZYMES
         ),
         sessile(
@@ -3591,7 +3590,6 @@ object EarthSpeciesCatalog {
             "brain coral",
             SizeClass.MEDIUM,
             ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.POLYP_BODY,
@@ -3599,7 +3597,7 @@ object EarthSpeciesCatalog {
             CommonTrait.RIGID_COLONY_FRAMEWORK,
             CommonTrait.REEF_BUILDING,
             CommonTrait.CLONAL_PROPAGATION,
-            CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
+            CommonTrait.INTERNAL_PHOTOSYMBIONTS,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.SLOW_GROWTH
         ),
@@ -3617,12 +3615,11 @@ object EarthSpeciesCatalog {
             "giant green anemone",
             SizeClass.SMALL,
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.POLYP_BODY,
             CommonTrait.VENOM_DELIVERY,
-            CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS
+            CommonTrait.INTERNAL_PHOTOSYMBIONTS
         ),
         sessile(
             "slender sea pen",
@@ -3938,7 +3935,7 @@ object EarthSpeciesCatalog {
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.SURFACE_HOLDFAST,
-            CommonTrait.INTERWOVEN_MAT,
+            CommonTrait.INTERWOVEN_BODY,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SHADE_FRONDS
         ),
@@ -4005,7 +4002,7 @@ object EarthSpeciesCatalog {
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.SURFACE_HOLDFAST,
-            CommonTrait.INTERWOVEN_MAT,
+            CommonTrait.INTERWOVEN_BODY,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.WHOLE_BODY_ANHYDROBIOSIS,
             CommonTrait.SLOW_GROWTH
@@ -4239,9 +4236,29 @@ object EarthSpeciesCatalog {
         vararg adaptations: SpeciesTrait,
         biochemistry: CommonTrait = CommonTrait.TEMPERATE_BIOCHEMISTRY,
     ): SpeciesDefinition {
+        val anatomy = buildList {
+            if (CommonTrait.HOOKED_TALONS in adaptations && CommonTrait.LIMBED_BODY !in adaptations) {
+                add(CommonTrait.LIMBED_BODY)
+            }
+            if (
+                adaptations.any { it == CommonTrait.TEETH || it == CommonTrait.LONG_TUSKS || it == CommonTrait.STRONG_JAWS } &&
+                CommonTrait.JAW !in adaptations
+            ) {
+                add(CommonTrait.JAW)
+            }
+            if (CommonTrait.LONG_TUSKS in adaptations && CommonTrait.TEETH !in adaptations) {
+                add(CommonTrait.TEETH)
+            }
+            if (
+                adaptations.any { it == CommonTrait.RETRACTABLE_CLAWS || it == CommonTrait.HOOKED_TALONS } &&
+                CommonTrait.CLAWS !in adaptations
+            ) {
+                add(CommonTrait.CLAWS)
+            }
+        }
         val structuralFoundation =
             if (
-                CommonTrait.LIMBED_BODY in adaptations &&
+                (CommonTrait.LIMBED_BODY in adaptations || CommonTrait.LIMBED_BODY in anatomy) &&
                 adaptations.none { it.group == TraitGroup.SKELETON }
             ) {
                 listOf(CommonTrait.BONY_SKELETON)
@@ -4254,12 +4271,13 @@ object EarthSpeciesCatalog {
             } else {
                 listOf(defaultOvosporeTrait(adaptations))
             }
+        val salinity = defaultSalinityTrait(adaptations)
         return SpeciesDefinition(
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
             motile = true,
-            traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + reproduction + adaptations,
+            traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + reproduction + salinity + anatomy + adaptations,
         )
     }
 
@@ -4274,20 +4292,31 @@ object EarthSpeciesCatalog {
             } else {
                 listOf(defaultOvosporeTrait(adaptations))
             }
+        val salinity = defaultSalinityTrait(adaptations)
         return SpeciesDefinition(
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
             motile = false,
-            traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + reproduction + adaptations,
+            traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + reproduction + salinity + adaptations,
         )
     }
 
+    private fun defaultSalinityTrait(adaptations: Array<out SpeciesTrait>): List<CommonTrait> {
+        if (adaptations.any { it.group == TraitGroup.SALINITY_STRATEGY }) return emptyList()
+
+        val aquatic = supportedHabitats(adaptations).any {
+            it == Habitat.COASTAL ||
+                it == Habitat.FRESHWATER ||
+                it == Habitat.SHALLOW_OCEAN ||
+                it == Habitat.OPEN_OCEAN ||
+                it == Habitat.DARK_WATER
+        }
+        return if (aquatic) listOf(CommonTrait.SALTWATER_OSMOREGULATION) else emptyList()
+    }
+
     private fun defaultOvosporeTrait(adaptations: Array<out SpeciesTrait>): CommonTrait {
-        val supportedHabitats = adaptations
-            .flatMap { it.effects }
-            .filterIsInstance<TraitEffect.HabitatAccess>()
-            .flatMapTo(mutableSetOf()) { it.habitatSelection.habitats.map { kvp -> kvp.first } }
+        val supportedHabitats = supportedHabitats(adaptations)
         val aquatic = supportedHabitats.any {
             it == Habitat.COASTAL ||
                 it == Habitat.FRESHWATER ||
@@ -4304,6 +4333,11 @@ object EarthSpeciesCatalog {
             CommonTrait.TERRESTRIAL_OVOSPORE
         }
     }
+
+    private fun supportedHabitats(adaptations: Array<out SpeciesTrait>): Set<Habitat> = adaptations
+        .flatMap { it.effects }
+        .filterIsInstance<TraitEffect.HabitatAccess>()
+        .flatMapTo(mutableSetOf()) { it.habitatSelection.habitats.map { kvp -> kvp.first } }
 
     fun idFromName(name: String): String =
         Normalizer

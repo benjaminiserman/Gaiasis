@@ -18,7 +18,8 @@ val mollusc = EarthSpeciesCatalog.animal(
     CommonTrait.CATHEMERAL,
     CommonTrait.POOR_HEARING,
     CommonTrait.EYES,
-    ColorTrait.BROWN_COLORATION
+    ColorTrait.BROWN_COLORATION,
+    CommonTrait.SALTWATER_OSMOREGULATION,
 )
 val clam = mollusc.descend(
     "clam",

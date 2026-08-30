@@ -423,6 +423,30 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `growth pace and reproduction frequency alternatives are mutually exclusive`() {
+        val growthConflict = predator("conflicting-growth").let { species ->
+            species.copy(traits = species.traits + CommonTrait.SLOW_GROWTH + CommonTrait.RAPID_GROWTH)
+        }
+        val reproductionConflict = predator("conflicting-reproduction").let { species ->
+            species.copy(
+                traits = species.traits +
+                    CommonTrait.INFREQUENT_REPRODUCTION +
+                    CommonTrait.FREQUENT_REPRODUCTION,
+            )
+        }
+
+        val growthFailure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(growthConflict))
+        }
+        val reproductionFailure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(reproductionConflict))
+        }
+
+        assertTrue(growthFailure.message.orEmpty().contains("GROWTH_PACE"))
+        assertTrue(reproductionFailure.message.orEmpty().contains("REPRODUCTION_FREQUENCY"))
+    }
+
+    @Test
     fun `motile species default to neighbor dispersal while sessile species do not`() {
         val motile = predator("default-motile-dispersal")
         val sessile = producer(id = "default-sessile-dispersal")
@@ -891,6 +915,30 @@ class EcologyCompilerTest {
             ).isEmpty(),
             message = "Hearing cognition and tool dependencies are explicit: expected `unmet( CommonTrait.INTELLIGENT, CommonTrait.TOOL_MANIPULATION, ).isEmpty()` to be true",
         )
+        assertTrue(
+            unmet(
+                CommonTrait.SLOW_GROWTH,
+                CommonTrait.SAPIENT,
+                CommonTrait.TOOL_MANIPULATION,
+            ).isEmpty(),
+        )
+    }
+
+    @Test
+    fun `cooperative behaviors require compatible social organization`() {
+        val base = predator("cooperative-dependencies")
+        fun unmet(organization: CommonTrait, behavior: CommonTrait) =
+            TraitDependencies.unmetRequirements(
+                base.copy(
+                    traits = base.traits.filter { it.group != TraitGroup.SOCIAL_ORGANIZATION } +
+                        organization + behavior,
+                ),
+            )
+
+        assertTrue(unmet(CommonTrait.SOLITARY, CommonTrait.COOPERATIVE_HUNTING).isNotEmpty())
+        assertTrue(unmet(CommonTrait.GROUP_LIVING, CommonTrait.COOPERATIVE_HUNTING).isEmpty())
+        assertTrue(unmet(CommonTrait.COLLECTIVE_LIVING, CommonTrait.HERDING_BEHAVIOR).isEmpty())
+        assertTrue(unmet(CommonTrait.SOLITARY, CommonTrait.HERDING_BEHAVIOR).isNotEmpty())
     }
 
     @Test
@@ -954,6 +1002,84 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `sessile species cannot carry locomotion anatomy`() {
+        val invalid = producer("walking-producer").let { species ->
+            species.copy(
+                traits = species.traits +
+                    CommonTrait.BONY_SKELETON +
+                    CommonTrait.LIMBED_BODY +
+                    CommonTrait.WALKING_LIMBS,
+            )
+        }
+
+        assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(invalid))
+        }
+    }
+
+    @Test
+    fun `internal photosymbionts grant shallow water photosynthesis to anchored polyps`() {
+        val coral = SpeciesDefinition(
+            id = "photosymbiotic-polyp",
+            displayName = "photosymbiotic polyp",
+            sizeClass = SizeClass.SMALL,
+            motile = false,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.PASSIVE_RESPIRATION,
+                CommonTrait.AQUATIC_OVOSPORE,
+                CommonTrait.SALTWATER_OSMOREGULATION,
+                CommonTrait.POLYP_BODY,
+                CommonTrait.INTERNAL_PHOTOSYMBIONTS,
+            ),
+        )
+        val compiled = EcologyCompiler.compile(listOf(coral)).species.single()
+
+        assertTrue(compiled.niche.accesses(EcoStrategy.PHOTOSYNTHESIS))
+        assertEquals(30.0, compiled.environment.optimalMaximumWaterDepthM)
+        assertEquals(80.0, compiled.environment.absoluteMaximumWaterDepthM)
+        assertEquals(AquaticSalinityTolerance.SALTWATER_ONLY, compiled.physiology.respiration.salinityTolerance)
+    }
+
+    @Test
+    fun `combined temperature tolerance effect widens outer and optimal ranges`() {
+        val thermalAdaptation = EffectTrait(
+            "broad thermal adaptation",
+            "Broadens both productive and survivable temperatures.",
+            listOf(
+                TraitEffect.TemperatureTolerance(
+                    colderC = 4.0,
+                    hotterC = 3.0,
+                    optimalColderC = 2.0,
+                    optimalHotterC = 1.0,
+                ),
+            ),
+        )
+        val ordinary = EcologyCompiler.compile(listOf(predator("ordinary-thermal-range"))).species.single()
+        val compiled = EcologyCompiler.compile(
+            listOf(predator("thermal-generalist").let { it.copy(traits = it.traits + thermalAdaptation) }),
+        ).species.single()
+
+        assertEquals(ordinary.physiology.thermal.outerLowC - 4.0, compiled.physiology.thermal.outerLowC)
+        assertEquals(ordinary.physiology.thermal.optimalLowC - 2.0, compiled.physiology.thermal.optimalLowC)
+        assertEquals(ordinary.physiology.thermal.optimalHighC + 1.0, compiled.physiology.thermal.optimalHighC)
+        assertEquals(ordinary.physiology.thermal.outerHighC + 3.0, compiled.physiology.thermal.outerHighC)
+    }
+
+    @Test
+    fun `competition penalties above one are preserved`() {
+        val grouped = predator("competition-sensitive").let { species ->
+            species.copy(
+                traits = species.traits.filter { it.group != TraitGroup.SOCIAL_ORGANIZATION } +
+                    CommonTrait.COLLECTIVE_LIVING,
+            )
+        }
+        val compiled = EcologyCompiler.compile(listOf(grouped)).species.single()
+
+        assertEquals(1.1, compiled.lifeHistory.nicheCompetitionSensitivity)
+    }
+
+    @Test
     fun `surface-attached sessile life does not require roots`() {
         val surfaceAttached = producer(
             "surface-attached-producer",
@@ -962,7 +1088,7 @@ class EcologyCompilerTest {
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.SURFACE_HOLDFAST,
-                CommonTrait.INTERWOVEN_MAT,
+                CommonTrait.INTERWOVEN_BODY,
             ),
         )
 

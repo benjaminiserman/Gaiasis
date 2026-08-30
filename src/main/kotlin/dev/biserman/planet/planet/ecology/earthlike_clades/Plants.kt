@@ -14,6 +14,13 @@ val landPlant = EarthSpeciesCatalog.sessile(
     ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
     CommonTrait.PHOTOSYNTHETIC_SURFACE,
 )
+val algae = landPlant.descend(
+    "algae",
+    SizeClass.MINUSCULE,
+    CommonTrait.CLONAL_PROPAGATION,
+    CommonTrait.AQUATIC_OVOSPORE,
+    CommonTrait.FRESHWATER_OSMOREGULATION,
+)
 
 // Nonvascular land plants
 val bryophyte = landPlant.descend(
@@ -21,9 +28,8 @@ val bryophyte = landPlant.descend(
     SizeClass.TINY,
     CommonTrait.SURFACE_HOLDFAST,
     CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
-    CommonTrait.INTERWOVEN_MAT,
+    CommonTrait.INTERWOVEN_BODY,
 )
-
 val moss = bryophyte.descend(
     "moss",
     SizeClass.TINY,
@@ -37,7 +43,6 @@ val vascularPlant = landPlant.descend(
     CommonTrait.VASCULAR_SYSTEM,
     CommonTrait.ROOTED_BODY,
 )
-
 val fern = vascularPlant.descend(
     "fern",
     SizeClass.SMALL,
@@ -45,7 +50,6 @@ val fern = vascularPlant.descend(
     CommonTrait.SHADE_FRONDS,
     CommonTrait.PERENNIAL_STORAGE_TISSUE,
 )
-
 val conifer = vascularPlant.descend(
     "conifer",
     SizeClass.LARGE,
@@ -57,32 +61,27 @@ val conifer = vascularPlant.descend(
     CommonTrait.SLOW_GROWTH,
 )
 
-// Flowering vascular plants
 val angiosperm = vascularPlant.descend(
     "angiosperm",
     SizeClass.SMALL,
     CommonTrait.FLOWERS,
 )
-
 val forb = angiosperm.descend(
     "forb",
     SizeClass.SMALL,
     CommonTrait.NECTARIES,
 )
-
 val grass = angiosperm.descend(
     "grass",
     SizeClass.SMALL,
-    CommonTrait.INTERWOVEN_MAT,
+    CommonTrait.INTERWOVEN_BODY,
 )
-
 val vine = angiosperm.descend(
     "vine",
     SizeClass.MEDIUM,
     CommonTrait.CANOPY_GROWTH,
     CommonTrait.SHADE_FRONDS,
 )
-
 val broadLeafTree = angiosperm.descend(
     "broad-leaf tree",
     SizeClass.LARGE,
@@ -91,7 +90,6 @@ val broadLeafTree = angiosperm.descend(
     CommonTrait.DEEP_ROOT_SYSTEM,
     CommonTrait.SLOW_GROWTH,
 )
-
 val succulent = angiosperm.descend(
     "succulent",
     SizeClass.MEDIUM,
@@ -100,7 +98,6 @@ val succulent = angiosperm.descend(
     CommonTrait.WAXY_CUTICLE,
     CommonTrait.DEEP_ROOT_SYSTEM,
 )
-
 val aquaticAngiosperm = angiosperm.descend(
     "aquatic angiosperm",
     SizeClass.SMALL,

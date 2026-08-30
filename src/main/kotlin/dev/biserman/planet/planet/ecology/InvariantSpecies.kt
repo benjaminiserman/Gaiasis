@@ -16,6 +16,7 @@ object InvariantSpecies {
             CommonTrait.INVARIANT_RESISTANCE,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.CLONAL_PROPAGATION,
+            CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.THAW_DEPENDENT_GROWTH,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,

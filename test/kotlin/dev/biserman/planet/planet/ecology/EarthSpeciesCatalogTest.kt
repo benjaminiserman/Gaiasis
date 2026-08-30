@@ -77,9 +77,9 @@ class EarthSpeciesCatalogTest {
 
         assertTrue(
             EarthSpeciesCatalog.MAMMALS.all {
-                CommonTrait.MAMMARY_GLANDS in it.traits
+                CommonTrait.LACTATION_GLANDS in it.traits
             },
-            message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `EarthSpeciesCatalog.MAMMALS.all { CommonTrait.MAMMARY_GLANDS in it.traits }` to be true"
+            message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `EarthSpeciesCatalog.MAMMALS.all { CommonTrait.LACTATION_GLANDS in it.traits }` to be true"
         )
         assertTrue(
             EarthSpeciesCatalog.BIRDS.all {
@@ -256,7 +256,7 @@ class EarthSpeciesCatalogTest {
         )
         listOf("sphagnum-moss", "reindeer-lichen").forEach { id ->
             assertTrue(CommonTrait.SURFACE_HOLDFAST in species.getValue(id).traits, message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.SURFACE_HOLDFAST in species.getValue(id).traits` to be true")
-            assertTrue(CommonTrait.INTERWOVEN_MAT in species.getValue(id).traits, message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.INTERWOVEN_MAT in species.getValue(id).traits` to be true")
+            assertTrue(CommonTrait.INTERWOVEN_BODY in species.getValue(id).traits, message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.INTERWOVEN_MAT in species.getValue(id).traits` to be true")
             assertTrue(CommonTrait.ROOTED_BODY !in species.getValue(id).traits, message = "Catalog includes distinct underrepresented functional archetypes: expected `CommonTrait.ROOTED_BODY !in species.getValue(id).traits` to be true")
         }
         assertTrue(
@@ -491,11 +491,11 @@ class EarthSpeciesCatalogTest {
     @Test
     fun `mammary glands trade metabolic upkeep for effective offspring recruitment`() {
         val mammal = EarthSpeciesCatalog.MAMMALS.first()
-        val withoutMammaryGlands = mammal.copy(
-            id = "${mammal.id}-without-mammary-glands",
-            traits = mammal.traits - CommonTrait.MAMMARY_GLANDS,
+        val withoutLactationGlands = mammal.copy(
+            id = "${mammal.id}-without-lactation-glands",
+            traits = mammal.traits - CommonTrait.LACTATION_GLANDS,
         )
-        val compiled = EcologyCompiler.compile(listOf(mammal, withoutMammaryGlands)).species
+        val compiled = EcologyCompiler.compile(listOf(mammal, withoutLactationGlands)).species
 
         assertTrue(
             compiled[0].lifeHistory.seasonalReproduction > compiled[1].lifeHistory.seasonalReproduction,
@@ -542,7 +542,7 @@ class EarthSpeciesCatalogTest {
         )
         val nonLactatingBrooder = kangaroo.copy(
             id = "non-lactating-brood-pouch",
-            traits = kangaroo.traits - CommonTrait.MAMMARY_GLANDS,
+            traits = kangaroo.traits - CommonTrait.LACTATION_GLANDS,
         )
         EcologyCompiler.compile(listOf(nonLactatingBrooder))
     }

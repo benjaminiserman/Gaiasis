@@ -19,6 +19,7 @@ val annelida = EarthSpeciesCatalog.animal(
     CommonTrait.POOR_SCENT_SENSE,
     CommonTrait.SEGMENTED_PHYSIQUE,
     CommonTrait.BODY_UNDULATION,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     ColorTrait.PALE_COLORATION
 )
 
@@ -26,9 +27,9 @@ val earthworm = annelida.descend(
     "earthworm",
     SizeClass.TINY,
     CommonTrait.FOSSORIAL_LIVING,
-    CommonTrait.BODY_UNDULATION,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.DECOMPOSING_ENZYMES,
+    minus = listOf(CommonTrait.SALTWATER_OSMOREGULATION)
 )
 
 val bristleWorm = annelida.descend(

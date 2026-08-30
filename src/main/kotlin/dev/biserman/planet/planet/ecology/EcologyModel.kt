@@ -129,16 +129,19 @@ sealed interface TraitEffect {
     data class TemperatureShift(val degreesC: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.shiftTemperature(degreesC)
     }
-    data class TemperatureTolerance(val colderC: Double = 0.0, val hotterC: Double = 0.0) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) =
-            context.widenTemperatureTolerance(colderC, hotterC)
-    }
-    data class TemperatureOptimalTolerance(
+    data class TemperatureTolerance(
         val colderC: Double = 0.0,
         val hotterC: Double = 0.0,
+        val optimalColderC: Double = 0.0,
+        val optimalHotterC: Double = 0.0,
     ) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
-            context.widenOptimalTemperatureTolerance(colderC, hotterC)
+            context.widenTemperatureTolerance(
+                colderC,
+                hotterC,
+                optimalColderC,
+                optimalHotterC,
+            )
     }
     data class MinimumActiveTemperature(val temperatureC: Double) : TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =

@@ -93,7 +93,7 @@ val caecilian = amphibian.descend(
     CommonTrait.BODY_UNDULATION,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.SEGMENTED_PHYSIQUE,
-    CommonTrait.MAMMARY_GLANDS,
+    CommonTrait.LACTATION_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.POOR_VISION,
     ColorTrait.BLACK_COLORATION,

@@ -21,6 +21,7 @@ val cnidarian = EarthSpeciesCatalog.animal(
     CommonTrait.SOLITARY,
     CommonTrait.POOR_HEARING,
     CommonTrait.POOR_SCENT_SENSE,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     ColorTrait.PALE_COLORATION,
 )
 val jellyfish = cnidarian.descend(
@@ -51,10 +52,9 @@ val stonyCoral = anthozoan.descend(
     "stony coral",
     SizeClass.SMALL,
     ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
-    CommonTrait.PHOTOSYNTHETIC_SURFACE,
     CommonTrait.RIGID_COLONY_FRAMEWORK,
     CommonTrait.REEF_BUILDING,
-    CommonTrait.SHALLOW_WATER_PHOTOSYMBIOSIS,
+    CommonTrait.INTERNAL_PHOTOSYMBIONTS,
     CommonTrait.WARM_WATER_ENZYMES,
 )
 val seaFan = anthozoan.descend(

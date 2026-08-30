@@ -84,6 +84,9 @@ object EcologyCompiler {
         require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
         }
+        require(definition.motile || TraitCapability.LOCOMOTION !in capabilities) {
+            "${definition.displayName} is sessile but has a locomotion capability"
+        }
 
         val context = SpeciesCompilationContext(
             speciesDisplayName = definition.displayName,

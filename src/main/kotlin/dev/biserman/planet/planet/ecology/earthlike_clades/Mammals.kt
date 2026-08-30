@@ -9,7 +9,7 @@ val mammal = tetrapoda.descend(
     SizeClass.MEDIUM,
     CommonTrait.ENDOTHERMY,
     CommonTrait.FUR,
-    CommonTrait.MAMMARY_GLANDS,
+    CommonTrait.LACTATION_GLANDS,
     CommonTrait.VIVIPARITY,
     CommonTrait.NOCTURNAL,
     CommonTrait.CLAWS,

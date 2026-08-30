@@ -153,6 +153,15 @@ class SpeciesCompilationContext internal constructor(
         niches: List<NicheDefinition>,
         commonTraits: Set<CommonTrait>,
     ): CompiledSpecies {
+        val optimalLowC = 15.0 + temperatureShift - colderOptimalTolerance
+        val optimalHighC = 25.0 + temperatureShift + hotterOptimalTolerance
+        require(optimalLowC <= optimalHighC) {
+            "$speciesDisplayName has an inverted optimal temperature range"
+        }
+        // Narrowing outer tolerance and widening the optimum remain independently composable,
+        // but the resulting lethal limits must still enclose the productive range.
+        val outerLowC = minOf(5.0 + temperatureShift - colderTolerance, optimalLowC - 1.0)
+        val outerHighC = maxOf(30.0 + temperatureShift + hotterTolerance, optimalHighC + 1.0)
         val habitatSupport = DoubleArray(Habitat.entries.size) { habitatIndex ->
             if (habitatAccess[habitatIndex]) {
                 habitatAffinity[habitatIndex].coerceIn(0.0, 1.0)
@@ -208,10 +217,10 @@ class SpeciesCompilationContext internal constructor(
                 massKg = massKg,
                 maintenanceDemand = maintenanceDemand,
                 thermal = ThermalProfile(
-                    outerLowC = 5.0 + temperatureShift - colderTolerance,
-                    optimalLowC = 15.0 + temperatureShift - colderOptimalTolerance,
-                    optimalHighC = 25.0 + temperatureShift + hotterOptimalTolerance,
-                    outerHighC = 30.0 + temperatureShift + hotterTolerance,
+                    outerLowC = outerLowC,
+                    optimalLowC = optimalLowC,
+                    optimalHighC = optimalHighC,
+                    outerHighC = outerHighC,
                     minimumActiveC = minimumActiveTemperatureC,
                     frozenDormantSurvival = frozenDormantSurvival.coerceIn(0.0, 1.0),
                     seasonalColdToleranceC = seasonalColdTolerance,
@@ -246,7 +255,7 @@ class SpeciesCompilationContext internal constructor(
                 seasonalReproduction =
                 definition.sizeClass.seasonalReproduction * reproductionMultiplier,
                 reserveCapacity = reserveCapacity.coerceIn(0.0, 1.5),
-                nicheCompetitionSensitivity = nicheCompetitionSensitivity.coerceIn(0.0, 1.0),
+                nicheCompetitionSensitivity = nicheCompetitionSensitivity.coerceIn(0.0, 2.0),
                 selfCrowdingSensitivity = selfCrowdingSensitivity.coerceIn(1.0, 4.0),
                 dormancyKind = dormancyKind,
                 dormantSurvival = dormantSurvival,
@@ -330,14 +339,16 @@ class SpeciesCompilationContext internal constructor(
         temperatureShift += degreesC
     }
 
-    fun widenTemperatureTolerance(colderC: Double, hotterC: Double) {
-        colderTolerance += colderC
-        hotterTolerance += hotterC
-    }
-
-    fun widenOptimalTemperatureTolerance(colderC: Double, hotterC: Double) {
-        colderOptimalTolerance += colderC
-        hotterOptimalTolerance += hotterC
+    fun widenTemperatureTolerance(
+        colderC: Double,
+        hotterC: Double,
+        optimalColderC: Double,
+        optimalHotterC: Double,
+    ) {
+        colderTolerance += if (optimalColderC > 0.0) maxOf(colderC, optimalColderC) else colderC
+        hotterTolerance += if (optimalHotterC > 0.0) maxOf(hotterC, optimalHotterC) else hotterC
+        colderOptimalTolerance += optimalColderC
+        hotterOptimalTolerance += optimalHotterC
     }
 
     fun requireMinimumActiveTemperature(temperatureC: Double) {

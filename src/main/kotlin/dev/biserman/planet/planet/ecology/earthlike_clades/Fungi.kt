@@ -8,7 +8,7 @@ val fungus = EarthSpeciesCatalog.sessile(
     "fungus",
     SizeClass.TINY,
     CommonTrait.PASSIVE_RESPIRATION,
-    CommonTrait.MYCELIAL_BODY,
+    CommonTrait.INTERWOVEN_BODY,
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
     CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
@@ -18,7 +18,7 @@ val fungus = EarthSpeciesCatalog.sessile(
 val fruitingFungus = fungus.descend(
     "fruiting fungus",
     SizeClass.SMALL,
-    CommonTrait.FRUITING_BODY,
+    CommonTrait.RADIATIVE_FRUITS,
     CommonTrait.PERENNIAL_STORAGE_TISSUE,
 )
 val mushroom = fruitingFungus.descend(
@@ -35,5 +35,5 @@ val mold = fungus.descend(
     "mold",
     SizeClass.TINY,
     CommonTrait.RAPID_GROWTH,
-    CommonTrait.INTERWOVEN_MAT,
+    CommonTrait.INTERWOVEN_BODY,
 )

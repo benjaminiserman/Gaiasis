@@ -22,6 +22,7 @@ val fish = EarthSpeciesCatalog.animal(
     CommonTrait.CATHEMERAL,
     CommonTrait.LIMBED_BODY,
     CommonTrait.VASCULAR_SYSTEM,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     ColorTrait.COUNTERSHADE_COLORATION
 )
 
