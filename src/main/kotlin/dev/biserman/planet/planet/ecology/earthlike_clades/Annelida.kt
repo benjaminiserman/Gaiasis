@@ -28,6 +28,7 @@ val earthworm = annelida.descend(
     SizeClass.TINY,
     CommonTrait.FOSSORIAL_LIVING,
     CommonTrait.TERRESTRIAL_OVOSPORE,
+    CommonTrait.HERMAPHRODITISM,
     CommonTrait.DECOMPOSING_ENZYMES,
     minus = listOf(CommonTrait.SALTWATER_OSMOREGULATION)
 )

@@ -925,6 +925,36 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `small clade traits require their underlying structures and strategies`() {
+        val base = predator("small-clade-dependencies")
+        fun unmet(vararg traits: SpeciesTrait) =
+            TraitDependencies.unmetRequirements(base.copy(traits = base.traits + traits))
+
+        assertTrue(unmet(CommonTrait.TOOTH_WHORLS).isNotEmpty())
+        assertTrue(
+            unmet(CommonTrait.JAW, CommonTrait.TEETH, CommonTrait.TOOTH_WHORLS).isEmpty(),
+        )
+        assertTrue(unmet(CommonTrait.BIOLUMINESCENT_LURE).isNotEmpty())
+        assertTrue(
+            unmet(CommonTrait.BIOLUMINESCENCE, CommonTrait.BIOLUMINESCENT_LURE).isEmpty(),
+        )
+        assertTrue(unmet(CommonTrait.SAW_STRUCTURES).isEmpty())
+        assertTrue(unmet(CommonTrait.FOOD_CLEANING_BEHAVIOR).isEmpty())
+        assertTrue(unmet(CommonTrait.HERMAPHRODITISM).isEmpty())
+        assertTrue(unmet(CommonTrait.PROJECTILE_CHEMICAL_SPRAY).isNotEmpty())
+        assertTrue(
+            unmet(CommonTrait.STINK_DEFENSE, CommonTrait.PROJECTILE_CHEMICAL_SPRAY).isEmpty(),
+        )
+        assertTrue(unmet(CommonTrait.INFRARED_SENSING).isEmpty())
+        assertTrue(unmet(CommonTrait.PARTHENOGENESIS).isEmpty())
+
+        val sessileCleaner = producer("sessile-cleaner").let { species ->
+            species.copy(traits = species.traits + CommonTrait.FOOD_CLEANING_BEHAVIOR)
+        }
+        assertTrue(TraitDependencies.unmetRequirements(sessileCleaner).isNotEmpty())
+    }
+
+    @Test
     fun `cooperative behaviors require compatible social organization`() {
         val base = predator("cooperative-dependencies")
         fun unmet(organization: CommonTrait, behavior: CommonTrait) =

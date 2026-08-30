@@ -48,6 +48,7 @@ val landSnail = snail.descend(
     CommonTrait.TRACHEA,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.TERRESTRIAL_OVOSPORE,
+    CommonTrait.HERMAPHRODITISM,
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.NOCTURNAL
 )
@@ -58,6 +59,7 @@ val seaSnail = snail.descend(
 val slug = gastropod.descend(
     "slug",
     SizeClass.TINY,
+    CommonTrait.HERMAPHRODITISM,
 )
 val landSlug = slug.descend(
     "land slug",

@@ -56,6 +56,11 @@ enum class HabitatGroup(override val habitats: List<Pair<Habitat, Double>>) : Ha
             Habitat.LAND_SURFACE to 1.0,
 
             Habitat.CAVE to 0.5,
+
+            Habitat.COASTAL to 0.1,
+            Habitat.FRESHWATER to 0.1,
+            Habitat.SHALLOW_OCEAN to 0.1,
+            Habitat.DARK_WATER to 0.1
         )
     ),
     FLYING(

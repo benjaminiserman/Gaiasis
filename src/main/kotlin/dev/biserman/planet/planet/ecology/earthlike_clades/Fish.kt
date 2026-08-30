@@ -261,9 +261,11 @@ val wrasse = percomorpha.descend(
     "wrasse",
     SizeClass.MEDIUM,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.FOOD_CLEANING_BEHAVIOR,
     CommonTrait.REEF_CAMOUFLAGE,
     CommonTrait.REEF_NESTING,
     CommonTrait.TERRITORIAL,
+    CommonTrait.SEQUENTIAL_HERMAPHRODITISM,
     ColorTrait.RAINBOW_COLORATION
 )
 

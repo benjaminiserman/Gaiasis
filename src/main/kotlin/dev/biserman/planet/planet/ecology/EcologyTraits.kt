@@ -61,6 +61,7 @@ enum class TraitCapability : FulfillsTraitRequirement {
     UNDERWATER_RESPIRATION,
     WATER_STORAGE,
     REPRODUCTION,
+    SEXUAL_REPRODUCTION,
     OVOSPORE_REPRODUCTION,
     OVOSPORE_BROODING,
     OVOSPORE_BROOD_SITE,
@@ -1040,6 +1041,34 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.18),
         ),
     ),
+    SEQUENTIAL_HERMAPHRODITISM(
+        "sequential hermaphroditism",
+        "An individual changes reproductive role during its lifetime in response to age, size, or social conditions, improving mating opportunities at the cost of reorganizing reproductive tissues.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.15),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.SEXUAL_REPRODUCTION)),
+    ),
+    HERMAPHRODITISM(
+        "hermaphroditism",
+        "Each reproductive individual can perform both mating roles, improving the chance that an encounter produces offspring at the cost of maintaining both reproductive functions.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.3),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.SEXUAL_REPRODUCTION)),
+    ),
+    PARTHENOGENESIS(
+        "parthenogenesis",
+        "Unfertilized reproductive cells can develop into offspring, allowing reproduction without a mate while reducing the genetic variety produced by each reproductive event.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.14),
+            TraitEffect.NicheCompetitionSensitivity(1.08),
+            TraitEffect.MaintenanceCost(0.09),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.REPRODUCTION)),
+    ),
     VIVIPARITY(
         "viviparity",
         "Offspring develop within a parent's body until they can survive outside it, protecting early development at a substantial metabolic cost.",
@@ -1050,6 +1079,7 @@ enum class CommonTrait(
         group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
+            TraitCapability.SEXUAL_REPRODUCTION,
         ),
     ),
     BROOD_POUCH(
@@ -1092,6 +1122,7 @@ enum class CommonTrait(
         group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
+            TraitCapability.SEXUAL_REPRODUCTION,
             TraitCapability.OVOSPORE_REPRODUCTION,
             TraitCapability.OVOSPORE_BROODING,
         ),
@@ -1106,6 +1137,7 @@ enum class CommonTrait(
         group = TraitGroup.OVOSPORE_TYPE,
         capabilities = setOf(
             TraitCapability.REPRODUCTION,
+            TraitCapability.SEXUAL_REPRODUCTION,
             TraitCapability.OVOSPORE_REPRODUCTION,
             TraitCapability.OVOSPORE_BROODING,
         ),
@@ -1374,7 +1406,7 @@ enum class CommonTrait(
             TraitEffect.HabitatAccess(Habitat.COASTAL, 0.15),
             TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.15),
             TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.15),
-            TraitEffect.CaptureAbility(0.01),
+            TraitEffect.CaptureAbility(0.03),
             TraitEffect.MaintenanceCost(0.12),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
@@ -1385,6 +1417,26 @@ enum class CommonTrait(
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY),
             TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM)
+        )
+    ),
+    HYDRAULIC_APPENDAGES(
+        "hydraulic appendages",
+        "Fluid pressure extends, stiffens, or repositions flexible appendages used for walking, climbing, attachment, feeding, or manipulation.",
+        listOf(
+            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.1),
+            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.1),
+            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.075),
+            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.075),
+            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.075),
+            TraitEffect.MaintenanceCost(0.06),
+        ),
+        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        capabilities = setOf(
+            TraitCapability.LOCOMOTION,
+            TraitCapability.TERRESTRIAL_LOCOMOTION,
+        ),
+        requirements = listOf(
+            TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
         )
     ),
     LEAPING_LEGS(
@@ -1798,6 +1850,17 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.03)
         ),
         requirements = listOf(TraitRequirement.allOf(JAW)),
+    ),
+    TOOTH_WHORLS(
+        "tooth whorls",
+        "Successive teeth form a curved or spiral cutting surface that grips and slices food as the mouth closes.",
+        listOf(
+            TraitEffect.CaptureAbility(0.16),
+            TraitEffect.LargerPreySizeClasses(1),
+            TraitEffect.ReproductionMultiplier(0.96),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TEETH)),
     ),
     FANGS(
         "fangs",
@@ -2322,6 +2385,16 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
     ),
+    INFRARED_SENSING(
+        "infrared sensing",
+        "Heat-sensitive organs resolve nearby warm surfaces or organisms independently of visible illumination.",
+        listOf(
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, 0.08),
+            TraitEffect.Sensing(0.12),
+            TraitEffect.CaptureAbility(0.08),
+            TraitEffect.MaintenanceCost(0.18),
+        ),
+    ),
     WHOOPING_CALL(
         "whooping call",
         "Long-range whoops recruit and coordinate members of a dispersed social hunting group.",
@@ -2485,6 +2558,16 @@ enum class CommonTrait(
             TraitEffect.HabitatAffinity(HabitatGroup.DARK, -0.20),
             TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.20),
             TraitEffect.Defense(0.22),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
+    STINK_DEFENSE(
+        "stink defense",
+        "Specialized glands release a persistent, repellent odor that discourages attackers but costs resources to produce and can reveal the defender's presence.",
+        listOf(
+            TraitEffect.Defense(0.26),
+            TraitEffect.CaptureAbility(-0.04),
+            TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.15),
         ),
     ),
@@ -2673,6 +2756,30 @@ enum class CommonTrait(
             TraitEffect.Defense(0.45)
         ),
     ),
+    SAW_STRUCTURES(
+        "saw structures",
+        "An elongated edge bearing repeated hard teeth or blades wounds food or attackers through sweeping, scraping, or vibrating motions.",
+        listOf(
+            TraitEffect.CaptureAbility(0.16),
+            TraitEffect.Defense(0.08),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.21),
+        ),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION)),
+    ),
+    PROJECTILE_CHEMICAL_SPRAY(
+        "projectile chemical spray",
+        "A pressurized or forcefully expelled chemical secretion is aimed at threats or prey from beyond immediate contact range.",
+        listOf(
+            TraitEffect.Defense(0.20),
+            TraitEffect.CaptureAbility(0.05),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(STINK_DEFENSE, TOXIC_SKIN, VENOM_DELIVERY),
+        ),
+    ),
     CONSTRICTING_BODY(
         "constricting body",
         "A long muscular body coils around captured prey and prevents breathing or circulation.",
@@ -2731,6 +2838,17 @@ enum class CommonTrait(
         ),
         requirements = listOf(TraitRequirement.allOf(TENTACLES)),
     ),
+    BIOLUMINESCENCE(
+        "bioluminescence",
+        "Chemical light produced by living tissues supports signaling, illumination, concealment, warning displays, or distraction in dim surroundings.",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.12),
+            TraitEffect.Sensing(0.04),
+            TraitEffect.Defense(0.04),
+            TraitEffect.ReproductionMultiplier(1.04),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+    ),
     BIOLUMINESCENT_LURE(
         "bioluminescent lure",
         "A controlled light organ attracts curious prey in otherwise dark water.",
@@ -2740,6 +2858,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.18),
             TraitEffect.MaintenanceCost(0.27),
         ),
+        requirements = listOf(TraitRequirement.allOf(BIOLUMINESCENCE)),
     ),
     PARASITIC_PROBOSCIS(
         "parasitic proboscis",
@@ -2922,6 +3041,20 @@ enum class CommonTrait(
     ),
 
     // Scavenger and decomposer traits
+    FOOD_CLEANING_BEHAVIOR(
+        "food-cleaning behavior",
+        "The organism deliberately removes parasites, damaged tissue, fouling growth, or trapped debris from another organism and consumes the material it removes.",
+        listOf(
+            TraitEffect.CaptureAbility(0.04),
+            TraitEffect.NicheCompetitionSensitivity(0.86),
+            TraitEffect.ReproductionMultiplier(1.04),
+            TraitEffect.MaintenanceCost(0.12),
+        ),
+        requirements = listOf(
+            TraitRequirement.AllOf(setOf(TraitCapability.LOCOMOTION)),
+            TraitRequirement.anyOf(GRAZING_MOUTHPARTS, MEAT_EATING_MOUTHPARTS),
+        ),
+    ),
     SCAVENGING_SENSES(
         "long-range carrion senses",
         "Sensory organs capable of locating dead organisms across a broad area.",

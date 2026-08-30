@@ -113,12 +113,14 @@ val python = serpent.descend(
     "python",
     SizeClass.MEDIUM,
     CommonTrait.CONSTRICTING_BODY,
+    CommonTrait.INFRARED_SENSING,
     ColorTrait.BROWN_COLORATION
 )
 val boa = serpent.descend(
     "boa",
     SizeClass.MEDIUM,
     CommonTrait.CONSTRICTING_BODY,
+    CommonTrait.INFRARED_SENSING,
     CommonTrait.VIVIPARITY,
     ColorTrait.BROWN_COLORATION
 )
