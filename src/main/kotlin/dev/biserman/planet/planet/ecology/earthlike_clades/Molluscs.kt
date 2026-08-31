@@ -17,8 +17,8 @@ val mollusc = EarthSpeciesCatalog.animal(
     CommonTrait.MANTLED_BODY,
     CommonTrait.GILLS,
     CommonTrait.CATHEMERAL,
-    CommonTrait.POOR_HEARING,
-    CommonTrait.EYES.atLevel(3),
+    CommonTrait.HEARING.atLevel(1),
+    CommonTrait.EYES.atLevel(1),
     ColorTrait.BROWN_COLORATION,
     CommonTrait.SALTWATER_OSMOREGULATION,
 )
@@ -93,18 +93,20 @@ val cephalopod = mollusc.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.LIMB_REGROWTH,
     CommonTrait.RAPID_GROWTH,
+    CommonTrait.EYES.atLevel(2),
     minus = listOf(CommonTrait.SLOW_METABOLISM)
 )
 val octopus = cephalopod.descend(
     "octopus",
     SizeClass.SMALL,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(3),
+    CommonTrait.EYES.atLevel(1),
     ColorTrait.ADAPTIVE_COLORATION,
 )
 val squid = cephalopod.descend(
     "squid",
     SizeClass.SMALL,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.DEEP_DIVING_PHYSIOLOGY,
     CommonTrait.BUOYANCY_BLADDER,
     ColorTrait.PALE_COLORATION,

@@ -14,6 +14,7 @@ val bird = reptile.descend(
     CommonTrait.OVOSPORE_NEST,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.REGIONAL_MIGRATION,
+    CommonTrait.INTELLIGENCE.atLevel(1),
     ColorTrait.BROWN_COLORATION,
 )
 
@@ -49,6 +50,7 @@ val waterfowl = bird.descend(
     CommonTrait.GROUP_LIVING,
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.WATERPROOF_PLUMAGE,
+    CommonTrait.INSULATING_PLUMAGE.atLevel(1),
     CommonTrait.LONG_MIGRATION
 )
 val grebe = bird.descend(
@@ -107,6 +109,8 @@ val penguin = bird.descend(
     CommonTrait.FAT_RESERVES,
     CommonTrait.TRUMPETING_CALL,
     CommonTrait.STREAMLINED_PHYSIQUE,
+    CommonTrait.BLUBBER,
+    CommonTrait.INSULATING_PLUMAGE.atLevel(3),
     ColorTrait.COUNTERSHADE_COLORATION,
 )
 val owl = bird.descend(
@@ -115,11 +119,11 @@ val owl = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.HOOKED_TALONS,
     CommonTrait.MOTION_TRACKING_SENSES,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.HEARING.atLevel(5),
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.EYES.atLevel(5),
     CommonTrait.SILENT_MOVEMENT,
-    CommonTrait.INSULATING_PLUMAGE,
+    CommonTrait.INSULATING_PLUMAGE.atLevel(2),
     CommonTrait.HOOTING_CALL,
     CommonTrait.NOCTURNAL,
 )
@@ -178,7 +182,7 @@ val parrot = bird.descend(
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.EXTENDED_PARENTAL_CARE,
     CommonTrait.IMITATIVE_VOCALIZATION,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     ColorTrait.RAINBOW_COLORATION
 )
 val corvid = bird.descend(
@@ -188,7 +192,7 @@ val corvid = bird.descend(
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.TOOL_MANIPULATION,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.CROAKING_CALL,
     ColorTrait.BLACK_COLORATION,
 )

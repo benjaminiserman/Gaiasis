@@ -140,50 +140,37 @@ private data class SpeciesPair(
 
     private fun sharesSeaIceMarineInterface(): Boolean = (consumer.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(target::supports)) || (target.supports(Habitat.SEA_ICE) && EcologyFitness.aquaticHabitats.any(consumer::supports))
 
-    fun predationModifiers(): PredationModifiers {
-        var captureBonusMultiplier = 1.0
-        var defenseBonusMultiplier = 1.0
+    fun predationModifiers(): InteractionEffectContext {
+        val context = InteractionEffectContext()
 
         fun applyFrom(
             bearer: CompiledSpecies,
+            bearerDefinition: SpeciesDefinition,
             opponent: CompiledSpecies,
             opponentDefinition: SpeciesDefinition,
             bearerIsConsumer: Boolean,
         ) {
             bearer.traits.entries.forEach { (trait, level) ->
-                trait.interactionEffectsAt(level)
-                    .filter { it.opponentCondition.matches(opponentDefinition, opponent.traits) }
-                    .flatMap { it.effects }
-                    .forEach { effect ->
-                        when (effect) {
-                            is InteractionEffect.CaptureBonusMultiplier -> {
-                                val affectsConsumer =
-                                    (effect.subject == InteractionEffectSubject.BEARER && bearerIsConsumer) ||
-                                        (effect.subject == InteractionEffectSubject.OPPONENT && !bearerIsConsumer)
-                                if (affectsConsumer) captureBonusMultiplier *= effect.multiplier
-                            }
-
-                            is InteractionEffect.DefenseBonusMultiplier -> {
-                                val affectsTarget =
-                                    (effect.subject == InteractionEffectSubject.BEARER && !bearerIsConsumer) ||
-                                        (effect.subject == InteractionEffectSubject.OPPONENT && bearerIsConsumer)
-                                if (affectsTarget) defenseBonusMultiplier *= effect.multiplier
-                            }
-                        }
+                trait.effectsAt(level).forEach { conditionalEffect ->
+                    if (conditionalEffect is ConditionalInteractionEffect &&
+                        conditionalEffect.condition.matches(
+                            bearer,
+                            bearerDefinition,
+                            opponent,
+                            opponentDefinition,
+                        )
+                    ) {
+                        context.apply(conditionalEffect.effects, bearerIsConsumer)
                     }
+                }
             }
         }
 
-        applyFrom(consumer, target, targetDefinition, bearerIsConsumer = true)
-        applyFrom(target, consumer, consumerDefinition, bearerIsConsumer = false)
-        return PredationModifiers(captureBonusMultiplier, defenseBonusMultiplier)
+        applyFrom(consumer, consumerDefinition, target, targetDefinition, bearerIsConsumer = true)
+        applyFrom(target, targetDefinition, consumer, consumerDefinition, bearerIsConsumer = false)
+        return context
     }
 }
-
-private data class PredationModifiers(
-    val captureBonusMultiplier: Double,
-    val defenseBonusMultiplier: Double,
-)
 
 private class PredationGraph(
     private val potentialPredation: Array<BooleanArray>,
@@ -217,10 +204,7 @@ internal object FoodWebCompiler {
                     definitions[consumer.index],
                     definitions[target.index],
                 )
-                val interaction = filterFeedingInteraction(pair)
-                    ?: grazingInteraction(pair)
-                    ?: colonyRaidingInteraction(pair)
-                    ?: predationInteraction(pair, predationGraph)
+                val interaction = filterFeedingInteraction(pair) ?: grazingInteraction(pair) ?: colonyRaidingInteraction(pair) ?: predationInteraction(pair, predationGraph)
                 if (interaction != null) {
                     builder.set(consumer.index, target.index, interaction)
                 }
@@ -264,12 +248,7 @@ internal object FoodWebCompiler {
     private fun colonyRaidingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.COLONY_RAIDING)
         val targetColonial = pair.target.traits.has(CommonTrait.EUSOCIAL_COLONY)
-        if (!pair.target.motile ||
-            pair.target.sizeClass != SizeClass.MINUSCULE ||
-            !targetColonial ||
-            !pair.sharesHabitatFor(EcoStrategy.COLONY_RAIDING) ||
-            support <= 0.0
-        ) {
+        if (!pair.target.motile || pair.target.sizeClass != SizeClass.MINUSCULE || !targetColonial || !pair.sharesHabitatFor(EcoStrategy.COLONY_RAIDING) || support <= 0.0) {
             return null
         }
 
@@ -309,11 +288,6 @@ internal object FoodWebCompiler {
         } else {
             0.0
         }
-        val soundLureCaptureBonus = if (pair.consumer.interactions.acousticSignalMask and pair.target.interactions.acousticSignalMask != 0L) {
-            pair.consumer.interactions.soundLureCaptureBonus
-        } else {
-            0.0
-        }
         val modifiers = pair.predationModifiers()
         val effectiveCapture = adjustedPositiveBonus(
             pair.consumer.interactions.captureAbility,
@@ -325,7 +299,7 @@ internal object FoodWebCompiler {
             } else {
                 0.0
             }
-            ) + burrowerCaptureBonus + soundLureCaptureBonus
+            ) + burrowerCaptureBonus + modifiers.captureBonus
         val effectiveDefense = adjustedPositiveBonus(
             pair.target.interactions.defense,
             InteractionBaselines.DEFENSE,
@@ -334,7 +308,7 @@ internal object FoodWebCompiler {
             pair.target.interactions.pursuitSpeed
         } else {
             pair.target.interactions.sensing
-        }
+        } + modifiers.defenseBonus
         val attack = (
             0.07 * intraguildAttackMultiplier * activityOverlapMultiplier(
                 pair.consumer.interactions.activityPattern,

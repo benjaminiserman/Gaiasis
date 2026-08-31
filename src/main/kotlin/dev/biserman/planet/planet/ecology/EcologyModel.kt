@@ -93,10 +93,14 @@ data class SpeciesDefinition(
     }
 }
 
-sealed interface TraitEffect {
+/** An unconditional effect applied while compiling one species' phenotype. */
+sealed interface DirectTraitEffect : TraitEffect {
     fun applyTo(context: SpeciesCompilationContext)
+}
 
-    data class HabitatAccess(val habitatSelection: HabitatSelection, val amount: Double = 0.0) : TraitEffect {
+sealed interface TraitEffect {
+
+    data class HabitatAccess(val habitatSelection: HabitatSelection, val amount: Double = 0.0) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) {
             habitatSelection.habitats.forEach { (habitat, factor) ->
                 context.accessHabitat(habitat)
@@ -104,7 +108,7 @@ sealed interface TraitEffect {
             }
         }
     }
-    data class HabitatAffinity(val habitatSelection: HabitatSelection, val amount: Double) : TraitEffect {
+    data class HabitatAffinity(val habitatSelection: HabitatSelection, val amount: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) {
             habitatSelection.habitats.forEach { (habitat, factor) ->
                 context.adjustHabitatAffinity(habitat, amount * factor)
@@ -113,7 +117,7 @@ sealed interface TraitEffect {
     }
 
     /** Enables a feeding strategy and optionally contributes its baseline affinity. */
-    data class StrategyAccess(val strategy: EcoStrategy, val amount: Double = 0.0) : TraitEffect {
+    data class StrategyAccess(val strategy: EcoStrategy, val amount: Double = 0.0) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) {
             context.accessStrategy(strategy)
             context.adjustStrategyAffinity(strategy, amount)
@@ -121,10 +125,10 @@ sealed interface TraitEffect {
     }
 
     /** Changes aptitude without granting the anatomy needed to use a strategy. */
-    data class StrategyAffinity(val strategy: EcoStrategy, val amount: Double) : TraitEffect {
+    data class StrategyAffinity(val strategy: EcoStrategy, val amount: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.adjustStrategyAffinity(strategy, amount)
     }
-    data class TemperatureShift(val degreesC: Double) : TraitEffect {
+    data class TemperatureShift(val degreesC: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.shiftTemperature(degreesC)
     }
     data class TemperatureTolerance(
@@ -132,7 +136,7 @@ sealed interface TraitEffect {
         val hotterC: Double = 0.0,
         val optimalColderC: Double = 0.0,
         val optimalHotterC: Double = 0.0,
-    ) : TraitEffect {
+    ) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.widenTemperatureTolerance(
                 colderC,
@@ -141,42 +145,42 @@ sealed interface TraitEffect {
                 optimalHotterC,
             )
     }
-    data class MinimumActiveTemperature(val temperatureC: Double) : TraitEffect {
+    data class MinimumActiveTemperature(val temperatureC: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.requireMinimumActiveTemperature(temperatureC)
     }
-    data class FrozenDormantSurvival(val fractionPerSeason: Double) : TraitEffect {
+    data class FrozenDormantSurvival(val fractionPerSeason: Double) : DirectTraitEffect {
         init {
             require(fractionPerSeason in 0.0..1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyFrozenDormantSurvival(fractionPerSeason)
     }
-    data class ThermalRegulation(val strategy: ThermalStrategy) : TraitEffect {
+    data class ThermalRegulation(val strategy: ThermalStrategy) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.regulateTemperatureWith(strategy)
     }
     data class SeasonalColdTolerance(
         val maximumBonusC: Double,
         val triggerInsolation: Double,
-    ) : TraitEffect {
+    ) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.tolerateSeasonalCold(maximumBonusC, triggerInsolation)
     }
 
-    data class WaterRequirement(val change: Double) : TraitEffect {
+    data class WaterRequirement(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeWaterRequirement(change)
     }
     data class MaximumWaterTolerance(
         val optimalMaximumChange: Double,
         val absoluteMaximumChange: Double,
-    ) : TraitEffect {
+    ) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.changeMaximumWaterTolerance(optimalMaximumChange, absoluteMaximumChange)
     }
     data class WaterDepthTolerance(
         val optimalMaximumM: Double,
         val absoluteMaximumM: Double,
-    ) : TraitEffect {
+    ) : DirectTraitEffect {
         init {
             require(optimalMaximumM >= 0.0)
             require(absoluteMaximumM > optimalMaximumM)
@@ -184,119 +188,116 @@ sealed interface TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.limitWaterDepth(optimalMaximumM, absoluteMaximumM)
     }
-    data class ElevationToleranceShift(val meters: Double) : TraitEffect {
+    data class ElevationToleranceShift(val meters: Double) : DirectTraitEffect {
         init {
             require(meters >= 0.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) = context.shiftElevationTolerance(meters)
     }
-    data object SnowHydration : TraitEffect {
+    data object SnowHydration : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.hydrateFromSnow()
     }
 
-    data class InsolationOptimum(val change: Double) : TraitEffect {
+    data class InsolationOptimum(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.shiftInsolationOptimum(change)
     }
-    data class CanopyLightEfficiency(val change: Double) : TraitEffect {
+    data class CanopyLightEfficiency(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeCanopyLightEfficiency(change)
     }
-    data class DenseCanopyForagingPenalty(val maximumPenalty: Double) : TraitEffect {
+    data class DenseCanopyForagingPenalty(val maximumPenalty: Double) : DirectTraitEffect {
         init {
             require(maximumPenalty in 0.0..1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.addDenseCanopyForagingPenalty(maximumPenalty)
     }
-    data class CaptureAbility(val change: Double) : TraitEffect {
+    data class CaptureAbility(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeCaptureAbility(change)
     }
-    data class BodyMassMultiplier(val multiplier: Double) : TraitEffect {
+    data class BodyMassMultiplier(val multiplier: Double) : DirectTraitEffect {
         init {
             require(multiplier > 0.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyBodyMass(multiplier)
     }
-    data class LargerPreySizeClasses(val additionalClasses: Int) : TraitEffect {
+    data class LargerPreySizeClasses(val additionalClasses: Int) : DirectTraitEffect {
         init {
             require(additionalClasses > 0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.expandLargerPreySizeClasses(additionalClasses)
     }
-    data class BurrowerCaptureBonus(val change: Double) : TraitEffect {
+    data class BurrowerCaptureBonus(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeBurrowerCaptureBonus(change)
     }
-    data class SoundLureCaptureBonus(val change: Double) : TraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.changeSoundLureCaptureBonus(change)
-    }
-    data class PursuitSpeed(val change: Double) : TraitEffect {
+    data class PursuitSpeed(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changePursuitSpeed(change)
     }
-    data class Sensing(val change: Double) : TraitEffect {
+    data class Sensing(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeSensing(change)
     }
-    data class ActivityPatternEffect(val pattern: ActivityPattern) : TraitEffect {
+    data class ActivityPatternEffect(val pattern: ActivityPattern) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.setActivityPattern(pattern)
     }
-    data class Defense(val change: Double) : TraitEffect {
+    data class Defense(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeDefense(change)
     }
-    data class Camouflage(val habitat: Habitat, val change: Double) : TraitEffect {
+    data class Camouflage(val habitat: Habitat, val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.addCamouflage(habitat, change)
     }
-    data class CamouflageColor(val color: BiologicalColor) : TraitEffect {
+    data class CamouflageColor(val color: BiologicalColor) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.setCamouflageColor(color)
     }
-    data class PhotosyntheticColor(val color: BiologicalColor) : TraitEffect {
+    data class PhotosyntheticColor(val color: BiologicalColor) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.setPhotosyntheticColor(color)
     }
-    data object AposematicColoration : TraitEffect {
+    data object AposematicColoration : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableAposematicColoration()
     }
-    data class ReefUse(val change: Double) : TraitEffect {
+    data class ReefUse(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeReefUse(change)
     }
-    data class ReefBuilding(val change: Double) : TraitEffect {
+    data class ReefBuilding(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeReefBuilding(change)
     }
-    data class FruitProduction(val activeBiomassFractionPerSeason: Double) : TraitEffect {
+    data class FruitProduction(val activeBiomassFractionPerSeason: Double) : DirectTraitEffect {
         init {
             require(activeBiomassFractionPerSeason in 0.0..1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.produceFruit(activeBiomassFractionPerSeason)
     }
-    data object Flowering : TraitEffect {
+    data object Flowering : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableFlowering()
     }
-    data class NectarProduction(val activeBiomassFractionPerSeason: Double) : TraitEffect {
+    data class NectarProduction(val activeBiomassFractionPerSeason: Double) : DirectTraitEffect {
         init {
             require(activeBiomassFractionPerSeason in 0.0..1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.produceNectar(activeBiomassFractionPerSeason)
     }
-    data class PollinationEfficiency(val change: Double) : TraitEffect {
+    data class PollinationEfficiency(val change: Double) : DirectTraitEffect {
         init {
             require(change >= 0.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.changePollinationEfficiency(change)
     }
-    data class WasteFertilization(val change: Double) : TraitEffect {
+    data class WasteFertilization(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeWasteFertilization(change)
     }
-    data class ReserveCapacity(val change: Double) : TraitEffect {
+    data class ReserveCapacity(val change: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.changeReserveCapacity(change)
     }
-    data class NicheCompetitionSensitivity(val multiplier: Double) : TraitEffect {
+    data class NicheCompetitionSensitivity(val multiplier: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyNicheCompetitionSensitivity(multiplier)
     }
 
     /** Increases the resource crowding caused by this species' own biomass. */
-    data class SelfCrowdingSensitivity(val multiplier: Double) : TraitEffect {
+    data class SelfCrowdingSensitivity(val multiplier: Double) : DirectTraitEffect {
         init {
             require(multiplier >= 1.0) {
                 "Self-crowding sensitivity must not reduce self-crowding"
@@ -306,63 +307,63 @@ sealed interface TraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplySelfCrowdingSensitivity(multiplier)
     }
-    data class Dormancy(val kind: DormancyKind, val survivalPerSeason: Double) : TraitEffect {
+    data class Dormancy(val kind: DormancyKind, val survivalPerSeason: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enterDormancy(kind, survivalPerSeason)
     }
-    data class DormantEntryBiomassRetention(val fraction: Double) : TraitEffect {
+    data class DormantEntryBiomassRetention(val fraction: Double) : DirectTraitEffect {
         init {
             require(fraction in 0.0..1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyDormantEntryRetention(fraction)
     }
-    data class DormantReactivationMultiplier(val multiplier: Double) : TraitEffect {
+    data class DormantReactivationMultiplier(val multiplier: Double) : DirectTraitEffect {
         init {
             require(multiplier >= 1.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) =
             context.multiplyDormantReactivation(multiplier)
     }
-    data class Dispersal(val kind: DispersalKind) : TraitEffect {
+    data class Dispersal(val kind: DispersalKind) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableDispersal(kind)
     }
-    data class RadiationRange(val tileSteps: Int) : TraitEffect {
+    data class RadiationRange(val tileSteps: Int) : DirectTraitEffect {
         init {
             require(tileSteps >= 1)
         }
         override fun applyTo(context: SpeciesCompilationContext) = context.expandRadiationRange(tileSteps)
     }
-    data class ReproductionMultiplier(val multiplier: Double) : TraitEffect {
+    data class ReproductionMultiplier(val multiplier: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyReproduction(multiplier)
     }
-    data class MetabolicDemandMultiplier(val multiplier: Double) : TraitEffect {
+    data class MetabolicDemandMultiplier(val multiplier: Double) : DirectTraitEffect {
         init {
             require(multiplier > 0.0)
         }
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyMetabolicDemand(multiplier)
     }
-    data object FreshwaterOsmoregulation : TraitEffect {
+    data object FreshwaterOsmoregulation : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableFreshwaterOsmoregulation()
     }
-    data object BroadSalinityTolerance : TraitEffect {
+    data object BroadSalinityTolerance : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableBroadSalinityTolerance()
     }
-    data class AquaticRespiration(val mode: AquaticRespirationMode) : TraitEffect {
+    data class AquaticRespiration(val mode: AquaticRespirationMode) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enableAquaticRespiration(mode)
     }
-    data object PelagicAerialResidency : TraitEffect {
+    data object PelagicAerialResidency : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enablePelagicAerialResidency()
     }
-    data object DarkWaterAdaptation : TraitEffect {
+    data object DarkWaterAdaptation : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.adaptToDarkWater()
     }
-    data class ObligateResidentHabitat(val habitat: Habitat) : TraitEffect {
+    data class ObligateResidentHabitat(val habitat: Habitat) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.requireResidentHabitat(habitat)
     }
-    data object RequiresAdjacentLand : TraitEffect {
+    data object RequiresAdjacentLand : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.requireAdjacentLand()
     }
-    data class MaintenanceCost(val fraction: Double) : TraitEffect {
+    data class MaintenanceCost(val fraction: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.addMaintenanceCost(fraction * 0.1)
     }
 }

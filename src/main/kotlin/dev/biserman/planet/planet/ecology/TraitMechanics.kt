@@ -5,9 +5,8 @@ data class TraitLevelDefinition(
     val displayName: String? = null,
     val description: String? = null,
     val effects: List<TraitEffect>,
-    val conditionalEffects: List<ConditionalTraitEffect> = emptyList(),
-    val interactionEffects: List<ConditionalInteractionEffect> = emptyList(),
     val capabilities: Set<TraitCapability> = emptySet(),
+    val requirements: List<TraitRequirement> = emptyList(),
 )
 
 /**
@@ -19,7 +18,7 @@ class TraitScale(levels: List<TraitLevelDefinition>) {
 
     init {
         require(this.levels.size >= 2) { "A scaled trait must have at least two present levels" }
-        require(this.levels.all { it.effects.isNotEmpty() || it.conditionalEffects.isNotEmpty() || it.interactionEffects.isNotEmpty() })
+        require(this.levels.all { it.effects.isNotEmpty() })
     }
 
     val maximumLevel: Int
@@ -202,8 +201,8 @@ sealed interface TraitCondition {
 /** Effects enabled by the rest of the bearer's compiled trait context. */
 data class ConditionalTraitEffect(
     val condition: TraitCondition,
-    val effects: List<TraitEffect>,
-) {
+    val effects: List<DirectTraitEffect>,
+) : TraitEffect {
     init {
         require(effects.isNotEmpty())
     }
@@ -214,35 +213,129 @@ enum class InteractionEffectSubject {
     OPPONENT,
 }
 
+/** Mutable pairwise state used while conditional interaction effects are compiled. */
+class InteractionEffectContext internal constructor() {
+    internal var captureBonus = 0.0
+        private set
+    internal var captureBonusMultiplier = 1.0
+        private set
+    internal var defenseBonus = 0.0
+        private set
+    internal var defenseBonusMultiplier = 1.0
+        private set
+
+    private var bearerIsConsumer = false
+
+    internal fun apply(effects: Iterable<InteractionEffect>, bearerIsConsumer: Boolean) {
+        this.bearerIsConsumer = bearerIsConsumer
+        effects.forEach { it.applyTo(this) }
+    }
+
+    internal fun addCaptureBonus(subject: InteractionEffectSubject, change: Double) {
+        if (subject.affectsConsumer()) captureBonus += change
+    }
+
+    internal fun multiplyCaptureBonus(subject: InteractionEffectSubject, multiplier: Double) {
+        if (subject.affectsConsumer()) captureBonusMultiplier *= multiplier
+    }
+
+    internal fun addDefenseBonus(subject: InteractionEffectSubject, change: Double) {
+        if (subject.affectsConsumer()) defenseBonus += change
+    }
+
+    internal fun multiplyDefenseBonus(subject: InteractionEffectSubject, multiplier: Double) {
+        if (subject.affectsTarget()) defenseBonusMultiplier *= multiplier
+    }
+
+    private fun InteractionEffectSubject.affectsConsumer(): Boolean =
+        (this == InteractionEffectSubject.BEARER && bearerIsConsumer) ||
+            (this == InteractionEffectSubject.OPPONENT && !bearerIsConsumer)
+
+    private fun InteractionEffectSubject.affectsTarget(): Boolean =
+        (this == InteractionEffectSubject.BEARER && !bearerIsConsumer) ||
+            (this == InteractionEffectSubject.OPPONENT && bearerIsConsumer)
+}
+
+/** Predicates that can inspect both creatures participating in an interaction. */
+sealed interface InteractionCondition {
+    fun matches(
+        bearer: CompiledSpecies,
+        bearerDefinition: SpeciesDefinition,
+        opponent: CompiledSpecies,
+        opponentDefinition: SpeciesDefinition,
+    ): Boolean
+
+    data class Opponent(val condition: TraitCondition) : InteractionCondition {
+        override fun matches(
+            bearer: CompiledSpecies,
+            bearerDefinition: SpeciesDefinition,
+            opponent: CompiledSpecies,
+            opponentDefinition: SpeciesDefinition,
+        ): Boolean = condition.matches(opponentDefinition, opponent.traits)
+    }
+
+    data object SharesAcousticSignal : InteractionCondition {
+        override fun matches(
+            bearer: CompiledSpecies,
+            bearerDefinition: SpeciesDefinition,
+            opponent: CompiledSpecies,
+            opponentDefinition: SpeciesDefinition,
+        ): Boolean =
+            bearer.interactions.acousticSignalMask and opponent.interactions.acousticSignalMask != 0L
+    }
+}
+
 /** A deliberately small set of pairwise modifiers resolved by the food-web compiler. */
 sealed interface InteractionEffect {
     val subject: InteractionEffectSubject
-    val multiplier: Double
+    fun applyTo(context: InteractionEffectContext)
+
+    data class CaptureBonus(
+        override val subject: InteractionEffectSubject,
+        val change: Double,
+    ) : InteractionEffect {
+        override fun applyTo(context: InteractionEffectContext) =
+            context.addCaptureBonus(subject, change)
+    }
 
     data class CaptureBonusMultiplier(
         override val subject: InteractionEffectSubject,
-        override val multiplier: Double,
+        val multiplier: Double,
     ) : InteractionEffect {
         init {
             require(multiplier >= 0.0)
         }
+
+        override fun applyTo(context: InteractionEffectContext) =
+            context.multiplyCaptureBonus(subject, multiplier)
+    }
+
+    data class DefenseBonus(
+        override val subject: InteractionEffectSubject,
+        val change: Double,
+    ) : InteractionEffect {
+        override fun applyTo(context: InteractionEffectContext) =
+            context.addDefenseBonus(subject, change)
     }
 
     data class DefenseBonusMultiplier(
         override val subject: InteractionEffectSubject,
-        override val multiplier: Double,
+        val multiplier: Double,
     ) : InteractionEffect {
         init {
             require(multiplier >= 0.0)
         }
+
+        override fun applyTo(context: InteractionEffectContext) =
+            context.multiplyDefenseBonus(subject, multiplier)
     }
 }
 
 /** Pairwise effects enabled when the other creature satisfies a trait condition. */
 data class ConditionalInteractionEffect(
-    val opponentCondition: TraitCondition,
+    val condition: InteractionCondition,
     val effects: List<InteractionEffect>,
-) {
+) : TraitEffect {
     init {
         require(effects.isNotEmpty())
     }

@@ -15,6 +15,9 @@ val mammal = tetrapoda.descend(
     CommonTrait.NOCTURNAL,
     CommonTrait.CLAWS,
     CommonTrait.TAIL,
+    CommonTrait.HEARING.atLevel(3),
+    CommonTrait.SCENT.atLevel(3),
+    CommonTrait.INTELLIGENCE.atLevel(1),
     ColorTrait.BROWN_COLORATION,
 )
 
@@ -80,7 +83,7 @@ val leporid = lagomorph.descend(
     "leporid",
     SizeClass.SMALL,
     CommonTrait.LEAPING_LEGS,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.HEARING.atLevel(5),
 )
 val rabbit = leporid.descend(
     "rabbit",
@@ -97,7 +100,7 @@ val pika = lagomorph.descend(
     "pika",
     SizeClass.SMALL,
     CommonTrait.SEASONAL_WINTER_COAT,
-    CommonTrait.DENSE_UNDERCOAT,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
     CommonTrait.HIGH_AFFINITY_BLOOD
 )
 
@@ -122,8 +125,8 @@ val microbat = bat.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.WOOLLY_UNDERCOAT,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(3),
+    CommonTrait.HEARING.atLevel(5),
     CommonTrait.ECHOLOCATION,
     CommonTrait.SEASONAL_TORPOR,
 )
@@ -132,7 +135,7 @@ val trueInsectivore = mammal.descend(
     "true insectivores",
     SizeClass.SMALL,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.TERRITORIAL
 )
@@ -157,7 +160,7 @@ val mole = trueInsectivore.descend(
 val shrew = trueInsectivore.descend(
     "shrew",
     SizeClass.SMALL,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.HEARING.atLevel(5),
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
     CommonTrait.EYES.atLevel(1),
@@ -175,8 +178,7 @@ val gymnure = trueInsectivore.descend(
 val primate = mammal.descend(
     "primates",
     SizeClass.SMALL,
-    CommonTrait.INTELLIGENT,
-    CommonTrait.POOR_SCENT_SENSE,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.COMPLEX_VOCALIZATIONS,
     CommonTrait.GROUP_LIVING,
@@ -199,14 +201,15 @@ val lemur = primate.descend(
     SizeClass.SMALL,
     CommonTrait.LEAPING_LEGS,
     CommonTrait.SEASONAL_TORPOR,
-    CommonTrait.KEEN_SCENT_SENSE,
-    minus = listOf(CommonTrait.INTELLIGENT)
+    CommonTrait.SCENT.atLevel(4),
+    CommonTrait.INTELLIGENCE.atLevel(1)
 )
 val ape = primate.descend(
     "ape",
     SizeClass.MEDIUM,
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.SLOW_GROWTH,
+    CommonTrait.SCENT.atLevel(2),
     minus = listOf(
         CommonTrait.GRAZING_MOUTHPARTS,
         CommonTrait.TAIL,
@@ -255,9 +258,9 @@ val pig = ungulate.descend(
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.FERMENTING_HINDGUT,
     CommonTrait.GRUNTING_CALL,
-    CommonTrait.KEEN_HEARING,
-    CommonTrait.KEEN_SCENT_SENSE,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.HEARING.atLevel(4),
+    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.LONG_TUSKS,
     CommonTrait.SOLITARY,
     minus = listOf(CommonTrait.OPEN_COUNTRY_PREFERENCE, CommonTrait.REGIONAL_MIGRATION)
@@ -289,7 +292,7 @@ val deer = ruminant.descend(
     "deer",
     SizeClass.MEDIUM,
     CommonTrait.BROWSING_MOUTHPARTS,
-    CommonTrait.DENSE_UNDERCOAT,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
     CommonTrait.SWIFT_LIMBS,
     CommonTrait.SEASONAL_WINTER_COAT,
     CommonTrait.GROUP_LIVING,
@@ -325,10 +328,10 @@ val cetacean = ungulate.descend(
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.BLUBBER,
     CommonTrait.LONG_MIGRATION,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.HEARING.atLevel(5),
     CommonTrait.ECHOLOCATION,
     CommonTrait.COMPLEX_VOCALIZATIONS,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.GROUP_LIVING,
     ColorTrait.COUNTERSHADE_COLORATION,
     minus = listOf(
@@ -364,7 +367,7 @@ val bear = carnivore.descend(
     SizeClass.LARGE,
     CommonTrait.HETEROTHERMY,
     CommonTrait.BROWSING_MOUTHPARTS,
-    CommonTrait.DENSE_UNDERCOAT,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.FAT_RESERVES,
     CommonTrait.GROWLING_CALL,
@@ -378,9 +381,9 @@ val raccoon = carnivore.descend(
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.GROUP_LIVING,
     CommonTrait.DIGGING_LIMBS,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.SCAVENGING_SENSES,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
     CommonTrait.CATHEMERAL,
@@ -430,7 +433,7 @@ val canid = carnivore.descend(
     "canids",
     SizeClass.MEDIUM,
     CommonTrait.BARKING_CALL,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.VESPERTINE
 )
 val wolf = canid.descend(
@@ -440,10 +443,10 @@ val wolf = canid.descend(
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.COOPERATIVE_HUNTING,
     CommonTrait.GROUP_LIVING,
-    CommonTrait.DENSE_UNDERCOAT,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(1),
     CommonTrait.SEASONAL_WINTER_COAT,
     CommonTrait.HOWLING_CALL,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE)
 )
@@ -460,7 +463,7 @@ val fox = canid.descend(
 val mustelid = carnivore.descend(
     "mustelid",
     SizeClass.SMALL,
-    CommonTrait.DENSE_UNDERCOAT,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
     CommonTrait.SLENDER_PHYSIQUE,
 )
 val badger = mustelid.descend(
@@ -470,7 +473,7 @@ val badger = mustelid.descend(
     ColorTrait.PALE_COLORATION,
     CommonTrait.DIGGING_LIMBS,
     CommonTrait.BURROW_BUILDER,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     minus = listOf(CommonTrait.SLENDER_PHYSIQUE, CommonTrait.AMBUSH_MUSCULATURE)
 )
 val otter = mustelid.descend(
@@ -480,7 +483,7 @@ val otter = mustelid.descend(
     CommonTrait.AQUATIC_LIMBS,
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.STREAMLINED_PHYSIQUE,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
     CommonTrait.CHIRPING_CALL,
 )
 val weasel = mustelid.descend(
@@ -504,5 +507,5 @@ val elephant = mammal.descend(
     CommonTrait.REGIONAL_MIGRATION,
     CommonTrait.EXTENDED_PARENTAL_CARE,
     CommonTrait.TRUMPETING_CALL,
-    CommonTrait.INTELLIGENT,
+    CommonTrait.INTELLIGENCE.atLevel(2),
 )

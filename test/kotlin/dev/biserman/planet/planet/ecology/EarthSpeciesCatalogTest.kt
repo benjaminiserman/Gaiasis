@@ -184,7 +184,7 @@ class EarthSpeciesCatalogTest {
             "north-american-river-otter",
         ).forEach(species::getValue)
         val honeyBadger = species.getValue("honey-badger")
-        assertTrue(CommonTrait.REINFORCED_HIDE in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.REINFORCED_HIDE in honeyBadger.traits` to be true")
+        assertTrue(CommonTrait.ARMORED_HIDE.atLevel(1) in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.ARMORED_HIDE.atLevel(1) in honeyBadger.traits` to be true")
         assertTrue(CommonTrait.FUR in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.FUR in honeyBadger.traits` to be true")
         assertTrue(CommonTrait.BULKY_PHYSIQUE !in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.BULKY_BODY !in honeyBadger.traits` to be true")
         assertTrue(CommonTrait.STRONG_JAWS !in honeyBadger.traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.STRONG_JAWS !in honeyBadger.traits` to be true")
@@ -747,7 +747,10 @@ class EarthSpeciesCatalogTest {
         assertTrue(CommonTrait.PROJECTILE_TONGUE !in anteater.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.PROJECTILE_TONGUE !in anteater.traits` to be true")
         assertTrue(CommonTrait.PROJECTILE_TONGUE in chameleon.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.PROJECTILE_TONGUE in chameleon.traits` to be true")
         assertTrue(CommonTrait.AMBUSH_MUSCULATURE !in anteater.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.AMBUSH_MUSCULATURE !in anteater.traits` to be true")
-        assertTrue(CommonTrait.VENOM_DELIVERY in bee.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.VENOM_DELIVERY in bee.traits` to be true")
+        assertTrue(
+            CommonTrait.VENOM_DELIVERY.atLevel(2) in bee.traits,
+            message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.VENOM_DELIVERY.atLevel(2) in bee.traits` to be true"
+        )
         assertTrue(CommonTrait.HONEY_STORES in bee.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.HONEY_STORES in bee.traits` to be true")
         assertTrue(CommonTrait.COLONY_THERMOREGULATION in bee.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.COLONY_THERMOREGULATION in bee.traits` to be true")
         assertTrue(CommonTrait.APOSEMATIC_COLORATION in bee.traits, message = "Anteater raids minuscule colonies while bee stingers and honey provide defense and reserves: expected `CommonTrait.APOSEMATIC_COLORATION in bee.traits` to be true")
@@ -795,7 +798,7 @@ class EarthSpeciesCatalogTest {
 
         val undefendedBee = bee.copy(
             id = "undefended-bee",
-            traits = bee.traits - CommonTrait.VENOM_DELIVERY - CommonTrait.HONEY_STORES,
+            traits = bee.traits - CommonTrait.VENOM_DELIVERY.atLevel(2) - CommonTrait.HONEY_STORES,
         )
         val beeComparison = EcologyCompiler.compile(listOf(bee, undefendedBee)).species
         assertTrue(
@@ -949,8 +952,8 @@ class EarthSpeciesCatalogTest {
             val traits = definitions.getValue(speciesId).traits
             assertTrue(
                 traits.any {
-                    it == CommonTrait.DENSE_UNDERCOAT ||
-                        it == CommonTrait.INSULATING_PLUMAGE ||
+                    it == CommonTrait.DENSE_UNDERCOAT.atLevel(2) ||
+                        it == CommonTrait.INSULATING_PLUMAGE.atLevel(2) ||
                         it == CommonTrait.FROST_HARDENED_TISSUES ||
                         it == CommonTrait.SEASONAL_WINTER_COAT
                 },
@@ -1064,7 +1067,10 @@ class EarthSpeciesCatalogTest {
 
         fun traitsOf(id: String) = requireNotNull(definitions[id]).traits
 
-        assertTrue(CommonTrait.REINFORCED_HIDE in traitsOf("honey-badger"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.REINFORCED_HIDE in traitsOf(\"honey-badger\")` to be true")
+        assertTrue(
+            CommonTrait.ARMORED_HIDE.atLevel(1) in traitsOf("honey-badger"),
+            message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.ARMORED_HIDE.atLevel(1) in traitsOf(\"honey-badger\")` to be true"
+        )
         assertTrue(CommonTrait.FUR in traitsOf("honey-badger"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.FUR in traitsOf(\"honey-badger\")` to be true")
         assertTrue(CommonTrait.ANTLERS in traitsOf("white-tailed-deer"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.ANTLERS in traitsOf(\"white-tailed-deer\")` to be true")
         assertTrue(CommonTrait.HORNS in traitsOf("blue-wildebeest"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.LARGE_HORN in traitsOf(\"blue-wildebeest\")` to be true")
@@ -1110,7 +1116,7 @@ class EarthSpeciesCatalogTest {
             "african-grey-parrot",
             "common-octopus",
         ).forEach { speciesId ->
-            assertTrue(CommonTrait.INTELLIGENT in traitsOf(speciesId), "$speciesId should have intelligence")
+            assertTrue(CommonTrait.INTELLIGENCE.atLevel(2) in traitsOf(speciesId), "$speciesId should have intelligence")
         }
         assertTrue(CommonTrait.GROUP_HUDDLING in traitsOf("emperor-penguin"), message = "Cognition activity and structural traits cover representative species: expected `CommonTrait.GROUP_HUDDLING in traitsOf(\"emperor-penguin\")` to be true")
         assertTrue(CommonTrait.FLIGHTLESS_WINGS in traitsOf("emperor-penguin"), message = "Cognition activity and structural traits cover representative species: expected `CommonTrait.FLIGHTLESS_WINGS in traitsOf(\"emperor-penguin\")` to be true")

@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val cnidarian = EarthSpeciesCatalog.animal(
     "cnidarian",
@@ -17,10 +18,9 @@ val cnidarian = EarthSpeciesCatalog.animal(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.TENTACLES,
     CommonTrait.BODY_REGENERATION,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.SOLITARY,
-    CommonTrait.POOR_HEARING,
-    CommonTrait.POOR_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(1),
     CommonTrait.SALTWATER_OSMOREGULATION,
     ColorTrait.PALE_COLORATION,
 )

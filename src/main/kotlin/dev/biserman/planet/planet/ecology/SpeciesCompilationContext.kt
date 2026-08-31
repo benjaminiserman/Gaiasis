@@ -58,7 +58,6 @@ class SpeciesCompilationContext internal constructor(
     private var largerPreySizeClasses = 0
     private var burrowerCaptureBonus = 0.0
     private var acousticSignalMask = 0L
-    private var soundLureCaptureBonus = 0.0
     private var pursuitSpeed = 0.0
     private var sensing = 0.0
     private var activityPattern: ActivityPattern? = null
@@ -85,10 +84,12 @@ class SpeciesCompilationContext internal constructor(
             require(signal.ordinal < Long.SIZE_BITS)
             acousticSignalMask = acousticSignalMask or (1L shl signal.ordinal)
         }
-        apply(trait.effectsAt(level))
+        trait.effectsAt(level).forEach { effect ->
+            if (effect is DirectTraitEffect) effect.applyTo(this)
+        }
     }
 
-    internal fun apply(effects: Iterable<TraitEffect>) = effects.forEach { it.applyTo(this) }
+    internal fun apply(effects: Iterable<DirectTraitEffect>) = effects.forEach { it.applyTo(this) }
 
     /** Applies phenotype rules that emerge from combinations of authored traits. */
     internal fun applyCrossTraitRules(
@@ -274,7 +275,6 @@ class SpeciesCompilationContext internal constructor(
                 largerPreySizeClasses = largerPreySizeClasses,
                 burrowerCaptureBonus = burrowerCaptureBonus.coerceIn(0.0, 1.0),
                 acousticSignalMask = acousticSignalMask,
-                soundLureCaptureBonus = soundLureCaptureBonus.coerceIn(0.0, 1.0),
                 pursuitSpeed = pursuitSpeed.coerceIn(0.0, 1.0),
                 sensing = sensing.coerceIn(0.0, 1.0),
                 activityPattern = activityPattern,
@@ -420,10 +420,6 @@ class SpeciesCompilationContext internal constructor(
 
     fun changeBurrowerCaptureBonus(change: Double) {
         burrowerCaptureBonus += change
-    }
-
-    fun changeSoundLureCaptureBonus(change: Double) {
-        soundLureCaptureBonus += change
     }
 
     fun changePursuitSpeed(change: Double) {

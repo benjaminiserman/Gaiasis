@@ -38,10 +38,7 @@ enum class TraitGroup : FulfillsTraitRequirement {
     TERRESTRIAL_MOVEMENT_STRUCTURE,
     FLIGHT_STRUCTURE,
     ACTIVITY_PATTERN,
-    COGNITIVE_COMPLEXITY,
     SOCIAL_ORGANIZATION,
-    HEARING_ACUITY,
-    SCENT_ACUITY,
     BURROW_REFUGE,
     BIOLOGICAL_COLOR,
     SKELETON,
@@ -251,10 +248,6 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
     val displayName: String
     val description: String
     val effects: List<TraitEffect>
-    val conditionalEffects: List<ConditionalTraitEffect>
-        get() = emptyList()
-    val interactionEffects: List<ConditionalInteractionEffect>
-        get() = emptyList()
     val scale: TraitScale?
         get() = null
     val maxLevel: Int
@@ -279,14 +272,11 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
     fun effectsAt(level: Int): List<TraitEffect> =
         scale?.definitionAt(level)?.effects ?: effects.also { require(level == 1) }
 
-    fun conditionalEffectsAt(level: Int): List<ConditionalTraitEffect> =
-        scale?.definitionAt(level)?.conditionalEffects ?: conditionalEffects.also { require(level == 1) }
-
-    fun interactionEffectsAt(level: Int): List<ConditionalInteractionEffect> =
-        scale?.definitionAt(level)?.interactionEffects ?: interactionEffects.also { require(level == 1) }
-
     fun capabilitiesAt(level: Int): Set<TraitCapability> =
         scale?.definitionAt(level)?.capabilities ?: capabilities.also { require(level == 1) }
+
+    fun requirementsAt(level: Int): List<TraitRequirement> =
+        scale?.definitionAt(level)?.requirements ?: requirements.also { require(level == 1) }
 }
 
 /**
@@ -297,8 +287,6 @@ data class EffectTrait(
     override val displayName: String,
     override val description: String,
     override val effects: List<TraitEffect>,
-    override val conditionalEffects: List<ConditionalTraitEffect> = emptyList(),
-    override val interactionEffects: List<ConditionalInteractionEffect> = emptyList(),
     override val group: TraitGroup? = null,
     override val capabilities: Set<TraitCapability> = emptySet(),
     override val requirements: List<TraitRequirement> = emptyList(),
@@ -306,7 +294,7 @@ data class EffectTrait(
     init {
         require(displayName.isNotBlank())
         require(description.isNotBlank())
-        require(effects.isNotEmpty() || conditionalEffects.isNotEmpty() || interactionEffects.isNotEmpty())
+        require(effects.isNotEmpty())
     }
 }
 
@@ -415,8 +403,6 @@ enum class CommonTrait(
     override val displayName: String,
     override val description: String,
     override val effects: List<TraitEffect>,
-    override val conditionalEffects: List<ConditionalTraitEffect> = emptyList(),
-    override val interactionEffects: List<ConditionalInteractionEffect> = emptyList(),
     override val scale: TraitScale? = null,
     override val invariantOnly: Boolean = false,
     override val isCosmetic: Boolean = false,
@@ -2140,25 +2126,44 @@ enum class CommonTrait(
     ),
     DENSE_UNDERCOAT(
         "dense undercoat",
-        "A thick layer of fine hair beneath the outer fur traps still air close to the body.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
-            TraitEffect.MetabolicDemandMultiplier(0.9),
-            TraitEffect.MaintenanceCost(0.12),
-            TraitEffect.BodyMassMultiplier(1.03)
-        ),
-        requirements = listOf(TraitRequirement.allOf(FUR)),
-    ),
-    WOOLLY_UNDERCOAT(
-        "woolly undercoat",
-        "A second layer of fine, densely packed hairs traps additional insulating air beneath the outer coat.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = 5.0, hotterC = -2.0),
-            TraitEffect.MaintenanceCost(0.18),
-            TraitEffect.BodyMassMultiplier(1.02)
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(FUR),
+        "Increasing densities of fine hair beneath outer fur trap still air close to the body, improving insulation at rising heat and tissue costs.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    displayName = "light undercoat",
+                    description = "A sparse layer of fine hair beneath outer fur provides modest insulation.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 3.0, hotterC = -1.0),
+                        TraitEffect.MetabolicDemandMultiplier(0.97),
+                        TraitEffect.MaintenanceCost(0.04),
+                        TraitEffect.BodyMassMultiplier(1.01),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FUR)),
+                ),
+                TraitLevelDefinition(
+                    displayName = "dense undercoat",
+                    description = "A thick layer of fine hair beneath outer fur traps still air close to the body.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
+                        TraitEffect.MetabolicDemandMultiplier(0.90),
+                        TraitEffect.MaintenanceCost(0.12),
+                        TraitEffect.BodyMassMultiplier(1.03),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FUR)),
+                ),
+                TraitLevelDefinition(
+                    displayName = "woolly undercoat",
+                    description = "Multiple layers of extremely dense, fine hair trap exceptional amounts of insulating air.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 13.0, hotterC = -5.0),
+                        TraitEffect.MetabolicDemandMultiplier(0.84),
+                        TraitEffect.MaintenanceCost(0.26),
+                        TraitEffect.BodyMassMultiplier(1.06),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FUR)),
+                ),
+            ),
         ),
     ),
     SEASONAL_WINTER_COAT(
@@ -2212,13 +2217,43 @@ enum class CommonTrait(
     ),
     INSULATING_PLUMAGE(
         "insulating plumage",
-        "Dense overlapping feathers trap air around the body while remaining lighter than an equally thick fur coat.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = 10.0, hotterC = -3.0),
-            TraitEffect.WaterRequirement(-0.03),
-            TraitEffect.MaintenanceCost(0.15),
+        "Increasing densities of overlapping feathers trap air around the body while remaining lighter than an equally thick fur coat.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    displayName = "light insulating plumage",
+                    description = "A modest layer of overlapping feathers traps a small amount of insulating air.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 4.0, hotterC = -1.0),
+                        TraitEffect.WaterRequirement(-0.01),
+                        TraitEffect.MaintenanceCost(0.05),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FEATHERS)),
+                ),
+                TraitLevelDefinition(
+                    displayName = "insulating plumage",
+                    description = "Dense overlapping feathers trap air around the body while remaining relatively light.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 10.0, hotterC = -3.0),
+                        TraitEffect.WaterRequirement(-0.03),
+                        TraitEffect.MaintenanceCost(0.15),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FEATHERS)),
+                ),
+                TraitLevelDefinition(
+                    displayName = "extreme insulating plumage",
+                    description = "Exceptionally deep, dense plumage traps thick air layers but imposes substantial heat and upkeep costs.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = 16.0, hotterC = -6.0),
+                        TraitEffect.WaterRequirement(-0.05),
+                        TraitEffect.MaintenanceCost(0.32),
+                        TraitEffect.BodyMassMultiplier(1.04),
+                    ),
+                    requirements = listOf(TraitRequirement.allOf(FEATHERS)),
+                ),
+            ),
         ),
-        requirements = listOf(TraitRequirement.allOf(FEATHERS)),
     ),
     WATERPROOF_PLUMAGE(
         "waterproof plumage",
@@ -2282,45 +2317,69 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.25),
         ),
     ),
-    KEEN_SCENT_SENSE(
-        "keen sense of smell",
-        "A large, sensitive chemical-sensing system follows faint trails, detects concealed threats, and helps individuals locate distant mates.",
-        listOf(
-            TraitEffect.Sensing(0.08),
-            TraitEffect.ReproductionMultiplier(1.05),
-            TraitEffect.MaintenanceCost(0.15),
+    SCENT(
+        "chemical sensing",
+        "Chemical receptors range from short-range contact sensors to systems that follow faint trails, detect concealed threats, and locate distant mates.",
+        emptyList(),
+        scale = TraitScale(
+            (1..5).map { level ->
+                TraitLevelDefinition(
+                    displayName = listOf(
+                        "rudimentary chemical sensing",
+                        "limited chemical sensing",
+                        "developed chemical sensing",
+                        "acute chemical sensing",
+                        "exceptional chemical sensing",
+                    )[level - 1],
+                    description = listOf(
+                        "Simple chemical receptors detect strong substances at contact or very short range.",
+                        "Chemical receptors recognize nearby food, threats, and potential mates.",
+                        "Developed chemical sensing follows useful gradients and distinguishes many environmental compounds.",
+                        "Acute chemical sensing follows faint trails and detects concealed organisms at substantial distances.",
+                        "Exceptional chemical sensing resolves extremely faint, old, or overlapping chemical traces across great distances.",
+                    )[level - 1],
+                    effects = listOf(
+                        TraitEffect.Sensing(0.016 * level),
+                        TraitEffect.ReproductionMultiplier(1.0 + 0.01 * level),
+                        TraitEffect.MaintenanceCost(
+                            listOf(0.01, 0.026, 0.055, 0.108, 0.204)[level - 1],
+                        ),
+                    ),
+                )
+            },
         ),
-        group = TraitGroup.SCENT_ACUITY,
     ),
-    POOR_SCENT_SENSE(
-        "poor sense of smell",
-        "Reduced chemical sensitivity makes it harder to follow faint trails, detect concealed threats, and locate distant mates.",
-        listOf(
-            TraitEffect.Sensing(-0.12),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(-0.15),
+    HEARING(
+        "hearing",
+        "Vibration-sensitive organs range from simple sound detection to precise localization and discrimination of faint, distant signals.",
+        emptyList(),
+        scale = TraitScale(
+            (1..5).map { level ->
+                TraitLevelDefinition(
+                    displayName = listOf(
+                        "rudimentary hearing",
+                        "limited hearing",
+                        "developed hearing",
+                        "acute hearing",
+                        "exceptional hearing",
+                    )[level - 1],
+                    description = listOf(
+                        "Simple vibration-sensitive organs detect loud nearby disturbances.",
+                        "Limited auditory organs distinguish nearby sounds and their rough direction.",
+                        "Developed hearing recognizes and locates varied sounds across useful distances.",
+                        "Acute hearing locates faint or concealed sound sources against background noise.",
+                        "Exceptional hearing resolves extremely faint, distant, or rapidly changing sounds with high precision.",
+                    )[level - 1],
+                    effects = listOf(
+                        TraitEffect.Sensing(0.016 * level),
+                        TraitEffect.CaptureAbility(0.006 * level),
+                        TraitEffect.MaintenanceCost(
+                            listOf(0.008, 0.021, 0.045, 0.088, 0.166)[level - 1],
+                        ),
+                    ),
+                )
+            },
         ),
-        group = TraitGroup.SCENT_ACUITY,
-    ),
-    KEEN_HEARING(
-        "keen hearing",
-        "Sensitive auditory organs and neural processing locate faint or distant sounds, including concealed threats, and distinguish them from background noise.",
-        listOf(
-            TraitEffect.Sensing(0.08),
-            TraitEffect.CaptureAbility(0.03),
-            TraitEffect.MaintenanceCost(0.12),
-        ),
-        group = TraitGroup.HEARING_ACUITY,
-    ),
-    POOR_HEARING(
-        "poor hearing",
-        "Reduced auditory sensitivity makes it harder to detect faint sounds and to distinguish useful signals from background noise.",
-        listOf(
-            TraitEffect.Sensing(-0.08),
-            TraitEffect.CaptureAbility(-0.03),
-            TraitEffect.MaintenanceCost(-0.12),
-        ),
-        group = TraitGroup.HEARING_ACUITY,
     ),
     ECHOLOCATION(
         "echolocation",
@@ -2331,7 +2390,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.27),
         ),
         requirements = listOf(
-            TraitRequirement.allOf(KEEN_HEARING),
+            TraitRequirement.traitLevelAtLeast(HEARING, 5),
         ),
     ),
     ELECTRORECEPTION(
@@ -2458,7 +2517,15 @@ enum class CommonTrait(
         "sound lures",
         "Familiar calls are imitated or repurposed to draw acoustically responsive prey into striking distance.",
         listOf(
-            TraitEffect.SoundLureCaptureBonus(0.22),
+            ConditionalInteractionEffect(
+                condition = InteractionCondition.SharesAcousticSignal,
+                effects = listOf(
+                    InteractionEffect.CaptureBonus(
+                        subject = InteractionEffectSubject.BEARER,
+                        change = 0.22,
+                    ),
+                ),
+            ),
             TraitEffect.MaintenanceCost(0.18),
         ),
         requirements = listOf(TraitRequirement.HasAcousticSignal),
@@ -2528,28 +2595,47 @@ enum class CommonTrait(
     ),
     ARMORED_HIDE(
         "armored hide",
-        "Thick skin reinforced with plates or embedded bone resists bites, claws, and impacts.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
-            TraitEffect.Defense(0.34),
-            TraitEffect.CaptureAbility(-0.07),
-            TraitEffect.ReproductionMultiplier(0.92),
-            TraitEffect.MaintenanceCost(0.24),
-            TraitEffect.BodyMassMultiplier(1.2)
-        ),
-    ),
-    REINFORCED_HIDE(
-        "reinforced hide",
-        "Dense, unusually tough skin beneath a fur coat resists tearing, punctures, and twisting bites without forming rigid armor.",
-        listOf(
-            TraitEffect.Defense(0.18),
-            TraitEffect.CaptureAbility(-0.02),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.15),
-            TraitEffect.BodyMassMultiplier(1.1)
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(FUR),
+        "Increasingly thick, tough, or mineralized body tissues resist bites, claws, crushing, and impacts at growing costs to mass and mobility.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    displayName = "reinforced hide",
+                    description = "Dense, unusually tough skin resists tearing, punctures, and twisting bites without forming rigid armor.",
+                    effects = listOf(
+                        TraitEffect.Defense(0.18),
+                        TraitEffect.CaptureAbility(-0.02),
+                        TraitEffect.ReproductionMultiplier(0.97),
+                        TraitEffect.MaintenanceCost(0.12),
+                        TraitEffect.BodyMassMultiplier(1.08),
+                    ),
+                ),
+                TraitLevelDefinition(
+                    displayName = "armored hide",
+                    description = "Thick skin reinforced with plates or embedded hard tissue resists bites, claws, and impacts.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = -5.0, hotterC = 6.0),
+                        TraitEffect.Defense(0.34),
+                        TraitEffect.CaptureAbility(-0.07),
+                        TraitEffect.ReproductionMultiplier(0.92),
+                        TraitEffect.MaintenanceCost(0.24),
+                        TraitEffect.BodyMassMultiplier(1.2),
+                    ),
+                ),
+                TraitLevelDefinition(
+                    displayName = "heavy armored hide",
+                    description = "Very thick, extensively mineralized armor withstands severe attacks but greatly increases mass and limits movement.",
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = -7.0, hotterC = 8.0),
+                        TraitEffect.Defense(0.52),
+                        TraitEffect.CaptureAbility(-0.14),
+                        TraitEffect.PursuitSpeed(-0.05),
+                        TraitEffect.ReproductionMultiplier(0.86),
+                        TraitEffect.MaintenanceCost(0.42),
+                        TraitEffect.BodyMassMultiplier(1.35),
+                    ),
+                ),
+            ),
         ),
     ),
     PROTECTIVE_SHELL(
@@ -2604,7 +2690,12 @@ enum class CommonTrait(
         "stink defense",
         "Specialized glands release a persistent, repellent odor that discourages attackers but costs resources to produce and can reveal the defender's presence.",
         listOf(
-            TraitEffect.Defense(0.26),
+            ConditionalInteractionEffect(
+                InteractionCondition.Opponent(TraitCondition.TraitLevelAtLeast(SCENT, 1)),
+                listOf(
+                    InteractionEffect.DefenseBonus(InteractionEffectSubject.BEARER, 0.2),
+                )
+            ),
             TraitEffect.CaptureAbility(-0.04),
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.15),
@@ -2787,31 +2878,72 @@ enum class CommonTrait(
     ),
     VENOM_DELIVERY(
         "venom delivery",
-        "Fangs, stingers, spines, or saliva introduce toxins that rapidly disable prey.",
-        listOf(
-            TraitEffect.CaptureAbility(0.24),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(0.21),
-            TraitEffect.Defense(0.45)
+        "Fangs, stingers, spines, or saliva introduce toxins whose potency ranges from irritating or weakening to rapidly disabling.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    displayName = "mild venom delivery",
+                    description = "Delivered toxins irritate, weaken, or slow prey and attackers.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.12),
+                        TraitEffect.Defense(0.20),
+                        TraitEffect.ReproductionMultiplier(0.98),
+                        TraitEffect.MaintenanceCost(0.08),
+                    ),
+                ),
+                TraitLevelDefinition(
+                    displayName = "potent venom delivery",
+                    description = "Delivered toxins rapidly impair prey and make attacks against the bearer dangerous.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.24),
+                        TraitEffect.Defense(0.45),
+                        TraitEffect.ReproductionMultiplier(0.95),
+                        TraitEffect.MaintenanceCost(0.21),
+                    ),
+                ),
+                TraitLevelDefinition(
+                    displayName = "extreme venom delivery",
+                    description = "Highly potent delivered toxins can swiftly disable large prey or inflict severe consequences on attackers.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.36),
+                        TraitEffect.Defense(0.65),
+                        TraitEffect.ReproductionMultiplier(0.91),
+                        TraitEffect.MaintenanceCost(0.42),
+                    ),
+                ),
+            ),
         ),
     ),
     VENOM_RESISTANCE(
         "venom resistance",
-        "Altered molecular targets, detoxification pathways, or protective blood chemistry reduce the disabling effects of venom delivered by predators.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(0.98),
-            TraitEffect.MaintenanceCost(0.15),
-        ),
-        interactionEffects = listOf(
-            ConditionalInteractionEffect(
-                opponentCondition = TraitCondition.HasTrait(VENOM_DELIVERY),
-                effects = listOf(
-                    InteractionEffect.CaptureBonusMultiplier(
-                        subject = InteractionEffectSubject.OPPONENT,
-                        multiplier = 0.5,
-                    ),
-                ),
-            ),
+        "Altered molecular targets, detoxification pathways, or protective blood chemistry provide increasing resistance to venom delivered by predators.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                0.75 to listOf(TraitEffect.ReproductionMultiplier(0.995), TraitEffect.MaintenanceCost(0.06)),
+                0.50 to listOf(TraitEffect.ReproductionMultiplier(0.98), TraitEffect.MaintenanceCost(0.15)),
+                0.25 to listOf(TraitEffect.ReproductionMultiplier(0.95), TraitEffect.MaintenanceCost(0.30)),
+            ).mapIndexed { index, (captureMultiplier, effects) ->
+                TraitLevelDefinition(
+                    displayName = listOf("partial venom resistance", "strong venom resistance", "extreme venom resistance")[index],
+                    description = listOf(
+                        "Detoxification and altered targets reduce some of the advantage gained by venomous predators.",
+                        "Efficient detoxification and protected molecular targets substantially reduce venom's disabling effects.",
+                        "Highly specialized physiology neutralizes nearly all of a venomous predator's aggregate capture advantage.",
+                    )[index],
+                    effects = effects +
+                        ConditionalInteractionEffect(
+                            condition = InteractionCondition.Opponent(TraitCondition.HasTrait(VENOM_DELIVERY)),
+                            effects = listOf(
+                                InteractionEffect.CaptureBonusMultiplier(
+                                    subject = InteractionEffectSubject.OPPONENT,
+                                    multiplier = captureMultiplier,
+                                ),
+                            ),
+                        ),
+                )
+            },
         ),
     ),
     SAW_STRUCTURES(
@@ -2900,7 +3032,7 @@ enum class CommonTrait(
         "bioluminescence",
         "Chemical light produced by living tissues supports signaling, illumination, concealment, warning displays, or distraction in dim surroundings.",
         listOf(
-            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.12),
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, 0.12),
             TraitEffect.Sensing(0.04),
             TraitEffect.Defense(0.04),
             TraitEffect.ReproductionMultiplier(1.04),
@@ -2911,9 +3043,16 @@ enum class CommonTrait(
         "bioluminescent lure",
         "A controlled light organ attracts curious prey in otherwise dark water.",
         listOf(
-            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.2),
+            ConditionalInteractionEffect(
+                condition = InteractionCondition.Opponent(TraitCondition.TraitLevelAtLeast(EYES, 1)),
+                effects = listOf(
+                    InteractionEffect.CaptureBonusMultiplier(
+                        subject = InteractionEffectSubject.BEARER,
+                        multiplier = 1.5,
+                    ),
+                ),
+            ),
             TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.24),
-            TraitEffect.CaptureAbility(0.18),
             TraitEffect.MaintenanceCost(0.27),
         ),
         requirements = listOf(TraitRequirement.allOf(BIOLUMINESCENCE)),
@@ -3052,37 +3191,55 @@ enum class CommonTrait(
     ),
 
     // Intelligence and tool use
-    INTELLIGENT(
-        "advanced intelligence",
-        "A large, flexible nervous system supports learning, memory, planning, social inference, and novel solutions across many situations.",
-        listOf(
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.Sensing(0.08),
-            TraitEffect.Defense(0.06),
-            TraitEffect.ReserveCapacity(0.05),
-            TraitEffect.NicheCompetitionSensitivity(0.94),
-            TraitEffect.ReproductionMultiplier(1.08),
-            TraitEffect.MaintenanceCost(1.05),
-        ),
-        group = TraitGroup.COGNITIVE_COMPLEXITY,
-        capabilities = setOf(TraitCapability.ADVANCED_COGNITION),
-    ),
-    SAPIENT(
-        "sapient intelligence",
-        "Exceptional abstraction, cumulative culture, symbolic communication, and deliberate long-term planning reshape how the organism solves ecological problems.",
-        listOf(
-            TraitEffect.CaptureAbility(0.10),
-            TraitEffect.Sensing(0.08),
-            TraitEffect.Defense(0.08),
-            TraitEffect.ReserveCapacity(0.08),
-            TraitEffect.NicheCompetitionSensitivity(0.90),
-            TraitEffect.ReproductionMultiplier(1.12),
-            TraitEffect.MaintenanceCost(1.65),
-        ),
-        group = TraitGroup.COGNITIVE_COMPLEXITY,
-        capabilities = setOf(TraitCapability.ADVANCED_COGNITION),
-        requirements = listOf(
-            TraitRequirement.allOf(SLOW_GROWTH),
+    INTELLIGENCE(
+        "intelligence",
+        "Increasingly flexible nervous systems support learning, memory, planning, social inference, abstraction, and novel solutions.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    displayName = "flexible intelligence",
+                    description = "Flexible learning and memory improve responses to recurring ecological problems.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.04),
+                        TraitEffect.Sensing(0.03),
+                        TraitEffect.Defense(0.02),
+                        TraitEffect.ReserveCapacity(0.02),
+                        TraitEffect.NicheCompetitionSensitivity(0.98),
+                        TraitEffect.ReproductionMultiplier(1.03),
+                        TraitEffect.MaintenanceCost(0.30),
+                    ),
+                ),
+                TraitLevelDefinition(
+                    displayName = "advanced intelligence",
+                    description = "A large, flexible nervous system supports learning, memory, planning, social inference, and novel solutions across many situations.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.10),
+                        TraitEffect.Sensing(0.08),
+                        TraitEffect.Defense(0.06),
+                        TraitEffect.ReserveCapacity(0.05),
+                        TraitEffect.NicheCompetitionSensitivity(0.94),
+                        TraitEffect.ReproductionMultiplier(1.08),
+                        TraitEffect.MaintenanceCost(1.05),
+                    ),
+                    capabilities = setOf(TraitCapability.ADVANCED_COGNITION),
+                ),
+                TraitLevelDefinition(
+                    displayName = "sapient intelligence",
+                    description = "Exceptional abstraction, cumulative culture, symbolic communication, and deliberate long-term planning reshape ecological problem solving.",
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.10),
+                        TraitEffect.Sensing(0.08),
+                        TraitEffect.Defense(0.08),
+                        TraitEffect.ReserveCapacity(0.08),
+                        TraitEffect.NicheCompetitionSensitivity(0.90),
+                        TraitEffect.ReproductionMultiplier(1.12),
+                        TraitEffect.MaintenanceCost(1.65),
+                    ),
+                    capabilities = setOf(TraitCapability.ADVANCED_COGNITION),
+                    requirements = listOf(TraitRequirement.allOf(SLOW_GROWTH)),
+                ),
+            ),
         ),
     ),
     TOOL_MANIPULATION(
@@ -3377,7 +3534,6 @@ enum class CommonTrait(
             TraitRequirement.anyOf(
                 ARMORED_HIDE,
                 BONY_SCALES,
-                REINFORCED_HIDE,
                 SPINES
             )
         )

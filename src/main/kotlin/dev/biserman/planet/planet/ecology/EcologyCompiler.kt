@@ -95,9 +95,11 @@ object EcologyCompiler {
         )
         traitProfile.entries.forEach { (trait, level) -> context.apply(trait, level) }
         traitProfile.entries.forEach { (trait, level) ->
-            trait.conditionalEffectsAt(level)
-                .filter { it.condition.matches(definition, traitProfile) }
-                .forEach { context.apply(it.effects) }
+            trait.effectsAt(level).forEach { effect ->
+                if (effect is ConditionalTraitEffect && effect.condition.matches(definition, traitProfile)) {
+                    context.apply(effect.effects)
+                }
+            }
         }
         context.applyCrossTraitRules(definition.sizeClass, commonTraits)
         return context.finish(index, definition, niches, commonTraits, traitProfile)

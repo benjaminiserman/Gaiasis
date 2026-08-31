@@ -84,7 +84,6 @@ data class InteractionProfile(
     val largerPreySizeClasses: Int,
     val burrowerCaptureBonus: Double,
     val acousticSignalMask: Long,
-    val soundLureCaptureBonus: Double,
     val pursuitSpeed: Double,
     val sensing: Double,
     val activityPattern: ActivityPattern?,

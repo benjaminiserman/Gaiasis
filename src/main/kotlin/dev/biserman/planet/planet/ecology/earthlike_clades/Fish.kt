@@ -12,6 +12,8 @@ val fish = EarthSpeciesCatalog.animal(
     CommonTrait.ECTOTHERMY,
     CommonTrait.GILLS,
     CommonTrait.EYES.atLevel(3),
+    CommonTrait.HEARING.atLevel(2),
+    CommonTrait.SCENT.atLevel(1),
     CommonTrait.TEETH,
     CommonTrait.SCALES,
     CommonTrait.JAW,
@@ -42,7 +44,8 @@ val shark = cartilaginousFish.descend(
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.TEETH_REGROWTH,
     CommonTrait.MOTION_TRACKING_SENSES,
-    CommonTrait.KEEN_HEARING,
+    CommonTrait.HEARING.atLevel(4),
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.STRONG_JAWS
 )
 val skate = cartilaginousFish.descend(
@@ -56,7 +59,7 @@ val stingray = cartilaginousFish.descend(
     SizeClass.MEDIUM,
     CommonTrait.FLATTENED_PHYSIQUE,
     CommonTrait.STINGER,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.VIVIPARITY
 )
 
@@ -159,9 +162,9 @@ val catfish = otophysa.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SOLITARY,
     CommonTrait.SUCTION_FEEDING,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.SPINES,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     ColorTrait.BROWN_COLORATION,
 )
 

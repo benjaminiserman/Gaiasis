@@ -18,8 +18,9 @@ val arthropod = EarthSpeciesCatalog.animal(
     CommonTrait.LIMBED_BODY,
     CommonTrait.VASCULAR_SYSTEM,
     CommonTrait.EYES.atLevel(3),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.GILLS,
-    CommonTrait.POOR_HEARING,
+    CommonTrait.HEARING.atLevel(1),
     ColorTrait.PALE_COLORATION,
 )
 
@@ -39,14 +40,14 @@ val arachnid = arthropod.descend(
 val spider = arachnid.descend(
     "spider",
     SizeClass.TINY,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.FANGS,
     CommonTrait.WEB_SILK
 )
 val scorpion = arachnid.descend(
     "scorpion",
     SizeClass.TINY,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.PINCERS,
     CommonTrait.STINGER,
 )
@@ -74,14 +75,14 @@ val centipede = myriapoda.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SWIFT_LIMBS,
     CommonTrait.FANGS,
-    CommonTrait.VENOM_DELIVERY
+    CommonTrait.VENOM_DELIVERY.atLevel(2)
 )
 val millipede = myriapoda.descend(
     "millipede",
     SizeClass.TINY,
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.FOSSORIAL_LIVING,
-    CommonTrait.ARMORED_HIDE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
     CommonTrait.EYES.atLevel(1),
 )
 
@@ -97,7 +98,7 @@ val isopod = crustacean.descend(
     "isopod",
     SizeClass.TINY,
     CommonTrait.DECOMPOSING_ENZYMES,
-    CommonTrait.ARMORED_HIDE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
     CommonTrait.BALL_ROLLING
 )
 val shrimp = crustacean.descend(
@@ -114,7 +115,7 @@ val reptantia = crustacean.descend(
     SizeClass.SMALL,
     CommonTrait.PINCERS,
     CommonTrait.CRUSHING_PINCERS,
-    CommonTrait.ARMORED_HIDE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
     CommonTrait.COASTAL_CLINGING_FEET,
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -229,7 +230,7 @@ val bee = insect.descend(
     CommonTrait.EUSOCIAL_COLONY,
     CommonTrait.COLONY_THERMOREGULATION,
     CommonTrait.OVOSPORE_NEST,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.STINGER,
     CommonTrait.HONEY_STORES,
     CommonTrait.APOSEMATIC_COLORATION,
@@ -249,7 +250,7 @@ val beetle = insect.descend(
     "beetle",
     SizeClass.TINY,
     CommonTrait.WASTE_FEEDING_MOUTHPARTS,
-    CommonTrait.ARMORED_HIDE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
     CommonTrait.DIGGING_LIMBS,
     ColorTrait.BLACK_COLORATION,
     CommonTrait.WEAK_WINGS

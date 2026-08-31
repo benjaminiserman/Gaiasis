@@ -21,8 +21,8 @@ val crocodile = reptile.descend(
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.STRONG_JAWS,
     CommonTrait.OVOSPORE_NEST,
-    CommonTrait.ARMORED_HIDE,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.BELLOWING_CALL,
     CommonTrait.NOCTURNAL
@@ -37,7 +37,7 @@ val tuatara = reptile.descend(
     CommonTrait.AUTOTOMY,
     CommonTrait.LIMB_REGROWTH,
     CommonTrait.SLOW_METABOLISM,
-    CommonTrait.POOR_HEARING,
+    CommonTrait.HEARING.atLevel(1),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.DIGGING_LIMBS
 )
@@ -63,9 +63,10 @@ val gecko = lizard.descend(
 val monitorLizard = lizard.descend(
     "monitor lizard",
     SizeClass.MEDIUM,
-    CommonTrait.ARMORED_HIDE,
-    CommonTrait.VENOM_DELIVERY,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.ARMORED_HIDE.atLevel(2),
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
+    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.INTELLIGENCE.atLevel(1),
     ColorTrait.BROWN_COLORATION
 )
 val wormLizard = lizard.descend(
@@ -101,7 +102,7 @@ val serpent = reptile.descend(
     "serpent",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.KEEN_SCENT_SENSE,
+    CommonTrait.SCENT.atLevel(5),
     CommonTrait.BODY_UNDULATION,
     CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
@@ -130,13 +131,13 @@ val boa = serpent.descend(
 val viper = serpent.descend(
     "viper",
     SizeClass.SMALL,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.FANGS,
 )
 val cobra = serpent.descend(
     "cobra",
     SizeClass.SMALL,
-    CommonTrait.VENOM_DELIVERY,
+    CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.FANGS,
     CommonTrait.HISSING_WARNING,
     CommonTrait.VESPERTINE
@@ -146,7 +147,7 @@ val testudines = reptile.descend(
     "testudines",
     SizeClass.SMALL,
     CommonTrait.PROTECTIVE_SHELL,
-    CommonTrait.POOR_HEARING
+    CommonTrait.HEARING.atLevel(1)
 )
 val turtle = testudines.descend(
     "turtle",
@@ -168,4 +169,5 @@ val tortoise = testudines.descend(
     SizeClass.MEDIUM,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SLOW_METABOLISM,
+    CommonTrait.INTELLIGENCE.atLevel(1),
 )

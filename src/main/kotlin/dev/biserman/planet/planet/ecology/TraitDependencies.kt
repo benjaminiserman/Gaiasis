@@ -10,8 +10,8 @@ object TraitDependencies {
     fun unmetRequirements(definition: SpeciesDefinition): List<UnmetTraitRequirement> {
         val profile = definition.traitProfile()
         val capabilities = profile.capabilities
-        return profile.entries.flatMap { (trait, _) ->
-            trait.requirements
+        return profile.entries.flatMap { (trait, level) ->
+            trait.requirementsAt(level)
                 .filterNot { it.isSatisfiedBy(definition, capabilities) }
                 .map { UnmetTraitRequirement(trait, it) }
         }
