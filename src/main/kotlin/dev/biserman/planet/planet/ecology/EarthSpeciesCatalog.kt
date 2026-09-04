@@ -3759,6 +3759,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.DEEP_ROOT_SYSTEM,
             CommonTrait.PERENNIAL_STORAGE_TISSUE
         ),
@@ -3771,6 +3772,7 @@ object EarthSpeciesCatalog {
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FLOWERS,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -3786,6 +3788,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SEASONAL_LEAF_DORMANCY
         ),
@@ -3797,6 +3800,7 @@ object EarthSpeciesCatalog {
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FRUIT_BEARING,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
@@ -3812,6 +3816,7 @@ object EarthSpeciesCatalog {
             ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FRUIT_BEARING,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
@@ -3828,6 +3833,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
             CommonTrait.SALT_EXCLUDING_ROOTS,
@@ -3844,6 +3850,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
             CommonTrait.SUCCULENT_STEM,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.WAXY_CUTICLE,
             CommonTrait.FROST_SENSITIVE_SUCCULENT_TISSUES,
             CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
@@ -3893,6 +3900,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
             CommonTrait.DEEP_ROOT_SYSTEM
@@ -3906,8 +3914,10 @@ object EarthSpeciesCatalog {
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FLOWERS,
             CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.UNDERGROUND_STORAGE_ORGANS,
             CommonTrait.RAPID_GROWTH,
         ),
         sessile(
@@ -3919,6 +3929,7 @@ object EarthSpeciesCatalog {
             CommonTrait.LARGE_EVERGREEN_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.SHADE_FRONDS,
             CommonTrait.FRUIT_BEARING,
             CommonTrait.FLOWERS,
@@ -3934,6 +3945,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ROOTED_BODY,
             CommonTrait.SHADE_FRONDS,
             CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.UNDERGROUND_STORAGE_ORGANS,
             CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
             CommonTrait.SEASONAL_LEAF_DORMANCY
         ),
@@ -4039,6 +4051,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.DEEP_ROOT_SYSTEM
@@ -4052,6 +4065,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.WAXY_CUTICLE,
             CommonTrait.DEEP_ROOT_SYSTEM,
@@ -4066,6 +4080,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.PERENNIAL_STORAGE_TISSUE
@@ -4092,6 +4107,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.DEEP_ROOT_SYSTEM,
             CommonTrait.WAXY_CUTICLE,
             CommonTrait.SLOW_GROWTH
@@ -4105,6 +4121,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NEEDLE_LEAVES,
             CommonTrait.ROOTED_BODY,
             CommonTrait.CANOPY_GROWTH,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
             CommonTrait.FROST_HARDENED_TISSUES,
             CommonTrait.SEASONAL_LEAF_DORMANCY,
             CommonTrait.PERENNIAL_STORAGE_TISSUE
@@ -4131,7 +4148,8 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.FLOWERS,
             CommonTrait.WAXY_CUTICLE,
-            CommonTrait.PERENNIAL_STORAGE_TISSUE
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.UNDERGROUND_STORAGE_ORGANS,
         ),
         sessile(
             "kudzu vine",
@@ -4145,6 +4163,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SHADE_FRONDS,
             CommonTrait.FLOWERS,
             CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.UNDERGROUND_STORAGE_ORGANS,
             CommonTrait.RAPID_GROWTH
         ),
         sessile(
@@ -4212,6 +4231,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.WAXY_CUTICLE,
             CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.UNDERGROUND_STORAGE_ORGANS,
             CommonTrait.AERIAL_OVOSPORE_DISPERSAL
         ),
         sessile(

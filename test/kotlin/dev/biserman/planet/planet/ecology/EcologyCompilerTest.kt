@@ -390,6 +390,7 @@ class EcologyCompilerTest {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.INSULATING_PLUMAGE,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
         )
 
         assertTrue(fiveLevelSenses.all { it.maxLevel == 5 })
@@ -447,6 +448,42 @@ class EcologyCompilerTest {
 
         assertEquals(0.0, compiled.species[0].interactions.sensing)
         assertEquals(0.20, compiled.species[1].interactions.sensing)
+    }
+
+    @Test
+    fun `plant storage and woody support require their underlying structures`() {
+        val base = producer()
+        val undergroundStorage = base.copy(
+            id = "underground-storage",
+            traits = base.traits +
+                CommonTrait.PERENNIAL_STORAGE_TISSUE +
+                CommonTrait.UNDERGROUND_STORAGE_ORGANS,
+        )
+        val unsupportedStorage = base.copy(
+            id = "unsupported-storage",
+            traits = base.traits + CommonTrait.UNDERGROUND_STORAGE_ORGANS,
+        )
+        val canopy = base.copy(
+            id = "canopy",
+            traits = base.traits + CommonTrait.VASCULAR_SYSTEM + CommonTrait.CANOPY_GROWTH,
+        )
+        val woodyCanopy = canopy.copy(
+            id = "woody-canopy",
+            traits = canopy.traits + CommonTrait.WOODY_SUPPORT_TISSUE.atLevel(2),
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(unsupportedStorage))
+        }
+
+        val ecology = EcologyCompiler.compile(listOf(base, undergroundStorage, canopy, woodyCanopy))
+        assertTrue(ecology.species[1].lifeHistory.reserveCapacity > ecology.species[0].lifeHistory.reserveCapacity)
+        assertEquals(
+            0.06,
+            ecology.species[3].environment.canopyLightEfficiency -
+                ecology.species[2].environment.canopyLightEfficiency,
+            0.000_001,
+        )
     }
 
     @Test

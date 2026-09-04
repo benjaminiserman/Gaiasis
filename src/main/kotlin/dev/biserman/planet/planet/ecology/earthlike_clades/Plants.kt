@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val landPlant = EarthSpeciesCatalog.sessile(
     "land plant",
@@ -49,6 +50,7 @@ val fern = vascularPlant.descend(
     CommonTrait.AERIAL_OVOSPORE_DISPERSAL,
     CommonTrait.SHADE_FRONDS,
     CommonTrait.PERENNIAL_STORAGE_TISSUE,
+    CommonTrait.UNDERGROUND_STORAGE_ORGANS,
 )
 val conifer = vascularPlant.descend(
     "conifer",
@@ -59,6 +61,7 @@ val conifer = vascularPlant.descend(
     CommonTrait.SEASONAL_LEAF_DORMANCY,
     CommonTrait.DEEP_ROOT_SYSTEM,
     CommonTrait.SLOW_GROWTH,
+    CommonTrait.WOODY_SUPPORT_TISSUE,
 )
 
 val angiosperm = vascularPlant.descend(
@@ -89,6 +92,16 @@ val broadLeafTree = angiosperm.descend(
     CommonTrait.CANOPY_GROWTH,
     CommonTrait.DEEP_ROOT_SYSTEM,
     CommonTrait.SLOW_GROWTH,
+    CommonTrait.WOODY_SUPPORT_TISSUE,
+)
+val fruitTree = angiosperm.descend(
+    "fruit tree",
+    SizeClass.LARGE,
+    CommonTrait.CANOPY_GROWTH,
+    CommonTrait.DEEP_ROOT_SYSTEM,
+    CommonTrait.SLOW_GROWTH,
+    CommonTrait.WOODY_SUPPORT_TISSUE,
+    CommonTrait.FRUIT_BEARING,
 )
 val succulent = angiosperm.descend(
     "succulent",

@@ -326,7 +326,7 @@ fun broodParasitismOf(
     TargetedRelationshipTrait(
         displayName = "$hostDisplayName brood host",
         description =
-        "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+            "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
         relationships = listOf(
             RelationshipEffect.RequiresTarget(
                 SpeciesSelector.ExactSpecies(hostSpeciesId),
@@ -971,6 +971,23 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.35),
             TraitEffect.ReproductionMultiplier(0.94),
             TraitEffect.MaintenanceCost(0.12),
+        ),
+    ),
+    UNDERGROUND_STORAGE_ORGANS(
+        "underground storage organs",
+        "Enlarged buried roots, stems, leaves, or analogous structures store concentrated reserves below the surface for survival and renewed growth.",
+        listOf(
+            TraitEffect.ReserveCapacity(0.18),
+            TraitEffect.Defense(0.04),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.15),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(
+                PERENNIAL_STORAGE_TISSUE,
+                TraitCapability.SUBSTRATE_ANCHORING,
+            ),
+            TraitRequirement.sessile(),
         ),
     ),
     CACHED_FOOD(
@@ -3436,6 +3453,27 @@ enum class CommonTrait(
             TraitEffect.CanopyLightEfficiency(0.22),
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.21),
+        ),
+    ),
+    WOODY_SUPPORT_TISSUE(
+        "woody support tissue",
+        "A substantial framework of rigid, persistent tissue supports trunks, branches, or analogous load-bearing structures.",
+        listOf(
+            TraitEffect.Defense(0.12),
+            TraitEffect.BodyMassMultiplier(1.22),
+            TraitEffect.ReproductionMultiplier(0.91),
+            TraitEffect.MaintenanceCost(0.15),
+            ConditionalTraitEffect(
+                condition = TraitCondition.HasTrait(CANOPY_GROWTH),
+                effects = listOf(TraitEffect.CanopyLightEfficiency(0.06)),
+            ),
+        ),
+        requirements = listOf(
+            TraitRequirement.allOf(
+                VASCULAR_SYSTEM,
+                TraitCapability.SUBSTRATE_ANCHORING,
+            ),
+            TraitRequirement.sessile(),
         ),
     ),
     SHADE_FRONDS(
