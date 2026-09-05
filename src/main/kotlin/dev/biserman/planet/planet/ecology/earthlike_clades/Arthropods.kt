@@ -42,7 +42,8 @@ val spider = arachnid.descend(
     SizeClass.TINY,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.FANGS,
-    CommonTrait.WEB_SILK
+    CommonTrait.WEB_SILK,
+    CommonTrait.SKITTISH
 )
 val scorpion = arachnid.descend(
     "scorpion",
@@ -50,6 +51,7 @@ val scorpion = arachnid.descend(
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.PINCERS,
     CommonTrait.STINGER,
+    CommonTrait.AGGRESSIVE,
 )
 val tick = arachnid.descend(
     "tick",
@@ -183,6 +185,7 @@ val mantis = insect.descend(
     CommonTrait.EYES.atLevel(5),
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.DIURNAL,
+    CommonTrait.CALM,
     ColorTrait.GREEN_COLORATION,
 )
 val roach = insect.descend(
@@ -190,8 +193,10 @@ val roach = insect.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.BODY_CARRIED_OVOSPORES,
+    CommonTrait.RESILIENT_DIGESTION,
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.LIMB_REGROWTH,
+    CommonTrait.SKITTISH,
     CommonTrait.WEAK_WINGS
 )
 val termite = insect.descend(
@@ -210,6 +215,7 @@ val locust = insect.descend(
     CommonTrait.REGIONAL_MIGRATION,
     CommonTrait.BURROWING_EGGS,
     CommonTrait.GRAZING_MOUTHPARTS,
+    CommonTrait.SKITTISH,
     CommonTrait.LEAPING_LEGS
 )
 val cicada = insect.descend(
@@ -244,6 +250,7 @@ val ant = insect.descend(
     SizeClass.MINUSCULE,
     CommonTrait.EUSOCIAL_COLONY,
     CommonTrait.GRAZING_MOUTHPARTS,
+    CommonTrait.CALM,
     CommonTrait.OVOSPORE_NEST,
 )
 val beetle = insect.descend(

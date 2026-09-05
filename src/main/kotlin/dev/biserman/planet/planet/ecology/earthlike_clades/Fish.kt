@@ -17,7 +17,6 @@ val fish = EarthSpeciesCatalog.animal(
     CommonTrait.TEETH,
     CommonTrait.SCALES,
     CommonTrait.JAW,
-    CommonTrait.TEETH,
     CommonTrait.TAIL,
     CommonTrait.AQUATIC_LIMBS,
     CommonTrait.AQUATIC_OVOSPORE,
@@ -46,6 +45,7 @@ val shark = cartilaginousFish.descend(
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.HEARING.atLevel(4),
     CommonTrait.SCENT.atLevel(5),
+    CommonTrait.CALM,
     CommonTrait.STRONG_JAWS
 )
 val skate = cartilaginousFish.descend(
@@ -115,6 +115,7 @@ val herring = teleostei.descend(
     SizeClass.SMALL,
     CommonTrait.SCHOOLING,
     CommonTrait.GILL_RAKERS,
+    CommonTrait.SKITTISH,
     CommonTrait.STREAMLINED_PHYSIQUE
 )
 val swordfish = teleostei.descend(
@@ -138,6 +139,7 @@ val otophysa = teleostei.descend(
 val minnow = otophysa.descend(
     "minnow",
     SizeClass.TINY,
+    CommonTrait.SKITTISH,
 )
 val carp = otophysa.descend(
     "carp",

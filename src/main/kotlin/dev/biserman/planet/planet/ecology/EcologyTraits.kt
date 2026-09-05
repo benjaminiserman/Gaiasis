@@ -39,6 +39,7 @@ enum class TraitGroup : FulfillsTraitRequirement {
     FLIGHT_STRUCTURE,
     ACTIVITY_PATTERN,
     SOCIAL_ORGANIZATION,
+    TEMPERAMENT,
     BURROW_REFUGE,
     BIOLOGICAL_COLOR,
     SKELETON,
@@ -3620,6 +3621,36 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.66),
             TraitEffect.MaintenanceCost(0.21),
         ),
+    ),
+    SKITTISH(
+        "skittish temperament",
+        "A readily alarmed disposition favors evasive vigilance and rapid flight over reproductive investment.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(0.9),
+            TraitEffect.Defense(0.075),
+            TraitEffect.PursuitSpeed(0.1),
+        ),
+        group = TraitGroup.TEMPERAMENT,
+    ),
+    CALM(
+        "calm temperament",
+        "A placid disposition diverts less energy to vigilance and escape, favoring reproductive investment instead.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(1.1),
+            TraitEffect.Defense(-0.075),
+            TraitEffect.PursuitSpeed(-0.1),
+        ),
+        group = TraitGroup.TEMPERAMENT,
+    ),
+    AGGRESSIVE(
+        "aggressive temperament",
+        "A confrontational disposition favors defense and contesting rivals at the expense of reproductive investment.",
+        listOf(
+            TraitEffect.ReproductionMultiplier(0.9),
+            TraitEffect.Defense(0.075),
+            TraitEffect.NicheCompetitionSensitivity(1.10),
+        ),
+        group = TraitGroup.TEMPERAMENT,
     ),
     SOLITARY(
         "solitary living",

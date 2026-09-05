@@ -5,8 +5,9 @@ import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
+import kotlin.collections.listOf
 
-val amphibian = EarthSpeciesCatalog.animal(
+val amphibian = tetrapoda.descend(
     "amphibian",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -17,6 +18,7 @@ val amphibian = EarthSpeciesCatalog.animal(
     CommonTrait.SLIMY_SKIN,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.PASSIVE_RESPIRATION,
+    CommonTrait.SKITTISH,
     ColorTrait.GREEN_COLORATION
 )
 
@@ -44,6 +46,7 @@ val bullfrog = anura.descend(
     "bullfrog",
     SizeClass.SMALL,
     CommonTrait.BULKY_PHYSIQUE,
+    minus = listOf(CommonTrait.SKITTISH)
 )
 val toad = anura.descend(
     "toad",
@@ -84,7 +87,8 @@ val giantSalamander = caudata.descend(
     CommonTrait.EYES.atLevel(1),
     CommonTrait.JAW,
     CommonTrait.SUCTION_FEEDING,
-    CommonTrait.SLOW_METABOLISM
+    CommonTrait.SLOW_METABOLISM,
+    minus = listOf(CommonTrait.SKITTISH)
 )
 
 // caecilians

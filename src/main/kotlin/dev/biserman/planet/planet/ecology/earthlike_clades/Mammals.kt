@@ -77,12 +77,13 @@ val lagomorph = glires.descend(
     "lagomorphs",
     SizeClass.SMALL,
     CommonTrait.FERMENTING_HINDGUT,
-    CommonTrait.VESPERTINE
+    CommonTrait.VESPERTINE,
 )
 val leporid = lagomorph.descend(
     "leporid",
     SizeClass.SMALL,
     CommonTrait.LEAPING_LEGS,
+    CommonTrait.SKITTISH,
     CommonTrait.HEARING.atLevel(5),
 )
 val rabbit = leporid.descend(
@@ -209,6 +210,8 @@ val ape = primate.descend(
     SizeClass.MEDIUM,
     CommonTrait.TOOL_MANIPULATION,
     CommonTrait.SLOW_GROWTH,
+    CommonTrait.INFREQUENT_REPRODUCTION,
+    CommonTrait.CALM,
     CommonTrait.SCENT.atLevel(2),
     minus = listOf(
         CommonTrait.GRAZING_MOUTHPARTS,
@@ -238,6 +241,7 @@ val horse = ungulate.descend(
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.REGIONAL_MIGRATION,
+    CommonTrait.SKITTISH,
     CommonTrait.CATHEMERAL,
     CommonTrait.BRAYING_CALL,
 )
@@ -247,6 +251,7 @@ val camel = ungulate.descend(
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.RUMINANT_STOMACH,
     CommonTrait.FAT_RESERVES,
+    CommonTrait.CALM,
     CommonTrait.FOOD_DERIVED_WATER,
     CommonTrait.CONCENTRATED_URINE,
     CommonTrait.GROUP_LIVING,
@@ -258,6 +263,7 @@ val pig = ungulate.descend(
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.FERMENTING_HINDGUT,
     CommonTrait.GRUNTING_CALL,
+    CommonTrait.AGGRESSIVE,
     CommonTrait.HEARING.atLevel(4),
     CommonTrait.SCENT.atLevel(5),
     CommonTrait.INTELLIGENCE.atLevel(2),
@@ -275,6 +281,8 @@ val ruminant = ungulate.descend(
 val bison = ruminant.descend(
     "bison",
     SizeClass.LARGE,
+    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
+    CommonTrait.HORNS,
     CommonTrait.BELLOWING_CALL,
 )
 val goat = ruminant.descend(
@@ -295,6 +303,7 @@ val deer = ruminant.descend(
     CommonTrait.DENSE_UNDERCOAT.atLevel(2),
     CommonTrait.SWIFT_LIMBS,
     CommonTrait.SEASONAL_WINTER_COAT,
+    CommonTrait.SKITTISH,
     CommonTrait.GROUP_LIVING,
     CommonTrait.VESPERTINE,
     minus = listOf(
@@ -309,6 +318,8 @@ val antelope = ruminant.descend(
     SizeClass.MEDIUM,
     CommonTrait.SWIFT_LIMBS,
     CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
+    CommonTrait.SKITTISH,
+    CommonTrait.HORNS,
     CommonTrait.BLEATING_CALL,
 )
 val giraffe = ruminant.descend(
@@ -337,6 +348,7 @@ val cetacean = ungulate.descend(
     minus = listOf(
         CommonTrait.GRAZING_MOUTHPARTS,
         CommonTrait.OPEN_COUNTRY_PREFERENCE,
+        CommonTrait.FUR,
     )
 )
 val whale = cetacean.descend(
@@ -344,12 +356,17 @@ val whale = cetacean.descend(
     SizeClass.COLOSSAL,
     CommonTrait.BALEEN,
     CommonTrait.DEEP_DIVING_PHYSIOLOGY,
-    CommonTrait.SONG_CALL
+    CommonTrait.SONG_CALL,
+    CommonTrait.FAT_RESERVES,
+    CommonTrait.SLOW_GROWTH,
 )
 val dolphin = cetacean.descend(
     "dolphin",
     SizeClass.MEDIUM,
     CommonTrait.COOPERATIVE_HUNTING,
+    CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.MOTION_TRACKING_SENSES,
+    CommonTrait.INFREQUENT_REPRODUCTION,
     CommonTrait.CLICKING_CALL
 )
 
@@ -367,7 +384,7 @@ val bear = carnivore.descend(
     SizeClass.LARGE,
     CommonTrait.HETEROTHERMY,
     CommonTrait.BROWSING_MOUTHPARTS,
-    CommonTrait.DENSE_UNDERCOAT.atLevel(2),
+    CommonTrait.DENSE_UNDERCOAT.atLevel(1),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.FAT_RESERVES,
     CommonTrait.GROWLING_CALL,
@@ -411,6 +428,7 @@ val felid = carnivore.descend(
     CommonTrait.RETRACTABLE_CLAWS,
     CommonTrait.FLEXIBLE_SPINE,
     CommonTrait.SILENT_MOVEMENT,
+    CommonTrait.AGGRESSIVE,
     CommonTrait.EYES.atLevel(4),
 )
 val panther = felid.descend(
@@ -447,6 +465,7 @@ val wolf = canid.descend(
     CommonTrait.SEASONAL_WINTER_COAT,
     CommonTrait.HOWLING_CALL,
     CommonTrait.INTELLIGENCE.atLevel(2),
+    CommonTrait.AGGRESSIVE,
     ColorTrait.PALE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE)
 )
@@ -498,6 +517,8 @@ val weasel = mustelid.descend(
 val elephant = mammal.descend(
     "elephant",
     SizeClass.HUGE,
+    CommonTrait.BULKY_PHYSIQUE,
+    CommonTrait.LONG_TUSKS,
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.PREHENSILE_TRUNK,
     CommonTrait.MASSIVE_EARS,

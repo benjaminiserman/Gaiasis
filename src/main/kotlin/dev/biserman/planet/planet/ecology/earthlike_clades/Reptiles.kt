@@ -25,6 +25,7 @@ val crocodile = reptile.descend(
     CommonTrait.SCENT.atLevel(5),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.BELLOWING_CALL,
+    CommonTrait.AGGRESSIVE,
     CommonTrait.NOCTURNAL
 )
 val tuatara = reptile.descend(
@@ -39,6 +40,7 @@ val tuatara = reptile.descend(
     CommonTrait.SLOW_METABOLISM,
     CommonTrait.HEARING.atLevel(1),
     CommonTrait.BURROW_BUILDER,
+    CommonTrait.CALM,
     CommonTrait.DIGGING_LIMBS
 )
 
@@ -58,6 +60,8 @@ val gecko = lizard.descend(
     CommonTrait.STICKY_FEET,
     CommonTrait.CHIRPING_CALL,
     CommonTrait.NOCTURNAL,
+    CommonTrait.AUTOTOMY,
+    CommonTrait.SKITTISH,
     minus = listOf(CommonTrait.CLAWS)
 )
 val monitorLizard = lizard.descend(
@@ -67,6 +71,7 @@ val monitorLizard = lizard.descend(
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.SCENT.atLevel(5),
     CommonTrait.INTELLIGENCE.atLevel(1),
+    CommonTrait.CALM,
     ColorTrait.BROWN_COLORATION
 )
 val wormLizard = lizard.descend(
@@ -94,6 +99,7 @@ val iguana = lizard.descend(
     SizeClass.SMALL,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.BROWSING_MOUTHPARTS,
+    CommonTrait.AUTOTOMY,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE, CommonTrait.MEAT_EATING_MOUTHPARTS)
 )
 
@@ -126,6 +132,7 @@ val boa = serpent.descend(
     CommonTrait.CONSTRICTING_BODY,
     CommonTrait.INFRARED_SENSING,
     CommonTrait.VIVIPARITY,
+    CommonTrait.CALM,
     ColorTrait.BROWN_COLORATION
 )
 val viper = serpent.descend(
@@ -140,7 +147,8 @@ val cobra = serpent.descend(
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.FANGS,
     CommonTrait.HISSING_WARNING,
-    CommonTrait.VESPERTINE
+    CommonTrait.VESPERTINE,
+    CommonTrait.AGGRESSIVE
 )
 
 val testudines = reptile.descend(
@@ -170,4 +178,5 @@ val tortoise = testudines.descend(
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SLOW_METABOLISM,
     CommonTrait.INTELLIGENCE.atLevel(1),
+    CommonTrait.CALM
 )

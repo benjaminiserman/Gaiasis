@@ -15,7 +15,9 @@ val bird = reptile.descend(
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.REGIONAL_MIGRATION,
     CommonTrait.INTELLIGENCE.atLevel(1),
+    CommonTrait.ENDOTHERMY,
     ColorTrait.BROWN_COLORATION,
+    minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION),
 )
 
 val ratite = bird.descend(
@@ -51,6 +53,7 @@ val waterfowl = bird.descend(
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.WATERPROOF_PLUMAGE,
     CommonTrait.INSULATING_PLUMAGE.atLevel(1),
+    CommonTrait.SKITTISH,
     CommonTrait.LONG_MIGRATION
 )
 val grebe = bird.descend(
@@ -67,11 +70,14 @@ val grebe = bird.descend(
 val crane = bird.descend(
     "crane",
     SizeClass.MEDIUM,
+    CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.WADING_LIMBS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.SPEAR_BILL,
     CommonTrait.REGIONAL_MIGRATION,
+    CommonTrait.HERDING_BEHAVIOR,
+    CommonTrait.TRUMPETING_CALL,
     CommonTrait.WATERPROOF_PLUMAGE,
     ColorTrait.WHITE_COLORATION,
 )
@@ -172,6 +178,8 @@ val songbird = bird.descend(
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.FRUIT_EATING_MOUTHPARTS,
     CommonTrait.CHIRPING_CALL,
+    CommonTrait.COMPLEX_VOCALIZATIONS,
+    CommonTrait.SKITTISH,
     CommonTrait.REGIONAL_MIGRATION,
 )
 val parrot = bird.descend(

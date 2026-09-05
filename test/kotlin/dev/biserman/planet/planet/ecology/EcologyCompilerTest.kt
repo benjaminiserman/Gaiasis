@@ -177,6 +177,40 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `temperaments compile their ecological tradeoffs without maintenance cost`() {
+        val ordinary = predator("ordinary-temperament").let { species ->
+            species.copy(traits = species.traits + CommonTrait.SWIFT_LIMBS)
+        }
+        val temperaments = listOf(CommonTrait.SKITTISH, CommonTrait.CALM, CommonTrait.AGGRESSIVE)
+        val compiled = EcologyCompiler.compile(
+            listOf(ordinary) + temperaments.map { temperament ->
+                ordinary.copy(
+                    id = temperament.name.lowercase(),
+                    displayName = temperament.displayName,
+                    traits = ordinary.traits + temperament,
+                )
+            },
+        ).species.associateBy { it.id }
+        val baseline = compiled.getValue(ordinary.id)
+        val skittish = compiled.getValue("skittish")
+        val calm = compiled.getValue("calm")
+        val aggressive = compiled.getValue("aggressive")
+
+        assertEquals(baseline.physiology.maintenanceDemand, skittish.physiology.maintenanceDemand)
+        assertEquals(baseline.physiology.maintenanceDemand, calm.physiology.maintenanceDemand)
+        assertEquals(baseline.physiology.maintenanceDemand, aggressive.physiology.maintenanceDemand)
+        assertTrue(skittish.lifeHistory.seasonalReproduction < baseline.lifeHistory.seasonalReproduction)
+        assertTrue(skittish.interactions.defense > baseline.interactions.defense)
+        assertTrue(skittish.interactions.pursuitSpeed > baseline.interactions.pursuitSpeed)
+        assertTrue(calm.lifeHistory.seasonalReproduction > baseline.lifeHistory.seasonalReproduction)
+        assertTrue(calm.interactions.defense < baseline.interactions.defense)
+        assertTrue(calm.interactions.pursuitSpeed < baseline.interactions.pursuitSpeed)
+        assertTrue(aggressive.lifeHistory.seasonalReproduction < baseline.lifeHistory.seasonalReproduction)
+        assertTrue(aggressive.interactions.defense > baseline.interactions.defense)
+        assertTrue(aggressive.lifeHistory.nicheCompetitionSensitivity > baseline.lifeHistory.nicheCompetitionSensitivity)
+    }
+
+    @Test
     fun `compiled niche profile owns its optimized arrays`() {
         val habitatSupport = DoubleArray(Habitat.entries.size).also {
             it[Habitat.LAND_SURFACE.ordinal] = 0.75
