@@ -778,7 +778,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06)
         ),
         group = TraitGroup.BODY_TYPE,
-        capabilities = HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(VASCULAR_SYSTEM),
             TraitRequirement.anyOf(TraitGroup.SKELETON)
@@ -3705,6 +3704,9 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.94),
             TraitEffect.MaintenanceCost(0.21),
         ),
+        requirements = listOf(
+            TraitRequirement.allOf(TraitCapability.SUBSTRATE_ANCHORING)
+        )
     ),
     REEF_BUILDING(
         "reef-building growth",
@@ -3827,6 +3829,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.21),
         ),
         capabilities = setOf(Habitat.CANOPY.accessCapability),
+        requirements = listOf(TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE)),
     ),
     WOODY_SUPPORT_TISSUE(
         "woody support tissue",

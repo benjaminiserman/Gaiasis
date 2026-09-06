@@ -94,4 +94,21 @@ class EarthlikeCladesTest {
         assertEquals(TreeOfLifeInclusion.INCLUDED, EarthTreeOfLife.inclusion(mammal, excluded))
         assertTrue(excluded.isEmpty())
     }
+
+    @Test
+    fun `trait differences include additions and removals from the direct ancestor`() {
+        val coconutCrab = EarthTreeOfLife.nodesById.getValue("coconut-crab")
+        val differences = EarthTreeOfLife.traitDifferencesFromAncestor(coconutCrab)
+
+        assertTrue(
+            differences.any {
+                it.kind == TraitDifferenceKind.ADDED && it.trait.baseTrait == CommonTrait.TRACHEA
+            },
+        )
+        assertTrue(
+            differences.any {
+                it.kind == TraitDifferenceKind.REMOVED && it.trait.baseTrait == CommonTrait.GILLS
+            },
+        )
+    }
 }

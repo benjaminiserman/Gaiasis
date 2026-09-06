@@ -7,6 +7,7 @@ import dev.biserman.planet.geometry.*
 import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.climate.ClimateDatum
 import dev.biserman.planet.planet.climate.OceanCurrent
+import dev.biserman.planet.planet.ecology.MutatedSpeciesRecord
 import dev.biserman.planet.planet.ecology.PlanetEcologyEnvironment
 import dev.biserman.planet.planet.tectonics.ConvergenceZone
 import dev.biserman.planet.planet.tectonics.DivergenceZone
@@ -207,6 +208,12 @@ class Planet(val seed: Int, val size: Int) {
     var daysPassed = 0
     var historyTurn = 0L
     var ecologyRandomizationCount = 0L
+
+    /** Whether new species may branch from living species at century boundaries. */
+    var mutationsEnabled = false
+
+    /** Generated species are stored as lineage-relative changes so saves can rebuild their traits. */
+    var mutatedSpecies: MutableList<MutatedSpeciesRecord> = mutableListOf()
 
     /** Extant catalog species omitted by the next ecosystem randomization. */
     var randomEcosystemSpeciesIdsExcluded: MutableSet<String> = mutableSetOf()

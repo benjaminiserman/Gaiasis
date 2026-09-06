@@ -8,17 +8,16 @@ import kotlin.random.Random
 /**
  * Production owner and Planet adapter for Ecology.
  *
- * Trait compilation remains global and immutable. Tiles serialize only local
- * population/resource state and lazily rebuild primitive runtime communities.
+ * Trait compilation is owned centrally and rebuilt when mutations add species.
+ * Tiles serialize local state by species id and lazily rebuild primitive runtime communities.
  */
 object PlanetEcology {
     const val TARGET_RANDOM_EVOLVING_SPECIES = 10
 
-    val definitions: List<SpeciesDefinition> =
-        EarthSpeciesCatalog.ALL + InvariantSpecies.ALL
-    val compiled: CompiledEcology by lazy {
-        EcologyCompiler.compile(definitions)
-    }
+    val definitions: List<SpeciesDefinition>
+        get() = EvolvingSpeciesCatalog.extantSpecies + InvariantSpecies.ALL
+    var compiled: CompiledEcology = EcologyCompiler.compile(definitions)
+        private set
 
     private var runtimeConfig = EcologyRuntimeConfig()
     private var runtimeInstance: EcologyRuntime? = null
@@ -29,6 +28,11 @@ object PlanetEcology {
     private var radiationScratch: MovementScratch? = null
     internal var runtimeConfigRevision: Long = 0
         private set
+
+    fun activatePlanet(planet: Planet) {
+        EvolvingSpeciesCatalog.activate(planet.mutatedSpecies)
+        rebuildCompiled(planet)
+    }
 
     /**
      * Makes values reloaded into [EcologyGlobals] effective on the next turn.
@@ -42,6 +46,177 @@ object PlanetEcology {
         runtimeConfigRevision++
         cachedWorld = null
         cachedPlanet = null
+    }
+
+    /** Runs after a completed history turn and branches living species on century boundaries. */
+    fun mutateAtInterval(planet: Planet) {
+        if (
+            !planet.mutationsEnabled ||
+            !EcologyMutations.isMutationInterval(planet.historyTurn)
+        ) {
+            return
+        }
+
+        val livingIds = planet.planetTiles.values
+            .asSequence()
+            .flatMap { it.ecosystem.populations.asSequence() }
+            .mapTo(hashSetOf()) { it.speciesId }
+        val parents = EvolvingSpeciesCatalog.extantSpecies
+            .filter { it.kind == SpeciesKind.EVOLVING && it.id in livingIds }
+            .sortedBy { it.id }
+        val accepted = parents.mapNotNull { parent ->
+            val random = Random(
+                scopedSeed(
+                    planet.seed,
+                    planet.historyTurn,
+                    parent.id.hashCode(),
+                    MUTATION_PROCESS,
+                ),
+            )
+            if (random.nextDouble() >= EcologyGlobals.mutationChancePerInterval) {
+                return@mapNotNull null
+            }
+            val proposal = EcologyMutations.propose(parent, random)
+            val candidate = EcologyMutations.compile(proposal.definition) ?: return@mapNotNull null
+            val hasCompatibleFounder = planet.planetTiles.values.any { tile ->
+                if (tile.ecosystem.populations.size >= TileEcosystem.MAXIMUM_POPULATIONS) {
+                    return@any false
+                }
+                tile.ecosystem.populations.any { population ->
+                    val nicheIndex = compiled.niches.indexOfFirst { niche ->
+                        niche.habitat == population.habitat &&
+                            niche.strategy == population.strategy
+                    }
+                    population.speciesId == parent.id &&
+                        nicheIndex >= 0 &&
+                        candidate.niche.fitFor(nicheIndex) > 0.0
+                }
+            }
+            proposal.takeIf { hasCompatibleFounder }
+        }
+        if (accepted.isEmpty()) return
+
+        val originalRecords = planet.mutatedSpecies.toList()
+        val acceptedRecords = accepted.map { it.record }
+        val allRecords = originalRecords + acceptedRecords
+        val acceptedAfterFullCompilation = try {
+            EvolvingSpeciesCatalog.activate(allRecords)
+            EcologyCompiler.compile(definitions)
+            accepted
+        } catch (_: IllegalArgumentException) {
+            EvolvingSpeciesCatalog.activate(originalRecords)
+            acceptIndividually(originalRecords, accepted)
+        } catch (_: IllegalStateException) {
+            EvolvingSpeciesCatalog.activate(originalRecords)
+            acceptIndividually(originalRecords, accepted)
+        }
+        if (acceptedAfterFullCompilation.isEmpty()) {
+            EvolvingSpeciesCatalog.activate(originalRecords)
+            rebuildCompiled(planet)
+            return
+        }
+
+        planet.mutatedSpecies =
+            (originalRecords + acceptedAfterFullCompilation.map { it.record }).toMutableList()
+        acceptedAfterFullCompilation.forEach { mutation ->
+            if (mutation.record.ancestorSpeciesId in planet.randomEcosystemSpeciesIdsExcluded) {
+                planet.randomEcosystemSpeciesIdsExcluded += mutation.record.id
+            }
+        }
+        EvolvingSpeciesCatalog.activate(planet.mutatedSpecies)
+        rebuildCompiled(planet)
+        val unfoundedIds = acceptedAfterFullCompilation
+            .filterNot { foundMutation(planet, it) }
+            .mapTo(hashSetOf()) { it.record.id }
+        if (unfoundedIds.isNotEmpty()) {
+            planet.mutatedSpecies.removeAll { it.id in unfoundedIds }
+            planet.randomEcosystemSpeciesIdsExcluded.removeAll(unfoundedIds)
+            EvolvingSpeciesCatalog.activate(planet.mutatedSpecies)
+            rebuildCompiled(planet)
+        }
+    }
+
+    private fun acceptIndividually(
+        originalRecords: List<MutatedSpeciesRecord>,
+        proposals: List<ProposedMutation>,
+    ): List<ProposedMutation> {
+        val accepted = mutableListOf<ProposedMutation>()
+        proposals.forEach { proposal ->
+            val records = originalRecords + accepted.map { it.record } + proposal.record
+            val valid = try {
+                EvolvingSpeciesCatalog.activate(records)
+                EcologyCompiler.compile(definitions)
+                true
+            } catch (_: IllegalArgumentException) {
+                false
+            } catch (_: IllegalStateException) {
+                false
+            }
+            if (valid) accepted += proposal
+        }
+        return accepted
+    }
+
+    private fun foundMutation(planet: Planet, mutation: ProposedMutation): Boolean {
+        val child = compiled.species[compiled.speciesIndex(mutation.definition.id)]
+        val eligibleTiles = planet.planetTiles.values
+            .filter { tile ->
+                if (tile.ecosystem.populations.size >= TileEcosystem.MAXIMUM_POPULATIONS) {
+                    return@filter false
+                }
+                val parentPopulation = tile.ecosystem.populations
+                    .firstOrNull { it.speciesId == mutation.record.ancestorSpeciesId }
+                    ?: return@filter false
+                val nicheIndex = compiled.niches.indexOfFirst { niche ->
+                    niche.habitat == parentPopulation.habitat &&
+                        niche.strategy == parentPopulation.strategy
+                }
+                nicheIndex >= 0 && child.niche.fitFor(nicheIndex) > 0.0
+            }
+            .sortedBy { it.tileId }
+        if (eligibleTiles.isEmpty()) return false
+        val random = Random(
+            scopedSeed(
+                planet.seed,
+                planet.historyTurn,
+                mutation.definition.id.hashCode(),
+                MUTATION_FOUNDING_PROCESS,
+            ),
+        )
+        val tile = eligibleTiles[random.nextInt(eligibleTiles.size)]
+        val parentPopulation = tile.ecosystem.populations
+            .first { it.speciesId == mutation.record.ancestorSpeciesId }
+        val nicheIndex = compiled.niches.indexOfFirst { niche ->
+            niche.habitat == parentPopulation.habitat &&
+                niche.strategy == parentPopulation.strategy
+        }
+        check(nicheIndex >= 0 && child.niche.fitFor(nicheIndex) > 0.0)
+
+        val activeFounder = parentPopulation.activeBiomassKg * EcologyMutations.FOUNDER_FRACTION
+        val reserveFounder = parentPopulation.reservesKg * EcologyMutations.FOUNDER_FRACTION
+        val dormantFounder = parentPopulation.dormantBiomassKg * EcologyMutations.FOUNDER_FRACTION
+        parentPopulation.activeBiomassKg -= activeFounder
+        parentPopulation.reservesKg -= reserveFounder
+        parentPopulation.dormantBiomassKg -= dormantFounder
+        tile.ecosystem.populations += EcosystemPopulation(
+            speciesId = child.id,
+            habitat = parentPopulation.habitat,
+            strategy = parentPopulation.strategy,
+            activeBiomassKg = activeFounder,
+            reservesKg = reserveFounder,
+            dormantBiomassKg = dormantFounder,
+        )
+        tile.ecosystem.invalidateRuntimeCache()
+        return true
+    }
+
+    private fun rebuildCompiled(planet: Planet) {
+        compiled = EcologyCompiler.compile(definitions)
+        runtimeInstance = null
+        radiationScratch = null
+        cachedWorld = null
+        cachedPlanet = null
+        planet.planetTiles.values.forEach { it.ecosystem.invalidateRuntimeCache() }
     }
 
     private fun newRuntime() = EcologyRuntime(
@@ -492,6 +667,8 @@ object PlanetEcology {
     )
 
     private const val RANDOMIZATION_PROCESS = 0x2C71_4A19
+    private const val MUTATION_PROCESS = 0x51EC_1A7E
+    private const val MUTATION_FOUNDING_PROCESS = 0x6F0A_3D12
 }
 
 internal object HabitatCacheMask {

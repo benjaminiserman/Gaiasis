@@ -34,7 +34,7 @@ object EcologyCompiler {
         )
     }
 
-    private fun compileSpecies(
+    internal fun compileSpecies(
         index: Int,
         definition: SpeciesDefinition,
         niches: List<NicheDefinition>,

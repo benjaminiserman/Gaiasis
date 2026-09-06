@@ -63,6 +63,7 @@ class Gui() : Node() {
     val modeToggleButton by lazy { findChild("ModeToggleButton") as Button }
     val nextTurnButton by lazy { findChild("NextTurnButton") as Button }
     val autoTurnsButton by lazy { findChild("AutoTurnsButton") as Button }
+    val mutationsButton by lazy { findChild("MutationsButton") as CheckButton }
     val historyYearLabel by lazy { findChild("HistoryYearLabel") as Label }
     val historySeasonLabel by lazy { findChild("HistorySeasonLabel") as Label }
     val climateConfigPanel by lazy { findChild("ClimateConfigPanel") as Control }
@@ -191,6 +192,7 @@ class Gui() : Node() {
         listOf<Control>(
             nextTurnButton,
             autoTurnsButton,
+            mutationsButton,
             historyYearLabel,
             historySeasonLabel,
             randomizeEcosystemsButton,
@@ -221,6 +223,12 @@ class Gui() : Node() {
 
         historyYearLabel.text = "Year ${HistoryCalendar.year(turn)}"
         historySeasonLabel.text = HistoryCalendar.season(turn, hemisphere).displayName
+    }
+
+    fun updateMutationToggle() {
+        mutationsButton.buttonPressed =
+            Main.instance.hasPlanet &&
+            Main.instance.planet.mutationsEnabled
     }
 
     fun showSeedSelection() {
@@ -310,6 +318,9 @@ class Gui() : Node() {
         }
         nextTurnButton.pressed.connect { Main.instance.advanceHistoryTurn() }
         autoTurnsButton.pressed.connect { toggleAutoTurns(autoTurnsButton.buttonPressed) }
+        mutationsButton.toggled.connect { enabled ->
+            if (Main.instance.hasPlanet) Main.instance.planet.mutationsEnabled = enabled
+        }
 
         showSettingsButton.addToggle("Show Stats", listOf("debug", "default")) { statsGraph.visible = it }
         showSettingsButton.addToggle("Track Stats", listOf("debug", "default")) { statsGraph.trackStats = it }

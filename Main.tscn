@@ -739,6 +739,12 @@ tooltip_text = "Automatically advance history one season at a time"
 toggle_mode = true
 text = "Auto Turns"
 
+[node name="MutationsButton" type="CheckButton" parent="GUI/MenuButtons"]
+visible = false
+layout_mode = 2
+tooltip_text = "Allow living species to branch into mutated descendants at the configured interval"
+text = "Mutations"
+
 [node name="ShowBrushToolbarButton" type="Button" parent="GUI/MenuButtons"]
 layout_mode = 2
 tooltip_text = "Show or hide the paint toolbar"
@@ -1060,10 +1066,27 @@ size_flags_horizontal = 3
 text = "Select a species or ancestor to inspect its population."
 autowrap_mode = 2
 
+[node name="TreeOfLifeCompiledTitle" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Compiled ecology"
+
+[node name="TreeOfLifeCompiledDetails" type="Tree" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+hide_root = true
+
 [node name="TreeOfLifeTraitsTitle" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Traits"
+
+[node name="TreeOfLifeTraitDifferencesOnly" type="CheckButton" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+tooltip_text = "Show traits added or removed relative to this node's direct ancestor"
+text = "Only differences from ancestor"
 
 [node name="TreeOfLifeTraits" type="Tree" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
 layout_mode = 2

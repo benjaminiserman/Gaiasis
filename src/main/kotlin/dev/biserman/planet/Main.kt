@@ -42,6 +42,7 @@ class Main : Node() {
         GD.print("average radius: ${newPlanet.topology.averageRadius}, area: ${newPlanet.topology.averageArea}")
 
         Tectonics.stepTectonicPlateForces(newPlanet)
+        PlanetEcology.activatePlanet(newPlanet)
         planetRenderer = PlanetRenderer(this, newPlanet)
 
         updatePlanet(newPlanet)
@@ -133,6 +134,7 @@ class Main : Node() {
     fun advanceHistoryTurn() {
         PlanetEcology.advanceAllOneSeason(planet)
         planet.historyTurn++
+        PlanetEcology.mutateAtInterval(planet)
         planetRenderer.update(planet)
         Gui.instance.statsGraph.update(planet)
         Gui.instance.updateHistoryDisplay()
@@ -145,6 +147,8 @@ class Main : Node() {
     fun updatePlanet(newPlanet: Planet) {
         GD.print("updating planet: $newPlanet")
         planet = newPlanet
+        PlanetEcology.activatePlanet(newPlanet)
+        Gui.instance.updateMutationToggle()
         Gui.instance.resetMapPreviewCenter()
         planetRenderer.update(newPlanet)
         Gui.instance.statsGraph.planet = newPlanet

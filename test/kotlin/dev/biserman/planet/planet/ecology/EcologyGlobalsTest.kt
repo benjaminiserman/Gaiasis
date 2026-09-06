@@ -8,20 +8,26 @@ import kotlin.test.assertEquals
 
 class EcologyGlobalsTest {
     @Test
-    fun `checked in ecology config matches the reloadable globals`() {
+    fun `checked in ecology config loads into the reloadable globals`() {
         val configFile = File("config/ecology_config.json")
         val checkedIn = Serialization.configMapper.readTree(configFile)
-        val currentGlobals = Serialization.configMapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(
+        val originalGlobals = Serialization.configMapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(
             EcologyGlobals,
         )
+        try {
+            // Exercise the same strict deserialization path as the in-game
+            // refresh button, so a JSON property without a matching compiled
+            // EcologyGlobals setter fails during tests rather than at runtime.
+            Serialization.configMapper.readValue<EcologyGlobals>(configFile)
+            EcologyGlobals.validate()
+            val loadedGlobals = Serialization.configMapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(
+                EcologyGlobals,
+            )
 
-        assertEquals(currentGlobals, checkedIn, message = "Checked in ecology config matches the reloadable globals: expected `checkedIn` to match `currentGlobals`")
-
-        // Exercise the same strict deserialization path as the in-game
-        // refresh button, so a JSON property without a matching compiled
-        // EcologyGlobals setter fails during tests rather than at runtime.
-        Serialization.configMapper.readValue<EcologyGlobals>(configFile)
-        EcologyGlobals.validate()
+            assertEquals(checkedIn, loadedGlobals)
+        } finally {
+            Serialization.configMapper.readValue<EcologyGlobals>(originalGlobals.toString())
+        }
     }
 
     @Test

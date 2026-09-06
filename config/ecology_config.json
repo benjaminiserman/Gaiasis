@@ -21,11 +21,13 @@
   "maximumPollinationBenefitFraction": 0.04,
   "maximumStarvationMortality": 0.72,
   "migrationRadiationChancePerSeason": 0.06,
+  "mutationChancePerInterval": 0.25,
+  "mutationIntervalYears": 10,
   "minimumRelativeRadiationNicheFit": 0.8,
   "minimumTerrestrialProducerWaterProductivity": 0.03,
   "minimumViableIndividuals": 2.0,
   "nectarAssimilationEfficiency": 0.68,
-  "neighborRadiationChancePerSeason": 0.02,
+  "neighborRadiationChancePerSeason": 0.03,
   "normalElevationLimitM": 2000.0,
   "normalMinimumElevationM": 0.0,
   "seasonalTorporColdBufferC": 5.0,
@@ -34,6 +36,6 @@
   "stressMortality": 0.42,
   "strongestCompetitorMortalityFraction": 0.2,
   "terrestrialProducerWaterExponent": 1.25,
-  "unassistedRadiationChancePerSeason": 0.005,
+  "unassistedRadiationChancePerSeason": 0.02,
   "wasteFullLevelBiomassKgKm2": 100.0
 }

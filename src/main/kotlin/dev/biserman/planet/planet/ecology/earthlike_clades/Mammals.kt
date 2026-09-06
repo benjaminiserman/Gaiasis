@@ -43,7 +43,7 @@ val mouse = rodent.descend(
     CommonTrait.CATHEMERAL
 )
 val rat = rodent.descend(
-    "mouse",
+    "rat",
     SizeClass.SMALL,
     CommonTrait.GROUP_LIVING,
     CommonTrait.MEAT_EATING_MOUTHPARTS,

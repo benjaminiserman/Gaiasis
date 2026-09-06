@@ -1,17 +1,24 @@
 package dev.biserman.planet.gui
 
 import dev.biserman.planet.Main
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.EarthTreeOfLife
+import dev.biserman.planet.planet.ecology.EcoStrategy
+import dev.biserman.planet.planet.ecology.Habitat
+import dev.biserman.planet.planet.ecology.PlanetEcology
+import dev.biserman.planet.planet.ecology.ProducerCompetitionLayer
 import dev.biserman.planet.planet.ecology.SpeciesDefinition
+import dev.biserman.planet.planet.ecology.SpeciesTrait
+import dev.biserman.planet.planet.ecology.TraitDifferenceKind
 import dev.biserman.planet.planet.ecology.TreeOfLifeInclusion
 import godot.api.Button
+import godot.api.CheckButton
 import godot.api.Control
 import godot.api.Label
 import godot.api.LineEdit
 import godot.api.TextServer
 import godot.api.Tree
 import godot.api.TreeItem
+import godot.core.Color
 import godot.core.connect
 import java.util.Locale
 
@@ -25,7 +32,10 @@ class TreeOfLifeView(private val gui: Gui) {
     private val tree by lazy { gui.findChild("TreeOfLifeTree") as Tree }
     private val detailsTitle by lazy { gui.findChild("TreeOfLifeDetailsTitle") as Label }
     private val details by lazy { gui.findChild("TreeOfLifeDetails") as Label }
+    private val compiledTitle by lazy { gui.findChild("TreeOfLifeCompiledTitle") as Label }
+    private val compiledDetails by lazy { gui.findChild("TreeOfLifeCompiledDetails") as Tree }
     private val traitsTitle by lazy { gui.findChild("TreeOfLifeTraitsTitle") as Label }
+    private val traitDifferencesOnly by lazy { gui.findChild("TreeOfLifeTraitDifferencesOnly") as CheckButton }
     private val traitsTree by lazy { gui.findChild("TreeOfLifeTraits") as Tree }
 
     private val definitionsByItem = mutableMapOf<TreeItem, SpeciesDefinition>()
@@ -35,6 +45,8 @@ class TreeOfLifeView(private val gui: Gui) {
     private var selectedNodeId: String? = null
     private var expandedTrait: TreeItem? = null
     private var updatingTree = false
+    private var builtTreeRevision = -1L
+    private var currentlyExtantSpeciesIds = emptySet<String>()
 
     fun initialize() {
         tree.setColumns(3)
@@ -52,6 +64,11 @@ class TreeOfLifeView(private val gui: Gui) {
         traitsTree.setColumns(1)
         traitsTree.setHideRoot(true)
         traitsTree.setAllowReselect(true)
+        compiledDetails.setColumns(2)
+        compiledDetails.setColumnExpand(0, true)
+        compiledDetails.setColumnExpand(1, false)
+        compiledDetails.setColumnCustomMinimumWidth(1, 125)
+        compiledDetails.setHideRoot(true)
 
         showButton.pressed.connect {
             panel.visible = true
@@ -77,6 +94,9 @@ class TreeOfLifeView(private val gui: Gui) {
             updateInclusionChecks()
             selectedNodeId?.let(EarthTreeOfLife.nodesById::get)?.let(::updateDetails)
         }
+        traitDifferencesOnly.toggled.connect {
+            selectedNodeId?.let(EarthTreeOfLife.nodesById::get)?.let(::updateDetails)
+        }
         traitsTree.itemSelected.connect {
             val item = traitsTree.getSelected() ?: return@connect
             val description = traitDescriptionsByItem[item] ?: return@connect
@@ -100,8 +120,10 @@ class TreeOfLifeView(private val gui: Gui) {
     fun refresh() {
         if (!panel.visible || !Main.instance.hasPlanet) return
 
-        if (itemsById.isEmpty()) buildTree()
+        currentlyExtantSpeciesIds = EarthTreeOfLife.currentlyExtantSpeciesIds(Main.instance.planet)
+        if (itemsById.isEmpty() || builtTreeRevision != EarthTreeOfLife.revision) buildTree()
         updateInclusionChecks()
+        updateLineageStatuses()
         applySearch(search.text)
 
         val selection = selectedNodeId?.let(EarthTreeOfLife.nodesById::get)
@@ -122,6 +144,7 @@ class TreeOfLifeView(private val gui: Gui) {
         tree.clear()
         val root = tree.createItem() ?: return
         EarthTreeOfLife.roots.sortedBy { it.displayName }.forEach { addNode(it, root) }
+        builtTreeRevision = EarthTreeOfLife.revision
     }
 
     private fun addNode(
@@ -138,18 +161,49 @@ class TreeOfLifeView(private val gui: Gui) {
         item.setText(1, definition.displayName)
         item.setTooltipText(1, "Inspect ${definition.displayName}")
 
-        val descendants = EarthTreeOfLife.extantDescendants(definition)
-        item.setText(
-            2,
-            if (EarthTreeOfLife.isExtant(definition)) {
-                "extant species"
-            } else {
-                "${descendants.size} extant descendant${if (descendants.size == 1) "" else "s"}"
-            },
-        )
         item.setSelectable(1, true)
         item.setSelectable(2, true)
         EarthTreeOfLife.visibleChildren(definition).forEach { addNode(it, item) }
+    }
+
+    private fun updateLineageStatuses() {
+        definitionsByItem.forEach { (item, definition) ->
+            val descendantCount = EarthTreeOfLife.extantDescendants(definition).count {
+                it.id != definition.id && it.id in currentlyExtantSpeciesIds
+            }
+            val isCatalogSpecies = EarthTreeOfLife.isExtant(definition)
+            val isCurrentlyExtant = definition.id in currentlyExtantSpeciesIds
+            val extinctNode = if (isCatalogSpecies) !isCurrentlyExtant else descendantCount == 0
+            if (extinctNode) {
+                item.setCustomColor(1, EXTINCT_NAME_COLOR)
+            } else {
+                item.clearCustomColor(1)
+            }
+            item.setText(
+                2,
+                when {
+                    isCurrentlyExtant -> buildString {
+                        append("extant species")
+                        if (descendantCount > 0) {
+                            append(" · ")
+                            append(descendantCount)
+                            append(" extant descendant")
+                            if (descendantCount != 1) append('s')
+                        }
+                    }
+                    isCatalogSpecies -> buildString {
+                        append("extinct species")
+                        if (descendantCount > 0) {
+                            append(" · ")
+                            append(descendantCount)
+                            append(" extant descendant")
+                            if (descendantCount != 1) append('s')
+                        }
+                    }
+                    else -> "$descendantCount extant descendant${if (descendantCount == 1) "" else "s"}"
+                },
+            )
+        }
     }
 
     private fun updateInclusionChecks() {
@@ -169,7 +223,7 @@ class TreeOfLifeView(private val gui: Gui) {
         val query = value.trim().lowercase(Locale.ROOT)
         if (query.isEmpty()) {
             EarthTreeOfLife.roots.forEach { applySearchVisibility(it, emptySet(), false) }
-            searchStatus.text = "${EarthSpeciesCatalog.ALL.size} extant species"
+            searchStatus.text = "${currentlyExtantSpeciesIds.size} extant species"
             return
         }
 
@@ -214,15 +268,43 @@ class TreeOfLifeView(private val gui: Gui) {
         val planet = Main.instance.planet
         val inspected = EarthTreeOfLife.inspectionDefinition(definition)
         val descendants = EarthTreeOfLife.extantDescendants(definition)
-        val population = EarthTreeOfLife.globalPopulation(planet, definition)
+        val descendantCount = descendants.count {
+            it.id != definition.id && it.id in currentlyExtantSpeciesIds
+        }
+        val isCatalogSpecies = EarthTreeOfLife.isExtant(definition)
+        val isCurrentlyExtant = definition.id in currentlyExtantSpeciesIds
+        val population = if (isCatalogSpecies) {
+            EarthTreeOfLife.ownGlobalPopulation(planet, definition)
+        } else {
+            EarthTreeOfLife.globalPopulation(planet, definition)
+        }
+        val descendantPopulation = if (isCatalogSpecies && descendantCount > 0) {
+            EarthTreeOfLife.descendantGlobalPopulation(planet, definition)
+        } else {
+            null
+        }
         val inclusion = EarthTreeOfLife.inclusion(
             definition,
             planet.randomEcosystemSpeciesIdsExcluded,
         )
-        val lineageStatus = if (EarthTreeOfLife.isExtant(definition)) {
-            "Extant species"
-        } else {
-            "Ancestral lineage containing ${descendants.size} extant species"
+        val lineageStatus = when {
+            isCurrentlyExtant -> buildString {
+                append("Extant species")
+                if (descendantCount > 0) {
+                    append(" with ")
+                    append(descendantCount)
+                    append(" extant descendant species")
+                }
+            }
+            isCatalogSpecies -> buildString {
+                append("Extinct species")
+                if (descendantCount > 0) {
+                    append(" with ")
+                    append(descendantCount)
+                    append(" extant descendant species")
+                }
+            }
+            else -> "Ancestral lineage containing $descendantCount extant species"
         }
         val randomizationStatus = when (inclusion) {
             TreeOfLifeInclusion.INCLUDED -> "Included"
@@ -235,33 +317,175 @@ class TreeOfLifeView(private val gui: Gui) {
             appendLine("Size class: ${inspected.sizeClass.name.lowercase().replace('_', ' ')}")
             appendLine("Randomize Ecosystems: $randomizationStatus")
             appendLine()
-            appendLine("Current global population")
-            appendLine("Individuals: ${formatAmount(population.individuals)}")
-            appendLine("Biomass: ${formatAmount(population.biomassKg)} kg")
-            appendLine("Occupied tiles: ${population.occupiedTiles}")
-            if (!EarthTreeOfLife.isExtant(definition)) {
+            appendPopulation(
+                title = if (isCatalogSpecies) {
+                    "Current global population (this species)"
+                } else {
+                    "Current clade population"
+                },
+                population = population,
+            )
+            if (!isCatalogSpecies) {
                 appendLine("Population totals aggregate all extant descendants.")
             }
+            descendantPopulation?.let {
+                appendLine()
+                appendPopulation(
+                    title = "Descendant clade population ($descendantCount species)",
+                    population = it,
+                )
+            }
         }
-        traitsTitle.text = "Traits (${inspected.traits.size})"
-        buildTraits(inspected)
+        buildCompiledDetails(inspected)
+        val ancestor = EarthTreeOfLife.directAncestor(definition)
+        traitDifferencesOnly.disabled = ancestor == null
+        if (traitDifferencesOnly.buttonPressed && ancestor != null) {
+            val differences = EarthTreeOfLife.traitDifferencesFromAncestor(definition)
+            traitsTitle.text = "Trait differences (${differences.size})"
+            buildTraits(
+                differences.map { difference ->
+                    val change = when (difference.kind) {
+                        TraitDifferenceKind.ADDED -> "Added"
+                        TraitDifferenceKind.REMOVED -> "Removed"
+                    }
+                    DisplayedTrait(
+                        trait = difference.trait,
+                        name = "${if (difference.kind == TraitDifferenceKind.ADDED) "+" else "−"} " +
+                            difference.trait.displayName,
+                        description = "$change relative to ${ancestor.displayName}.\n\n" +
+                            difference.trait.description,
+                    )
+                },
+            )
+        } else {
+            traitsTitle.text = "Traits (${inspected.traits.size})"
+            buildTraits(inspected.traits.map(::DisplayedTrait))
+        }
     }
 
-    private fun buildTraits(definition: SpeciesDefinition) {
+    private fun buildCompiledDetails(definition: SpeciesDefinition) {
+        compiledDetails.clear()
+        val compiled = PlanetEcology.compiled.species.firstOrNull { it.id == definition.id }
+        if (compiled == null) {
+            compiledTitle.text = "Compiled ecology unavailable for ancestral lineages"
+            compiledDetails.visible = false
+            return
+        }
+        compiledTitle.text = "Compiled ecology"
+        compiledDetails.visible = true
+        val root = compiledDetails.createItem() ?: return
+
+        val habitats = compiledDetails.createItem(root) ?: return
+        habitats.setText(0, "Habitats")
+        habitats.setText(1, "access · affinity")
+        habitats.setSelectable(0, false)
+        habitats.setSelectable(1, false)
+        Habitat.entries.forEach { habitat ->
+            val item = compiledDetails.createItem(habitats) ?: return@forEach
+            item.setText(0, habitat.displayName.toDisplayText())
+            item.setText(
+                1,
+                if (compiled.niche.accesses(habitat)) {
+                    "yes · ${formatPercent(compiled.niche.supportFor(habitat))}"
+                } else {
+                    "no · —"
+                },
+            )
+            item.setSelectable(0, false)
+            item.setSelectable(1, false)
+        }
+
+        val strategies = compiledDetails.createItem(root) ?: return
+        strategies.setText(0, "Ecological strategies")
+        strategies.setText(1, "access · affinity")
+        strategies.setSelectable(0, false)
+        strategies.setSelectable(1, false)
+        EcoStrategy.entries.forEach { strategy ->
+            val item = compiledDetails.createItem(strategies) ?: return@forEach
+            item.setText(0, strategy.displayName.toDisplayText())
+            item.setText(
+                1,
+                if (compiled.niche.accesses(strategy)) {
+                    "yes · ${formatPercent(compiled.niche.supportFor(strategy))}"
+                } else {
+                    "no · —"
+                },
+            )
+            item.setSelectable(0, false)
+            item.setSelectable(1, false)
+        }
+
+        val profile = compiledDetails.createItem(root) ?: return
+        profile.setText(0, "Headline profile")
+        profile.setText(1, "compiled value")
+        profile.setSelectable(0, false)
+        profile.setSelectable(1, false)
+        val thermal = compiled.physiology.thermal
+        val hydration = compiled.physiology.hydration
+        val respiration = compiled.physiology.respiration
+        val lifeHistory = compiled.lifeHistory
+        addCompiledDetail(profile, "Typical body mass", "${formatAmount(compiled.physiology.massKg)} kg")
+        addCompiledDetail(profile, "Maintenance demand", formatAmount(compiled.physiology.maintenanceDemand))
+        addCompiledDetail(profile, "Thermal regulation", thermal.regulation?.name.toDisplayText())
+        addCompiledDetail(profile, "Optimal temperature", "${formatNumber(thermal.optimalLowC)}–${formatNumber(thermal.optimalHighC)} °C")
+        addCompiledDetail(profile, "Survival temperature", "${formatNumber(thermal.outerLowC)}–${formatNumber(thermal.outerHighC)} °C")
+        addCompiledDetail(
+            profile,
+            "Water tolerance",
+            "${formatPercent(hydration.minimumWater)} min · ${formatPercent(hydration.maximumWater)} max",
+        )
+        addCompiledDetail(
+            profile,
+            "Respiration",
+            buildList {
+                if (respiration.aerialBreathing) add("air")
+                if (respiration.underwaterBreathing) add("water")
+                if (respiration.prolongedBreathHolding) add("breath-holding")
+            }.joinToString().ifEmpty { "none" },
+        )
+        addCompiledDetail(profile, "Salinity", respiration.salinityTolerance.name.toDisplayText())
+        addCompiledDetail(profile, "Seasonal reproduction", formatNumber(lifeHistory.seasonalReproduction))
+        addCompiledDetail(profile, "Energy reserves", formatPercent(lifeHistory.reserveCapacity))
+        addCompiledDetail(profile, "Dormancy", lifeHistory.dormancyKind.name.toDisplayText())
+        addCompiledDetail(profile, "Dispersal", lifeHistory.dispersalKind.name.toDisplayText())
+        addCompiledDetail(profile, "Capture / defense", "${formatNumber(compiled.interactions.captureAbility)} / ${formatNumber(compiled.interactions.defense)}")
+        addCompiledDetail(profile, "Pursuit / sensing", "${formatPercent(compiled.interactions.pursuitSpeed)} / ${formatPercent(compiled.interactions.sensing)}")
+        if (compiled.niche.producerCompetitionLayer != ProducerCompetitionLayer.NONE) {
+            addCompiledDetail(
+                profile,
+                "Producer layer",
+                compiled.niche.producerCompetitionLayer.name.toDisplayText(),
+            )
+        }
+    }
+
+    private fun addCompiledDetail(
+        parent: TreeItem,
+        name: String,
+        value: String,
+    ) {
+        val item = compiledDetails.createItem(parent) ?: return
+        item.setText(0, name)
+        item.setText(1, value)
+        item.setSelectable(0, false)
+        item.setSelectable(1, false)
+    }
+
+    private fun buildTraits(traits: List<DisplayedTrait>) {
         expandedTrait = null
         traitDescriptionsByItem.clear()
         traitNamesByItem.clear()
         traitsTree.clear()
         val root = traitsTree.createItem() ?: return
-        definition.traits.forEach { trait ->
+        traits.forEach { displayed ->
             val item = traitsTree.createItem(root) ?: return@forEach
-            traitNamesByItem[item] = trait.displayName
-            item.setText(0, "▶ ${trait.displayName}")
+            traitNamesByItem[item] = displayed.name
+            item.setText(0, "▶ ${displayed.name}")
             item.setTooltipText(0, "Click to show or hide this trait's description")
             item.setDisableFolding(true)
             val description = traitsTree.createItem(item) ?: return@forEach
             traitDescriptionsByItem[item] = description
-            description.setText(0, trait.description)
+            description.setText(0, displayed.description)
             description.setAutowrapMode(0, TextServer.AutowrapMode.WORD_SMART)
             description.setSelectable(0, false)
             description.setVisible(false)
@@ -273,6 +497,16 @@ class TreeOfLifeView(private val gui: Gui) {
         traitNamesByItem[item]?.let { item.setText(0, "▶ $it") }
     }
 
+    private fun StringBuilder.appendPopulation(
+        title: String,
+        population: dev.biserman.planet.planet.ecology.GlobalPopulation,
+    ) {
+        appendLine(title)
+        appendLine("Individuals: ${formatAmount(population.individuals)}")
+        appendLine("Biomass: ${formatAmount(population.biomassKg)} kg")
+        appendLine("Occupied tiles: ${population.occupiedTiles}")
+    }
+
     private fun close() {
         panel.visible = false
     }
@@ -281,5 +515,22 @@ class TreeOfLifeView(private val gui: Gui) {
         value == 0.0 -> "0"
         value >= 10_000.0 || value < 0.01 -> String.format(Locale.ROOT, "%.2e", value)
         else -> String.format(Locale.ROOT, "%,.2f", value)
+    }
+
+    private fun formatNumber(value: Double): String = String.format(Locale.ROOT, "%.2f", value)
+
+    private fun formatPercent(value: Double): String = String.format(Locale.ROOT, "%.0f%%", value * 100.0)
+
+    private fun String?.toDisplayText(): String =
+        this?.lowercase(Locale.ROOT)?.replace('_', ' ')?.replace('-', ' ') ?: "none"
+
+    private data class DisplayedTrait(
+        val trait: SpeciesTrait,
+        val name: String = trait.displayName,
+        val description: String = trait.description,
+    )
+
+    companion object {
+        private val EXTINCT_NAME_COLOR = Color(0.62, 0.62, 0.62, 1.0)
     }
 }

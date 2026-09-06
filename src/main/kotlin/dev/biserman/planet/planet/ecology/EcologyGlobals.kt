@@ -94,13 +94,19 @@ object EcologyGlobals {
     var minimumViableIndividuals = 2.0
 
     /** Seasonal chance that a species without a dispersal trait attempts to colonize a neighbor. */
-    var unassistedRadiationChancePerSeason = 0.005
+    var unassistedRadiationChancePerSeason = 0.02
 
     /** Seasonal neighboring-colonization chance for species with a migration trait. */
     var migrationRadiationChancePerSeason = 0.06
 
     /** Seasonal neighboring-colonization chance for species specialized for local dispersal. */
-    var neighborRadiationChancePerSeason = 0.02
+    var neighborRadiationChancePerSeason = 0.03
+
+    /** Chance that each globally living species branches at a mutation interval. */
+    var mutationChancePerInterval = 0.25
+
+    /** Number of simulated years between mutation rolls. */
+    var mutationIntervalYears = 100
 
     /**
      * Lowest intrinsic niche fit a colonist may choose, expressed as a fraction
@@ -157,6 +163,8 @@ object EcologyGlobals {
         require(unassistedRadiationChancePerSeason in 0.0..1.0)
         require(migrationRadiationChancePerSeason in 0.0..1.0)
         require(neighborRadiationChancePerSeason in 0.0..1.0)
+        require(mutationChancePerInterval in 0.0..1.0)
+        require(mutationIntervalYears > 0)
         require(minimumRelativeRadiationNicheFit in 0.0..1.0)
         require(establishmentCapacityMultiplier >= 1.0)
         require(aposematicPredationMultiplier >= 0.0)
