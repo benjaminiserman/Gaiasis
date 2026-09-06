@@ -38,7 +38,7 @@ val bristleWorm = annelida.descend(
     "bristle worm",
     SizeClass.TINY,
     CommonTrait.PASSIVE_RESPIRATION,
-    CommonTrait.ANTENNAE,
+    CommonTrait.ANTENNAE.atLevel(2),
     CommonTrait.MARINE_SNOW_COLLECTORS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
 )

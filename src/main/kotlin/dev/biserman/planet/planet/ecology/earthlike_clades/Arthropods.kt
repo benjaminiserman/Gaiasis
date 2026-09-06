@@ -10,15 +10,15 @@ val arthropod = EarthSpeciesCatalog.animal(
     "arthropod",
     SizeClass.TINY,
     CommonTrait.ECTOTHERMY,
-    CommonTrait.CRAWLING_APPENDAGES,
+    CommonTrait.CRAWLING_APPENDAGES.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.CATHEMERAL,
     CommonTrait.SOLITARY,
     CommonTrait.MOLTING_EXOSKELETON,
     CommonTrait.LIMBED_BODY,
     CommonTrait.VASCULAR_SYSTEM,
-    CommonTrait.EYES.atLevel(3),
-    CommonTrait.SCENT.atLevel(3),
+    CommonTrait.EYES.atLevel(2),
+    CommonTrait.SCENT.atLevel(2),
     CommonTrait.GILLS,
     CommonTrait.HEARING.atLevel(1),
     ColorTrait.PALE_COLORATION,
@@ -41,7 +41,7 @@ val spider = arachnid.descend(
     "spider",
     SizeClass.TINY,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
-    CommonTrait.FANGS,
+    CommonTrait.FANGS.atLevel(2),
     CommonTrait.WEB_SILK,
     CommonTrait.SKITTISH
 )
@@ -75,8 +75,8 @@ val centipede = myriapoda.descend(
     "centipede",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.SWIFT_LIMBS,
-    CommonTrait.FANGS,
+    CommonTrait.SWIFT_LIMBS.atLevel(2),
+    CommonTrait.FANGS.atLevel(2),
     CommonTrait.VENOM_DELIVERY.atLevel(2)
 )
 val millipede = myriapoda.descend(
@@ -94,6 +94,7 @@ val crustacean = arthropod.descend(
     SizeClass.TINY,
     CommonTrait.BODY_CARRIED_OVOSPORES,
     CommonTrait.WAXY_CUTICLE,
+    CommonTrait.ANTENNAE.atLevel(1),
     CommonTrait.NOCTURNAL,
 )
 val isopod = crustacean.descend(
@@ -106,10 +107,11 @@ val isopod = crustacean.descend(
 val shrimp = crustacean.descend(
     "shrimp",
     SizeClass.TINY,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
+    CommonTrait.ANTENNAE.atLevel(2),
     CommonTrait.EURYHALINE_OSMOREGULATION,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    minus = listOf(CommonTrait.CRAWLING_APPENDAGES)
+    minus = listOf(CommonTrait.CRAWLING_APPENDAGES.atLevel(2))
 )
 
 val reptantia = crustacean.descend(
@@ -127,13 +129,14 @@ val reptantia = crustacean.descend(
 val astacidea = reptantia.descend(
     "astacidea",
     SizeClass.SMALL,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.ANTENNAE.atLevel(2),
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.TAIL
 )
 val lobster = astacidea.descend(
     "lobster",
     SizeClass.SMALL,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
 )
 val crayfish = astacidea.descend(
     "crayfish",
@@ -151,7 +154,8 @@ val crab = reptantia.descend(
 val insect = arthropod.descend(
     "insect",
     SizeClass.TINY,
-    CommonTrait.WINGS,
+    CommonTrait.WINGS.atLevel(2),
+    CommonTrait.ANTENNAE.atLevel(2),
     CommonTrait.WAXY_CUTICLE,
     CommonTrait.TRACHEA,
     CommonTrait.TERRESTRIAL_OVOSPORE,
@@ -163,8 +167,8 @@ val dragonfly = insect.descend(
     "dragonfly",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.SWIFT_LIMBS,
-    CommonTrait.EYES.atLevel(5),
+    CommonTrait.SWIFT_LIMBS.atLevel(2),
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.DIURNAL,
     ColorTrait.RAINBOW_COLORATION
 )
@@ -174,7 +178,7 @@ val mayfly = insect.descend(
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.GILLS,
     CommonTrait.FRESHWATER_OSMOREGULATION,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.GRAZING_MOUTHPARTS
 )
 val mantis = insect.descend(
@@ -182,7 +186,7 @@ val mantis = insect.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.EYES.atLevel(5),
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.DIURNAL,
     CommonTrait.CALM,
@@ -197,14 +201,14 @@ val roach = insect.descend(
     CommonTrait.SCAVENGING_SENSES,
     CommonTrait.LIMB_REGROWTH,
     CommonTrait.SKITTISH,
-    CommonTrait.WEAK_WINGS
+    CommonTrait.WINGS.atLevel(1)
 )
 val termite = insect.descend(
     "termite",
     SizeClass.TINY,
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.EUSOCIAL_COLONY,
-    CommonTrait.DIGGING_LIMBS,
+    CommonTrait.DIGGING_LIMBS.atLevel(2),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.OVOSPORE_NEST,
     ColorTrait.PALE_COLORATION,
@@ -257,9 +261,9 @@ val beetle = insect.descend(
     SizeClass.TINY,
     CommonTrait.WASTE_FEEDING_MOUTHPARTS,
     CommonTrait.ARMORED_HIDE.atLevel(2),
-    CommonTrait.DIGGING_LIMBS,
+    CommonTrait.DIGGING_LIMBS.atLevel(2),
     ColorTrait.BLACK_COLORATION,
-    CommonTrait.WEAK_WINGS
+    CommonTrait.WINGS.atLevel(1)
 )
 val butterfly = insect.descend(
     "butterfly",

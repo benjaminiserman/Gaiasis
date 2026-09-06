@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val fungus = EarthSpeciesCatalog.sessile(
     "fungus",
@@ -28,12 +29,12 @@ val mushroom = fruitingFungus.descend(
 val shelfFungus = fruitingFungus.descend(
     "shelf fungus",
     SizeClass.SMALL,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(1),
 )
 
 val mold = fungus.descend(
     "mold",
     SizeClass.TINY,
-    CommonTrait.RAPID_GROWTH,
+    CommonTrait.RAPID_GROWTH.atLevel(2),
     CommonTrait.INTERWOVEN_BODY,
 )

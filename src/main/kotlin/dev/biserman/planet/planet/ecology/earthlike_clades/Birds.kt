@@ -9,7 +9,7 @@ val bird = reptile.descend(
     "bird",
     SizeClass.SMALL,
     CommonTrait.FEATHERS,
-    CommonTrait.WINGS,
+    CommonTrait.WINGS.atLevel(2),
     CommonTrait.BEAK,
     CommonTrait.OVOSPORE_NEST,
     CommonTrait.COLLECTIVE_LIVING,
@@ -23,26 +23,24 @@ val bird = reptile.descend(
 val ratite = bird.descend(
     "ratite",
     SizeClass.MEDIUM,
-    CommonTrait.WALKING_LIMBS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.LONG_NECK,
-    CommonTrait.SWIFT_LIMBS,
+    CommonTrait.SWIFT_LIMBS.atLevel(1),
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.NEIGHBOR_DISPERSAL,
-    minus = listOf(CommonTrait.WINGS),
+    minus = listOf(CommonTrait.WINGS.atLevel(2)),
 )
 val fowl = bird.descend(
     "fowl",
     SizeClass.SMALL,
-    CommonTrait.WALKING_LIMBS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SEED_CRACKING_MOUTHPARTS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FREQUENT_REPRODUCTION,
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.GROUP_LIVING,
-    CommonTrait.WEAK_WINGS
+    CommonTrait.WINGS.atLevel(1)
 )
 val waterfowl = bird.descend(
     "waterfowl",
@@ -50,7 +48,7 @@ val waterfowl = bird.descend(
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.GROUP_LIVING,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(1),
     CommonTrait.WATERPROOF_PLUMAGE,
     CommonTrait.INSULATING_PLUMAGE.atLevel(1),
     CommonTrait.SKITTISH,
@@ -62,7 +60,7 @@ val grebe = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(1),
     CommonTrait.WATERPROOF_PLUMAGE,
     CommonTrait.SPEAR_BILL,
     CommonTrait.LONG_NECK,
@@ -93,12 +91,12 @@ val gull = bird.descend(
 val hummingbird = bird.descend(
     "hummingbird",
     SizeClass.TINY,
-    CommonTrait.FAST_METABOLISM,
+    CommonTrait.FAST_METABOLISM.atLevel(2),
     CommonTrait.NECTAR_SIPPING_TONGUE,
     CommonTrait.POLLEN_CARRYING_SURFACES,
     CommonTrait.LONG_MIGRATION,
     CommonTrait.CHIRPING_CALL,
-    CommonTrait.SWIFT_LIMBS,
+    CommonTrait.SWIFT_LIMBS.atLevel(2),
     CommonTrait.COMPLEX_VOCALIZATIONS,
     ColorTrait.RAINBOW_COLORATION
 )
@@ -106,7 +104,7 @@ val penguin = bird.descend(
     "penguin",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.SEA_ICE_ROOKERY,
@@ -126,9 +124,9 @@ val owl = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.HOOKED_TALONS,
     CommonTrait.MOTION_TRACKING_SENSES,
-    CommonTrait.HEARING.atLevel(5),
+    CommonTrait.HEARING.atLevel(3),
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.EYES.atLevel(5),
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.SILENT_MOVEMENT,
     CommonTrait.INSULATING_PLUMAGE.atLevel(2),
     CommonTrait.HOOTING_CALL,
@@ -139,9 +137,9 @@ val hawk = bird.descend(
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.EYES.atLevel(5),
+    CommonTrait.EYES.atLevel(3),
     CommonTrait.MOTION_TRACKING_SENSES,
-    CommonTrait.SWIFT_LIMBS,
+    CommonTrait.SWIFT_LIMBS.atLevel(2),
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.HOOKED_TALONS,
 )
@@ -167,7 +165,7 @@ val woodpecker = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.DIGGING_LIMBS,
+    CommonTrait.DIGGING_LIMBS.atLevel(1),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.DRUMMING_DISPLAY,
 )
@@ -192,6 +190,7 @@ val parrot = bird.descend(
     CommonTrait.EXTENDED_PARENTAL_CARE,
     CommonTrait.IMITATIVE_VOCALIZATION,
     CommonTrait.INTELLIGENCE.atLevel(2),
+    CommonTrait.SLOW_GROWTH.atLevel(1),
     ColorTrait.RAINBOW_COLORATION
 )
 val corvid = bird.descend(

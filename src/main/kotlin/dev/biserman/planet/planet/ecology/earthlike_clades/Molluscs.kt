@@ -10,7 +10,7 @@ val mollusc = EarthSpeciesCatalog.animal(
     "mollusc",
     SizeClass.TINY,
     CommonTrait.ECTOTHERMY,
-    CommonTrait.SLOW_METABOLISM,
+    CommonTrait.SLOW_METABOLISM.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.SOLITARY,
     CommonTrait.VASCULAR_SYSTEM,
@@ -93,9 +93,9 @@ val cephalopod = mollusc.descend(
     CommonTrait.SUCTION_CUPS,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.LIMB_REGROWTH,
-    CommonTrait.RAPID_GROWTH,
+    CommonTrait.RAPID_GROWTH.atLevel(2),
     CommonTrait.EYES.atLevel(2),
-    minus = listOf(CommonTrait.SLOW_METABOLISM)
+    minus = listOf(CommonTrait.SLOW_METABOLISM.atLevel(2))
 )
 val octopus = cephalopod.descend(
     "octopus",

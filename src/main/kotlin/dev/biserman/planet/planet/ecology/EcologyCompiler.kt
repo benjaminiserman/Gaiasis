@@ -82,7 +82,7 @@ object EcologyCompiler {
         require(definition.motile || TraitGroup.THERMOREGULATION !in traitsByGroup) {
             "${definition.displayName} is not motile but has a motile thermal strategy"
         }
-        require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
+        require(definition.motile || TraitGroup.PRIMARY_LOCOMOTION !in traitsByGroup) {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
         }
         val context = SpeciesCompilationContext(

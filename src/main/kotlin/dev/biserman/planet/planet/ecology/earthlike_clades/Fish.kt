@@ -11,14 +11,14 @@ val fish = EarthSpeciesCatalog.animal(
     SizeClass.SMALL,
     CommonTrait.ECTOTHERMY,
     CommonTrait.GILLS,
-    CommonTrait.EYES.atLevel(3),
+    CommonTrait.EYES.atLevel(2),
     CommonTrait.HEARING.atLevel(2),
     CommonTrait.SCENT.atLevel(1),
     CommonTrait.TEETH,
     CommonTrait.SCALES,
     CommonTrait.JAW,
     CommonTrait.TAIL,
-    CommonTrait.AQUATIC_LIMBS,
+    CommonTrait.AQUATIC_LIMBS.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.CATHEMERAL,
@@ -43,8 +43,8 @@ val shark = cartilaginousFish.descend(
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.TEETH_REGROWTH,
     CommonTrait.MOTION_TRACKING_SENSES,
-    CommonTrait.HEARING.atLevel(4),
-    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.HEARING.atLevel(3),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.CALM,
     CommonTrait.STRONG_JAWS
 )
@@ -87,9 +87,9 @@ val sturgeon = bonyFish.descend(
     CommonTrait.GROUP_LIVING,
     CommonTrait.ELECTRORECEPTION,
     CommonTrait.EURYHALINE_OSMOREGULATION,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.REGIONAL_MIGRATION,
-    CommonTrait.COLD_ACTIVE_ENZYMES,
+    CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1),
     CommonTrait.BULKY_PHYSIQUE
 )
 
@@ -97,7 +97,7 @@ val sturgeon = bonyFish.descend(
 val teleostei = bonyFish.descend(
     "teleostei",
     SizeClass.SMALL,
-    CommonTrait.PROTRUSIBLE_JAW,
+    CommonTrait.PROTRUSIBLE_JAW.atLevel(2),
     minus = listOf(CommonTrait.STREAMLINED_PHYSIQUE)
 )
 val eel = teleostei.descend(
@@ -108,7 +108,7 @@ val eel = teleostei.descend(
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SOLITARY,
     ColorTrait.BROWN_COLORATION,
-    minus = listOf(CommonTrait.AQUATIC_LIMBS)
+    minus = listOf(CommonTrait.AQUATIC_LIMBS.atLevel(2))
 )
 val herring = teleostei.descend(
     "herring",
@@ -125,7 +125,7 @@ val swordfish = teleostei.descend(
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.SPEAR_BILL,
     CommonTrait.LONG_MIGRATION,
-    CommonTrait.SWIFT_LIMBS,
+    CommonTrait.SWIFT_LIMBS.atLevel(2),
     CommonTrait.ECTOTHERMY,
     CommonTrait.GROUP_LIVING
 )
@@ -147,7 +147,7 @@ val carp = otophysa.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.GRAZING_MOUTHPARTS,
     CommonTrait.SUCTION_FEEDING,
-    CommonTrait.COLD_ACTIVE_ENZYMES,
+    CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1),
 )
 val piranha = otophysa.descend(
     "piranha",
@@ -164,7 +164,7 @@ val catfish = otophysa.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SOLITARY,
     CommonTrait.SUCTION_FEEDING,
-    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.SPINES,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     ColorTrait.BROWN_COLORATION,
@@ -203,7 +203,7 @@ val gobie = percomorpha.descend(
     "gobie",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.DIGGING_LIMBS,
+    CommonTrait.DIGGING_LIMBS.atLevel(1),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.SOLITARY,
     CommonTrait.TERRITORIAL,
@@ -252,7 +252,7 @@ val perch = percomorpha.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SUCTION_FEEDING,
     CommonTrait.FRESHWATER_OSMOREGULATION,
-    CommonTrait.COLD_ACTIVE_ENZYMES,
+    CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1),
     CommonTrait.GILL_RAKERS
 )
 val pufferfish = percomorpha.descend(
@@ -281,8 +281,8 @@ val wrasse = percomorpha.descend(
 val tetrapoda = bonyFish.descend(
     "tetrapoda",
     SizeClass.SMALL,
-    CommonTrait.WALKING_LIMBS,
+    CommonTrait.WALKING_LIMBS.atLevel(2),
     CommonTrait.TRACHEA,
     CommonTrait.SOLITARY,
-    minus = listOf(CommonTrait.AQUATIC_LIMBS, CommonTrait.GILLS, ColorTrait.COUNTERSHADE_COLORATION)
+    minus = listOf(CommonTrait.AQUATIC_LIMBS.atLevel(2), CommonTrait.GILLS, ColorTrait.COUNTERSHADE_COLORATION)
 )

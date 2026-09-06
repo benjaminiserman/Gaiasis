@@ -35,7 +35,7 @@ enum class TraitGroup : FulfillsTraitRequirement {
     BODY_TYPE,
     BODY_PHYSIQUE,
     PHOTOSYNTHETIC_STRUCTURE,
-    TERRESTRIAL_MOVEMENT_STRUCTURE,
+    PRIMARY_LOCOMOTION,
     FLIGHT_STRUCTURE,
     ACTIVITY_PATTERN,
     SOCIAL_ORGANIZATION,
@@ -142,8 +142,7 @@ sealed interface TraitRequirement {
             }
         }
 
-        override fun describe(): String =
-            "requires ${requirements.joinToString()}"
+        override fun describe(): String = "requires ${requirements.joinToString()}"
     }
 
     data class AnyOf(val requirements: Set<FulfillsTraitRequirement>) : TraitRequirement {
@@ -163,8 +162,7 @@ sealed interface TraitRequirement {
             }
         }
 
-        override fun describe(): String =
-            "requires one of ${requirements.joinToString()}"
+        override fun describe(): String = "requires one of ${requirements.joinToString()}"
     }
 
     data class NoneOf(val requirements: Set<FulfillsTraitRequirement>) : TraitRequirement {
@@ -180,8 +178,7 @@ sealed interface TraitRequirement {
             }
         }
 
-        override fun describe(): String =
-            "requires none of ${requirements.joinToString()}"
+        override fun describe(): String = "requires none of ${requirements.joinToString()}"
     }
 
     data class SizeClassIs(val sizeClass: SizeClass) : TraitRequirement {
@@ -217,8 +214,7 @@ sealed interface TraitRequirement {
             capabilities: Set<FulfillsTraitRequirement>,
         ): Boolean = definition.motile == motile
 
-        override fun describe(): String =
-            if (motile) "requires a motile organism" else "requires a sessile organism"
+        override fun describe(): String = if (motile) "requires a motile organism" else "requires a sessile organism"
     }
 
     data object HasAcousticSignal : TraitRequirement {
@@ -243,8 +239,7 @@ sealed interface TraitRequirement {
             capabilities: Set<FulfillsTraitRequirement>,
         ): Boolean = definition.traitLevel(trait) >= level
 
-        override fun describe(): String =
-            "requires ${trait.displayName} at level $level or higher"
+        override fun describe(): String = "requires ${trait.displayName} at level $level or higher"
     }
 
     companion object {
@@ -286,14 +281,11 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
     val requirements: List<TraitRequirement>
         get() = emptyList()
 
-    fun effectsAt(level: Int): List<TraitEffect> =
-        scale?.definitionAt(level)?.effects ?: effects.also { require(level == 1) }
+    fun effectsAt(level: Int): List<TraitEffect> = scale?.definitionAt(level)?.effects ?: effects.also { require(level == 1) }
 
-    fun capabilitiesAt(level: Int): Set<TraitCapability> =
-        scale?.definitionAt(level)?.capabilities ?: capabilities.also { require(level == 1) }
+    fun capabilitiesAt(level: Int): Set<TraitCapability> = scale?.definitionAt(level)?.capabilities?.ifEmpty { capabilities } ?: capabilities.also { require(level == 1) }
 
-    fun requirementsAt(level: Int): List<TraitRequirement> =
-        scale?.definitionAt(level)?.requirements ?: requirements.also { require(level == 1) }
+    fun requirementsAt(level: Int): List<TraitRequirement> = scale?.definitionAt(level)?.requirements?.ifEmpty { requirements } ?: requirements.also { require(level == 1) }
 }
 
 /**
@@ -331,30 +323,27 @@ data class TargetedRelationshipTrait(
         require(maintenanceCost > 0.0)
     }
 
-    override val effects: List<TraitEffect> =
-        listOf(TraitEffect.MaintenanceCost(maintenanceCost))
+    override val effects: List<TraitEffect> = listOf(TraitEffect.MaintenanceCost(maintenanceCost))
 }
 
 /** Authored host dependency paired with [CommonTrait.BROOD_PARASITISM]. */
 fun broodParasitismOf(
     hostSpeciesId: String,
     hostDisplayName: String,
-): TargetedRelationshipTrait =
-    TargetedRelationshipTrait(
-        displayName = "$hostDisplayName brood host",
-        description =
-            "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
-        relationships = listOf(
-            RelationshipEffect.RequiresTarget(
-                SpeciesSelector.ExactSpecies(hostSpeciesId),
-            ),
+): TargetedRelationshipTrait = TargetedRelationshipTrait(
+    displayName = "$hostDisplayName brood host",
+    description = "Reproductive timing, ovospore mimicry, or host manipulation is specialized around placing offspring with $hostDisplayName.",
+    relationships = listOf(
+        RelationshipEffect.RequiresTarget(
+            SpeciesSelector.ExactSpecies(hostSpeciesId),
         ),
-        maintenanceCost = 0.06,
-        capabilities = setOf(TraitCapability.BROOD_HOST_RELATIONSHIP),
-        requirements = listOf(
-            TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
-        ),
-    )
+    ),
+    maintenanceCost = 0.06,
+    capabilities = setOf(TraitCapability.BROOD_HOST_RELATIONSHIP),
+    requirements = listOf(
+        TraitRequirement.AllOf(setOf(TraitCapability.OVOSPORE_BROODING)),
+    ),
+)
 
 enum class ColorTrait(
     override val displayName: String,
@@ -364,15 +353,36 @@ enum class ColorTrait(
     traitEffects: List<TraitEffect> = listOf()
 ) : SpeciesTrait {
     BLACK_COLORATION("black coloration", "Dark biological pigments absorb broadly and reduce contrast against very dim backgrounds.", BiologicalColor.BLACK),
-    BROWN_COLORATION("brown coloration", "Brown biological pigments shape light absorption and reduce contrast against earth, bark, or shallow-water substrates.", BiologicalColor.BROWN),
+    BROWN_COLORATION(
+        "brown coloration",
+        "Brown biological pigments shape light absorption and reduce contrast against earth, bark, or shallow-water substrates.",
+        BiologicalColor.BROWN
+    ),
     GREEN_COLORATION("green coloration", "Green biological pigments shape light absorption and reduce contrast among photosynthetic growth.", BiologicalColor.GREEN),
-    BLUE_COLORATION("blue coloration", "Blue biological pigments shape light absorption and reduce contrast in blue-lit environments.", BiologicalColor.BLUE),
+    BLUE_COLORATION(
+        "blue coloration",
+        "Blue biological pigments shape light absorption and reduce contrast in blue-lit environments.",
+        BiologicalColor.BLUE
+    ),
     RED_COLORATION("red coloration", "Red biological pigments shape light absorption, conceal, or signal where longer wavelengths dominate.", BiologicalColor.RED),
-    PURPLE_COLORATION("purple coloration", "Purple biological pigments shape light absorption and may conceal or signal against similar surroundings.", BiologicalColor.PURPLE),
+    PURPLE_COLORATION(
+        "purple coloration",
+        "Purple biological pigments shape light absorption and may conceal or signal against similar surroundings.",
+        BiologicalColor.PURPLE
+    ),
     YELLOW_COLORATION("yellow coloration", "Yellow biological pigments shape light absorption and can reduce contrast in dry, brightly lit habitats.", BiologicalColor.YELLOW),
-    PALE_COLORATION("pale coloration", "Sparse or low-saturation biological pigments trade light absorption for lower tissue investment.", BiologicalColor.PALE, maintenanceCost = -0.06),
+    PALE_COLORATION(
+        "pale coloration",
+        "Sparse or low-saturation biological pigments trade light absorption for lower tissue investment.",
+        BiologicalColor.PALE,
+        maintenanceCost = -0.06
+    ),
     WHITE_COLORATION("white coloration", "Reflective biological tissues limit light absorption and reduce contrast against snow and ice.", BiologicalColor.WHITE),
-    COUNTERSHADE_COLORATION("countershading", "A dark upper surface and light underside alter light absorption and reduce contrast in sunlit water.", BiologicalColor.COUNTERSHADE),
+    COUNTERSHADE_COLORATION(
+        "countershading",
+        "A dark upper surface and light underside alter light absorption and reduce contrast in sunlit water.",
+        BiologicalColor.COUNTERSHADE
+    ),
     ADAPTIVE_COLORATION("adaptive coloration", "Pigment cells change the body's absorption, color, and pattern in response to its surroundings.", BiologicalColor.ADAPTIVE, maintenanceCost = 0.24),
     RAINBOW_COLORATION(
         "rainbow coloration",
@@ -382,23 +392,19 @@ enum class ColorTrait(
         traitEffects = listOf(
             TraitEffect.ReproductionMultiplier(1.3),
         )
-    ),
-    ;
+    ), ;
 
-    override val effects: List<TraitEffect> =
-        listOf(
-            TraitEffect.CamouflageColor(color),
-            TraitEffect.PhotosyntheticColor(color),
-            TraitEffect.MaintenanceCost(maintenanceCost)
-        ).plus(traitEffects)
+    override val effects: List<TraitEffect> = listOf(
+        TraitEffect.CamouflageColor(color),
+        TraitEffect.PhotosyntheticColor(color),
+        TraitEffect.MaintenanceCost(maintenanceCost)
+    ).plus(traitEffects)
     override val group: TraitGroup = TraitGroup.BIOLOGICAL_COLOR
 
     companion object {
-        fun camouflage(color: BiologicalColor): ColorTrait =
-            entries.single { it.color == color }
+        fun camouflage(color: BiologicalColor): ColorTrait = entries.single { it.color == color }
 
-        fun photosynthetic(color: BiologicalColor): ColorTrait =
-            entries.single { it.color == color }
+        fun photosynthetic(color: BiologicalColor): ColorTrait = entries.single { it.color == color }
     }
 }
 
@@ -479,19 +485,47 @@ enum class CommonTrait(
     COLD_ACTIVE_ENZYMES(
         "cold-active enzymes",
         "Specialized metabolic enzymes retain useful reaction rates in cold water but become unstable at ordinary warm temperatures.",
-        listOf(
-            TraitEffect.TemperatureShift(-13.0),
-            TraitEffect.ReproductionMultiplier(0.90),
-            TraitEffect.MaintenanceCost(0.16),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(-6.5),
+                        TraitEffect.ReproductionMultiplier(0.95),
+                        TraitEffect.MaintenanceCost(0.08),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(-13.0),
+                        TraitEffect.ReproductionMultiplier(0.90),
+                        TraitEffect.MaintenanceCost(0.16),
+                    )
+                ),
+            )
         ),
     ),
     HEAT_STABLE_ENZYMES(
         "heat-stable enzymes",
         "Proteins and cell membranes remain functional through sustained hot conditions without shifting the organism's entire biochemical regime.",
-        listOf(
-            TraitEffect.TemperatureShift(10.0),
-            TraitEffect.ReproductionMultiplier(0.95),
-            TraitEffect.MaintenanceCost(0.2),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(5.0),
+                        TraitEffect.ReproductionMultiplier(0.975),
+                        TraitEffect.MaintenanceCost(0.10),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(10.0),
+                        TraitEffect.ReproductionMultiplier(0.95),
+                        TraitEffect.MaintenanceCost(0.2),
+                    )
+                ),
+            )
         ),
     ),
     WARM_WATER_ENZYMES(
@@ -598,40 +632,96 @@ enum class CommonTrait(
     SLOW_METABOLISM(
         "extremely slow metabolism",
         "Low-throughput digestion and cellular metabolism extract energy from poor food while sharply limiting growth and reproduction.",
-        listOf(
-            TraitEffect.MetabolicDemandMultiplier(0.55),
-            TraitEffect.ReproductionMultiplier(0.65),
-            TraitEffect.MaintenanceCost(0.09),
-            TraitEffect.PursuitSpeed(-0.5)
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.MetabolicDemandMultiplier(0.775),
+                        TraitEffect.ReproductionMultiplier(0.825),
+                        TraitEffect.MaintenanceCost(0.045),
+                        TraitEffect.PursuitSpeed(-0.25),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.MetabolicDemandMultiplier(0.55),
+                        TraitEffect.ReproductionMultiplier(0.65),
+                        TraitEffect.MaintenanceCost(0.09),
+                        TraitEffect.PursuitSpeed(-0.5)
+                    )
+                ),
+            )
         ),
         group = TraitGroup.METABOLIC_PACE,
     ),
     FAST_METABOLISM(
         "fast metabolism",
         "A high-throughput metabolism rapidly supplies active tissues with energy, but requires a large and reliable food intake.",
-        listOf(
-            TraitEffect.MetabolicDemandMultiplier(1.35),
-            TraitEffect.ReproductionMultiplier(1.12),
-            TraitEffect.PursuitSpeed(0.08),
-            TraitEffect.MaintenanceCost(0.09),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.MetabolicDemandMultiplier(1.175),
+                        TraitEffect.ReproductionMultiplier(1.06),
+                        TraitEffect.PursuitSpeed(0.04),
+                        TraitEffect.MaintenanceCost(0.045),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.MetabolicDemandMultiplier(1.35),
+                        TraitEffect.ReproductionMultiplier(1.12),
+                        TraitEffect.PursuitSpeed(0.08),
+                        TraitEffect.MaintenanceCost(0.09),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.METABOLIC_PACE,
     ),
     SLOW_GROWTH(
         "slow growth",
         "New tissue and mature body mass accumulate gradually, reducing continual construction costs but slowing population biomass recovery.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(0.72),
-            TraitEffect.MaintenanceCost(-0.48),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.ReproductionMultiplier(0.86),
+                        TraitEffect.MaintenanceCost(-0.24),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.ReproductionMultiplier(0.72),
+                        TraitEffect.MaintenanceCost(-0.48),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.GROWTH_PACE,
     ),
     RAPID_GROWTH(
         "rapid growth",
         "Exceptionally fast production of new shoots and tissues allows an organism to replace losses and spread quickly when conditions are favorable.",
-        listOf(
-            TraitEffect.ReproductionMultiplier(1.75),
-            TraitEffect.MaintenanceCost(1.05),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.ReproductionMultiplier(1.375),
+                        TraitEffect.MaintenanceCost(0.525),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.ReproductionMultiplier(1.75),
+                        TraitEffect.MaintenanceCost(1.05),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.GROWTH_PACE,
     ),
@@ -851,21 +941,37 @@ enum class CommonTrait(
     SWEAT_GLANDS(
         "sweat glands",
         "Skin glands that cool the body by evaporating secreted water.",
-        listOf(
-            TraitEffect.TemperatureTolerance(hotterC = 9.0),
-            TraitEffect.PursuitSpeed(0.1),
-            TraitEffect.WaterRequirement(0.08),
-            TraitEffect.MaintenanceCost(0.21),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.TemperatureTolerance(hotterC = 4.5), TraitEffect.PursuitSpeed(0.05), TraitEffect.WaterRequirement(0.04), TraitEffect.MaintenanceCost(0.105))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(hotterC = 9.0),
+                        TraitEffect.PursuitSpeed(0.1),
+                        TraitEffect.WaterRequirement(0.08),
+                        TraitEffect.MaintenanceCost(0.21),
+                    )
+                ),
+            )
         ),
     ),
     MASSIVE_EARS(
         "massive heat-radiating ears",
         "Large thin appendages with rich circulation that exchange heat rapidly with the air.",
-        listOf(
-            TraitEffect.TemperatureTolerance(colderC = -3.0, hotterC = 6.0),
-            TraitEffect.Defense(-0.04),
-            TraitEffect.Sensing(0.01),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.TemperatureTolerance(colderC = -1.5, hotterC = 3.0), TraitEffect.Defense(-0.02), TraitEffect.Sensing(0.005), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureTolerance(colderC = -3.0, hotterC = 6.0),
+                        TraitEffect.Defense(-0.04),
+                        TraitEffect.Sensing(0.01),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
     ),
     WATER_STORAGE_TISSUE(
@@ -1412,11 +1518,19 @@ enum class CommonTrait(
     WALKING_LIMBS(
         "walking limbs",
         "Jointed, load-bearing limbs support deliberate walking, running, or hopping across solid ground.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.35),
-            TraitEffect.MaintenanceCost(0.12),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.175), TraitEffect.MaintenanceCost(0.06))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.35),
+                        TraitEffect.MaintenanceCost(0.12),
+                    )
+                ),
+            )
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
@@ -1431,7 +1545,7 @@ enum class CommonTrait(
             TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
             TraitEffect.MaintenanceCost(-0.12),
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
@@ -1447,7 +1561,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.02),
             TraitEffect.MaintenanceCost(0.04),
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION
@@ -1459,26 +1573,42 @@ enum class CommonTrait(
     CRAWLING_APPENDAGES(
         "crawling appendages",
         "Several small jointed appendages distribute weight and provide precise movement over irregular solid surfaces.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.25),
-            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.25),
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
-            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.15),
-            TraitEffect.CaptureAbility(0.03),
-            TraitEffect.MaintenanceCost(0.12),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.125),
+                        TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.125),
+                        TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.075),
+                        TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.075),
+                        TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.075),
+                        TraitEffect.CaptureAbility(0.015),
+                        TraitEffect.MaintenanceCost(0.06)
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.25),
+                        TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.25),
+                        TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
+                        TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
+                        TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.15),
+                        TraitEffect.CaptureAbility(0.03),
+                        TraitEffect.MaintenanceCost(0.12),
+                    )
+                ),
+            )
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ) + HabitatGroup.WALKING.accessCapabilities +
-            HabitatGroup.CLIMBING.accessCapabilities +
-            setOf(
-                Habitat.COASTAL.accessCapability,
-                Habitat.SHALLOW_OCEAN.accessCapability,
-                Habitat.FRESHWATER.accessCapability,
-            ),
+        ) + HabitatGroup.WALKING.accessCapabilities + HabitatGroup.CLIMBING.accessCapabilities + setOf(
+            Habitat.COASTAL.accessCapability,
+            Habitat.SHALLOW_OCEAN.accessCapability,
+            Habitat.FRESHWATER.accessCapability,
+        ),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY),
             TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM)
@@ -1487,25 +1617,40 @@ enum class CommonTrait(
     HYDRAULIC_APPENDAGES(
         "hydraulic appendages",
         "Fluid pressure extends, stiffens, or repositions flexible appendages used for walking, climbing, attachment, feeding, or manipulation.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.1),
-            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.1),
-            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.075),
-            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.075),
-            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.075),
-            TraitEffect.MaintenanceCost(0.06),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.05),
+                        TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.05),
+                        TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.0375),
+                        TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.0375),
+                        TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.0375),
+                        TraitEffect.MaintenanceCost(0.03)
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.1),
+                        TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.1),
+                        TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.075),
+                        TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.075),
+                        TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.075),
+                        TraitEffect.MaintenanceCost(0.06),
+                    )
+                ),
+            )
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ) + HabitatGroup.WALKING.accessCapabilities +
-            HabitatGroup.CLIMBING.accessCapabilities +
-            setOf(
-                Habitat.COASTAL.accessCapability,
-                Habitat.SHALLOW_OCEAN.accessCapability,
-                Habitat.FRESHWATER.accessCapability,
-            ),
+        ) + HabitatGroup.WALKING.accessCapabilities + HabitatGroup.CLIMBING.accessCapabilities + setOf(
+            Habitat.COASTAL.accessCapability,
+            Habitat.SHALLOW_OCEAN.accessCapability,
+            Habitat.FRESHWATER.accessCapability,
+        ),
         requirements = listOf(
             TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
         )
@@ -1526,11 +1671,19 @@ enum class CommonTrait(
     DIGGING_LIMBS(
         "digging limbs",
         "Reinforced limbs rapidly excavate soil, tear apart nests, and expose concealed food.",
-        listOf(
-            TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.15),
-            TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.15),
-            TraitEffect.CaptureAbility(0.05),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.075), TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.075), TraitEffect.CaptureAbility(0.025), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.15),
+                        TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.15),
+                        TraitEffect.CaptureAbility(0.05),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
         capabilities = setOf(TraitCapability.BURROW_EXCAVATION, Habitat.UNDERGROUND.accessCapability),
         requirements = listOf(
@@ -1540,10 +1693,19 @@ enum class CommonTrait(
     AQUATIC_LIMBS(
         "aquatic limbs",
         "Broad propulsive flippers or fins that support controlled swimming in open water.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.5),
-            TraitEffect.MaintenanceCost(0.12),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.25), TraitEffect.MaintenanceCost(0.06))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.5),
+                        TraitEffect.MaintenanceCost(0.12),
+                    )
+                ),
+            )
         ),
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.AQUATIC_LOCOMOTION,
             TraitCapability.LOCOMOTION,
@@ -1555,11 +1717,20 @@ enum class CommonTrait(
     AMPHIBIOUS_LIMBS(
         "amphibious limbs",
         "Load-bearing limbs and swimming surfaces that permit regular movement between land and shallow water.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.3),
-            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
-            TraitEffect.MaintenanceCost(0.18),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.15), TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.1), TraitEffect.MaintenanceCost(0.09))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.3),
+                        TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
+                        TraitEffect.MaintenanceCost(0.18),
+                    )
+                ),
+            )
         ),
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.AQUATIC_LOCOMOTION,
@@ -1579,7 +1750,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(0.10),
             TraitEffect.MaintenanceCost(0.12),
         ),
-        group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+        group = TraitGroup.PRIMARY_LOCOMOTION,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
@@ -1703,28 +1874,19 @@ enum class CommonTrait(
     WINGS(
         "wings",
         "Paired aerodynamic surfaces generate lift and thrust through active wingbeats.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.4),
-            TraitEffect.PursuitSpeed(0.5),
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.MaintenanceCost(0.72),
-        ),
-        group = TraitGroup.FLIGHT_STRUCTURE,
-        capabilities = setOf(
-            TraitCapability.LOCOMOTION,
-        ) + HabitatGroup.FLYING.accessCapabilities,
-        requirements = listOf(
-            TraitRequirement.anyOf(LIMBED_BODY)
-        )
-    ),
-    WEAK_WINGS(
-        "weak wings",
-        "Paired aerodynamic surfaces weakly generate lift and thrust through active wingbeats.",
-        listOf(
-            TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.2),
-            TraitEffect.PursuitSpeed(0.15),
-            TraitEffect.CaptureAbility(0.08),
-            TraitEffect.MaintenanceCost(0.3),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.2), TraitEffect.PursuitSpeed(0.15), TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.3))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.4),
+                        TraitEffect.PursuitSpeed(0.5),
+                        TraitEffect.CaptureAbility(0.12),
+                        TraitEffect.MaintenanceCost(0.72),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(
@@ -1928,20 +2090,23 @@ enum class CommonTrait(
         "Light-sensitive visual organs range from rudimentary direction-and-motion detectors to high-resolution systems that distinguish distant targets.",
         emptyList(),
         scale = TraitScale(
-            (1..5).map { level ->
+            (1..3).map { level ->
                 TraitLevelDefinition(
+                    displayName = listOf(
+                        "rudimentary eyes",
+                        "developed eyes",
+                        "exceptional eyes",
+                    )[level - 1],
                     description = listOf(
                         "Simple visual organs detect light direction and nearby movement.",
-                        "Low-resolution visual organs distinguish broad shapes and movement at short range.",
                         "Developed visual organs recognize shapes, movement, brightness, and color across useful distances.",
-                        "Acute visual organs resolve small or partially concealed targets at long range.",
                         "Exceptionally high-resolution visual organs distinguish distant targets and fine detail against cluttered backgrounds.",
                     )[level - 1],
                     effects = listOf(
-                        TraitEffect.Sensing(0.02 * level),
-                        TraitEffect.CaptureAbility(0.01 * level),
+                        TraitEffect.Sensing(listOf(0.02, 0.06, 0.10)[level - 1]),
+                        TraitEffect.CaptureAbility(listOf(0.01, 0.03, 0.05)[level - 1]),
                         TraitEffect.MaintenanceCost(
-                            listOf(0.01, 0.028, 0.060, 0.118, 0.224)[level - 1],
+                            listOf(0.01, 0.060, 0.224)[level - 1],
                         ),
                     ),
                 )
@@ -1951,9 +2116,12 @@ enum class CommonTrait(
     ANTENNAE(
         "antennae",
         "Large, specialized, or highly specialized antennae provide a wide range of information about the environment and the animal's surroundings.",
-        listOf(
-            TraitEffect.Sensing(0.02),
-            TraitEffect.MaintenanceCost(0.05)
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.Sensing(0.01), TraitEffect.MaintenanceCost(0.025))),
+                TraitLevelDefinition(effects = listOf(TraitEffect.Sensing(0.02), TraitEffect.MaintenanceCost(0.05))),
+            )
         ),
     ),
     BEAK(
@@ -1984,20 +2152,31 @@ enum class CommonTrait(
     TOOTH_WHORLS(
         "tooth whorls",
         "Successive teeth form a curved or spiral cutting surface that grips and slices food as the mouth closes.",
-        listOf(
-            TraitEffect.CaptureAbility(0.16),
-            TraitEffect.LargerPreySizeClasses(1),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.21),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.LargerPreySizeClasses(1), TraitEffect.ReproductionMultiplier(0.98), TraitEffect.MaintenanceCost(0.105))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.16),
+                        TraitEffect.LargerPreySizeClasses(1),
+                        TraitEffect.ReproductionMultiplier(0.96),
+                        TraitEffect.MaintenanceCost(0.21),
+                    )
+                ),
+            )
         ),
         requirements = listOf(TraitRequirement.allOf(TEETH)),
     ),
     FANGS(
         "fangs",
         "Elongated pointed teeth pierce and retain prey or deliver a disabling bite.",
-        listOf(
-            TraitEffect.CaptureAbility(0.08),
-            TraitEffect.MaintenanceCost(0.06)
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.CaptureAbility(0.04), TraitEffect.MaintenanceCost(0.03))),
+                TraitLevelDefinition(effects = listOf(TraitEffect.CaptureAbility(0.08), TraitEffect.MaintenanceCost(0.06))),
+            )
         ),
     ),
     SERRATED_TEETH(
@@ -2022,10 +2201,18 @@ enum class CommonTrait(
     PROTRUSIBLE_JAW(
         "protrusible jaw",
         "The jaws project rapidly away from the skull, extending reach and drawing nearby prey into the mouth.",
-        listOf(
-            TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.18),
-            TraitEffect.CaptureAbility(0.12),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.09), TraitEffect.CaptureAbility(0.06), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.18),
+                        TraitEffect.CaptureAbility(0.12),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
         requirements = listOf(TraitRequirement.allOf(JAW)),
     ),
@@ -2088,11 +2275,19 @@ enum class CommonTrait(
     HORNS(
         "horns",
         "One or more large permanent keratinous or bony head weapons deter predators and resolve contests by impact or leverage.",
-        listOf(
-            TraitEffect.CaptureAbility(0.03),
-            TraitEffect.Defense(0.15),
-            TraitEffect.ReproductionMultiplier(0.98),
-            TraitEffect.MaintenanceCost(0.18),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.CaptureAbility(0.015), TraitEffect.Defense(0.075), TraitEffect.ReproductionMultiplier(0.99), TraitEffect.MaintenanceCost(0.09))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.03),
+                        TraitEffect.Defense(0.15),
+                        TraitEffect.ReproductionMultiplier(0.98),
+                        TraitEffect.MaintenanceCost(0.18),
+                    )
+                ),
+            )
         ),
     ),
     SUCTION_CUPS(
@@ -2411,27 +2606,23 @@ enum class CommonTrait(
         "Chemical receptors range from short-range contact sensors to systems that follow faint trails, detect concealed threats, and locate distant mates.",
         emptyList(),
         scale = TraitScale(
-            (1..5).map { level ->
+            (1..3).map { level ->
                 TraitLevelDefinition(
                     displayName = listOf(
                         "rudimentary chemical sensing",
-                        "limited chemical sensing",
                         "developed chemical sensing",
-                        "acute chemical sensing",
                         "exceptional chemical sensing",
                     )[level - 1],
                     description = listOf(
                         "Simple chemical receptors detect strong substances at contact or very short range.",
-                        "Chemical receptors recognize nearby food, threats, and potential mates.",
                         "Developed chemical sensing follows useful gradients and distinguishes many environmental compounds.",
-                        "Acute chemical sensing follows faint trails and detects concealed organisms at substantial distances.",
                         "Exceptional chemical sensing resolves extremely faint, old, or overlapping chemical traces across great distances.",
                     )[level - 1],
                     effects = listOf(
-                        TraitEffect.Sensing(0.016 * level),
-                        TraitEffect.ReproductionMultiplier(1.0 + 0.01 * level),
+                        TraitEffect.Sensing(listOf(0.016, 0.048, 0.080)[level - 1]),
+                        TraitEffect.ReproductionMultiplier(listOf(1.01, 1.03, 1.05)[level - 1]),
                         TraitEffect.MaintenanceCost(
-                            listOf(0.01, 0.026, 0.055, 0.108, 0.204)[level - 1],
+                            listOf(0.01, 0.055, 0.204)[level - 1],
                         ),
                     ),
                 )
@@ -2443,27 +2634,23 @@ enum class CommonTrait(
         "Vibration-sensitive organs range from simple sound detection to precise localization and discrimination of faint, distant signals.",
         emptyList(),
         scale = TraitScale(
-            (1..5).map { level ->
+            (1..3).map { level ->
                 TraitLevelDefinition(
                     displayName = listOf(
                         "rudimentary hearing",
-                        "limited hearing",
                         "developed hearing",
-                        "acute hearing",
                         "exceptional hearing",
                     )[level - 1],
                     description = listOf(
                         "Simple vibration-sensitive organs detect loud nearby disturbances.",
-                        "Limited auditory organs distinguish nearby sounds and their rough direction.",
                         "Developed hearing recognizes and locates varied sounds across useful distances.",
-                        "Acute hearing locates faint or concealed sound sources against background noise.",
                         "Exceptional hearing resolves extremely faint, distant, or rapidly changing sounds with high precision.",
                     )[level - 1],
                     effects = listOf(
-                        TraitEffect.Sensing(0.016 * level),
-                        TraitEffect.CaptureAbility(0.006 * level),
+                        TraitEffect.Sensing(listOf(0.016, 0.048, 0.080)[level - 1]),
+                        TraitEffect.CaptureAbility(listOf(0.006, 0.018, 0.030)[level - 1]),
                         TraitEffect.MaintenanceCost(
-                            listOf(0.008, 0.021, 0.045, 0.088, 0.166)[level - 1],
+                            listOf(0.008, 0.045, 0.166)[level - 1],
                         ),
                     ),
                 )
@@ -2479,7 +2666,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.27),
         ),
         requirements = listOf(
-            TraitRequirement.traitLevelAtLeast(HEARING, 5),
+            TraitRequirement.traitLevelAtLeast(HEARING, 3),
         ),
     ),
     ELECTRORECEPTION(
@@ -2526,23 +2713,77 @@ enum class CommonTrait(
         acousticSignal = AcousticSignal.RATTLE,
     ),
     ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.ROAR),
-    TRUMPETING_CALL("trumpeting call", "A loud trumpet communicates alarm, excitement, and identity between social group members.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRUMPET),
+    TRUMPETING_CALL(
+        "trumpeting call",
+        "A loud trumpet communicates alarm, excitement, and identity between social group members.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.TRUMPET
+    ),
     BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BELLOW),
-    BLEATING_CALL("bleating call", "A nasal bleat maintains contact between companions, parents, and young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BLEAT),
+    BLEATING_CALL(
+        "bleating call",
+        "A nasal bleat maintains contact between companions, parents, and young.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.BLEAT
+    ),
     GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GRUNT),
-    HONKING_CALL("honking call", "A loud honk maintains contact within a flock and during coordinated flight.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HONK),
+    HONKING_CALL(
+        "honking call",
+        "A loud honk maintains contact within a flock and during coordinated flight.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.HONK
+    ),
     BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUGLE),
-    CROAKING_CALL("croaking call", "Repeated croaks advertise identity and reproductive readiness near breeding sites.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROAK),
+    CROAKING_CALL(
+        "croaking call",
+        "Repeated croaks advertise identity and reproductive readiness near breeding sites.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.CROAK
+    ),
     BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BRAY),
-    HOOTING_CALL("hooting call", "Resonant hoots carry identity and location through forests or darkness.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HOOT),
+    HOOTING_CALL(
+        "hooting call",
+        "Resonant hoots carry identity and location through forests or darkness.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.HOOT
+    ),
     BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BARK),
-    GROWLING_CALL("growling call", "A low rough vocal warning signals agitation and readiness for close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GROWL),
+    GROWLING_CALL(
+        "growling call",
+        "A low rough vocal warning signals agitation and readiness for close-range defense.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.GROWL
+    ),
     SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.SCREECH),
-    QUACKING_CALL("quacking call", "Repeated nasal calls maintain contact among water-foraging companions and their young.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.QUACK),
+    QUACKING_CALL(
+        "quacking call",
+        "Repeated nasal calls maintain contact among water-foraging companions and their young.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.QUACK
+    ),
     CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
-    TRILLING_CALL("trilling call", "Rapidly modulated calls transmit identity and contact information as a sustained trill.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.TRILL),
+    TRILLING_CALL(
+        "trilling call",
+        "Rapidly modulated calls transmit identity and contact information as a sustained trill.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.TRILL
+    ),
     WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.WHISTLE),
-    CLICKING_CALL("clicking call", "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CLICK),
+    CLICKING_CALL(
+        "clicking call",
+        "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.CLICK
+    ),
     BUZZING_CALL("buzzing call", "A sustained buzzing signal communicates presence, contact, or reproductive readiness at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUZZ),
     CHIRPING_CALL(
         "chirping call",
@@ -2552,9 +2793,20 @@ enum class CommonTrait(
         acousticSignal = AcousticSignal.CHIRP,
     ),
     MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
-    PURRING_CALL("purring call", "A quiet rhythmic vibration communicates close-range social state and contentment.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.PURR),
+    PURRING_CALL(
+        "purring call",
+        "A quiet rhythmic vibration communicates close-range social state and contentment.",
+        emptyList(),
+        isCosmetic = true,
+        acousticSignal = AcousticSignal.PURR
+    ),
     HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
-    IMITATIVE_VOCALIZATION("imitative vocalization", "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.", emptyList(), isCosmetic = true),
+    IMITATIVE_VOCALIZATION(
+        "imitative vocalization",
+        "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.",
+        emptyList(),
+        isCosmetic = true
+    ),
     BOOMING_CALL(
         "booming call",
         "A resonant low-frequency display call carries between widely separated potential mates.",
@@ -2804,10 +3056,18 @@ enum class CommonTrait(
     BALEEN(
         "baleen",
         "Dense flexible plates that strain suspended organisms from water passing through the mouth.",
-        listOf(
-            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.88),
-            TraitEffect.CaptureAbility(0.06),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.44), TraitEffect.CaptureAbility(0.03), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.88),
+                        TraitEffect.CaptureAbility(0.06),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.FILTERING_APPARATUS,
         requirements = listOf(TraitRequirement.sizeClassAtLeast(SizeClass.SMALL))
@@ -2815,10 +3075,18 @@ enum class CommonTrait(
     SIEVING_TEETH(
         "sieving teeth",
         "Interlocking teeth or baleen form a sieve that retains minuscule swimming prey as water is expelled from the mouth.",
-        listOf(
-            TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.82),
-            TraitEffect.CaptureAbility(0.1),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.41), TraitEffect.CaptureAbility(0.05), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAccess(EcoStrategy.FILTER_FEEDING, 0.82),
+                        TraitEffect.CaptureAbility(0.1),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.FILTERING_APPARATUS,
         requirements = listOf(TraitRequirement.allOf(TEETH), TraitRequirement.sizeClassAtLeast(SizeClass.SMALL))
@@ -2865,11 +3133,19 @@ enum class CommonTrait(
     SWIFT_LIMBS(
         "swift limbs",
         "Long, powerful, or rapidly cycling limbs increase speed, helping hunters close distance and prey escape pursuit.",
-        listOf(
-            TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.2),
-            TraitEffect.PursuitSpeed(0.18),
-            TraitEffect.WaterRequirement(0.03),
-            TraitEffect.MaintenanceCost(0.24),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.1), TraitEffect.PursuitSpeed(0.09), TraitEffect.WaterRequirement(0.015), TraitEffect.MaintenanceCost(0.12))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAffinity(EcoStrategy.PURSUIT_PREDATION, 0.2),
+                        TraitEffect.PursuitSpeed(0.18),
+                        TraitEffect.WaterRequirement(0.03),
+                        TraitEffect.MaintenanceCost(0.24),
+                    )
+                ),
+            )
         ),
         requirements = listOf(
             TraitRequirement.allOf(
@@ -2882,11 +3158,19 @@ enum class CommonTrait(
     LONG_TUSKS(
         "long tusks",
         "Elongated exposed teeth serve as weapons, display structures, digging tools, or levers during contests and movement.",
-        listOf(
-            TraitEffect.CaptureAbility(0.04),
-            TraitEffect.Defense(0.14),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.15),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(effects = listOf(TraitEffect.CaptureAbility(0.02), TraitEffect.Defense(0.07), TraitEffect.ReproductionMultiplier(0.985), TraitEffect.MaintenanceCost(0.075))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.CaptureAbility(0.04),
+                        TraitEffect.Defense(0.14),
+                        TraitEffect.ReproductionMultiplier(0.97),
+                        TraitEffect.MaintenanceCost(0.15),
+                    )
+                ),
+            )
         ),
         requirements = listOf(
             TraitRequirement.allOf(TEETH),
@@ -2914,7 +3198,7 @@ enum class CommonTrait(
         requirements = listOf(
             TraitRequirement.allOf(CLAWS),
             TraitRequirement.anyOf(
-                TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
+                TraitGroup.PRIMARY_LOCOMOTION,
                 CLIMBING_LIMBS,
             ),
         ),
@@ -2927,7 +3211,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.15),
         ),
         requirements = listOf(
-            TraitRequirement.allOf(TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE),
+            TraitRequirement.allOf(TraitGroup.PRIMARY_LOCOMOTION),
         ),
     ),
     SPEAR_BILL(
@@ -3023,16 +3307,15 @@ enum class CommonTrait(
                         "Efficient detoxification and protected molecular targets substantially reduce venom's disabling effects.",
                         "Highly specialized physiology neutralizes nearly all of a venomous predator's aggregate capture advantage.",
                     )[index],
-                    effects = effects +
-                        ConditionalInteractionEffect(
-                            condition = InteractionCondition.Opponent(TraitCondition.HasTrait(VENOM_DELIVERY)),
-                            effects = listOf(
-                                InteractionEffect.CaptureBonusMultiplier(
-                                    subject = InteractionEffectSubject.OPPONENT,
-                                    multiplier = captureMultiplier,
-                                ),
+                    effects = effects + ConditionalInteractionEffect(
+                        condition = InteractionCondition.Opponent(TraitCondition.HasTrait(VENOM_DELIVERY)),
+                        effects = listOf(
+                            InteractionEffect.CaptureBonusMultiplier(
+                                subject = InteractionEffectSubject.OPPONENT,
+                                multiplier = captureMultiplier,
                             ),
                         ),
+                    ),
                 )
             },
         ),
@@ -3497,12 +3780,28 @@ enum class CommonTrait(
     LARGE_EVERGREEN_LEAVES(
         "large evergreen leaves",
         "Large, long-lived leaves maintain a broad light-harvesting canopy throughout the year rather than being replaced as a seasonal cohort.",
-        listOf(
-            TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.06),
-            TraitEffect.CanopyLightEfficiency(0.10),
-            TraitEffect.WaterRequirement(0.12),
-            TraitEffect.TemperatureTolerance(colderC = -4.0),
-            TraitEffect.MaintenanceCost(0.33),
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 0.53),
+                        TraitEffect.CanopyLightEfficiency(0.05),
+                        TraitEffect.WaterRequirement(0.06),
+                        TraitEffect.TemperatureTolerance(colderC = -2.0),
+                        TraitEffect.MaintenanceCost(0.165)
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 1.06),
+                        TraitEffect.CanopyLightEfficiency(0.10),
+                        TraitEffect.WaterRequirement(0.12),
+                        TraitEffect.TemperatureTolerance(colderC = -4.0),
+                        TraitEffect.MaintenanceCost(0.33),
+                    )
+                ),
+            )
         ),
         group = TraitGroup.PHOTOSYNTHETIC_STRUCTURE,
     ),

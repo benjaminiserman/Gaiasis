@@ -39,7 +39,7 @@ class TraitScale(levels: List<TraitLevelDefinition>) {
     }
 }
 
-/** An authored level selection. Ordinary traits implicitly select level one. */
+/** An authored level selection. Ordinary traits select their fully developed level. */
 data class LeveledTrait(
     val trait: SpeciesTrait,
     val level: Int,
@@ -64,7 +64,7 @@ val SpeciesTrait.baseTrait: SpeciesTrait
     get() = if (this is LeveledTrait) trait else this
 
 val SpeciesTrait.authoredLevel: Int
-    get() = if (this is LeveledTrait) level else 1
+    get() = if (this is LeveledTrait) level else baseTrait.maxLevel
 
 fun defaultLeveledDisplayNameAdjective(trait: SpeciesTrait, level: Int): String =
     listOf(

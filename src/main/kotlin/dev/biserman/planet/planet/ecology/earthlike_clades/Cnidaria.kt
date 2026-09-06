@@ -11,7 +11,7 @@ val cnidarian = EarthSpeciesCatalog.animal(
     SizeClass.TINY,
     CommonTrait.ECTOTHERMY,
     CommonTrait.PRIMITIVE_BODY,
-    CommonTrait.SLOW_METABOLISM,
+    CommonTrait.SLOW_METABOLISM.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.CLONAL_PROPAGATION,
     CommonTrait.PASSIVE_RESPIRATION,
@@ -62,6 +62,5 @@ val seaFan = anthozoan.descend(
     "sea fan",
     SizeClass.SMALL,
     CommonTrait.SUSPENSION_FEEDING_TENTACLES,
-    CommonTrait.SLOW_GROWTH,
     ColorTrait.RED_COLORATION
 )

@@ -4,6 +4,7 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
+import dev.biserman.planet.planet.ecology.atLevel
 
 val landPlant = EarthSpeciesCatalog.sessile(
     "land plant",
@@ -59,7 +60,7 @@ val conifer = vascularPlant.descend(
     CommonTrait.FROST_HARDENED_TISSUES,
     CommonTrait.SEASONAL_LEAF_DORMANCY,
     CommonTrait.DEEP_ROOT_SYSTEM,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.WOODY_SUPPORT_TISSUE,
 )
 
@@ -87,18 +88,19 @@ val vine = angiosperm.descend(
 val broadLeafTree = angiosperm.descend(
     "broad-leaf tree",
     SizeClass.LARGE,
-    CommonTrait.LARGE_EVERGREEN_LEAVES,
+    CommonTrait.LARGE_EVERGREEN_LEAVES.atLevel(2),
     CommonTrait.CANOPY_GROWTH,
     CommonTrait.DEEP_ROOT_SYSTEM,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.WOODY_SUPPORT_TISSUE,
 )
 val fruitTree = angiosperm.descend(
     "fruit tree",
     SizeClass.LARGE,
     CommonTrait.CANOPY_GROWTH,
+    CommonTrait.LARGE_EVERGREEN_LEAVES.atLevel(1),
     CommonTrait.DEEP_ROOT_SYSTEM,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.WOODY_SUPPORT_TISSUE,
     CommonTrait.FRUIT_BEARING,
 )

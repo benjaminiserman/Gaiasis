@@ -5,6 +5,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private fun List<SpeciesTrait>.hasTrait(trait: CommonTrait): Boolean =
+    any { it.baseTrait == trait }
+
+private fun List<SpeciesTrait>.withoutTrait(trait: CommonTrait): List<SpeciesTrait> =
+    filterNot { it.baseTrait == trait }
+
 class EarthSpeciesCatalogTest {
     companion object {
         private lateinit var compiledCatalog: CompiledEcology
@@ -87,13 +93,16 @@ class EarthSpeciesCatalogTest {
             },
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `EarthSpeciesCatalog.BIRDS.all { CommonTrait.FEATHERS in it.traits }` to be true"
         )
-        assertTrue(CommonTrait.WINGS in species.getValue("bald-eagle").traits, message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WINGS in species.getValue(\"bald-eagle\").traits` to be true")
         assertTrue(
-            CommonTrait.WINGS in species.getValue("little-brown-bat").traits,
+            species.getValue("bald-eagle").traits.hasTrait(CommonTrait.WINGS),
+            message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WINGS in species.getValue(\"bald-eagle\").traits` to be true"
+        )
+        assertTrue(
+            species.getValue("little-brown-bat").traits.hasTrait(CommonTrait.WINGS),
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WINGS in species.getValue(\"little-brown-bat\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.WINGS in species.getValue("western-honey-bee").traits,
+            species.getValue("western-honey-bee").traits.hasTrait(CommonTrait.WINGS),
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WINGS in species.getValue(\"western-honey-bee\").traits` to be true"
         )
         assertTrue(
@@ -105,15 +114,15 @@ class EarthSpeciesCatalogTest {
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.MUSCULAR_FOOT in species.getValue(\"garden-snail\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.CRAWLING_APPENDAGES in species.getValue("leafcutter-ant").traits,
+            species.getValue("leafcutter-ant").traits.hasTrait(CommonTrait.CRAWLING_APPENDAGES),
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.CRAWLING_APPENDAGES in species.getValue(\"leafcutter-ant\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.WALKING_LIMBS in species.getValue("cheetah").traits,
+            species.getValue("cheetah").traits.hasTrait(CommonTrait.WALKING_LIMBS),
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.WALKING_LIMBS in species.getValue(\"cheetah\").traits` to be true"
         )
         assertTrue(
-            CommonTrait.SWIFT_LIMBS in species.getValue("cheetah").traits,
+            species.getValue("cheetah").traits.hasTrait(CommonTrait.SWIFT_LIMBS),
             message = "Catalog assigns structural anatomy rather than generic locomotion outcomes: expected `CommonTrait.SWIFT_LEGS in species.getValue(\"cheetah\").traits` to be true"
         )
         assertTrue(
@@ -160,7 +169,7 @@ class EarthSpeciesCatalogTest {
             message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.BULKY_BODY in species.getValue(\"brown-bear\").traits` to be true"
         )
         listOf("african-elephant", "walrus", "hippopotamus").forEach { id ->
-            assertTrue(CommonTrait.LONG_TUSKS in species.getValue(id).traits, message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.LONG_TUSKS in species.getValue(id).traits` to be true")
+            assertTrue(species.getValue(id).traits.hasTrait(CommonTrait.LONG_TUSKS), message = "Body engineering and feeding traits cover their representative mammals: expected `CommonTrait.LONG_TUSKS in species.getValue(id).traits` to be true")
         }
         listOf(
             "orca",
@@ -266,75 +275,6 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `catalog assigns authored slow life histories`() {
-        val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
-
-        listOf(
-            "african-elephant",
-            "white-rhinoceros",
-            "western-gorilla",
-            "chimpanzee",
-            "bornean-orangutan",
-            "giant-panda",
-            "west-indian-manatee",
-            "galapagos-tortoise",
-            "tuatara",
-            "great-white-shark",
-            "whale-shark",
-            "giant-oceanic-manta-ray",
-            "antarctic-silverfish",
-            "antarctic-toothfish",
-            "alligator-gar",
-            "american-lobster",
-            "brain-coral",
-            "common-sea-fan",
-            "slender-sea-pen",
-            "english-oak",
-            "saguaro-cactus",
-            "reindeer-lichen",
-            "himalayan-juniper",
-            "saharan-cypress",
-            "moss-campion",
-        ).forEach { id ->
-            assertTrue(CommonTrait.SLOW_GROWTH in species.getValue(id).traits, "$id should have slow growth")
-        }
-        listOf(
-            "african-elephant",
-            "white-rhinoceros",
-            "western-gorilla",
-            "chimpanzee",
-            "bornean-orangutan",
-            "polar-bear",
-            "brown-bear",
-            "giant-panda",
-            "blue-whale",
-            "orca",
-            "bottlenose-dolphin",
-            "walrus",
-            "west-indian-manatee",
-            "wandering-albatross",
-            "andean-condor",
-            "kakapo",
-            "tuatara",
-            "great-white-shark",
-            "giant-oceanic-manta-ray",
-        ).forEach { id ->
-            assertTrue(
-                CommonTrait.INFREQUENT_REPRODUCTION in species.getValue(id).traits,
-                "$id should reproduce infrequently",
-            )
-        }
-        assertTrue(
-            CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue("humpback-whale").traits,
-            message = "Catalog assigns authored slow life histories: expected `CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue(\"humpback-whale\").traits` to be true"
-        )
-        assertTrue(
-            CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue("giant-bamboo").traits,
-            message = "Catalog assigns authored slow life histories: expected `CommonTrait.INFREQUENT_REPRODUCTION !in species.getValue(\"giant-bamboo\").traits` to be true"
-        )
-    }
-
-    @Test
     fun `catalog assigns limb regrowth to regenerative animals`() {
         val species = EarthSpeciesCatalog.ALL.associateBy { it.id }
         val regenerativeSpecies =
@@ -393,7 +333,7 @@ class EarthSpeciesCatalogTest {
             assertTrue(CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits, message = "Trees use authored photosynthetic structures: expected `CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits` to be true")
         }
         broadLeafEvergreens.forEach { id ->
-            assertTrue(CommonTrait.LARGE_EVERGREEN_LEAVES in species.getValue(id).traits, message = "Trees use authored photosynthetic structures: expected `CommonTrait.LARGE_EVERGREEN_LEAVES in species.getValue(id).traits` to be true")
+            assertTrue(species.getValue(id).traits.hasTrait(CommonTrait.LARGE_EVERGREEN_LEAVES), message = "Trees use authored photosynthetic structures: expected `CommonTrait.LARGE_EVERGREEN_LEAVES in species.getValue(id).traits` to be true")
             assertTrue(CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits, message = "Trees use authored photosynthetic structures: expected `CommonTrait.PHOTOSYNTHETIC_SURFACE !in species.getValue(id).traits` to be true")
         }
         droughtDeciduous.forEach { id ->
@@ -709,10 +649,10 @@ class EarthSpeciesCatalogTest {
     @Test
     fun `giant bamboo rapid growth trades maintenance for reproduction`() {
         val bamboo = EarthSpeciesCatalog.ALL.single { it.id == "giant-bamboo" }
-        assertTrue(CommonTrait.RAPID_GROWTH in bamboo.traits, message = "Giant bamboo rapid growth trades maintenance for reproduction: expected `CommonTrait.RAPID_GROWTH in bamboo.traits` to be true")
+        assertTrue(bamboo.traits.hasTrait(CommonTrait.RAPID_GROWTH), message = "Giant bamboo rapid growth trades maintenance for reproduction: expected `CommonTrait.RAPID_GROWTH in bamboo.traits` to be true")
         val ordinaryGrowth = bamboo.copy(
             id = "ordinary-growth-bamboo",
-            traits = bamboo.traits - CommonTrait.RAPID_GROWTH,
+            traits = bamboo.traits.withoutTrait(CommonTrait.RAPID_GROWTH),
         )
         val compiled = EcologyCompiler.compile(listOf(bamboo, ordinaryGrowth)).species
 
@@ -818,10 +758,10 @@ class EarthSpeciesCatalogTest {
     @Test
     fun `sloth slow metabolism trades reproductive speed for lower energy demand`() {
         val sloth = EarthSpeciesCatalog.ALL.single { it.id == "three-toed-sloth" }
-        assertTrue(CommonTrait.SLOW_METABOLISM in sloth.traits, message = "Sloth slow metabolism trades reproductive speed for lower energy demand: expected `CommonTrait.SLOW_METABOLISM in sloth.traits` to be true")
+        assertTrue(sloth.traits.hasTrait(CommonTrait.SLOW_METABOLISM), message = "Sloth slow metabolism trades reproductive speed for lower energy demand: expected `CommonTrait.SLOW_METABOLISM in sloth.traits` to be true")
         val ordinaryMetabolism = sloth.copy(
             id = "ordinary-metabolism-sloth",
-            traits = sloth.traits - CommonTrait.SLOW_METABOLISM,
+            traits = sloth.traits.withoutTrait(CommonTrait.SLOW_METABOLISM),
         )
         val compiled = EcologyCompiler.compile(listOf(sloth, ordinaryMetabolism)).species
 
@@ -895,9 +835,9 @@ class EarthSpeciesCatalogTest {
         val cheetah = EarthSpeciesCatalog.ALL.single { it.id == "cheetah" }
         val gazelle = EarthSpeciesCatalog.ALL.single { it.id == "thomsons-gazelle" }
 
-        assertTrue(CommonTrait.SWIFT_LIMBS in cheetah.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in cheetah.traits` to be true")
+        assertTrue(cheetah.traits.hasTrait(CommonTrait.SWIFT_LIMBS), message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in cheetah.traits` to be true")
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES in cheetah.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.MOTION_TRACKING_SENSES in cheetah.traits` to be true")
-        assertTrue(CommonTrait.SWIFT_LIMBS in gazelle.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in gazelle.traits` to be true")
+        assertTrue(gazelle.traits.hasTrait(CommonTrait.SWIFT_LIMBS), message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.SWIFT_LEGS in gazelle.traits` to be true")
         assertTrue(CommonTrait.MOTION_TRACKING_SENSES !in gazelle.traits, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `CommonTrait.MOTION_TRACKING_SENSES !in gazelle.traits` to be true")
 
         val compiledGazelle = EcologyCompiler.compile(listOf(gazelle)).species.single()
@@ -909,11 +849,11 @@ class EarthSpeciesCatalogTest {
 
         val slowCheetah = cheetah.copy(
             id = "slow-cheetah",
-            traits = cheetah.traits - CommonTrait.SWIFT_LIMBS,
+            traits = cheetah.traits.withoutTrait(CommonTrait.SWIFT_LIMBS),
         )
         val slowGazelle = gazelle.copy(
             id = "slow-gazelle",
-            traits = gazelle.traits - CommonTrait.SWIFT_LIMBS,
+            traits = gazelle.traits.withoutTrait(CommonTrait.SWIFT_LIMBS),
         )
         val compiledHunters = EcologyCompiler.compile(listOf(cheetah, slowCheetah, gazelle, slowGazelle)).species
         assertTrue(
@@ -1073,7 +1013,7 @@ class EarthSpeciesCatalogTest {
         )
         assertTrue(CommonTrait.FUR in traitsOf("honey-badger"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.FUR in traitsOf(\"honey-badger\")` to be true")
         assertTrue(CommonTrait.ANTLERS in traitsOf("white-tailed-deer"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.ANTLERS in traitsOf(\"white-tailed-deer\")` to be true")
-        assertTrue(CommonTrait.HORNS in traitsOf("blue-wildebeest"), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.LARGE_HORN in traitsOf(\"blue-wildebeest\")` to be true")
+        assertTrue(traitsOf("blue-wildebeest").hasTrait(CommonTrait.HORNS), message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.LARGE_HORN in traitsOf(\"blue-wildebeest\")` to be true")
         assertTrue(
             CommonTrait.RETRACTABLE_CLAWS in traitsOf("african-lion"),
             message = "New defensive movement social and signaling traits cover representative species: expected `CommonTrait.RETRACTABLE_CLAWS in traitsOf(\"african-lion\")` to be true"

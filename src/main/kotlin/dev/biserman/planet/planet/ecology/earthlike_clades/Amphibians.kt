@@ -11,7 +11,7 @@ val amphibian = tetrapoda.descend(
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.ECTOTHERMY,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.FRESHWATER_OSMOREGULATION,
     CommonTrait.NOCTURNAL,
     CommonTrait.SLIMY_SKIN,
@@ -38,6 +38,7 @@ val treeFrog = anura.descend(
     "tree frog",
     SizeClass.TINY,
     CommonTrait.CLIMBING_LIMBS,
+    CommonTrait.WALKING_LIMBS.atLevel(1),
     ColorTrait.GREEN_COLORATION,
     minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS)
 )
@@ -65,7 +66,7 @@ val caudata = amphibian.descend(
 val moleSalamander = caudata.descend(
     "mole salamander",
     SizeClass.TINY,
-    CommonTrait.DIGGING_LIMBS,
+    CommonTrait.DIGGING_LIMBS.atLevel(1),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.GILLS
@@ -86,7 +87,7 @@ val giantSalamander = caudata.descend(
     CommonTrait.EYES.atLevel(1),
     CommonTrait.JAW,
     CommonTrait.SUCTION_FEEDING,
-    CommonTrait.SLOW_METABOLISM,
+    CommonTrait.SLOW_METABOLISM.atLevel(2),
     minus = listOf(CommonTrait.SKITTISH)
 )
 
@@ -101,5 +102,5 @@ val caecilian = amphibian.descend(
     CommonTrait.VIVIPARITY,
     CommonTrait.EYES.atLevel(1),
     ColorTrait.BLACK_COLORATION,
-    minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS)
+    minus = listOf(CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2))
 )

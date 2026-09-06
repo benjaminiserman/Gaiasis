@@ -18,12 +18,12 @@ val crocodile = reptile.descend(
     "crocodile",
     SizeClass.LARGE,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.STRONG_JAWS,
     CommonTrait.OVOSPORE_NEST,
     CommonTrait.ARMORED_HIDE.atLevel(2),
-    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.BELLOWING_CALL,
     CommonTrait.AGGRESSIVE,
@@ -33,16 +33,16 @@ val tuatara = reptile.descend(
     "tuatara",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.SLOW_GROWTH,
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.SEASONAL_TORPOR,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.AUTOTOMY,
     CommonTrait.LIMB_REGROWTH,
-    CommonTrait.SLOW_METABOLISM,
+    CommonTrait.SLOW_METABOLISM.atLevel(1),
     CommonTrait.HEARING.atLevel(1),
     CommonTrait.BURROW_BUILDER,
     CommonTrait.CALM,
-    CommonTrait.DIGGING_LIMBS
+    CommonTrait.DIGGING_LIMBS.atLevel(2)
 )
 
 // lizards
@@ -69,7 +69,7 @@ val monitorLizard = lizard.descend(
     SizeClass.MEDIUM,
     CommonTrait.ARMORED_HIDE.atLevel(2),
     CommonTrait.VENOM_DELIVERY.atLevel(2),
-    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.INTELLIGENCE.atLevel(1),
     CommonTrait.CALM,
     ColorTrait.BROWN_COLORATION
@@ -89,8 +89,8 @@ val chameleon = lizard.descend(
     SizeClass.SMALL,
     CommonTrait.PROJECTILE_TONGUE,
     CommonTrait.TERRESTRIAL_CAMOUFLAGE,
-    CommonTrait.SLOW_METABOLISM,
-    CommonTrait.EYES.atLevel(5),
+    CommonTrait.SLOW_METABOLISM.atLevel(2),
+    CommonTrait.EYES.atLevel(3),
     ColorTrait.ADAPTIVE_COLORATION,
     minus = listOf(CommonTrait.AMBUSH_MUSCULATURE, CommonTrait.SLENDER_PHYSIQUE)
 )
@@ -108,7 +108,7 @@ val serpent = reptile.descend(
     "serpent",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.SCENT.atLevel(5),
+    CommonTrait.SCENT.atLevel(3),
     CommonTrait.BODY_UNDULATION,
     CommonTrait.SLENDER_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
@@ -117,7 +117,8 @@ val serpent = reptile.descend(
 )
 val snake = serpent.descend(
     "snake",
-    SizeClass.SMALL
+    SizeClass.SMALL,
+    CommonTrait.FANGS.atLevel(1),
 )
 val python = serpent.descend(
     "python",
@@ -139,13 +140,13 @@ val viper = serpent.descend(
     "viper",
     SizeClass.SMALL,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
-    CommonTrait.FANGS,
+    CommonTrait.FANGS.atLevel(2),
 )
 val cobra = serpent.descend(
     "cobra",
     SizeClass.SMALL,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
-    CommonTrait.FANGS,
+    CommonTrait.FANGS.atLevel(2),
     CommonTrait.HISSING_WARNING,
     CommonTrait.VESPERTINE,
     CommonTrait.AGGRESSIVE
@@ -155,29 +156,30 @@ val testudines = reptile.descend(
     "testudines",
     SizeClass.SMALL,
     CommonTrait.PROTECTIVE_SHELL,
+    CommonTrait.SLOW_GROWTH.atLevel(1),
     CommonTrait.HEARING.atLevel(1)
 )
 val turtle = testudines.descend(
     "turtle",
     SizeClass.SMALL,
-    CommonTrait.AMPHIBIOUS_LIMBS,
+    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.FRESHWATER_OSMOREGULATION,
-    CommonTrait.SLOW_GROWTH
 )
 val seaTurtle = testudines.descend(
     "sea turtle",
     SizeClass.MEDIUM,
-    CommonTrait.AQUATIC_LIMBS,
+    CommonTrait.AQUATIC_LIMBS.atLevel(2),
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.LONG_MIGRATION,
-    minus = listOf(CommonTrait.WALKING_LIMBS)
+    minus = listOf(CommonTrait.WALKING_LIMBS.atLevel(2))
 )
 val tortoise = testudines.descend(
     "tortoise",
     SizeClass.MEDIUM,
     CommonTrait.GRAZING_MOUTHPARTS,
-    CommonTrait.SLOW_METABOLISM,
+    CommonTrait.SLOW_METABOLISM.atLevel(2),
+    CommonTrait.SLOW_GROWTH.atLevel(2),
     CommonTrait.INTELLIGENCE.atLevel(1),
     CommonTrait.CALM
 )

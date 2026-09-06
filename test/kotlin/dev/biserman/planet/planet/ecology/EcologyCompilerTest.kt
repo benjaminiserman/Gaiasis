@@ -451,10 +451,10 @@ class EcologyCompilerTest {
             traits = predator("ordinary-senses").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } + CommonTrait.MOTION_TRACKING_SENSES,
         )
         val scent = predator("scent-specialist").copy(
-            traits = predator("scent-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } + listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.SCENT.atLevel(5)),
+            traits = predator("scent-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } + listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.SCENT.atLevel(3)),
         )
         val sight = predator("sight-specialist").copy(
-            traits = predator("sight-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } + listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.EYES.atLevel(5)),
+            traits = predator("sight-specialist").traits.filterNot { it == CommonTrait.AMBUSH_MUSCULATURE } + listOf(CommonTrait.MOTION_TRACKING_SENSES, CommonTrait.EYES.atLevel(3)),
         )
         val prey = predator("sensory-prey", SizeClass.SMALL)
         val ecology = EcologyCompiler.compile(listOf(ordinary, scent, sight, prey))
@@ -486,8 +486,8 @@ class EcologyCompilerTest {
     @Test
     fun `different levels of the same scaled sense are mutually exclusive`() {
         listOf(
-            CommonTrait.HEARING.atLevel(5) to CommonTrait.HEARING.atLevel(1),
-            CommonTrait.SCENT.atLevel(5) to CommonTrait.SCENT.atLevel(1),
+            CommonTrait.HEARING.atLevel(3) to CommonTrait.HEARING.atLevel(1),
+            CommonTrait.SCENT.atLevel(3) to CommonTrait.SCENT.atLevel(1),
         ).forEachIndexed { index, (high, low) ->
             assertFailsWith<IllegalArgumentException> {
                 val base = predator("conflicting-scaled-sense-$index")
@@ -498,34 +498,34 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `scaled eyes increase benefits linearly and costs increasingly`() {
+    fun `scaled eyes preserve increasing benefits and costs`() {
         fun withEyes(id: String, level: Int) = predator(id).copy(
             traits = predator(id).traits + CommonTrait.EYES.atLevel(level),
         )
 
-        val definitions = (1..5).map { withEyes("eyes-$it", it) }
+        val definitions = (1..3).map { withEyes("eyes-$it", it) }
         val compiled = EcologyCompiler.compile(definitions).species
 
         compiled.forEachIndexed { index, species ->
             assertEquals(index + 1, species.traits.levelOf(CommonTrait.EYES))
         }
         assertEquals("rudimentary eyes", CommonTrait.EYES.displayNameAt(1))
-        assertEquals("exceptional eyes", CommonTrait.EYES.displayNameAt(5))
+        assertEquals("exceptional eyes", CommonTrait.EYES.displayNameAt(3))
         assertEquals(listOf(1), CommonTrait.EYES.adjacentLevelsFrom(0))
-        assertEquals(listOf(2, 4), CommonTrait.EYES.adjacentLevelsFrom(3))
-        assertEquals(listOf(4), CommonTrait.EYES.adjacentLevelsFrom(5))
-        assertEquals(0.02, compiled[1].interactions.sensing - compiled[0].interactions.sensing, 0.000_001)
-        assertEquals(0.02, compiled[4].interactions.sensing - compiled[3].interactions.sensing, 0.000_001)
-        assertTrue(compiled[4].interactions.captureAbility > compiled[0].interactions.captureAbility)
-        assertTrue(compiled[4].physiology.maintenanceDemand > compiled[0].physiology.maintenanceDemand)
+        assertEquals(listOf(1, 3), CommonTrait.EYES.adjacentLevelsFrom(2))
+        assertEquals(listOf(2), CommonTrait.EYES.adjacentLevelsFrom(3))
+        assertEquals(0.04, compiled[1].interactions.sensing - compiled[0].interactions.sensing, 0.000_001)
+        assertEquals(0.04, compiled[2].interactions.sensing - compiled[1].interactions.sensing, 0.000_001)
+        assertTrue(compiled[2].interactions.captureAbility > compiled[0].interactions.captureAbility)
+        assertTrue(compiled[2].physiology.maintenanceDemand > compiled[0].physiology.maintenanceDemand)
         val lowCostStep = compiled[1].physiology.maintenanceDemand - compiled[0].physiology.maintenanceDemand
-        val highCostStep = compiled[4].physiology.maintenanceDemand - compiled[3].physiology.maintenanceDemand
+        val highCostStep = compiled[2].physiology.maintenanceDemand - compiled[1].physiology.maintenanceDemand
         assertTrue(highCostStep > lowCostStep)
     }
 
     @Test
     fun `scaled trait families expose the intended number of levels and rising costs`() {
-        val fiveLevelSenses = listOf(CommonTrait.EYES, CommonTrait.HEARING, CommonTrait.SCENT)
+        val threeLevelSenses = listOf(CommonTrait.EYES, CommonTrait.HEARING, CommonTrait.SCENT)
         val threeLevelTraits = listOf(
             CommonTrait.INTELLIGENCE,
             CommonTrait.VENOM_DELIVERY,
@@ -535,12 +535,12 @@ class EcologyCompilerTest {
             CommonTrait.INSULATING_PLUMAGE,
         )
 
-        assertTrue(fiveLevelSenses.all { it.maxLevel == 5 })
+        assertTrue(threeLevelSenses.all { it.maxLevel == 3 })
         assertTrue(threeLevelTraits.all { it.maxLevel == 3 })
         assertEquals(1, CommonTrait.BLUBBER.maxLevel)
         assertEquals(1, CommonTrait.WOODY_SUPPORT_TISSUE.maxLevel)
 
-        (fiveLevelSenses + threeLevelTraits).forEach { trait ->
+        (threeLevelSenses + threeLevelTraits).forEach { trait ->
             val costs = (1..trait.maxLevel).map { level ->
                 trait.effectsAt(level).filterIsInstance<TraitEffect.MaintenanceCost>().sumOf(TraitEffect.MaintenanceCost::fraction)
             }
@@ -659,7 +659,7 @@ class EcologyCompilerTest {
         val alertPrey = ordinaryPrey.copy(
             id = "alert-prey",
             displayName = "alert-prey",
-            traits = ordinaryPrey.traits + CommonTrait.HEARING.atLevel(5),
+            traits = ordinaryPrey.traits + CommonTrait.HEARING.atLevel(3),
         )
         val ecology = EcologyCompiler.compile(listOf(ambusher, ordinaryPrey, alertPrey))
 
@@ -1175,8 +1175,8 @@ class EcologyCompilerTest {
 
         assertTrue(unmet(CommonTrait.ECHOLOCATION).isNotEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.ECHOLOCATION).isNotEmpty()` to be true")
         assertTrue(
-            unmet(CommonTrait.HEARING.atLevel(5), CommonTrait.ECHOLOCATION).isEmpty(),
-            message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.HEARING.atLevel(5), CommonTrait.ECHOLOCATION).isEmpty()` to be true"
+            unmet(CommonTrait.HEARING.atLevel(3), CommonTrait.ECHOLOCATION).isEmpty(),
+            message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.HEARING.atLevel(3), CommonTrait.ECHOLOCATION).isEmpty()` to be true"
         )
         assertTrue(unmet(CommonTrait.INTELLIGENCE.atLevel(2)).isEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.INTELLIGENCE.atLevel(2)).isEmpty()` to be true")
         assertTrue(unmet(CommonTrait.INTELLIGENCE.atLevel(3)).isNotEmpty(), message = "Hearing cognition and tool dependencies are explicit: expected `unmet(CommonTrait.INTELLIGENCE.atLevel(3)).isNotEmpty()` to be true")
