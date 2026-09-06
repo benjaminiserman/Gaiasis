@@ -833,6 +833,12 @@ layout_mode = 2
 tooltip_text = "Remove all populations and ecology resources from every tile"
 text = "Clear Ecosystems"
 
+[node name="TreeOfLifeButton" type="Button" parent="GUI/SettingsButtons"]
+visible = false
+layout_mode = 2
+tooltip_text = "Explore extant species, their ancestors, traits, and global populations"
+text = "Tree of Life"
+
 [node name="SettingsOptionsPanel" type="PanelContainer" parent="GUI"]
 visible = false
 layout_mode = 1
@@ -940,3 +946,128 @@ offset_bottom = -537.0
 grow_horizontal = 0
 grow_vertical = 0
 text = "Copy"
+
+[node name="TreeOfLifeView" type="ColorRect" parent="GUI"]
+visible = false
+z_index = 110
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.018, 0.024, 0.94)
+
+[node name="Panel" type="PanelContainer" parent="GUI/TreeOfLifeView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 48.0
+offset_right = -48.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="GUI/TreeOfLifeView/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="GUI/TreeOfLifeView/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Tree of Life"
+
+[node name="Spacer" type="Control" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseTreeOfLifeButton" type="Button" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Header"]
+custom_minimum_size = Vector2(42, 36)
+layout_mode = 2
+tooltip_text = "Close the tree of life"
+text = "Close"
+
+[node name="Help" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content"]
+layout_mode = 2
+text = "Use the Randomize? checkbox to include or omit a lineage and all its descendants. Click its Lineage or Status cells to inspect it."
+autowrap_mode = 2
+
+[node name="Split" type="HSplitContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content"]
+custom_minimum_size = Vector2(800, 500)
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 520
+
+[node name="TreeColumn" type="VBoxContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TreeOfLifeSearch" type="LineEdit" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/TreeColumn"]
+layout_mode = 2
+placeholder_text = "Search species or traits..."
+clear_button_enabled = true
+
+[node name="TreeOfLifeSearchStatus" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/TreeColumn"]
+layout_mode = 2
+text = "Search names first, then trait names and descriptions"
+
+[node name="TreeOfLifeTree" type="Tree" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/TreeColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+allow_reselect = true
+hide_root = true
+
+[node name="DetailsPanel" type="PanelContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DetailsMargin" type="MarginContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="DetailsContent" type="VBoxContainer" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TreeOfLifeDetailsTitle" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Select a node"
+autowrap_mode = 2
+
+[node name="TreeOfLifeDetails" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Select a species or ancestor to inspect its population."
+autowrap_mode = 2
+
+[node name="TreeOfLifeTraitsTitle" type="Label" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Traits"
+
+[node name="TreeOfLifeTraits" type="Tree" parent="GUI/TreeOfLifeView/Panel/Margin/Content/Split/DetailsPanel/DetailsMargin/DetailsContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+allow_reselect = true
+hide_root = true

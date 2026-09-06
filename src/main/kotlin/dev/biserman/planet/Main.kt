@@ -137,6 +137,7 @@ class Main : Node() {
         Gui.instance.statsGraph.update(planet)
         Gui.instance.updateHistoryDisplay()
         Gui.instance.updateInfobox()
+        Gui.instance.treeOfLifeView.refresh()
     }
 
     val hasPlanet get() = ::planet.isInitialized
@@ -149,6 +150,7 @@ class Main : Node() {
         Gui.instance.statsGraph.planet = newPlanet
         Gui.instance.brushTool.refreshOptions()
         Gui.instance.updateHistoryDisplay()
+        Gui.instance.treeOfLifeView.refresh()
     }
 
     companion object {

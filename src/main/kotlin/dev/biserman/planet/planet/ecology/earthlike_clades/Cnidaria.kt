@@ -2,28 +2,21 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val cnidarian = EarthSpeciesCatalog.animal(
+val cnidarian = animal.descend(
     "cnidarian",
     SizeClass.TINY,
-    CommonTrait.ECTOTHERMY,
-    CommonTrait.PRIMITIVE_BODY,
     CommonTrait.SLOW_METABOLISM.atLevel(2),
-    CommonTrait.AQUATIC_OVOSPORE,
-    CommonTrait.CLONAL_PROPAGATION,
-    CommonTrait.PASSIVE_RESPIRATION,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.TENTACLES,
     CommonTrait.PULSING_BELL,
     CommonTrait.BODY_REGENERATION,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
-    CommonTrait.SOLITARY,
     CommonTrait.SCENT.atLevel(1),
-    CommonTrait.SALTWATER_OSMOREGULATION,
     ColorTrait.PALE_COLORATION,
+    minus = listOf(CommonTrait.VASCULAR_SYSTEM)
 )
 val jellyfish = cnidarian.descend(
     "jellyfish",

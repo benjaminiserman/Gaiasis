@@ -49,6 +49,7 @@ class Gui() : Node() {
     val clearMapButton by lazy { findChild("ClearMapButton") as Button }
     val randomizeEcosystemsButton by lazy { findChild("RandomizeEcosystemsButton") as Button }
     val clearEcosystemsButton by lazy { findChild("ClearEcosystemsButton") as Button }
+    val treeOfLifeButton by lazy { findChild("TreeOfLifeButton") as Button }
 
     val saveButton by lazy { findChild("SaveButton") as Button }
     val loadButton by lazy { findChild("LoadButton") as Button }
@@ -86,6 +87,7 @@ class Gui() : Node() {
     val brushTool by lazy { BrushTool(this) }
     val climateConfigTool by lazy { ClimateCalibrationControls(this) }
     val tectonicConfigTool by lazy { TectonicCalibrationControls(this) }
+    val treeOfLifeView by lazy { TreeOfLifeView(this) }
 
     var mode = Mode.EDIT
         private set
@@ -193,12 +195,14 @@ class Gui() : Node() {
             historySeasonLabel,
             randomizeEcosystemsButton,
             clearEcosystemsButton,
+            treeOfLifeButton,
         ).forEach { it.visible = !isEditMode }
 
         modeToggleButton.buttonPressed = !isEditMode
         modeToggleButton.text = if (isEditMode) "Edit Mode" else "Play Mode"
         statsGraph.setHistoryMode(!isEditMode)
         brushTool.setEditModeEnabled(isEditMode)
+        treeOfLifeView.setPlayModeEnabled(!isEditMode)
 
         if (!isEditMode) {
             showClimateConfigButton.buttonPressed = false
@@ -299,6 +303,7 @@ class Gui() : Node() {
         brushTool.initialize()
         climateConfigTool.initialize()
         tectonicConfigTool.initialize()
+        treeOfLifeView.initialize()
 
         modeToggleButton.pressed.connect {
             setMode(if (modeToggleButton.buttonPressed) Mode.PLAY else Mode.EDIT)
@@ -338,6 +343,7 @@ class Gui() : Node() {
                 PlanetEcology.randomizeEcosystems(planet)
                 Main.instance.planetRenderer.update(planet)
                 updateInfobox()
+                treeOfLifeView.refresh()
             }
         }
         clearEcosystemsButton.pressed.connect {
@@ -345,6 +351,7 @@ class Gui() : Node() {
                 PlanetEcology.clearEcosystems(Main.instance.planet)
                 Main.instance.planetRenderer.update(Main.instance.planet)
                 updateInfobox()
+                treeOfLifeView.refresh()
             }
         }
 

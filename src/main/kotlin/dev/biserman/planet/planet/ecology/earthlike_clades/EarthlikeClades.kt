@@ -1,10 +1,26 @@
 package dev.biserman.planet.planet.ecology.earthlike_clades
 
+import dev.biserman.planet.planet.ecology.ColorTrait
+import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.SpeciesDefinition
 import dev.biserman.planet.planet.ecology.SpeciesTrait
 import dev.biserman.planet.planet.ecology.baseTrait
+
+val animal = EarthSpeciesCatalog.animal(
+    "animal",
+    SizeClass.SMALL,
+    CommonTrait.ECTOTHERMY,
+    CommonTrait.PASSIVE_RESPIRATION,
+    CommonTrait.CLONAL_PROPAGATION,
+    CommonTrait.CATHEMERAL,
+    CommonTrait.PRIMITIVE_BODY,
+    CommonTrait.SOLITARY,
+    CommonTrait.VASCULAR_SYSTEM,
+    CommonTrait.SALTWATER_OSMOREGULATION,
+    ColorTrait.PALE_COLORATION
+)
 
 fun SpeciesDefinition.extend(
     name: String,
@@ -16,6 +32,7 @@ fun SpeciesDefinition.extend(
     displayName = name,
     sizeClass = sizeClass,
     traits = mergeInheritedTraits(traits, adaptations, minus),
+    descendants = mutableListOf(),
 )
 
 fun SpeciesDefinition.descend(
@@ -30,6 +47,7 @@ fun SpeciesDefinition.descend(
         sizeClass = sizeClass,
         traits = mergeInheritedTraits(traits, adaptations, minus),
         ancestorSpeciesId = id,
+        descendants = mutableListOf(),
     )
     descendants.add(descendant)
     return descendant

@@ -2,14 +2,13 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val fish = EarthSpeciesCatalog.animal(
+val fish = animal.descend(
     "fish",
     SizeClass.SMALL,
-    CommonTrait.ECTOTHERMY,
+    CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.GILLS,
     CommonTrait.EYES.atLevel(2),
     CommonTrait.HEARING.atLevel(2),
@@ -19,13 +18,10 @@ val fish = EarthSpeciesCatalog.animal(
     CommonTrait.JAW,
     CommonTrait.TAIL,
     CommonTrait.AQUATIC_LIMBS.atLevel(2),
-    CommonTrait.AQUATIC_OVOSPORE,
     CommonTrait.COLLECTIVE_LIVING,
-    CommonTrait.CATHEMERAL,
     CommonTrait.LIMBED_BODY,
-    CommonTrait.VASCULAR_SYSTEM,
-    CommonTrait.SALTWATER_OSMOREGULATION,
-    ColorTrait.COUNTERSHADE_COLORATION
+    ColorTrait.COUNTERSHADE_COLORATION,
+    minus = listOf(CommonTrait.CLONAL_PROPAGATION, CommonTrait.PASSIVE_RESPIRATION)
 )
 
 // cartilaginous fish
@@ -97,7 +93,7 @@ val sturgeon = bonyFish.descend(
 val teleostei = bonyFish.descend(
     "teleostei",
     SizeClass.SMALL,
-    CommonTrait.PROTRUSIBLE_JAW.atLevel(2),
+    CommonTrait.PROTRUSIBLE_JAW.atLevel(1),
     minus = listOf(CommonTrait.STREAMLINED_PHYSIQUE)
 )
 val eel = teleostei.descend(

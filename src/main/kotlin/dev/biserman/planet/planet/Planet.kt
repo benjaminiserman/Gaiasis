@@ -207,6 +207,9 @@ class Planet(val seed: Int, val size: Int) {
     var daysPassed = 0
     var historyTurn = 0L
     var ecologyRandomizationCount = 0L
+
+    /** Extant catalog species omitted by the next ecosystem randomization. */
+    var randomEcosystemSpeciesIdsExcluded: MutableSet<String> = mutableSetOf()
     var nextPlateId = 0
 
     var seaLevel: Double = 0.0

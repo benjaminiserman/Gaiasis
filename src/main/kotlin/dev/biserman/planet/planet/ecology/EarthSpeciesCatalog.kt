@@ -780,6 +780,7 @@ object EarthSpeciesCatalog {
             CommonTrait.COASTAL_CLINGING_FEET,
             CommonTrait.MARINE_SNOW_COLLECTORS,
             CommonTrait.ARMORED_HIDE.atLevel(2),
+            CommonTrait.SALTWATER_OSMOREGULATION,
             ColorTrait.BROWN_COLORATION,
         ),
         cephalopod.descend(
@@ -1221,17 +1222,16 @@ object EarthSpeciesCatalog {
             CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.BROWN_COLORATION,
         ),
-        reptile.descend(
+        lizard.descend(
             "desert horned lizard",
             SizeClass.TINY,
-            CommonTrait.MEAT_EATING_MOUTHPARTS,
-            CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.DIGGING_LIMBS.atLevel(1),
             CommonTrait.BURROW_BUILDER,
             CommonTrait.CONCENTRATED_URINE,
             CommonTrait.WATER_RETENTIVE_SCALES,
             CommonTrait.SAND_ADAPTATION,
-            ColorTrait.PALE_COLORATION,
+            ColorTrait.YELLOW_COLORATION,
+            minus = listOf(CommonTrait.CLIMBING_LIMBS, CommonTrait.SLENDER_PHYSIQUE)
         ),
         turtle.descend(
             "common snapping turtle",
@@ -1360,7 +1360,7 @@ object EarthSpeciesCatalog {
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.STRONG_JAWS,
         ),
-        fish.descend(
+        teleostei.descend(
             "ocellaris clownfish",
             SizeClass.TINY,
             CommonTrait.CALM,
@@ -1394,7 +1394,7 @@ object EarthSpeciesCatalog {
             CommonTrait.ELECTRORECEPTION,
             CommonTrait.ELECTRIC_ORGAN,
         ),
-        fish.descend(
+        percomorpha.descend(
             "deep-sea anglerfish",
             SizeClass.SMALL,
             CommonTrait.CALM,
@@ -1486,7 +1486,7 @@ object EarthSpeciesCatalog {
             ColorTrait.GREEN_COLORATION,
             CommonTrait.SOLITARY,
         ),
-        fish.descend(
+        teleostei.descend(
             "arapaima",
             SizeClass.MEDIUM,
             CommonTrait.AGGRESSIVE,
@@ -1496,7 +1496,7 @@ object EarthSpeciesCatalog {
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
         ),
-        fish.descend(
+        percomorpha.descend(
             "antarctic silverfish",
             SizeClass.SMALL,
             CommonTrait.SKITTISH,
@@ -1554,7 +1554,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.STREAMLINED_PHYSIQUE,
         ),
-        fish.descend(
+        teleostei.descend(
             "glacier lanternfish",
             SizeClass.TINY,
             CommonTrait.SKITTISH,
@@ -2040,7 +2040,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WHOLE_BODY_ANHYDROBIOSIS,
             CommonTrait.SLOW_GROWTH.atLevel(2)
         ),
-        landPlant.descend(
+        plant.descend(
             "venus flytrap",
             SizeClass.SMALL,
             CommonTrait.VASCULAR_SYSTEM,

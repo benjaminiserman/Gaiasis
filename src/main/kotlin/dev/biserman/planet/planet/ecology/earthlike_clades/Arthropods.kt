@@ -2,26 +2,25 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val arthropod = EarthSpeciesCatalog.animal(
+val arthropod = animal.descend(
     "arthropod",
     SizeClass.TINY,
-    CommonTrait.ECTOTHERMY,
-    CommonTrait.CRAWLING_APPENDAGES.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
-    CommonTrait.CATHEMERAL,
-    CommonTrait.SOLITARY,
+    CommonTrait.GILLS,
+    CommonTrait.CRAWLING_APPENDAGES.atLevel(2),
     CommonTrait.MOLTING_EXOSKELETON,
     CommonTrait.LIMBED_BODY,
-    CommonTrait.VASCULAR_SYSTEM,
     CommonTrait.EYES.atLevel(2),
     CommonTrait.SCENT.atLevel(2),
-    CommonTrait.GILLS,
     CommonTrait.HEARING.atLevel(1),
-    ColorTrait.PALE_COLORATION,
+    minus = listOf(
+        CommonTrait.SALTWATER_OSMOREGULATION,
+        CommonTrait.PASSIVE_RESPIRATION,
+        CommonTrait.CLONAL_PROPAGATION
+    )
 )
 
 // arachnids
@@ -95,6 +94,7 @@ val crustacean = arthropod.descend(
     CommonTrait.BODY_CARRIED_OVOSPORES,
     CommonTrait.WAXY_CUTICLE,
     CommonTrait.ANTENNAE.atLevel(1),
+    CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.NOCTURNAL,
 )
 val isopod = crustacean.descend(

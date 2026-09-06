@@ -115,7 +115,9 @@ object PlanetEcology {
         val annualEnvironments =
             PlanetEcologyEnvironment.annualEnvironments(tile, climate, context)
         val invariantSpecies = relevantInvariantSpecies(annualEnvironments)
-        val scoredCandidates = EarthSpeciesCatalog.ALL.map { definition ->
+        val scoredCandidates = EarthTreeOfLife.randomizationCandidates(
+            tile.planet.randomEcosystemSpeciesIdsExcluded,
+        ).map { definition ->
             val species = compiled.species[compiled.speciesIndex(definition.id)]
             species to EcologySuitability.evaluate(
                 species,

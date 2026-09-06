@@ -6,8 +6,8 @@ import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val landPlant = EarthSpeciesCatalog.sessile(
-    "land plant",
+val plant = EarthSpeciesCatalog.sessile(
+    "plant",
     SizeClass.TINY,
     CommonTrait.PASSIVE_RESPIRATION,
     CommonTrait.PRIMITIVE_BODY,
@@ -15,7 +15,7 @@ val landPlant = EarthSpeciesCatalog.sessile(
     ColorTrait.GREEN_COLORATION,
     CommonTrait.PHOTOSYNTHETIC_SURFACE,
 )
-val algae = landPlant.descend(
+val algae = plant.descend(
     "algae",
     SizeClass.MINUSCULE,
     CommonTrait.CLONAL_PROPAGATION,
@@ -24,7 +24,7 @@ val algae = landPlant.descend(
 )
 
 // Nonvascular land plants
-val bryophyte = landPlant.descend(
+val bryophyte = plant.descend(
     "bryophyte",
     SizeClass.TINY,
     CommonTrait.SURFACE_HOLDFAST,
@@ -38,7 +38,7 @@ val moss = bryophyte.descend(
 )
 
 // Vascular land plants
-val vascularPlant = landPlant.descend(
+val vascularPlant = plant.descend(
     "vascular plant",
     SizeClass.SMALL,
     CommonTrait.VASCULAR_SYSTEM,

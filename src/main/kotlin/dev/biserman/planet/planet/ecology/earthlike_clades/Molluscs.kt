@@ -2,25 +2,20 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val mollusc = EarthSpeciesCatalog.animal(
+val mollusc = animal.descend(
     "mollusc",
     SizeClass.TINY,
-    CommonTrait.ECTOTHERMY,
     CommonTrait.SLOW_METABOLISM.atLevel(2),
     CommonTrait.AQUATIC_OVOSPORE,
-    CommonTrait.SOLITARY,
-    CommonTrait.VASCULAR_SYSTEM,
     CommonTrait.MANTLED_BODY,
     CommonTrait.GILLS,
-    CommonTrait.CATHEMERAL,
     CommonTrait.HEARING.atLevel(1),
     CommonTrait.EYES.atLevel(1),
     ColorTrait.BROWN_COLORATION,
-    CommonTrait.SALTWATER_OSMOREGULATION,
+    minus = listOf(CommonTrait.CLONAL_PROPAGATION, CommonTrait.PASSIVE_RESPIRATION)
 )
 val clam = mollusc.descend(
     "clam",

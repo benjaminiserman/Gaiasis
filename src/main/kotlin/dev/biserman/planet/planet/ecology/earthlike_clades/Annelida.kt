@@ -2,26 +2,17 @@ package dev.biserman.planet.planet.ecology.earthlike_clades
 
 import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
-import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
 import dev.biserman.planet.planet.ecology.atLevel
 
-val annelida = EarthSpeciesCatalog.animal(
+val annelida = animal.descend(
     "annelida",
     SizeClass.TINY,
-    CommonTrait.ECTOTHERMY,
     CommonTrait.AQUATIC_OVOSPORE,
-    CommonTrait.SOLITARY,
-    CommonTrait.VASCULAR_SYSTEM,
-    CommonTrait.PRIMITIVE_BODY,
-    CommonTrait.PASSIVE_RESPIRATION,
-    CommonTrait.CATHEMERAL,
     CommonTrait.HEARING.atLevel(1),
     CommonTrait.SCENT.atLevel(1),
     CommonTrait.SEGMENTED_PHYSIQUE,
     CommonTrait.BODY_UNDULATION,
-    CommonTrait.SALTWATER_OSMOREGULATION,
-    ColorTrait.PALE_COLORATION
 )
 
 val earthworm = annelida.descend(
