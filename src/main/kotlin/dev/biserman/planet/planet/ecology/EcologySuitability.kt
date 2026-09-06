@@ -51,7 +51,7 @@ object EcologySuitability {
                 val niche = ecology.niches[nicheIndex]
                 val seasonalFitness = annualEnvironments.map { environment ->
                     (
-                        EcologyFitness.combined(species, environment, niche.habitat) *
+                        EcologyFitness.combined(species, environment, niche) *
                             EcologyFitness.reefAssociationMultiplier(species, environment)
                         ).coerceIn(0.0, 1.0)
                 }

@@ -193,14 +193,13 @@ class EcologyExperimentsTest {
         id = id,
         displayName = id,
         sizeClass = SizeClass.SMALL,
-        motile = false,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ) + extraTraits,
     )
 
@@ -211,7 +210,6 @@ class EcologyExperimentsTest {
         id = id,
         displayName = id,
         sizeClass = SizeClass.MEDIUM,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -232,7 +230,6 @@ class EcologyExperimentsTest {
         id = id,
         displayName = id,
         sizeClass = SizeClass.LARGE,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -254,7 +251,6 @@ class EcologyExperimentsTest {
         id = id,
         displayName = id,
         sizeClass = SizeClass.MEDIUM,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,

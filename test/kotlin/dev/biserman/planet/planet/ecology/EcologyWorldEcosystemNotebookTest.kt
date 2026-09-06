@@ -34,9 +34,14 @@ class EcologyWorldEcosystemNotebookTest {
         assertEquals(
             6,
             scenarios.count {
-                it.expectedExtinctions.isNotEmpty()
+                it.expectedExtinctions.isNotEmpty() &&
+                    (!it.intendedStable ||
+                        it.introductions.isNotEmpty() ||
+                        it.climateShifts.isNotEmpty() ||
+                        it.habitatShifts.isNotEmpty() ||
+                        it.populationRemovals.isNotEmpty())
             },
-            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.expectedExtinctions.isNotEmpty() }` to match `6`"
+            message = "The notebook must retain its six explicit collapse or intervention scenarios",
         )
         assertEquals(1, scenarios.count { it.tile.includeAeroplankton }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.tile.includeAeroplankton }` to match `1`")
         assertEquals(

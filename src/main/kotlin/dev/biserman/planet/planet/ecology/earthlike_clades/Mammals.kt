@@ -336,6 +336,7 @@ val cetacean = ungulate.descend(
     SizeClass.LARGE,
     CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.BLUBBER,
     CommonTrait.LONG_MIGRATION,
@@ -349,11 +350,13 @@ val cetacean = ungulate.descend(
         CommonTrait.GRAZING_MOUTHPARTS,
         CommonTrait.OPEN_COUNTRY_PREFERENCE,
         CommonTrait.FUR,
+        CommonTrait.WALKING_LIMBS,
     )
 )
 val whale = cetacean.descend(
     "whale",
     SizeClass.COLOSSAL,
+    CommonTrait.EYES.atLevel(2),
     CommonTrait.BALEEN,
     CommonTrait.DEEP_DIVING_PHYSIOLOGY,
     CommonTrait.SONG_CALL,
@@ -413,6 +416,7 @@ val seal = carnivore.descend(
     SizeClass.MEDIUM,
     CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.BLUBBER,

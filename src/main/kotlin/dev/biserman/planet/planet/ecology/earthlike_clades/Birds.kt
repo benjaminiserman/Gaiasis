@@ -41,7 +41,7 @@ val fowl = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.FREQUENT_REPRODUCTION,
     CommonTrait.HERDING_BEHAVIOR,
-    CommonTrait.COLLECTIVE_LIVING,
+    CommonTrait.GROUP_LIVING,
     CommonTrait.WEAK_WINGS
 )
 val waterfowl = bird.descend(
@@ -108,6 +108,7 @@ val penguin = bird.descend(
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.AMPHIBIOUS_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.SEA_ICE_ROOKERY,
     CommonTrait.MOTION_TRACKING_SENSES,
     CommonTrait.BURROW_BORROWER,

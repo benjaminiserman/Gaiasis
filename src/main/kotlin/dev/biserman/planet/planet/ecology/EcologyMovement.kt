@@ -150,12 +150,12 @@ object EcologyMovement {
                     )
                     if (candidateNiche < 0) continue
                     if (!canEstablish(speciesIndex, candidate, candidateNiche)) continue
-                    val candidateHabitat = ecology.niches[candidateNiche].habitat
+                    val candidateNicheDefinition = ecology.niches[candidateNiche]
                     if (
                         EcologyFitness.combined(
                             species,
                             environments[candidate],
-                            candidateHabitat,
+                            candidateNicheDefinition,
                         ) < EcologySuitability.MINIMUM_ACTIVE_FITNESS
                     ) {
                         continue

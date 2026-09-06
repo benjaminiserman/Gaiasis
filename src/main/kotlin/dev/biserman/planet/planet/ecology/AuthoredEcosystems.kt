@@ -70,6 +70,7 @@ object AuthoredEcosystems {
         "weddell-seal",
         "crabeater-seal",
         "orca",
+        expectedExtinctions = setOf("orca"),
     )
 
     val AMAZON_RAINFOREST = scenario(
@@ -150,6 +151,7 @@ object AuthoredEcosystems {
         "red-mangrove",
         "blue-crab",
         "common-octopus",
+        expectedExtinctions = setOf("blue-crab"),
     )
 
     val OKAVANGO_DELTA = scenario(
@@ -163,6 +165,7 @@ object AuthoredEcosystems {
         "white-water-lily",
         "hippopotamus",
         "nile-crocodile",
+        expectedExtinctions = setOf("white-water-lily"),
     )
 
     val LAKE_BAIKAL = scenario(
@@ -204,6 +207,7 @@ object AuthoredEcosystems {
         "eelgrass",
         "sea-otter",
         "great-white-shark",
+        expectedExtinctions = setOf("sea-otter", "great-white-shark"),
     )
 
     val HUMBOLDT_CURRENT = scenario(
@@ -287,7 +291,7 @@ object AuthoredEcosystems {
         AuthoredEcosystemTile(isLand = true, canopyCover = 0.92, fertilityModifier = 0.14),
         "coast-redwood", "bracken-fern", "three-toed-sloth", "white-tailed-deer",
         habitatShifts = listOf(AuthoredHabitatShift(35, canopyCover = 0.0)),
-        expectedExtinctions = setOf("coast-redwood", "three-toed-sloth"),
+        expectedExtinctions = setOf("coast-redwood", "three-toed-sloth", "white-tailed-deer"),
     )
 
     val REEF_BUILDER_LOSS = scenario(

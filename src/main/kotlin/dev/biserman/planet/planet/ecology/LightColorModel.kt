@@ -58,7 +58,7 @@ object LightColorModel {
             BiologicalColor.PURPLE to purple,
             BiologicalColor.PALE to pale,
             BiologicalColor.WHITE to white,
-            BiologicalColor.COUNTERSHADE to 0.0,
+            BiologicalColor.COUNTERSHADE to (blueGreen + white) / 2.0,
             BiologicalColor.RAINBOW to rainbow,
         ).let { it.plus(BiologicalColor.ADAPTIVE to it.values.max()) },
     )

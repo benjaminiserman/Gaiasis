@@ -23,13 +23,11 @@ fun SpeciesDefinition.descend(
     sizeClass: SizeClass,
     vararg adaptations: SpeciesTrait,
     minus: List<SpeciesTrait> = listOf(),
-    motile: Boolean = this.motile,
 ): SpeciesDefinition {
     val descendant = copy(
         id = EarthSpeciesCatalog.idFromName(name),
         displayName = name,
         sizeClass = sizeClass,
-        motile = motile,
         traits = mergeInheritedTraits(traits, adaptations, minus),
         ancestorSpeciesId = id,
     )

@@ -4,7 +4,6 @@ import dev.biserman.planet.planet.ecology.ColorTrait
 import dev.biserman.planet.planet.ecology.CommonTrait
 import dev.biserman.planet.planet.ecology.EarthSpeciesCatalog
 import dev.biserman.planet.planet.ecology.SizeClass
-import dev.biserman.planet.planet.ecology.atLevel
 
 val landPlant = EarthSpeciesCatalog.sessile(
     "land plant",
@@ -12,7 +11,7 @@ val landPlant = EarthSpeciesCatalog.sessile(
     CommonTrait.PASSIVE_RESPIRATION,
     CommonTrait.PRIMITIVE_BODY,
     CommonTrait.TERRESTRIAL_OVOSPORE,
-    ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+    ColorTrait.GREEN_COLORATION,
     CommonTrait.PHOTOSYNTHETIC_SURFACE,
 )
 val algae = landPlant.descend(

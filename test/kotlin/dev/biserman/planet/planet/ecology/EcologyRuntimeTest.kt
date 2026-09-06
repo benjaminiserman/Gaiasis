@@ -13,7 +13,6 @@ class EcologyRuntimeTest {
             id = id,
             displayName = id,
             sizeClass = SizeClass.TINY,
-            motile = true,
             traits = buildList {
                 add(CommonTrait.TRACHEA)
                 add(CommonTrait.VASCULAR_SYSTEM)
@@ -121,7 +120,6 @@ class EcologyRuntimeTest {
             id = id,
             displayName = id,
             sizeClass = SizeClass.TINY,
-            motile = true,
             traits = listOfNotNull(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -142,7 +140,6 @@ class EcologyRuntimeTest {
             id = "warning-test-predator",
             displayName = "Warning test predator",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -490,7 +487,6 @@ class EcologyRuntimeTest {
             id = "decomposer",
             displayName = "Decomposer",
             sizeClass = SizeClass.SMALL,
-            motile = false,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -503,7 +499,6 @@ class EcologyRuntimeTest {
             id = "coprophage",
             displayName = "Coprophage",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -741,39 +736,43 @@ class EcologyRuntimeTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = false,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.TERRESTRIAL_OVOSPORE,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ) + extraTraits,
     )
 
     private fun aquaticProducer(
         extraTraits: List<SpeciesTrait> = emptyList(),
-    ) = SpeciesDefinition(
-        id = "aquatic-producer",
-        displayName = "Aquatic producer",
-        sizeClass = SizeClass.SMALL,
-        motile = false,
-        traits = listOf(
-            CommonTrait.TEMPERATE_BIOCHEMISTRY,
-            CommonTrait.AQUATIC_OVOSPORE,
-            CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            CommonTrait.BUOYANCY_BLADDER,
-            CommonTrait.PASSIVE_RESPIRATION,
-            ColorTrait.BLUE_PHOTOSYNTHETIC_PIGMENTS,
-        ) + extraTraits,
-    )
+    ): SpeciesDefinition {
+        val salinity = if (extraTraits.any { it.group == TraitGroup.SALINITY_STRATEGY }) {
+            emptyList()
+        } else {
+            listOf(CommonTrait.SALTWATER_OSMOREGULATION)
+        }
+        return SpeciesDefinition(
+            id = "aquatic-producer",
+            displayName = "Aquatic producer",
+            sizeClass = SizeClass.SMALL,
+            traits = listOf(
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.AQUATIC_OVOSPORE,
+                CommonTrait.PHOTOSYNTHETIC_SURFACE,
+                CommonTrait.BUOYANCY_BLADDER,
+                CommonTrait.PASSIVE_RESPIRATION,
+                ColorTrait.BLUE_COLORATION,
+            ) + salinity + extraTraits,
+        )
+    }
 
     private fun grazer() = SpeciesDefinition(
         id = "grazer",
         displayName = "Grazer",
         sizeClass = SizeClass.MEDIUM,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -794,7 +793,6 @@ class EcologyRuntimeTest {
         id = "predator",
         displayName = "Predator",
         sizeClass = SizeClass.LARGE,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -816,7 +814,6 @@ class EcologyRuntimeTest {
         id = "scavenger",
         displayName = "Scavenger",
         sizeClass = SizeClass.MEDIUM,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,

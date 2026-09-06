@@ -116,7 +116,8 @@ class EcologyCompilerTest {
         val canopyAccess = EffectTrait(
             displayName = "canopy access",
             description = "Provides a physical means of entering and operating in a canopy.",
-            effects = listOf(TraitEffect.HabitatAccess(Habitat.CANOPY)),
+            effects = listOf(TraitEffect.MaintenanceCost(0.0)),
+            capabilities = setOf(Habitat.CANOPY.accessCapability),
         )
         val affinityOnly = terrestrialPrey("affinity-only", SizeClass.SMALL).let { species ->
             species.copy(traits = species.traits + canopyAffinity)
@@ -138,6 +139,114 @@ class EcologyCompilerTest {
             absoluteTolerance = 1e-12,
             message = "An accessible habitat should retain its independently compiled affinity",
         )
+    }
+
+    @Test
+    fun `habitat capability routes distinguish shores fresh water and open water`() {
+        val land = setOf(
+            TraitCapability.LAND_SURFACE_ACCESS,
+            TraitCapability.AERIAL_RESPIRATION,
+        )
+        assertTrue(Habitat.COASTAL.isAccessibleBy(land))
+        assertTrue(Habitat.SEA_ICE.isAccessibleBy(land))
+        assertTrue(Habitat.FRESHWATER.isAccessibleBy(land))
+        assertTrue(!Habitat.SHALLOW_OCEAN.isAccessibleBy(land))
+        assertTrue(!Habitat.OPEN_OCEAN.isAccessibleBy(land))
+
+        val saltwaterAquatic = setOf(
+            TraitCapability.SHALLOW_OCEAN_ACCESS,
+            TraitCapability.OPEN_OCEAN_ACCESS,
+            TraitCapability.UNDERWATER_RESPIRATION,
+            TraitCapability.SALTWATER_OSMOREGULATION,
+        )
+        assertTrue(Habitat.COASTAL.isAccessibleBy(saltwaterAquatic))
+        assertTrue(Habitat.SEA_ICE.isAccessibleBy(saltwaterAquatic))
+        assertTrue(Habitat.SHALLOW_OCEAN.isAccessibleBy(saltwaterAquatic))
+        assertTrue(Habitat.OPEN_OCEAN.isAccessibleBy(saltwaterAquatic))
+        assertTrue(!Habitat.FRESHWATER.isAccessibleBy(saltwaterAquatic))
+
+        val freshwaterAquatic = setOf(
+            TraitCapability.FRESHWATER_ACCESS,
+            TraitCapability.UNDERWATER_RESPIRATION,
+            TraitCapability.FRESHWATER_OSMOREGULATION,
+        )
+        assertTrue(Habitat.FRESHWATER.isAccessibleBy(freshwaterAquatic))
+        assertTrue(!Habitat.COASTAL.isAccessibleBy(freshwaterAquatic))
+
+        val openOceanBreathHolder = setOf(
+            TraitCapability.OPEN_OCEAN_ACCESS,
+            TraitCapability.AERIAL_RESPIRATION,
+            TraitCapability.PROLONGED_BREATH_HOLDING,
+            TraitCapability.SALTWATER_OSMOREGULATION,
+        )
+        assertTrue(Habitat.OPEN_OCEAN.isAccessibleBy(openOceanBreathHolder))
+        assertTrue(
+            !Habitat.OPEN_OCEAN.isAccessibleBy(
+                openOceanBreathHolder - TraitCapability.PROLONGED_BREATH_HOLDING,
+            ),
+        )
+    }
+
+    @Test
+    fun `dark water requires deep adaptation and may be an exclusive habitat`() {
+        val ordinaryDiver = setOf(
+            TraitCapability.DARK_WATER_ACCESS,
+            TraitCapability.UNDERWATER_RESPIRATION,
+            TraitCapability.SALTWATER_OSMOREGULATION,
+        )
+        assertTrue(!Habitat.DARK_WATER.isAccessibleBy(ordinaryDiver))
+        assertTrue(
+            Habitat.DARK_WATER.isAccessibleBy(
+                ordinaryDiver + TraitCapability.DEEP_WATER_ADAPTATION,
+            ),
+        )
+
+        val obligateDeepSpecies = SpeciesDefinition(
+            id = "obligate-deep-species",
+            displayName = "Obligate deep species",
+            sizeClass = SizeClass.SMALL,
+            traits = listOf(
+                CommonTrait.GILLS,
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
+                CommonTrait.AQUATIC_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
+                CommonTrait.LIMBED_BODY,
+                CommonTrait.AQUATIC_LIMBS,
+                CommonTrait.SALTWATER_OSMOREGULATION,
+                CommonTrait.DEEP_WATER_ADAPTATION,
+                CommonTrait.SUSPENSION_FEEDING_TENTACLES,
+            ),
+        )
+        val compiled = EcologyCompiler.compile(listOf(obligateDeepSpecies)).species.single()
+
+        assertTrue(compiled.niche.supportFor(Habitat.DARK_WATER) > 0.0)
+        Habitat.entries.filter { it != Habitat.DARK_WATER }.forEach { habitat ->
+            assertEquals(0.0, compiled.niche.supportFor(habitat))
+        }
+    }
+
+    @Test
+    fun `representative marine lineages satisfy saltwater habitat routes`() {
+        val ecology = EcologyCompiler.compile(
+            listOf(
+                EarthSpeciesCatalog.MAMMALS.single { it.id == "blue-whale" },
+                EarthSpeciesCatalog.BIRDS.single { it.id == "emperor-penguin" },
+                EarthSpeciesCatalog.REPTILES_AND_AMPHIBIANS.single { it.id == "green-sea-turtle" },
+                EarthSpeciesCatalog.FISH.single { it.id == "whale-shark" },
+            ),
+        )
+
+        listOf("blue-whale", "green-sea-turtle", "whale-shark").forEach { speciesId ->
+            assertTrue(ecology.species.single { it.id == speciesId }.niche.supportFor(Habitat.SHALLOW_OCEAN) > 0.0)
+        }
+        assertTrue(ecology.species.single { it.id == "emperor-penguin" }.niche.supportFor(Habitat.SEA_ICE) > 0.0)
+        assertTrue(ecology.species.single { it.id == "blue-whale" }.niche.supportFor(Habitat.DARK_WATER) > 0.0)
+        assertTrue(ecology.species.single { it.id == "whale-shark" }.niche.supportFor(Habitat.DARK_WATER) > 0.0)
+        assertEquals(0.0, ecology.species.single { it.id == "emperor-penguin" }.niche.supportFor(Habitat.DARK_WATER))
+        assertEquals(0.0, ecology.species.single { it.id == "green-sea-turtle" }.niche.supportFor(Habitat.DARK_WATER))
     }
 
     @Test
@@ -424,12 +533,12 @@ class EcologyCompilerTest {
             CommonTrait.ARMORED_HIDE,
             CommonTrait.DENSE_UNDERCOAT,
             CommonTrait.INSULATING_PLUMAGE,
-            CommonTrait.WOODY_SUPPORT_TISSUE,
         )
 
         assertTrue(fiveLevelSenses.all { it.maxLevel == 5 })
         assertTrue(threeLevelTraits.all { it.maxLevel == 3 })
         assertEquals(1, CommonTrait.BLUBBER.maxLevel)
+        assertEquals(1, CommonTrait.WOODY_SUPPORT_TISSUE.maxLevel)
 
         (fiveLevelSenses + threeLevelTraits).forEach { trait ->
             val costs = (1..trait.maxLevel).map { level ->
@@ -503,7 +612,7 @@ class EcologyCompilerTest {
         )
         val woodyCanopy = canopy.copy(
             id = "woody-canopy",
-            traits = canopy.traits + CommonTrait.WOODY_SUPPORT_TISSUE.atLevel(2),
+            traits = canopy.traits + CommonTrait.WOODY_SUPPORT_TISSUE,
         )
 
         assertFailsWith<IllegalArgumentException> {
@@ -673,17 +782,23 @@ class EcologyCompilerTest {
 
     @Test
     fun `motile species require exactly one thermal strategy`() {
+        val locomotion = EffectTrait(
+            displayName = "test locomotion",
+            description = "Provides locomotion without selecting a thermal strategy.",
+            effects = listOf(TraitEffect.MaintenanceCost(0.0)),
+            capabilities = setOf(TraitCapability.LOCOMOTION),
+        )
         val invalid = SpeciesDefinition(
             id = "invalid",
             displayName = "Invalid swimmer",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.AQUATIC_OVOSPORE,
                 CommonTrait.BUOYANCY_BLADDER,
                 CommonTrait.SUSPENSION_FEEDING_TENTACLES,
+                locomotion,
             ),
         )
 
@@ -780,7 +895,6 @@ class EcologyCompilerTest {
             id = "reproduction-missing",
             displayName = "Reproduction missing",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -847,12 +961,9 @@ class EcologyCompilerTest {
             id = "floating-body",
             displayName = "Floating body",
             sizeClass = SizeClass.MINUSCULE,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
-                CommonTrait.ECTOTHERMY,
-                CommonTrait.SOLITARY,
                 CommonTrait.CLONAL_PROPAGATION,
                 CommonTrait.AERIAL_FLOATING_BODY,
             ),
@@ -860,7 +971,7 @@ class EcologyCompilerTest {
         val photosynthetic = floating.copy(
             id = "photosynthetic-floating-body",
             displayName = "Photosynthetic floating body",
-            traits = floating.traits + CommonTrait.PHOTOSYNTHETIC_SURFACE + ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            traits = floating.traits + CommonTrait.PHOTOSYNTHETIC_SURFACE + ColorTrait.GREEN_COLORATION,
         )
 
         val ecology = EcologyCompiler.compile(listOf(floating, photosynthetic))
@@ -882,7 +993,6 @@ class EcologyCompilerTest {
             id = "oversized-floater",
             displayName = "Oversized floater",
             sizeClass = SizeClass.TINY,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -905,7 +1015,6 @@ class EcologyCompilerTest {
             id = "limbless-regenerator",
             displayName = "Limbless regenerator",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -933,7 +1042,6 @@ class EcologyCompilerTest {
             id = "deep-diver",
             displayName = "Deep diver",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -943,7 +1051,9 @@ class EcologyCompilerTest {
                 CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
                 CommonTrait.AQUATIC_LIMBS,
+                CommonTrait.SALTWATER_OSMOREGULATION,
                 CommonTrait.DEEP_DIVING_PHYSIOLOGY,
+                CommonTrait.SOLITARY,
             ),
         )
 
@@ -965,6 +1075,18 @@ class EcologyCompilerTest {
             ).isEmpty(),
             message = "Deep diving accepts either underwater respiration or breath holding: expected `TraitDependencies.unmetRequirements( base.copy(traits = base.traits + CommonTrait.PROLONGED_BREATH_HOLDING), ).isEmpty()` to be true",
         )
+
+        val gilled = EcologyCompiler.compile(
+            listOf(base.copy(id = "gilled-diver", traits = base.traits + CommonTrait.GILLS)),
+        ).species.single()
+        val breathHolding = EcologyCompiler.compile(
+            listOf(base.copy(id = "breath-holding-diver", traits = base.traits + CommonTrait.PROLONGED_BREATH_HOLDING)),
+        ).species.single()
+        assertTrue(gilled.niche.accesses(Habitat.OPEN_OCEAN))
+        assertTrue(gilled.physiology.respiration.underwaterBreathing)
+        assertTrue(breathHolding.niche.accesses(Habitat.OPEN_OCEAN))
+        assertTrue(breathHolding.physiology.respiration.aerialBreathing)
+        assertTrue(breathHolding.physiology.respiration.prolongedBreathHolding)
     }
 
     @Test
@@ -1194,7 +1316,6 @@ class EcologyCompilerTest {
             id = "photosymbiotic-polyp",
             displayName = "photosymbiotic polyp",
             sizeClass = SizeClass.SMALL,
-            motile = false,
             traits = listOf(
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
                 CommonTrait.PASSIVE_RESPIRATION,
@@ -1207,8 +1328,8 @@ class EcologyCompilerTest {
         val compiled = EcologyCompiler.compile(listOf(coral)).species.single()
 
         assertTrue(compiled.niche.accesses(EcoStrategy.PHOTOSYNTHESIS))
-        assertEquals(30.0, compiled.environment.optimalMaximumWaterDepthM)
-        assertEquals(80.0, compiled.environment.absoluteMaximumWaterDepthM)
+        assertTrue(compiled.environment.optimalMaximumWaterDepthM.isInfinite())
+        assertTrue(compiled.environment.absoluteMaximumWaterDepthM.isInfinite())
         assertEquals(AquaticSalinityTolerance.SALTWATER_ONLY, compiled.physiology.respiration.salinityTolerance)
     }
 
@@ -1303,7 +1424,6 @@ class EcologyCompilerTest {
             id = "cloud-sieve",
             displayName = "Cloud sieve",
             sizeClass = SizeClass.TINY,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -1332,7 +1452,6 @@ class EcologyCompilerTest {
             id = "herbivore",
             displayName = "herbivore",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -1418,7 +1537,6 @@ class EcologyCompilerTest {
             id = "brood-parasite",
             displayName = "brood parasite",
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -1579,7 +1697,8 @@ class EcologyCompilerTest {
         listOf(SizeClass.HUGE, SizeClass.COLOSSAL).forEach { sizeClass ->
             val base = aquaticFilter("oversized-river-filter-${sizeClass.name}", sizeClass)
             val definition = base.copy(
-                traits = base.traits + CommonTrait.EURYHALINE_OSMOREGULATION,
+                traits = base.traits - CommonTrait.SALTWATER_OSMOREGULATION +
+                    CommonTrait.EURYHALINE_OSMOREGULATION,
             )
             val ecology = EcologyCompiler.compile(listOf(definition))
             val species = ecology.species.single()
@@ -1737,6 +1856,44 @@ class EcologyCompilerTest {
     }
 
     @Test
+    fun `grazing targets sessile heterotrophs without requiring photosynthesis`() {
+        val sessileHeterotroph = SpeciesDefinition(
+            id = "sessile-heterotroph",
+            displayName = "Sessile heterotroph",
+            sizeClass = SizeClass.SMALL,
+            traits = listOf(
+                CommonTrait.TRACHEA,
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.TERRESTRIAL_OVOSPORE,
+                CommonTrait.ROOTED_BODY,
+                CommonTrait.DECOMPOSING_ENZYMES,
+            ),
+        )
+        val grazer = predator("sessile-heterotroph-grazer", SizeClass.SMALL).copy(
+            traits = predator("sessile-heterotroph-grazer", SizeClass.SMALL).traits +
+                CommonTrait.GRAZING_MOUTHPARTS,
+        )
+        val ecology = EcologyCompiler.compile(listOf(sessileHeterotroph, grazer))
+        val target = ecology.speciesIndex(sessileHeterotroph.id)
+
+        assertEquals(0.0, ecology.species[target].niche.supportFor(EcoStrategy.PHOTOSYNTHESIS))
+        assertEquals(
+            InteractionKind.GRAZING,
+            ecology.interactions.get(ecology.speciesIndex(grazer.id), target).kind,
+        )
+    }
+
+    @Test
+    fun `one biological color supplies camouflage and photosynthetic pigment`() {
+        val green = ColorTrait.GREEN_COLORATION
+
+        assertEquals(green, ColorTrait.camouflage(BiologicalColor.GREEN))
+        assertEquals(green, ColorTrait.photosynthetic(BiologicalColor.GREEN))
+        assertTrue(TraitEffect.CamouflageColor(BiologicalColor.GREEN) in green.effects)
+        assertTrue(TraitEffect.PhotosyntheticColor(BiologicalColor.GREEN) in green.effects)
+    }
+
+    @Test
     fun `separated marine predator tiers are not treated as intraguild competitors`() {
         val definitions = listOf("antarctic-silverfish", "harbor-seal", "orca").map { id ->
             EarthSpeciesCatalog.ALL.single { it.id == id }
@@ -1765,8 +1922,11 @@ class EcologyCompilerTest {
             val interaction = ecology.interactions.get(consumer.index, target.index)
             val attack = undiscountedAttack(consumer, target)
             assertEquals(InteractionKind.PREDATION, interaction.kind, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.kind` to match `InteractionKind.PREDATION`")
-            assertEquals(attack, interaction.targetLossRate, 1.0e-12, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.targetLossRate` to match `attack`")
-            assertEquals(attack * 1.30, interaction.consumerGainRate, 1.0e-12, message = "Separated marine predator tiers are not treated as intraguild competitors: expected `interaction.consumerGainRate` to match `attack * 1.30`")
+            assertTrue(
+                interaction.targetLossRate > attack * 0.5,
+                "The interaction must not receive the 50% intraguild competition discount",
+            )
+            assertEquals(interaction.targetLossRate * 1.30, interaction.consumerGainRate, 1.0e-12)
         }
     }
 
@@ -1952,8 +2112,7 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = SizeClass.SMALL,
-        motile = false,
-        traits = withReproduction(traits, CommonTrait.TERRESTRIAL_OVOSPORE) + ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+        traits = withReproduction(traits, CommonTrait.TERRESTRIAL_OVOSPORE) + ColorTrait.GREEN_COLORATION,
     )
 
     private fun predator(
@@ -1963,7 +2122,6 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -1987,7 +2145,6 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -1997,6 +2154,8 @@ class EcologyCompilerTest {
             CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
+            CommonTrait.PROLONGED_BREATH_HOLDING,
+            CommonTrait.SALTWATER_OSMOREGULATION,
             CommonTrait.SOLITARY,
             CommonTrait.JAW,
             CommonTrait.BALEEN,
@@ -2010,13 +2169,14 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = true,
         traits = listOf(
-            CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
             CommonTrait.AQUATIC_OVOSPORE,
             CommonTrait.BUOYANCY_BLADDER,
+            CommonTrait.GILLS,
+            CommonTrait.SALTWATER_OSMOREGULATION,
+            CommonTrait.JET_PROPULSION,
             CommonTrait.SOLITARY,
         ),
     )
@@ -2028,7 +2188,6 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -2050,7 +2209,6 @@ class EcologyCompilerTest {
         id = id,
         displayName = id,
         sizeClass = sizeClass,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -2060,6 +2218,7 @@ class EcologyCompilerTest {
             CommonTrait.BONY_SKELETON,
             CommonTrait.LIMBED_BODY,
             CommonTrait.AQUATIC_LIMBS,
+            CommonTrait.PROLONGED_BREATH_HOLDING,
             CommonTrait.SOLITARY,
             CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.AMBUSH_MUSCULATURE,

@@ -368,7 +368,7 @@ class EcologyRuntime(
                     0.0
                 } else {
                     (
-                        EcologyFitness.combined(species, environment, niche.habitat) *
+                        EcologyFitness.combined(species, environment, niche) *
                             EcologyFitness.reefAssociationMultiplier(species, environment)
                         ).coerceIn(0.0, 1.0)
                 }
@@ -471,12 +471,19 @@ class EcologyRuntime(
     private fun accumulateNicheBiomass(community: TileCommunity) {
         for (populationIndex in 0 until community.size) {
             val species = ecology.species[community.speciesIndices[populationIndex]]
+            val niche = ecology.niches[community.nicheIndices[populationIndex]]
+            val producerLayer =
+                if (niche.strategy == EcoStrategy.PHOTOSYNTHESIS) {
+                    species.niche.producerCompetitionLayer
+                } else {
+                    ProducerCompetitionLayer.NONE
+                }
             val offset =
                 (
                     community.nicheIndices[populationIndex] * SizeClass.entries.size +
                         species.sizeClass.ordinal
                     ) * ProducerCompetitionLayer.entries.size +
-                    species.niche.producerCompetitionLayer.ordinal
+                    producerLayer.ordinal
             normalizedBiomassByNicheSizeAndProducerLayer[offset] +=
                 effectiveActive[populationIndex] /
                 species.sizeClass.densityScale *
@@ -788,7 +795,7 @@ class EcologyRuntime(
             val habitat = environment.habitatAvailability(niche.habitat)
             val baseResource = environment.resourceSupport(niche, species.sizeClass)
             val canUseWasteAsFertilizer =
-                species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
+                niche.strategy == EcoStrategy.PHOTOSYNTHESIS
             val resource =
                 if (canUseWasteAsFertilizer && species.interactions.wasteFertilization > 0.0) {
                     (
@@ -802,6 +809,12 @@ class EcologyRuntime(
                 }
             val carryingBiomass =
                 EcologyBiomass.carryingCapacityKg(species, niche, environment)
+            val producerLayer =
+                if (niche.strategy == EcoStrategy.PHOTOSYNTHESIS) {
+                    species.niche.producerCompetitionLayer
+                } else {
+                    ProducerCompetitionLayer.NONE
+                }
             val nicheSizeOffset =
                 community.nicheIndices[populationIndex] *
                     SizeClass.entries.size *
@@ -818,9 +831,9 @@ class EcologyRuntime(
                 }
                 for (otherLayer in ProducerCompetitionLayer.entries) {
                     val layerOverlap = when {
-                        otherLayer == species.niche.producerCompetitionLayer -> 1.0
+                        otherLayer == producerLayer -> 1.0
                         otherLayer == ProducerCompetitionLayer.NONE ||
-                            species.niche.producerCompetitionLayer == ProducerCompetitionLayer.NONE -> 0.0
+                            producerLayer == ProducerCompetitionLayer.NONE -> 0.0
                         // Suspended producers use water-column space while
                         // rooted and holdfast-bearing producers use substrate.
                         // Their shared climate resource is already represented
@@ -852,11 +865,18 @@ class EcologyRuntime(
             // food when both background resources and modeled prey are absent.
             val resourceFactor = resource / (resource + 0.08 + crowding)
             val environmentalFitness = fitness[populationIndex]
+            val primaryStrategyEfficiency =
+                if (niche.strategy == EcoStrategy.PHOTOSYNTHESIS) {
+                    species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS)
+                } else {
+                    1.0
+                }
             val backgroundAssimilation =
                 active *
                     (0.30 + species.lifeHistory.seasonalReproduction) *
                     environmentalFitness *
-                    resourceFactor
+                    resourceFactor *
+                    primaryStrategyEfficiency
             // Below the viable-activity threshold an organism may endure for a
             // while, but cannot turn captured food into growth. This prevents
             // abundant prey from making a profoundly climate-mismatched animal
@@ -865,15 +885,38 @@ class EcologyRuntime(
                 if (environmentalFitness < 0.35) 0.0 else sqrt(environmentalFitness)
             val interactionCapacityRemaining =
                 (1.0 - active / max(1.0, carryingBiomass)).coerceIn(0.0, 1.0)
+            val maintenanceFraction = species.physiology.maintenanceDemand / species.physiology.massKg
+            val supplementalPhotosyntheticAssimilation =
+                if (niche.strategy != EcoStrategy.PHOTOSYNTHESIS) {
+                    val photosyntheticSupport =
+                        species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS)
+                    val photosyntheticNutrients =
+                        (
+                            environment.fertility +
+                                species.interactions.wasteFertilization *
+                                environment.resources.waste *
+                                (1.0 - environment.fertility)
+                            ).coerceIn(0.0, 1.0)
+                    active *
+                        maintenanceFraction *
+                        0.75 *
+                        photosyntheticSupport *
+                        photosyntheticNutrients *
+                        environment.lightAt(niche.habitat) *
+                        EcologyFitness.light(species, environment, niche.habitat) *
+                        environmentalFitness
+                } else {
+                    0.0
+                }
             val grossAssimilation =
                 backgroundAssimilation +
+                    supplementalPhotosyntheticAssimilation +
                     (
                         interactionGains[populationIndex] +
                             relationshipBenefits[populationIndex]
                         ) *
                     physiologicalAssimilation *
                     interactionCapacityRemaining
-            val maintenanceFraction = species.physiology.maintenanceDemand / species.physiology.massKg
             val maintenance = active * maintenanceFraction
             val stress = 1.0 - environmentalFitness
             // Moderate mismatch already reduces feeding and reproduction through

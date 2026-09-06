@@ -216,7 +216,6 @@ class EcologyMovementTest {
         id = "land-disperser",
         displayName = "Land disperser",
         sizeClass = SizeClass.SMALL,
-        motile = false,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -224,7 +223,7 @@ class EcologyMovementTest {
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.ROOTED_BODY,
             CommonTrait.NEIGHBOR_DISPERSAL,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ),
     )
 
@@ -232,7 +231,6 @@ class EcologyMovementTest {
         id = "migrant",
         displayName = "Migrant",
         sizeClass = SizeClass.MEDIUM,
-        motile = true,
         traits = listOf(
             CommonTrait.TRACHEA,
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -252,7 +250,6 @@ class EcologyMovementTest {
         id = "freshwater-disperser",
         displayName = "Freshwater disperser",
         sizeClass = SizeClass.SMALL,
-        motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.ECTOTHERMY,
@@ -261,6 +258,7 @@ class EcologyMovementTest {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.GILLS,
+            CommonTrait.JET_PROPULSION,
             CommonTrait.GILL_RAKERS,
         ),
     )

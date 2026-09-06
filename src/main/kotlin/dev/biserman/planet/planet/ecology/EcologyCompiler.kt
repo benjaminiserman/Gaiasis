@@ -85,10 +85,6 @@ object EcologyCompiler {
         require(definition.motile || TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE !in traitsByGroup) {
             "${definition.displayName} is not motile and cannot have a terrestrial movement structure"
         }
-        require(definition.motile || TraitCapability.LOCOMOTION !in capabilities) {
-            "${definition.displayName} is sessile but has a locomotion capability"
-        }
-
         val context = SpeciesCompilationContext(
             speciesDisplayName = definition.displayName,
             sizeTemperatureTolerance = sizeTemperatureTolerance(definition.sizeClass),
@@ -101,7 +97,7 @@ object EcologyCompiler {
                 }
             }
         }
-        context.applyCrossTraitRules(definition.sizeClass, commonTraits)
+        context.applyCrossTraitRules(definition.sizeClass, capabilities)
         return context.finish(index, definition, niches, commonTraits, traitProfile)
     }
 

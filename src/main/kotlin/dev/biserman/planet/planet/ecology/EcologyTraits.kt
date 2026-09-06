@@ -56,8 +56,24 @@ enum class TraitCapability : FulfillsTraitRequirement {
     RESPIRATION,
     AERIAL_RESPIRATION,
     UNDERWATER_RESPIRATION,
+    PROLONGED_BREATH_HOLDING,
+    FRESHWATER_OSMOREGULATION,
+    SALTWATER_OSMOREGULATION,
+    EURYHALINE_OSMOREGULATION,
+    DEEP_WATER_ADAPTATION,
     WATER_STORAGE,
     REPRODUCTION,
+    LAND_SURFACE_ACCESS,
+    CANOPY_ACCESS,
+    FRESHWATER_ACCESS,
+    COASTAL_ACCESS,
+    SHALLOW_OCEAN_ACCESS,
+    OPEN_OCEAN_ACCESS,
+    DARK_WATER_ACCESS,
+    SEA_ICE_ACCESS,
+    AERIAL_ACCESS,
+    CAVE_ACCESS,
+    UNDERGROUND_ACCESS,
     SEXUAL_REPRODUCTION,
     OVOSPORE_REPRODUCTION,
     OVOSPORE_BROODING,
@@ -343,56 +359,46 @@ fun broodParasitismOf(
 enum class ColorTrait(
     override val displayName: String,
     override val description: String,
-    colorEffect: TraitEffect,
+    val color: BiologicalColor,
     maintenanceCost: Double = 0.0,
     traitEffects: List<TraitEffect> = listOf()
 ) : SpeciesTrait {
-    BLACK_COLORATION("black coloration", "Dark pigments conceal the body against very dim backgrounds.", TraitEffect.CamouflageColor(BiologicalColor.BLACK)),
-    BROWN_COLORATION("brown coloration", "Earth-toned pigments conceal the body against soil, bark, and dry vegetation.", TraitEffect.CamouflageColor(BiologicalColor.BROWN)),
-    GREEN_COLORATION("green coloration", "Green pigments conceal the body among photosynthetic growth.", TraitEffect.CamouflageColor(BiologicalColor.GREEN)),
-    BLUE_COLORATION("blue coloration", "Blue pigments conceal the body in blue-lit environments.", TraitEffect.CamouflageColor(BiologicalColor.BLUE)),
-    RED_COLORATION("red coloration", "Red pigments conceal or signal where longer wavelengths dominate.", TraitEffect.CamouflageColor(BiologicalColor.RED)),
-    PURPLE_COLORATION("purple coloration", "Purple pigments conceal or signal against similarly colored surroundings.", TraitEffect.CamouflageColor(BiologicalColor.PURPLE)),
-    YELLOW_COLORATION("yellow coloration", "High-saturation yellow pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.YELLOW)),
-    PALE_COLORATION("pale coloration", "Low-saturation pigments conceal the body in deserts and dry grasslands.", TraitEffect.CamouflageColor(BiologicalColor.PALE), maintenanceCost = -0.06),
-    WHITE_COLORATION("white coloration", "White tissues, hairs, or feathers conceal the body against snow and ice.", TraitEffect.CamouflageColor(BiologicalColor.WHITE)),
-    COUNTERSHADE_COLORATION("countershading", "A dark upper surface and light underside reduce contrast in sunlit water.", TraitEffect.CamouflageColor(BiologicalColor.COUNTERSHADE)),
-    ADAPTIVE_COLORATION("adaptive coloration", "Pigment cells actively change the body's color and pattern to match its surroundings.", TraitEffect.CamouflageColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.24),
+    BLACK_COLORATION("black coloration", "Dark biological pigments absorb broadly and reduce contrast against very dim backgrounds.", BiologicalColor.BLACK),
+    BROWN_COLORATION("brown coloration", "Brown biological pigments shape light absorption and reduce contrast against earth, bark, or shallow-water substrates.", BiologicalColor.BROWN),
+    GREEN_COLORATION("green coloration", "Green biological pigments shape light absorption and reduce contrast among photosynthetic growth.", BiologicalColor.GREEN),
+    BLUE_COLORATION("blue coloration", "Blue biological pigments shape light absorption and reduce contrast in blue-lit environments.", BiologicalColor.BLUE),
+    RED_COLORATION("red coloration", "Red biological pigments shape light absorption, conceal, or signal where longer wavelengths dominate.", BiologicalColor.RED),
+    PURPLE_COLORATION("purple coloration", "Purple biological pigments shape light absorption and may conceal or signal against similar surroundings.", BiologicalColor.PURPLE),
+    YELLOW_COLORATION("yellow coloration", "Yellow biological pigments shape light absorption and can reduce contrast in dry, brightly lit habitats.", BiologicalColor.YELLOW),
+    PALE_COLORATION("pale coloration", "Sparse or low-saturation biological pigments trade light absorption for lower tissue investment.", BiologicalColor.PALE, maintenanceCost = -0.06),
+    WHITE_COLORATION("white coloration", "Reflective biological tissues limit light absorption and reduce contrast against snow and ice.", BiologicalColor.WHITE),
+    COUNTERSHADE_COLORATION("countershading", "A dark upper surface and light underside alter light absorption and reduce contrast in sunlit water.", BiologicalColor.COUNTERSHADE),
+    ADAPTIVE_COLORATION("adaptive coloration", "Pigment cells change the body's absorption, color, and pattern in response to its surroundings.", BiologicalColor.ADAPTIVE, maintenanceCost = 0.24),
     RAINBOW_COLORATION(
         "rainbow coloration",
         "Sub-microscopic reflective structures or a variety of different pigments give the organism a rainbow coloration.",
-        TraitEffect.CamouflageColor(BiologicalColor.RAINBOW),
+        BiologicalColor.RAINBOW,
         maintenanceCost = 0.12,
         traitEffects = listOf(
             TraitEffect.ReproductionMultiplier(1.3),
         )
     ),
-
-    BLACK_PHOTOSYNTHETIC_PIGMENTS("black photosynthetic pigments", "Broad-spectrum pigments absorb most visible wavelengths.", TraitEffect.PhotosyntheticColor(BiologicalColor.BLACK)),
-    BROWN_PHOTOSYNTHETIC_PIGMENTS("brown photosynthetic pigments", "Brown photosynthetic pigments balance absorption across a broad spectrum.", TraitEffect.PhotosyntheticColor(BiologicalColor.BROWN)),
-    GREEN_PHOTOSYNTHETIC_PIGMENTS("green photosynthetic pigments", "Green photosynthetic tissues absorb red and blue wavelengths efficiently.", TraitEffect.PhotosyntheticColor(BiologicalColor.GREEN)),
-    BLUE_PHOTOSYNTHETIC_PIGMENTS("blue photosynthetic pigments", "Blue photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.BLUE)),
-    RED_PHOTOSYNTHETIC_PIGMENTS("red photosynthetic pigments", "Red photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.RED)),
-    PURPLE_PHOTOSYNTHETIC_PIGMENTS("purple photosynthetic pigments", "Purple photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PURPLE)),
-    YELLOW_PHOTOSYNTHETIC_PIGMENTS("yellow photosynthetic pigments", "Yellow photosynthetic pigments favor the wavelengths available in their light environment.", TraitEffect.PhotosyntheticColor(BiologicalColor.YELLOW)),
-    PALE_PHOTOSYNTHETIC_PIGMENTS("pale photosynthetic pigments", "Sparse photosynthetic pigments trade light capture for lower tissue investment.", TraitEffect.PhotosyntheticColor(BiologicalColor.PALE)),
-    WHITE_PHOTOSYNTHETIC_PIGMENTS("white photosynthetic pigments", "Reflective photosynthetic tissues limit excess light absorption.", TraitEffect.PhotosyntheticColor(BiologicalColor.WHITE)),
-    ADAPTIVE_PHOTOSYNTHETIC_PIGMENTS("adaptive photosynthetic pigments", "Pigment concentrations shift to match changing light spectra.", TraitEffect.PhotosyntheticColor(BiologicalColor.ADAPTIVE), maintenanceCost = 0.24),
     ;
 
     override val effects: List<TraitEffect> =
-        listOfNotNull(
-            colorEffect,
+        listOf(
+            TraitEffect.CamouflageColor(color),
+            TraitEffect.PhotosyntheticColor(color),
             TraitEffect.MaintenanceCost(maintenanceCost)
         ).plus(traitEffects)
     override val group: TraitGroup = TraitGroup.BIOLOGICAL_COLOR
 
     companion object {
         fun camouflage(color: BiologicalColor): ColorTrait =
-            entries.single { TraitEffect.CamouflageColor(color) in it.effects }
+            entries.single { it.color == color }
 
         fun photosynthetic(color: BiologicalColor): ColorTrait =
-            entries.single { TraitEffect.PhotosyntheticColor(color) in it.effects }
+            entries.single { it.color == color }
     }
 }
 
@@ -454,12 +460,12 @@ enum class CommonTrait(
             TraitEffect.ReserveCapacity(0.15),
             TraitEffect.NicheCompetitionSensitivity(0.15),
             TraitEffect.Dormancy(DormancyKind.PROPAGULE, 0.9995),
-            TraitEffect.BroadSalinityTolerance,
             TraitEffect.ReproductionMultiplier(0.88),
             TraitEffect.MaintenanceCost(0.18),
         ),
         invariantOnly = true,
         group = TraitGroup.DORMANCY_MODE,
+        capabilities = setOf(TraitCapability.EURYHALINE_OSMOREGULATION),
     ),
     ANTIFREEZE_PROTEINS(
         "antifreeze proteins",
@@ -483,9 +489,9 @@ enum class CommonTrait(
         "heat-stable enzymes",
         "Proteins and cell membranes remain functional through sustained hot conditions without shifting the organism's entire biochemical regime.",
         listOf(
-            TraitEffect.TemperatureTolerance(colderC = -2.0, hotterC = 10.0),
-            TraitEffect.ReproductionMultiplier(0.94),
-            TraitEffect.MaintenanceCost(0.14),
+            TraitEffect.TemperatureShift(10.0),
+            TraitEffect.ReproductionMultiplier(0.95),
+            TraitEffect.MaintenanceCost(0.2),
         ),
     ),
     WARM_WATER_ENZYMES(
@@ -508,11 +514,11 @@ enum class CommonTrait(
         "prolonged breath-holding",
         "Large internal oxygen stores and dive responses sustain repeated activity far from an immediately accessible shore.",
         listOf(
-            TraitEffect.AquaticRespiration(AquaticRespirationMode.BREATH_HOLDING),
-            TraitEffect.ReserveCapacity(0.08),
-            TraitEffect.ReproductionMultiplier(0.97),
-            TraitEffect.MaintenanceCost(0.04),
+            TraitEffect.HabitatAffinity(Habitat.OPEN_OCEAN, 0.1),
+            TraitEffect.MaintenanceCost(0.05),
         ),
+        capabilities = setOf(TraitCapability.PROLONGED_BREATH_HOLDING),
+        requirements = listOf(TraitRequirement.allOf(TraitCapability.AERIAL_RESPIRATION)),
     ),
 
     // Thermoregulation, growth, and metabolism
@@ -682,6 +688,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06)
         ),
         group = TraitGroup.BODY_TYPE,
+        capabilities = HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(VASCULAR_SYSTEM),
             TraitRequirement.anyOf(TraitGroup.SKELETON)
@@ -709,14 +716,14 @@ enum class CommonTrait(
         ),
         group = TraitGroup.BODY_TYPE,
         requirements = listOf(
-            TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
+            TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM)
         )
     ),
     GELATINOUS_BODY(
         "gelatinous body",
         "A mostly water-filled body achieves large volume and buoyancy with little metabolically expensive tissue, at the cost of poor resistance to attack.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.3),
             TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.2),
             TraitEffect.MetabolicDemandMultiplier(0.72),
             TraitEffect.Defense(-0.14),
@@ -732,7 +739,7 @@ enum class CommonTrait(
         "anchored polyp body",
         "A mouth surrounded by flexible feeding structures projects from an attached body that can withdraw or contract when disturbed.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.3),
             TraitEffect.HabitatAffinity(HabitatGroup.LAND, -0.2),
             TraitEffect.StrategyAffinity(EcoStrategy.FILTER_FEEDING, 0.05),
             TraitEffect.StrategyAffinity(EcoStrategy.AMBUSH_PREDATION, 0.05),
@@ -740,7 +747,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.BODY_TYPE,
-        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING) + HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.noneOf(VASCULAR_SYSTEM),
             TraitRequirement.noneOf(TraitCapability.LOCOMOTION),
@@ -751,11 +758,11 @@ enum class CommonTrait(
         "rooted body",
         "True roots penetrate terrestrial substrate, anchoring the body while gathering water and dissolved nutrients.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.65),
+            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, 0.65),
             TraitEffect.MaintenanceCost(0.02),
         ),
         group = TraitGroup.BODY_TYPE,
-        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING, Habitat.LAND_SURFACE.accessCapability),
         requirements = listOf(
             TraitRequirement.noneOf(TraitCapability.LOCOMOTION),
             TraitRequirement.sessile(),
@@ -778,13 +785,14 @@ enum class CommonTrait(
         "aerial floating body",
         "A minuscule, low-density body with drag-producing surfaces or buoyant chambers that remains suspended in atmospheric currents.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AERIAL, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.AERIAL, 0.3),
             TraitEffect.PelagicAerialResidency,
             TraitEffect.WaterRequirement(-0.15),
             TraitEffect.CaptureAbility(-0.04),
             TraitEffect.MaintenanceCost(0.02),
         ),
         group = TraitGroup.BODY_TYPE,
+        capabilities = HabitatGroup.AERIAL.accessCapabilities,
         requirements = listOf(TraitRequirement.SizeClassIs(SizeClass.MINUSCULE)),
     ),
 
@@ -797,17 +805,18 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.SALINITY_STRATEGY,
+        capabilities = setOf(TraitCapability.SALTWATER_OSMOREGULATION),
     ),
     FRESHWATER_OSMOREGULATION(
         "freshwater osmoregulation",
         "Membranes and excretory structures that maintain internal chemistry in dilute freshwater.",
         listOf(
             TraitEffect.HabitatAffinity(HabitatGroup.FRESHWATER, 0.15),
-            TraitEffect.FreshwaterOsmoregulation,
             TraitEffect.ReproductionMultiplier(0.96),
             TraitEffect.MaintenanceCost(0.12),
         ),
         group = TraitGroup.SALINITY_STRATEGY,
+        capabilities = setOf(TraitCapability.FRESHWATER_OSMOREGULATION),
     ),
     EURYHALINE_OSMOREGULATION(
         "euryhaline osmoregulation",
@@ -815,11 +824,11 @@ enum class CommonTrait(
         listOf(
             TraitEffect.HabitatAffinity(HabitatGroup.FRESHWATER, 0.1),
             TraitEffect.HabitatAffinity(HabitatGroup.SALTWATER, 0.1),
-            TraitEffect.BroadSalinityTolerance,
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.21),
         ),
         group = TraitGroup.SALINITY_STRATEGY,
+        capabilities = setOf(TraitCapability.EURYHALINE_OSMOREGULATION),
     ),
 
     // climate adaptations
@@ -844,6 +853,7 @@ enum class CommonTrait(
         "Skin glands that cool the body by evaporating secreted water.",
         listOf(
             TraitEffect.TemperatureTolerance(hotterC = 9.0),
+            TraitEffect.PursuitSpeed(0.1),
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.21),
         ),
@@ -935,12 +945,13 @@ enum class CommonTrait(
         "salt-excluding roots",
         "Root membranes limit the uptake of dissolved salts while drawing water from coastal sediment.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.65),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.65),
             TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, -0.5),
             TraitEffect.HabitatAffinity(Habitat.FRESHWATER, -0.33),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.MaintenanceCost(0.15),
         ),
+        capabilities = setOf(Habitat.COASTAL.accessCapability),
         requirements = listOf(
             TraitRequirement.anyOf(ROOTED_BODY, TraitCapability.SUBSTRATE_ANCHORING),
         ),
@@ -1047,12 +1058,12 @@ enum class CommonTrait(
         "passive respiration",
         "Respiratory gases diffuse across the body surface without dedicated pumping or specialized internal exchange organs.",
         listOf(
-            TraitEffect.AquaticRespiration(AquaticRespirationMode.UNDERWATER),
             TraitEffect.MaintenanceCost(0.03),
             TraitEffect.Defense(-0.1)
         ),
         capabilities = setOf(
             TraitCapability.RESPIRATION,
+            TraitCapability.AERIAL_RESPIRATION,
             TraitCapability.UNDERWATER_RESPIRATION
         ),
     ),
@@ -1060,7 +1071,6 @@ enum class CommonTrait(
         "gills",
         "Thin, blood-supplied folds extract dissolved respiratory gases from water as it passes over them.",
         listOf(
-            TraitEffect.AquaticRespiration(AquaticRespirationMode.UNDERWATER),
             TraitEffect.MaintenanceCost(0.06),
         ),
         capabilities = setOf(
@@ -1272,12 +1282,13 @@ enum class CommonTrait(
         "sea-ice rookery",
         "Breeding colonies occupy persistent sea ice close enough to land for repeated access to stable resting and nesting grounds.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.SEA_ICE, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.SEA_ICE, 0.5),
             TraitEffect.ObligateResidentHabitat(Habitat.SEA_ICE),
             TraitEffect.RequiresAdjacentLand,
             TraitEffect.ReproductionMultiplier(0.94),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        capabilities = setOf(Habitat.SEA_ICE.accessCapability),
     ),
     COASTAL_BREEDING_SITE(
         "coastal breeding site",
@@ -1402,34 +1413,36 @@ enum class CommonTrait(
         "walking limbs",
         "Jointed, load-bearing limbs support deliberate walking, running, or hopping across solid ground.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.35),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.35),
             TraitEffect.MaintenanceCost(0.12),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+        ) + HabitatGroup.WALKING.accessCapabilities,
         requirements = listOf(TraitRequirement.anyOf(LIMBED_BODY))
     ),
     BODY_UNDULATION(
         "body undulation",
-        "Alternating muscular waves push an elongated body across the ground without weight-bearing limbs.",
+        "Alternating muscular waves propel an elongated body across solid ground or through water without weight-bearing limbs.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.LAND, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
             TraitEffect.MaintenanceCost(-0.12),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+            TraitCapability.AQUATIC_LOCOMOTION,
+        ) + HabitatGroup.LAND.accessCapabilities + HabitatGroup.AQUATIC.accessCapabilities,
     ),
     MUSCULAR_FOOT(
         "muscular foot",
         "A broad contractile foot produces slow, stable movement across soil, rock, plants, or other firm surfaces.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.15),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.15),
             TraitEffect.Defense(0.02),
             TraitEffect.CaptureAbility(-0.02),
             TraitEffect.MaintenanceCost(0.04),
@@ -1438,7 +1451,7 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION
-        ),
+        ) + HabitatGroup.WALKING.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(MANTLED_BODY, PRIMITIVE_BODY)
         )
@@ -1447,11 +1460,11 @@ enum class CommonTrait(
         "crawling appendages",
         "Several small jointed appendages distribute weight and provide precise movement over irregular solid surfaces.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.25),
-            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.25),
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.15),
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.15),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.15),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.25),
+            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.15),
             TraitEffect.CaptureAbility(0.03),
             TraitEffect.MaintenanceCost(0.12),
         ),
@@ -1459,7 +1472,13 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+        ) + HabitatGroup.WALKING.accessCapabilities +
+            HabitatGroup.CLIMBING.accessCapabilities +
+            setOf(
+                Habitat.COASTAL.accessCapability,
+                Habitat.SHALLOW_OCEAN.accessCapability,
+                Habitat.FRESHWATER.accessCapability,
+            ),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY),
             TraitRequirement.sizeClassAtMost(SizeClass.MEDIUM)
@@ -1469,18 +1488,24 @@ enum class CommonTrait(
         "hydraulic appendages",
         "Fluid pressure extends, stiffens, or repositions flexible appendages used for walking, climbing, attachment, feeding, or manipulation.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.1),
-            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.1),
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.075),
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.075),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.075),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.1),
+            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.1),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.075),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.075),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.075),
             TraitEffect.MaintenanceCost(0.06),
         ),
         group = TraitGroup.TERRESTRIAL_MOVEMENT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+        ) + HabitatGroup.WALKING.accessCapabilities +
+            HabitatGroup.CLIMBING.accessCapabilities +
+            setOf(
+                Habitat.COASTAL.accessCapability,
+                Habitat.SHALLOW_OCEAN.accessCapability,
+                Habitat.FRESHWATER.accessCapability,
+            ),
         requirements = listOf(
             TraitRequirement.sizeClassAtMost(SizeClass.SMALL)
         )
@@ -1496,19 +1521,18 @@ enum class CommonTrait(
         ),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY),
-            TraitRequirement.sizeClassAtLeast(SizeClass.TINY)
         )
     ),
     DIGGING_LIMBS(
         "digging limbs",
         "Reinforced limbs rapidly excavate soil, tear apart nests, and expose concealed food.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.UNDERGROUND, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.15),
             TraitEffect.StrategyAccess(EcoStrategy.COLONY_RAIDING, 0.15),
             TraitEffect.CaptureAbility(0.05),
             TraitEffect.MaintenanceCost(0.15),
         ),
-        capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
+        capabilities = setOf(TraitCapability.BURROW_EXCAVATION, Habitat.UNDERGROUND.accessCapability),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1517,13 +1541,13 @@ enum class CommonTrait(
         "aquatic limbs",
         "Broad propulsive flippers or fins that support controlled swimming in open water.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.5),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.5),
             TraitEffect.MaintenanceCost(0.12),
         ),
         capabilities = setOf(
             TraitCapability.AQUATIC_LOCOMOTION,
             TraitCapability.LOCOMOTION,
-        ),
+        ) + HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY, MANTLED_BODY)
         )
@@ -1532,15 +1556,15 @@ enum class CommonTrait(
         "amphibious limbs",
         "Load-bearing limbs and swimming surfaces that permit regular movement between land and shallow water.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.LAND, 0.3),
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
             TraitEffect.MaintenanceCost(0.18),
         ),
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.AQUATIC_LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+        ) + HabitatGroup.LAND.accessCapabilities + HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1549,9 +1573,9 @@ enum class CommonTrait(
         "wading limbs",
         "Elongated load-bearing limbs keep the body above shallow water while allowing deliberate movement and prey capture over soft submerged ground.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.WALKING, 0.3),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.25),
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.25),
+            TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.3),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.25),
             TraitEffect.CaptureAbility(0.10),
             TraitEffect.MaintenanceCost(0.12),
         ),
@@ -1559,6 +1583,9 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
+        ) + HabitatGroup.WALKING.accessCapabilities + setOf(
+            Habitat.FRESHWATER.accessCapability,
+            Habitat.COASTAL.accessCapability,
         ),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
@@ -1568,14 +1595,14 @@ enum class CommonTrait(
         "climbing limbs",
         "Grasping limbs, claws, pads, or a prehensile body that supports deliberate movement through a canopy.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.3),
+            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.3),
             TraitEffect.CaptureAbility(-0.03),
             TraitEffect.MaintenanceCost(0.2),
         ),
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.TERRESTRIAL_LOCOMOTION,
-        ),
+        ) + HabitatGroup.CLIMBING.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1584,7 +1611,7 @@ enum class CommonTrait(
         "pulsing bell",
         "A flexible bell-shaped body rhythmically displaces water, allowing controlled vertical and horizontal swimming without rigid fins.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
             TraitEffect.PursuitSpeed(-0.2),
             TraitEffect.Defense(-0.1),
             TraitEffect.MaintenanceCost(0.03),
@@ -1592,7 +1619,7 @@ enum class CommonTrait(
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.AQUATIC_LOCOMOTION,
-        ),
+        ) + HabitatGroup.AQUATIC.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(GELATINOUS_BODY)
         )
@@ -1602,7 +1629,6 @@ enum class CommonTrait(
         "Pressure-tolerant tissues, collapsible gas spaces, oxygen stores, or equivalent adaptations permit prolonged activity below the sunlit surface layer.",
         listOf(
             TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.25),
-            TraitEffect.DarkWaterAdaptation,
             // Deep water is usually cooler and less seasonally variable than
             // the surface represented by the tile's single temperature.
             TraitEffect.TemperatureTolerance(
@@ -1621,14 +1647,42 @@ enum class CommonTrait(
                 PROLONGED_BREATH_HOLDING,
             ),
         ),
+        capabilities = setOf(
+            TraitCapability.DARK_WATER_ACCESS,
+            TraitCapability.DEEP_WATER_ADAPTATION,
+        ),
+    ),
+    DEEP_WATER_ADAPTATION(
+        "obligate deep-water adaptation",
+        "Pressure-stable tissues and a low-light metabolism permit survival in deep water but cannot function in surface habitats.",
+        listOf(
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.40),
+            TraitEffect.ObligateResidentHabitat(Habitat.DARK_WATER),
+            TraitEffect.TemperatureTolerance(colderC = 10.0, hotterC = -2.0),
+            TraitEffect.MaintenanceCost(0.24),
+        ),
+        capabilities = setOf(
+            TraitCapability.DARK_WATER_ACCESS,
+            TraitCapability.DEEP_WATER_ADAPTATION,
+        ),
+        requirements = listOf(
+            TraitRequirement.anyOf(
+                TraitCapability.UNDERWATER_RESPIRATION,
+            ),
+            TraitRequirement.anyOf(
+                TraitCapability.SALTWATER_OSMOREGULATION,
+                TraitCapability.EURYHALINE_OSMOREGULATION,
+            ),
+        ),
     ),
     STICKY_FEET(
         "sticky feet",
         "Specialized toe pads use microscopic dry-adhesive structures, soft wet-contact surfaces, or analogous mechanisms to grip smooth and steep surfaces.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.CLIMBING, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.CLIMBING, 0.2),
             TraitEffect.MaintenanceCost(0.12),
         ),
+        capabilities = HabitatGroup.CLIMBING.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(CLIMBING_LIMBS, MUSCULAR_FOOT),
         ),
@@ -1637,11 +1691,11 @@ enum class CommonTrait(
         "coastal clinging feet",
         "Gripping limbs or attachment pads that resist waves and currents in shallow coastal habitats.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.25),
             TraitEffect.CaptureAbility(-0.05),
             TraitEffect.MaintenanceCost(0.09),
         ),
-        capabilities = setOf(TraitCapability.LOCOMOTION),
+        capabilities = setOf(TraitCapability.LOCOMOTION, Habitat.COASTAL.accessCapability),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1650,7 +1704,7 @@ enum class CommonTrait(
         "wings",
         "Paired aerodynamic surfaces generate lift and thrust through active wingbeats.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.FLYING, 0.4),
+            TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.4),
             TraitEffect.PursuitSpeed(0.5),
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.72),
@@ -1658,7 +1712,7 @@ enum class CommonTrait(
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
-        ),
+        ) + HabitatGroup.FLYING.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1667,7 +1721,7 @@ enum class CommonTrait(
         "weak wings",
         "Paired aerodynamic surfaces weakly generate lift and thrust through active wingbeats.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.FLYING, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.FLYING, 0.2),
             TraitEffect.PursuitSpeed(0.15),
             TraitEffect.CaptureAbility(0.08),
             TraitEffect.MaintenanceCost(0.3),
@@ -1675,7 +1729,7 @@ enum class CommonTrait(
         group = TraitGroup.FLIGHT_STRUCTURE,
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
-        ),
+        ) + HabitatGroup.FLYING.accessCapabilities,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )
@@ -1700,11 +1754,12 @@ enum class CommonTrait(
         "pelagic soaring",
         "Long, efficient wings and wind-harvesting flight allow extended foraging far from land without exhausting energy reserves.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.AERIAL, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.AERIAL, 0.25),
             TraitEffect.PelagicAerialResidency,
             TraitEffect.ReserveCapacity(0.08),
             TraitEffect.MaintenanceCost(0.24),
         ),
+        capabilities = setOf(Habitat.AERIAL.accessCapability),
         requirements = listOf(
             TraitRequirement.allOf(WINGS),
         ),
@@ -1713,7 +1768,7 @@ enum class CommonTrait(
         "gliding membrane",
         "A broad skin membrane or flattened body turns height and forward speed into controlled unpowered flight.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.15),
             TraitEffect.HabitatAffinity(HabitatGroup.WALKING, -0.05),
             TraitEffect.PursuitSpeed(0.08),
             TraitEffect.Defense(0.05),
@@ -1721,6 +1776,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.21),
         ),
         group = TraitGroup.FLIGHT_STRUCTURE,
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
         requirements = listOf(
             TraitRequirement.anyOf(
                 CLIMBING_LIMBS,
@@ -1732,14 +1788,14 @@ enum class CommonTrait(
         "jet propulsion",
         "Water is forcefully expelled from a muscular chamber for rapid acceleration and maneuvering.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.2),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
             TraitEffect.CaptureAbility(0.12),
             TraitEffect.MaintenanceCost(0.36),
         ),
         capabilities = setOf(
             TraitCapability.LOCOMOTION,
             TraitCapability.AQUATIC_LOCOMOTION,
-        ),
+        ) + HabitatGroup.AQUATIC.accessCapabilities,
     ),
 
     // Body structure,
@@ -1781,7 +1837,7 @@ enum class CommonTrait(
         ),
         requirements = listOf(
             TraitRequirement.anyOf(TraitCapability.AQUATIC_LOCOMOTION, WINGS),
-            TraitRequirement.sizeClassAtLeast(SizeClass.SMALL)
+            TraitRequirement.sizeClassAtLeast(SizeClass.TINY)
         ),
         group = TraitGroup.BODY_PHYSIQUE,
     ),
@@ -1805,10 +1861,10 @@ enum class CommonTrait(
         listOf(
             TraitEffect.BodyMassMultiplier(0.5),
             TraitEffect.PursuitSpeed(-0.1),
-            TraitEffect.HabitatAccess(Habitat.UNDERGROUND, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.UNDERGROUND, 0.25),
             TraitEffect.MaintenanceCost(0.075),
         ),
-        capabilities = setOf(TraitCapability.BURROW_EXCAVATION),
+        capabilities = setOf(TraitCapability.BURROW_EXCAVATION, Habitat.UNDERGROUND.accessCapability),
         group = TraitGroup.BODY_PHYSIQUE,
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY, PRIMITIVE_BODY, GELATINOUS_BODY)
@@ -1820,32 +1876,43 @@ enum class CommonTrait(
         "surface holdfast",
         "Fine adhesive filaments or pads fasten the body to soil, stone, bark, or another exposed surface without penetrating it as true roots.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.6),
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, 0.6),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.075),
         ),
-        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        capabilities = setOf(
+            TraitCapability.SUBSTRATE_ANCHORING,
+            Habitat.LAND_SURFACE.accessCapability,
+            Habitat.CANOPY.accessCapability,
+        ),
     ),
     BUOYANCY_BLADDER(
         "buoyancy bladder",
         "A gas- or fluid-regulating chamber that controls position in the water column without continuous swimming.",
         listOf(
-            TraitEffect.HabitatAccess(HabitatGroup.AQUATIC, 0.1),
+            TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.1),
+            TraitEffect.HabitatAffinity(Habitat.DARK_WATER, -0.2),
             TraitEffect.Defense(-0.05),
             TraitEffect.MaintenanceCost(0.12),
-        )
+        ),
+        capabilities = HabitatGroup.AQUATIC.accessCapabilities,
     ),
     SUBSTRATE_HOLDFAST(
         "aquatic holdfast",
         "A tough anchoring structure that secures a sessile body to rock or reef under waves and currents.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.5),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.5),
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.5),
             TraitEffect.MaintenanceCost(0.12),
         ),
-        capabilities = setOf(TraitCapability.SUBSTRATE_ANCHORING),
+        capabilities = setOf(
+            TraitCapability.SUBSTRATE_ANCHORING,
+            Habitat.COASTAL.accessCapability,
+            Habitat.FRESHWATER.accessCapability,
+            Habitat.SHALLOW_OCEAN.accessCapability,
+        ),
     ),
     FLEXIBLE_SPINE(
         "flexible spine",
@@ -2032,11 +2099,15 @@ enum class CommonTrait(
         "gripping suction cups",
         "Pressure-sealing discs attach to rock, prey, and other bodies under water.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.COASTAL, 0.25),
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.15),
+            TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.15),
             TraitEffect.Defense(0.08),
             TraitEffect.CaptureAbility(0.10),
             TraitEffect.MaintenanceCost(0.18),
+        ),
+        capabilities = setOf(
+            Habitat.COASTAL.accessCapability,
+            Habitat.SHALLOW_OCEAN.accessCapability,
         ),
     ),
     TAIL(
@@ -2714,9 +2785,7 @@ enum class CommonTrait(
                     InteractionEffect.DefenseBonus(InteractionEffectSubject.BEARER, 0.2),
                 )
             ),
-            TraitEffect.CaptureAbility(-0.04),
-            TraitEffect.ReproductionMultiplier(0.96),
-            TraitEffect.MaintenanceCost(0.15),
+            TraitEffect.MaintenanceCost(0.1),
         ),
     ),
 
@@ -2741,7 +2810,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.15),
         ),
         group = TraitGroup.FILTERING_APPARATUS,
-        requirements = listOf(TraitRequirement.allOf(JAW))
+        requirements = listOf(TraitRequirement.sizeClassAtLeast(SizeClass.SMALL))
     ),
     SIEVING_TEETH(
         "sieving teeth",
@@ -2752,7 +2821,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.15),
         ),
         group = TraitGroup.FILTERING_APPARATUS,
-        requirements = listOf(TraitRequirement.allOf(TEETH))
+        requirements = listOf(TraitRequirement.allOf(TEETH), TraitRequirement.sizeClassAtLeast(SizeClass.SMALL))
     ),
     GILL_RAKERS(
         "gill rakers",
@@ -2806,7 +2875,8 @@ enum class CommonTrait(
             TraitRequirement.allOf(
                 TraitCapability.LOCOMOTION,
                 LIMBED_BODY
-            )
+            ),
+            TraitRequirement.sizeClassAtMost(SizeClass.LARGE)
         ),
     ),
     LONG_TUSKS(
@@ -2818,7 +2888,10 @@ enum class CommonTrait(
             TraitEffect.ReproductionMultiplier(0.97),
             TraitEffect.MaintenanceCost(0.15),
         ),
-        requirements = listOf(TraitRequirement.allOf(TEETH)),
+        requirements = listOf(
+            TraitRequirement.allOf(TEETH),
+            TraitRequirement.sizeClassAtLeast(SizeClass.SMALL)
+        ),
     ),
     STRONG_JAWS(
         "strong jaws",
@@ -3009,7 +3082,7 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.18),
         ),
         requirements = listOf(
-            TraitRequirement.AllOf(setOf(CLAWS, LIMBED_BODY)),
+            TraitRequirement.AllOf(setOf(CLAWS)),
         ),
     ),
     STINGER(
@@ -3180,22 +3253,24 @@ enum class CommonTrait(
         "long browsing neck",
         "An elongated neck reaches foliage beyond the feeding height of most ground animals.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.3),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.3),
             TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.10),
             TraitEffect.WaterRequirement(0.04),
             TraitEffect.MaintenanceCost(0.27),
         ),
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
     ),
     PREHENSILE_TRUNK(
         "prehensile trunk",
         "A muscular mobile appendage manipulates branches, uproots food, and draws water without lowering the whole body.",
         listOf(
             TraitEffect.StrategyAffinity(EcoStrategy.GRAZING, 0.18),
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.2),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.2),
             TraitEffect.CaptureAbility(0.10),
             TraitEffect.WaterRequirement(0.03),
             TraitEffect.MaintenanceCost(0.24),
         ),
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
     ),
     NECTAR_SIPPING_TONGUE(
         "nectar-sipping tongue",
@@ -3330,8 +3405,11 @@ enum class CommonTrait(
         listOf(
             TraitEffect.StrategyAccess(EcoStrategy.DEPOSIT_FEEDING, 0.84),
             TraitEffect.HabitatAffinity(Habitat.DARK_WATER, 0.30),
-            TraitEffect.DarkWaterAdaptation,
             TraitEffect.MaintenanceCost(0.15),
+        ),
+        capabilities = setOf(
+            TraitCapability.DARK_WATER_ACCESS,
+            TraitCapability.DEEP_WATER_ADAPTATION,
         ),
     ),
 
@@ -3359,19 +3437,13 @@ enum class CommonTrait(
     ),
     INTERNAL_PHOTOSYMBIONTS(
         "internal photosymbionts",
-        "Light-dependent symbionts living within an anchored aquatic host provide part of its energy, restricting productive growth to illuminated shallow water.",
+        "Light-dependent symbionts living within an anchored aquatic host provide part of its energy.",
         listOf(
             TraitEffect.StrategyAccess(EcoStrategy.PHOTOSYNTHESIS, 0.55),
-            TraitEffect.WaterDepthTolerance(
-                optimalMaximumM = 30.0,
-                absoluteMaximumM = 80.0,
-            ),
-            TraitEffect.ReproductionMultiplier(1.10),
-            TraitEffect.MaintenanceCost(0.18),
-        ),
-        requirements = listOf(
-            TraitRequirement.allOf(POLYP_BODY),
-        ),
+            TraitEffect.HabitatAffinity(HabitatGroup.DARK, -0.5),
+            TraitEffect.MetabolicDemandMultiplier(1.2),
+            TraitEffect.MaintenanceCost(-0.33),
+        )
     ),
     REEF_NESTING(
         "reef nesting",
@@ -3450,11 +3522,12 @@ enum class CommonTrait(
         "canopy growth",
         "A tall or climbing growth form that places much of the organism within an elevated living canopy.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.8),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.8),
             TraitEffect.CanopyLightEfficiency(0.22),
             TraitEffect.WaterRequirement(0.08),
             TraitEffect.MaintenanceCost(0.21),
         ),
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
     ),
     WOODY_SUPPORT_TISSUE(
         "woody support tissue",
@@ -3493,12 +3566,13 @@ enum class CommonTrait(
         "epiphytic roots",
         "Roots or analogous anchors cling to another organism above the ground and rapidly absorb intermittent rain, mist, and trapped debris without parasitizing the support.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.66),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.66),
             TraitEffect.CanopyLightEfficiency(0.10),
             TraitEffect.WaterRequirement(0.12),
             TraitEffect.Defense(-0.04),
             TraitEffect.MaintenanceCost(0.18),
         ),
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
         requirements = listOf(
             TraitRequirement.AllOf(
                 setOf(
@@ -3512,13 +3586,14 @@ enum class CommonTrait(
         "cushion growth",
         "Many short, tightly packed shoots form a low rounded surface that traps heat and moisture while resisting wind and abrasive particles.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.LAND_SURFACE, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.LAND_SURFACE, 0.5),
             TraitEffect.TemperatureTolerance(optimalColderC = 5.0),
             TraitEffect.WaterRequirement(-0.04),
             TraitEffect.ReproductionMultiplier(0.92),
             TraitEffect.Defense(0.05),
             TraitEffect.MaintenanceCost(0.15),
         ),
+        capabilities = setOf(Habitat.LAND_SURFACE.accessCapability),
         requirements = listOf(
             TraitRequirement.AllOf(
                 setOf(
@@ -3532,11 +3607,15 @@ enum class CommonTrait(
         "floating fronds",
         "Long buoyant photosynthetic blades rise from an aquatic anchor into well-lit surface water.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.SHALLOW_OCEAN, 0.4),
-            TraitEffect.HabitatAccess(Habitat.FRESHWATER, 0.4),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.4),
+            TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.4),
             TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.2),
             TraitEffect.InsolationOptimum(-0.06),
             TraitEffect.MaintenanceCost(0.21),
+        ),
+        capabilities = setOf(
+            Habitat.SHALLOW_OCEAN.accessCapability,
+            Habitat.FRESHWATER.accessCapability,
         ),
         requirements = listOf(
             TraitRequirement.allOf(TraitGroup.PHOTOSYNTHETIC_STRUCTURE),
@@ -3581,9 +3660,10 @@ enum class CommonTrait(
         "undulating climbing",
         "Lasso or concertina movement allows creatures to climb without needing limbs.",
         listOf(
-            TraitEffect.HabitatAccess(Habitat.CANOPY, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.CANOPY, 0.25),
             TraitEffect.MaintenanceCost(0.15)
         ),
+        capabilities = setOf(Habitat.CANOPY.accessCapability),
         requirements = listOf(
             TraitRequirement.anyOf(BODY_UNDULATION)
         )

@@ -2,7 +2,28 @@ package dev.biserman.planet.planet.ecology
 
 interface HabitatSelection {
     val habitats: List<Pair<Habitat, Double>>
+
+    val accessCapabilities: Set<TraitCapability>
+        get() = habitats.mapTo(linkedSetOf()) { it.first.accessCapability }
 }
+
+private val AERIAL_RESPIRATION = setOf(TraitCapability.AERIAL_RESPIRATION)
+private val FRESHWATER_TOLERANCE = setOf(
+    TraitCapability.FRESHWATER_OSMOREGULATION,
+    TraitCapability.EURYHALINE_OSMOREGULATION,
+)
+private val SALTWATER_TOLERANCE = setOf(
+    TraitCapability.SALTWATER_OSMOREGULATION,
+    TraitCapability.EURYHALINE_OSMOREGULATION,
+)
+private val AQUATIC_OR_AERIAL_RESPIRATION = setOf(
+    TraitCapability.UNDERWATER_RESPIRATION,
+    TraitCapability.AERIAL_RESPIRATION,
+)
+private val AQUATIC_OR_BREATH_HOLDING = setOf(
+    TraitCapability.UNDERWATER_RESPIRATION,
+    TraitCapability.PROLONGED_BREATH_HOLDING,
+)
 
 enum class HabitatGroup(override val habitats: List<Pair<Habitat, Double>>) : HabitatSelection {
     LAND(
@@ -38,6 +59,16 @@ enum class HabitatGroup(override val habitats: List<Pair<Habitat, Double>>) : Ha
             Habitat.DARK_WATER to 1.0,
 
             Habitat.COASTAL to 0.5
+        )
+    ),
+    BRIGHT(
+        listOf(
+            Habitat.SHALLOW_OCEAN to 1.0,
+            Habitat.OPEN_OCEAN to 1.0,
+            Habitat.LAND_SURFACE to 1.0,
+            Habitat.COASTAL to 1.0,
+            Habitat.FRESHWATER to 1.0,
+            Habitat.CANOPY to 1.0,
         )
     ),
     DARK(
@@ -88,21 +119,121 @@ enum class HabitatGroup(override val habitats: List<Pair<Habitat, Double>>) : Ha
 enum class Habitat(
     val displayName: String,
     val aquatic: Boolean,
+    val accessCapability: TraitCapability,
+    /** Every set is an OR-clause; every clause must be fulfilled. */
+    val capabilityRequirements: List<Set<TraitCapability>>,
 ) : HabitatSelection {
-    LAND_SURFACE("land-surface", false),
-    CANOPY("canopy", false),
-    FRESHWATER("freshwater", true),
-    COASTAL("coastal", true),
-    SHALLOW_OCEAN("shallow-ocean", true),
-    OPEN_OCEAN("open-ocean", true),
-    DARK_WATER("dark-water", true),
-    SEA_ICE("sea-ice", false),
-    AERIAL("aerial", false),
-    CAVE("cave", false),
-    UNDERGROUND("underground", false),
+    LAND_SURFACE(
+        "land-surface",
+        false,
+        TraitCapability.LAND_SURFACE_ACCESS,
+        listOf(setOf(TraitCapability.LAND_SURFACE_ACCESS), AERIAL_RESPIRATION),
+    ),
+    CANOPY(
+        "canopy",
+        false,
+        TraitCapability.CANOPY_ACCESS,
+        listOf(setOf(TraitCapability.CANOPY_ACCESS), AERIAL_RESPIRATION),
+    ),
+    FRESHWATER(
+        "freshwater",
+        true,
+        TraitCapability.FRESHWATER_ACCESS,
+        listOf(
+            setOf(TraitCapability.LAND_SURFACE_ACCESS, TraitCapability.FRESHWATER_ACCESS),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AERIAL_RESPIRATION + FRESHWATER_TOLERANCE,
+        ),
+    ),
+    COASTAL(
+        "coastal",
+        true,
+        TraitCapability.COASTAL_ACCESS,
+        listOf(
+            setOf(
+                TraitCapability.LAND_SURFACE_ACCESS,
+                TraitCapability.COASTAL_ACCESS,
+                TraitCapability.SHALLOW_OCEAN_ACCESS,
+                TraitCapability.OPEN_OCEAN_ACCESS,
+            ),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AERIAL_RESPIRATION + SALTWATER_TOLERANCE,
+        ),
+    ),
+    SHALLOW_OCEAN(
+        "shallow-ocean",
+        true,
+        TraitCapability.SHALLOW_OCEAN_ACCESS,
+        listOf(
+            setOf(TraitCapability.SHALLOW_OCEAN_ACCESS),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AQUATIC_OR_BREATH_HOLDING,
+            SALTWATER_TOLERANCE,
+        ),
+    ),
+    OPEN_OCEAN(
+        "open-ocean",
+        true,
+        TraitCapability.OPEN_OCEAN_ACCESS,
+        listOf(
+            setOf(TraitCapability.OPEN_OCEAN_ACCESS),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AQUATIC_OR_BREATH_HOLDING,
+            SALTWATER_TOLERANCE,
+        ),
+    ),
+    DARK_WATER(
+        "dark-water",
+        true,
+        TraitCapability.DARK_WATER_ACCESS,
+        listOf(
+            setOf(TraitCapability.DARK_WATER_ACCESS),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AQUATIC_OR_BREATH_HOLDING,
+            SALTWATER_TOLERANCE,
+            setOf(TraitCapability.DEEP_WATER_ADAPTATION),
+        ),
+    ),
+    SEA_ICE(
+        "sea-ice",
+        false,
+        TraitCapability.SEA_ICE_ACCESS,
+        listOf(
+            setOf(
+                TraitCapability.LAND_SURFACE_ACCESS,
+                TraitCapability.SEA_ICE_ACCESS,
+                TraitCapability.COASTAL_ACCESS,
+                TraitCapability.SHALLOW_OCEAN_ACCESS,
+                TraitCapability.OPEN_OCEAN_ACCESS,
+            ),
+            AQUATIC_OR_AERIAL_RESPIRATION,
+            AERIAL_RESPIRATION + SALTWATER_TOLERANCE,
+        ),
+    ),
+    AERIAL(
+        "aerial",
+        false,
+        TraitCapability.AERIAL_ACCESS,
+        listOf(setOf(TraitCapability.AERIAL_ACCESS), AERIAL_RESPIRATION),
+    ),
+    CAVE(
+        "cave",
+        false,
+        TraitCapability.CAVE_ACCESS,
+        listOf(setOf(TraitCapability.CAVE_ACCESS), AERIAL_RESPIRATION),
+    ),
+    UNDERGROUND(
+        "underground",
+        false,
+        TraitCapability.UNDERGROUND_ACCESS,
+        listOf(setOf(TraitCapability.UNDERGROUND_ACCESS), AERIAL_RESPIRATION),
+    ),
     ;
 
     override val habitats: List<Pair<Habitat, Double>> = listOf(this to 1.0)
+
+    fun isAccessibleBy(capabilities: Set<TraitCapability>): Boolean =
+        capabilityRequirements.all { clause -> clause.any(capabilities::contains) }
 
     fun availableLight(insolation: Double, canopyCover: Double): Double = when (this) {
         CANOPY, SEA_ICE, AERIAL -> insolation

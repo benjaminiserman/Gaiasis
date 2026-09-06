@@ -10,7 +10,6 @@ object InvariantSpecies {
         id = "invariant-carpet-plants",
         displayName = "carpet plants",
         sizeClass = SizeClass.TINY,
-        motile = false,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
@@ -22,7 +21,7 @@ object InvariantSpecies {
             CommonTrait.ROOTED_BODY,
             CommonTrait.FLOWERS,
             CommonTrait.NECTARIES,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ),
         kind = SpeciesKind.INVARIANT,
     )
@@ -31,7 +30,6 @@ object InvariantSpecies {
         id = "invariant-bugs",
         displayName = "bugs",
         sizeClass = SizeClass.TINY,
-        motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
@@ -52,7 +50,6 @@ object InvariantSpecies {
         id = "invariant-small-aquatic-life",
         displayName = "small aquatic life",
         sizeClass = SizeClass.TINY,
-        motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
@@ -76,19 +73,16 @@ object InvariantSpecies {
         id = "invariant-plankton",
         displayName = "plankton",
         sizeClass = SizeClass.MINUSCULE,
-        motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
             CommonTrait.CLONAL_PROPAGATION,
             CommonTrait.MICROSCOPIC_RESTING_STAGES,
-            CommonTrait.ECTOTHERMY,
-            CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ),
         kind = SpeciesKind.INVARIANT,
     )
@@ -97,17 +91,14 @@ object InvariantSpecies {
         id = "invariant-aeroplankton",
         displayName = "aeroplankton",
         sizeClass = SizeClass.MINUSCULE,
-        motile = true,
         traits = listOf(
             CommonTrait.TEMPERATE_BIOCHEMISTRY,
             CommonTrait.INVARIANT_RESISTANCE,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.CLONAL_PROPAGATION,
-            CommonTrait.ECTOTHERMY,
-            CommonTrait.COLLECTIVE_LIVING,
             CommonTrait.AERIAL_FLOATING_BODY,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
         ),
         kind = SpeciesKind.INVARIANT,
     )

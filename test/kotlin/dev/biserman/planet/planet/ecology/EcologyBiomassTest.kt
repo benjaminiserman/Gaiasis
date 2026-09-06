@@ -84,6 +84,52 @@ class EcologyBiomassTest {
     }
 
     @Test
+    fun `motile mixotroph receives producer capacity only in its photosynthesis niche`() {
+        val definition = SpeciesDefinition(
+            id = "motile-mixotroph",
+            displayName = "Motile mixotroph",
+            sizeClass = SizeClass.SMALL,
+            traits = listOf(
+                CommonTrait.TRACHEA,
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ENDOTHERMY,
+                CommonTrait.SOLITARY,
+                CommonTrait.VIVIPARITY,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
+                CommonTrait.LIMBED_BODY,
+                CommonTrait.WALKING_LIMBS,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.PHOTOSYNTHETIC_SURFACE,
+                ColorTrait.GREEN_COLORATION,
+            ),
+        )
+        val ecology = EcologyCompiler.compile(listOf(definition))
+        val species = ecology.species.single()
+        val environment = SeasonalCellEnvironment.create(
+            areaKm2 = 40_000.0,
+            temperatureC = 22.0,
+            insolation = 0.8,
+            precipitationMm = 800.0,
+            isLand = true,
+        )
+        val grazing = ecology.niches.single {
+            it.habitat == Habitat.LAND_SURFACE && it.strategy == EcoStrategy.GRAZING
+        }
+        val photosynthesis = ecology.niches.single {
+            it.habitat == Habitat.LAND_SURFACE && it.strategy == EcoStrategy.PHOTOSYNTHESIS
+        }
+
+        assertTrue(species.motile)
+        assertTrue(species.niche.supports(EcoStrategy.GRAZING))
+        assertTrue(species.niche.supports(EcoStrategy.PHOTOSYNTHESIS))
+        assertTrue(
+            EcologyBiomass.carryingCapacityKg(species, photosynthesis, environment) >
+                EcologyBiomass.carryingCapacityKg(species, grazing, environment) * 100.0,
+        )
+    }
+
+    @Test
     fun `modeled prey consumers receive a trophic ceiling without background food`() {
         val ecology = EcologyCompiler.compile(listOf(InvariantSpecies.BUGS))
         val bugs = ecology.species.single()

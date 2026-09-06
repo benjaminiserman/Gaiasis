@@ -50,6 +50,7 @@ data class HydrationProfile(
 
 data class RespirationProfile(
     val salinityTolerance: AquaticSalinityTolerance,
+    val aerialBreathing: Boolean,
     val underwaterBreathing: Boolean,
     val prolongedBreathHolding: Boolean,
 )

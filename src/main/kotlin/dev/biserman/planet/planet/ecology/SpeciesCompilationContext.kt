@@ -14,7 +14,7 @@ class SpeciesCompilationContext internal constructor(
     private val speciesDisplayName: String,
     sizeTemperatureTolerance: Double,
 ) {
-    private val habitatAccess = BooleanArray(Habitat.entries.size)
+    private val habitatPermitted = BooleanArray(Habitat.entries.size) { true }
     private val habitatAffinity = DoubleArray(Habitat.entries.size)
     private val strategyAccess = BooleanArray(EcoStrategy.entries.size)
     private val strategyAffinity = DoubleArray(EcoStrategy.entries.size)
@@ -71,11 +71,6 @@ class SpeciesCompilationContext internal constructor(
     private var pollinationEfficiency = 0.0
     private var wasteFertilization = 0.0
     private var pelagicAerialResident = false
-    private var darkWaterAdapted = false
-    private var freshwaterAdapted = false
-    private var broadSalinityTolerance = false
-    private var underwaterBreathing = false
-    private var prolongedBreathHolding = false
     private var obligateResidentHabitat: Habitat? = null
     private var requiresAdjacentLand = false
 
@@ -94,45 +89,22 @@ class SpeciesCompilationContext internal constructor(
     /** Applies phenotype rules that emerge from combinations of authored traits. */
     internal fun applyCrossTraitRules(
         sizeClass: SizeClass,
-        commonTraits: Set<CommonTrait>,
+        capabilities: Set<TraitCapability>,
     ) {
-        when (compiledSalinityTolerance()) {
-            AquaticSalinityTolerance.SALTWATER_ONLY ->
-                habitatAccess[Habitat.FRESHWATER.ordinal] = false
-
-            AquaticSalinityTolerance.FRESHWATER_ONLY -> {
-                habitatAccess[Habitat.COASTAL.ordinal] = false
-                habitatAccess[Habitat.SHALLOW_OCEAN.ordinal] = false
-                habitatAccess[Habitat.OPEN_OCEAN.ordinal] = false
-                habitatAccess[Habitat.DARK_WATER.ordinal] = false
-            }
-
-            AquaticSalinityTolerance.BROAD -> Unit
-        }
-        if (commonTraits.any { TraitCapability.LOCOMOTION in it.capabilities }) {
+        if (TraitCapability.LOCOMOTION in capabilities) {
             if (sizeClass.ordinal >= SizeClass.HUGE.ordinal) {
-                habitatAccess[Habitat.FRESHWATER.ordinal] = false
+                habitatPermitted[Habitat.FRESHWATER.ordinal] = false
             }
             if (sizeClass >= SizeClass.LARGE) {
-                habitatAccess[Habitat.CANOPY.ordinal] = false
-            }
-            if (!underwaterBreathing && !prolongedBreathHolding) {
-                habitatAccess[Habitat.SHALLOW_OCEAN.ordinal] = false
-                habitatAccess[Habitat.OPEN_OCEAN.ordinal] = false
-                habitatAccess[Habitat.DARK_WATER.ordinal] = false
-                reefUse = 0.0
+                habitatPermitted[Habitat.CANOPY.ordinal] = false
             }
         }
         obligateResidentHabitat?.let { requiredHabitat ->
-            habitatAccess.indices.forEach { habitatIndex ->
+            habitatPermitted.indices.forEach { habitatIndex ->
                 if (habitatIndex != requiredHabitat.ordinal) {
-                    habitatAccess[habitatIndex] = false
+                    habitatPermitted[habitatIndex] = false
                 }
             }
-        }
-
-        if (!darkWaterAdapted) {
-            habitatAccess[Habitat.DARK_WATER.ordinal] = false
         }
 
         val grazingSupport = effectiveStrategySupport(EcoStrategy.GRAZING)
@@ -166,6 +138,10 @@ class SpeciesCompilationContext internal constructor(
         // but the resulting lethal limits must still enclose the productive range.
         val outerLowC = minOf(5.0 + temperatureShift - colderTolerance, optimalLowC - 1.0)
         val outerHighC = maxOf(30.0 + temperatureShift + hotterTolerance, optimalHighC + 1.0)
+        val capabilities = traitProfile.capabilities
+        val habitatAccess = BooleanArray(Habitat.entries.size) { habitatIndex ->
+            habitatPermitted[habitatIndex] && Habitat.entries[habitatIndex].isAccessibleBy(capabilities)
+        }
         val habitatSupport = DoubleArray(Habitat.entries.size) { habitatIndex ->
             if (habitatAccess[habitatIndex]) {
                 habitatAffinity[habitatIndex].coerceIn(0.0, 1.0)
@@ -184,21 +160,11 @@ class SpeciesCompilationContext internal constructor(
             if (habitat <= 0.0 || strategy <= 0.0) 0.0 else habitat * strategy
         }
         val massKg = definition.sizeClass.typicalMassKg * bodyMassMultiplier
-        val sessilePhotosyntheticMaintenance =
-            if (
-                !definition.motile &&
-                strategySupport[EcoStrategy.PHOTOSYNTHESIS.ordinal] > 0.0
-            ) {
-                0.30
-            } else {
-                1.0
-            }
         val maintenanceDemand =
             massKg *
                 definition.sizeClass.maintenancePerKg *
                 max(0.15, 1.0 + maintenanceCost) *
-                metabolicDemandMultiplier *
-                sessilePhotosyntheticMaintenance
+                metabolicDemandMultiplier
         val compiledDispersalKind =
             if (definition.motile && dispersalKind == DispersalKind.NONE) {
                 DispersalKind.NEIGHBOR
@@ -239,9 +205,10 @@ class SpeciesCompilationContext internal constructor(
                     snowHydration = snowHydration,
                 ),
                 respiration = RespirationProfile(
-                    salinityTolerance = compiledSalinityTolerance(),
-                    underwaterBreathing = underwaterBreathing,
-                    prolongedBreathHolding = prolongedBreathHolding,
+                    salinityTolerance = compiledSalinityTolerance(capabilities),
+                    aerialBreathing = TraitCapability.AERIAL_RESPIRATION in capabilities,
+                    underwaterBreathing = TraitCapability.UNDERWATER_RESPIRATION in capabilities,
+                    prolongedBreathHolding = TraitCapability.PROLONGED_BREATH_HOLDING in capabilities,
                 ),
             ),
             environment = EnvironmentalProfile(
@@ -253,7 +220,7 @@ class SpeciesCompilationContext internal constructor(
                 denseCanopyForagingPenalty =
                 denseCanopyForagingPenalty.coerceIn(0.0, 1.0),
                 pelagicAerialResident = pelagicAerialResident,
-                darkWaterAdapted = darkWaterAdapted,
+                darkWaterAdapted = TraitCapability.DEEP_WATER_ADAPTATION in capabilities,
                 requiresAdjacentLand = requiresAdjacentLand,
             ),
             lifeHistory = LifeHistoryProfile(
@@ -314,14 +281,10 @@ class SpeciesCompilationContext internal constructor(
         )
     }
 
-    private fun compiledSalinityTolerance(): AquaticSalinityTolerance = when {
-        broadSalinityTolerance -> AquaticSalinityTolerance.BROAD
-        freshwaterAdapted -> AquaticSalinityTolerance.FRESHWATER_ONLY
+    private fun compiledSalinityTolerance(capabilities: Set<TraitCapability>): AquaticSalinityTolerance = when {
+        TraitCapability.EURYHALINE_OSMOREGULATION in capabilities -> AquaticSalinityTolerance.BROAD
+        TraitCapability.FRESHWATER_OSMOREGULATION in capabilities -> AquaticSalinityTolerance.FRESHWATER_ONLY
         else -> AquaticSalinityTolerance.SALTWATER_ONLY
-    }
-
-    fun accessHabitat(habitat: Habitat) {
-        habitatAccess[habitat.ordinal] = true
     }
 
     fun adjustHabitatAffinity(habitat: Habitat, amount: Double) {
@@ -529,27 +492,8 @@ class SpeciesCompilationContext internal constructor(
         metabolicDemandMultiplier *= multiplier
     }
 
-    fun enableFreshwaterOsmoregulation() {
-        freshwaterAdapted = true
-    }
-
-    fun enableBroadSalinityTolerance() {
-        broadSalinityTolerance = true
-    }
-
-    fun enableAquaticRespiration(mode: AquaticRespirationMode) {
-        when (mode) {
-            AquaticRespirationMode.UNDERWATER -> underwaterBreathing = true
-            AquaticRespirationMode.BREATH_HOLDING -> prolongedBreathHolding = true
-        }
-    }
-
     fun enablePelagicAerialResidency() {
         pelagicAerialResident = true
-    }
-
-    fun adaptToDarkWater() {
-        darkWaterAdapted = true
     }
 
     fun requireResidentHabitat(habitat: Habitat) {

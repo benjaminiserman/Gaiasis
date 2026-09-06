@@ -100,7 +100,6 @@ private class BenchmarkScenario(
                         id = "land-producer-$index",
                         displayName = "Land producer $index",
                         sizeClass = SizeClass.entries[index % 4],
-                        motile = false,
                         traits = listOf(
                             CommonTrait.TRACHEA,
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -130,13 +129,13 @@ private class BenchmarkScenario(
                         id = "ocean-producer-$index",
                         displayName = "Ocean producer $index",
                         sizeClass = SizeClass.entries[index % 4],
-                        motile = false,
                         traits = listOf(
                             CommonTrait.TEMPERATE_BIOCHEMISTRY,
                             CommonTrait.AQUATIC_OVOSPORE,
                             CommonTrait.PHOTOSYNTHETIC_SURFACE,
                             CommonTrait.BUOYANCY_BLADDER,
                             CommonTrait.PASSIVE_RESPIRATION,
+                            CommonTrait.SALTWATER_OSMOREGULATION,
                             ColorTrait.photosynthetic(
                                 BiologicalColor.entries[index % BiologicalColor.entries.size],
                             ),
@@ -170,7 +169,6 @@ private class BenchmarkScenario(
                 id = id,
                 displayName = id,
                 sizeClass = SizeClass.entries[2 + index % 4],
-                motile = true,
                 traits = listOf(
                     CommonTrait.TRACHEA,
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -204,7 +202,6 @@ private class BenchmarkScenario(
                 id = id,
                 displayName = id,
                 sizeClass = SizeClass.entries[1 + index % 5],
-                motile = true,
                 traits = listOf(
                     CommonTrait.TEMPERATE_BIOCHEMISTRY,
                     CommonTrait.ECTOTHERMY,
@@ -212,6 +209,8 @@ private class BenchmarkScenario(
                     CommonTrait.AQUATIC_OVOSPORE,
                     CommonTrait.BUOYANCY_BLADDER,
                     CommonTrait.GILLS,
+                    CommonTrait.SALTWATER_OSMOREGULATION,
+                    CommonTrait.JET_PROPULSION,
                     strategyTrait,
                     ColorTrait.camouflage(BiologicalColor.entries[index % BiologicalColor.entries.size]),
                 ) + if (strategy == EcoStrategy.AMBUSH_PREDATION || strategy == EcoStrategy.SCAVENGING) {

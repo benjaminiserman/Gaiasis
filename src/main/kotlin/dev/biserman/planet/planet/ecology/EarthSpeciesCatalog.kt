@@ -28,7 +28,6 @@ object EarthSpeciesCatalog {
             SizeClass.LARGE,
             CommonTrait.SKITTISH,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
-            CommonTrait.SOLITARY,
         ),
         horse.descend(
             "plains zebra",
@@ -320,6 +319,7 @@ object EarthSpeciesCatalog {
         camel.descend(
             "dromedary camel",
             SizeClass.LARGE,
+            CommonTrait.HEAT_STABLE_ENZYMES,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
             ColorTrait.PALE_COLORATION,
             CommonTrait.SOLITARY,
@@ -381,6 +381,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CALM,
             CommonTrait.SIEVING_TEETH,
             ColorTrait.PALE_COLORATION,
+            minus = listOf(CommonTrait.MEAT_EATING_MOUTHPARTS),
         ),
         otter.descend(
             "sea otter",
@@ -582,7 +583,6 @@ object EarthSpeciesCatalog {
             CommonTrait.HETEROTHERMY,
             CommonTrait.DIURNAL,
             CommonTrait.FOOD_DERIVED_WATER,
-            CommonTrait.HYPOXIA_RESPONSIVE_METABOLISM,
             CommonTrait.BURROW_BORROWER,
         ),
         // Rocky Mountains
@@ -665,17 +665,19 @@ object EarthSpeciesCatalog {
     )
 
     val EXTINCT_SPECIES: List<SpeciesDefinition> = listOf(
-        animal(
+        reptile.descend(
             "tyrannosaurus rex",
             SizeClass.HUGE,
             CommonTrait.ENDOTHERMY,
             CommonTrait.SWIFT_LIMBS,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.STRONG_JAWS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.FAT_RESERVES,
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "velociraptor",
             SizeClass.SMALL,
             CommonTrait.ENDOTHERMY,
@@ -683,12 +685,14 @@ object EarthSpeciesCatalog {
             CommonTrait.FEATHERS,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.HOOKED_TALONS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.INSULATING_PLUMAGE.atLevel(2),
             CommonTrait.COOPERATIVE_HUNTING,
             ColorTrait.BROWN_COLORATION,
-            CommonTrait.GROUP_LIVING
+            CommonTrait.GROUP_LIVING,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "triceratops",
             SizeClass.HUGE,
             CommonTrait.ENDOTHERMY,
@@ -697,8 +701,9 @@ object EarthSpeciesCatalog {
             CommonTrait.ARMORED_HIDE.atLevel(2),
             CommonTrait.HORNS,
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "stegosaurus",
             SizeClass.HUGE,
             CommonTrait.ECTOTHERMY,
@@ -706,16 +711,18 @@ object EarthSpeciesCatalog {
             CommonTrait.FERMENTING_HINDGUT,
             CommonTrait.ARMORED_HIDE.atLevel(2),
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "ankylosaurus",
             SizeClass.HUGE,
             CommonTrait.ECTOTHERMY,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.ARMORED_HIDE.atLevel(2),
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "brachiosaurus",
             SizeClass.HUGE,
             CommonTrait.ENDOTHERMY,
@@ -723,8 +730,9 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_NECK,
             CommonTrait.FERMENTING_HINDGUT,
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "titanosaurus",
             SizeClass.COLOSSAL,
             CommonTrait.ENDOTHERMY,
@@ -732,14 +740,17 @@ object EarthSpeciesCatalog {
             CommonTrait.LONG_NECK,
             CommonTrait.FERMENTING_HINDGUT,
             ColorTrait.BROWN_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
-        animal(
+        reptile.descend(
             "pteranodon",
             SizeClass.MEDIUM,
             CommonTrait.ENDOTHERMY,
             CommonTrait.WINGS,
+            CommonTrait.MEAT_EATING_MOUTHPARTS,
             CommonTrait.LONG_MIGRATION,
             ColorTrait.PALE_COLORATION,
+            minus = listOf(CommonTrait.BEHAVIORAL_THERMOREGULATION)
         ),
         elephant.descend(
             "woolly mammoth",
@@ -889,13 +900,13 @@ object EarthSpeciesCatalog {
             SizeClass.SMALL,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.QUACKING_CALL,
-            CommonTrait.SOLITARY,
         ),
         waterfowl.descend(
             "canada goose",
             SizeClass.SMALL,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.HONKING_CALL,
+            CommonTrait.COLLECTIVE_LIVING
         ),
         waterfowl.descend(
             "mute swan",
@@ -903,14 +914,12 @@ object EarthSpeciesCatalog {
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.TRUMPETING_CALL,
             ColorTrait.PALE_COLORATION,
-            CommonTrait.SOLITARY,
         ),
         fowl.descend(
             "red junglefowl",
             SizeClass.SMALL,
             CommonTrait.AGGRESSIVE,
             CommonTrait.CROWING_CALL,
-            CommonTrait.SOLITARY,
         ),
         fowl.descend(
             "indian peafowl",
@@ -918,7 +927,6 @@ object EarthSpeciesCatalog {
             CommonTrait.CALM,
             CommonTrait.SCREECHING_CALL,
             ColorTrait.BLUE_COLORATION,
-            CommonTrait.SOLITARY,
         ),
         woodpecker.descend(
             "pileated woodpecker",
@@ -1014,6 +1022,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SKITTISH,
             CommonTrait.AQUATIC_LIMBS,
             CommonTrait.PROLONGED_BREATH_HOLDING,
+            CommonTrait.SALTWATER_OSMOREGULATION,
             CommonTrait.COASTAL_BREEDING_SITE,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.INSULATING_PLUMAGE.atLevel(2),
@@ -1040,6 +1049,7 @@ object EarthSpeciesCatalog {
             CommonTrait.CROAKING_CALL,
             ColorTrait.ADAPTIVE_COLORATION,
             CommonTrait.SOLITARY,
+            minus = listOf(CommonTrait.HERDING_BEHAVIOR)
         ),
         hornbill.descend(
             "keel-billed toucan",
@@ -1354,8 +1364,8 @@ object EarthSpeciesCatalog {
         pike.descend(
             "northern pike",
             SizeClass.MEDIUM,
+            CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.AGGRESSIVE,
-            CommonTrait.COLD_ACTIVE_ENZYMES,
             CommonTrait.MOTION_TRACKING_SENSES,
             CommonTrait.STRONG_JAWS,
         ),
@@ -1374,7 +1384,6 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             CommonTrait.CALM,
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.BODY_CARRIED_OVOSPORES,
             CommonTrait.SOLITARY,
         ),
         gobie.descend(
@@ -1435,18 +1444,21 @@ object EarthSpeciesCatalog {
         carp.descend(
             "common carp",
             SizeClass.MEDIUM,
+            CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.CALM,
             CommonTrait.BUOYANCY_BLADDER,
             ColorTrait.BROWN_COLORATION,
             CommonTrait.SOLITARY,
+            minus = listOf(CommonTrait.COLD_ACTIVE_ENZYMES),
         ),
         minnow.descend(
             "fathead minnow",
             SizeClass.TINY,
-            CommonTrait.COLD_ACTIVE_ENZYMES,
+            CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.RESILIENT_DIGESTION,
             CommonTrait.FREQUENT_REPRODUCTION,
             CommonTrait.OVOSPORE_NEST,
+            CommonTrait.GILL_RAKERS,
         ),
         piranha.descend(
             "red-bellied piranha",
@@ -1463,6 +1475,7 @@ object EarthSpeciesCatalog {
         perch.descend(
             "coral grouper",
             SizeClass.MEDIUM,
+            CommonTrait.SALTWATER_OSMOREGULATION,
             CommonTrait.AGGRESSIVE,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.AMBUSH_MUSCULATURE,
@@ -1470,6 +1483,7 @@ object EarthSpeciesCatalog {
             CommonTrait.REEF_SHELTER_DEPENDENCE,
             ColorTrait.RED_COLORATION,
             CommonTrait.SOLITARY,
+            minus = listOf(CommonTrait.FRESHWATER_OSMOREGULATION, CommonTrait.COLD_ACTIVE_ENZYMES),
         ),
         wrasse.descend(
             "bumphead parrotfish",
@@ -1833,7 +1847,7 @@ object EarthSpeciesCatalog {
         seaAnemone.descend(
             "giant green anemone",
             SizeClass.SMALL,
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.INTERNAL_PHOTOSYMBIONTS
         ),
         anthozoan.descend(
@@ -2007,8 +2021,9 @@ object EarthSpeciesCatalog {
         ),
         algae.descend(
             "giant kelp",
-            SizeClass.LARGE,
-            ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
+            SizeClass.MEDIUM,
+            CommonTrait.SALTWATER_OSMOREGULATION,
+            ColorTrait.BROWN_COLORATION,
             CommonTrait.SUBSTRATE_HOLDFAST,
             CommonTrait.FLOATING_FRONDS,
             CommonTrait.PERENNIAL_STORAGE_TISSUE,
@@ -2028,7 +2043,7 @@ object EarthSpeciesCatalog {
             SizeClass.TINY,
             // Its thallus is pale, but its photobiont still captures light with
             // chlorophyll rather than a pale photosynthetic pigment.
-            ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+            ColorTrait.GREEN_COLORATION,
             CommonTrait.PHOTOSYNTHETIC_SURFACE,
             CommonTrait.SURFACE_HOLDFAST,
             CommonTrait.FROST_HARDENED_TISSUES,
@@ -2201,7 +2216,6 @@ object EarthSpeciesCatalog {
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
-            motile = true,
             traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + reproduction + salinity + anatomy + adaptations,
         )
     }
@@ -2225,7 +2239,6 @@ object EarthSpeciesCatalog {
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
-            motile = false,
             traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + reproduction + salinity + adaptations,
         )
     }
@@ -2233,13 +2246,11 @@ object EarthSpeciesCatalog {
     private fun defaultSalinityTrait(adaptations: Array<out SpeciesTrait>): List<CommonTrait> {
         if (adaptations.any { it.group == TraitGroup.SALINITY_STRATEGY }) return emptyList()
 
-        val aquatic = supportedHabitats(adaptations).any {
-            it == Habitat.COASTAL ||
-                it == Habitat.FRESHWATER ||
-                it == Habitat.SHALLOW_OCEAN ||
-                it == Habitat.OPEN_OCEAN ||
-                it == Habitat.DARK_WATER
-        }
+        val capabilities = adaptations
+            .flatMapTo(mutableSetOf()) { it.baseTrait.capabilitiesAt(it.authoredLevel) }
+        val aquatic =
+            TraitCapability.UNDERWATER_RESPIRATION in capabilities ||
+                TraitCapability.AQUATIC_LOCOMOTION in capabilities
         return if (aquatic) listOf(CommonTrait.SALTWATER_OSMOREGULATION) else emptyList()
     }
 
@@ -2262,10 +2273,11 @@ object EarthSpeciesCatalog {
         }
     }
 
-    private fun supportedHabitats(adaptations: Array<out SpeciesTrait>): Set<Habitat> = adaptations
-        .flatMap { it.baseTrait.effectsAt(it.authoredLevel) }
-        .filterIsInstance<TraitEffect.HabitatAccess>()
-        .flatMapTo(mutableSetOf()) { it.habitatSelection.habitats.map { kvp -> kvp.first } }
+    private fun supportedHabitats(adaptations: Array<out SpeciesTrait>): Set<Habitat> {
+        val capabilities = adaptations
+            .flatMapTo(mutableSetOf()) { it.baseTrait.capabilitiesAt(it.authoredLevel) }
+        return Habitat.entries.filterTo(mutableSetOf()) { it.accessCapability in capabilities }
+    }
 
     fun idFromName(name: String): String =
         Normalizer

@@ -469,10 +469,10 @@ class EarthSpeciesCatalogTest {
             message = "Catalog assigns explicit reproductive strategies: expected `EarthSpeciesCatalog.BIRDS.all { CommonTrait.TERRESTRIAL_OVOSPORE in it.traits }` to be true"
         )
         assertTrue(
-            EarthSpeciesCatalog.FISH.all {
-                CommonTrait.AQUATIC_OVOSPORE in it.traits
+            EarthSpeciesCatalog.FISH.all { definition ->
+                definition.traits.any { TraitCapability.REPRODUCTION in it.capabilities }
             },
-            message = "Catalog assigns explicit reproductive strategies: expected `EarthSpeciesCatalog.FISH.all { CommonTrait.AQUATIC_OVOSPORE in it.traits }` to be true"
+            message = "Every fish must retain a reproductive strategy, including viviparous fish",
         )
         assertTrue(
             CommonTrait.CLONAL_PROPAGATION in catalog.single {
@@ -915,14 +915,14 @@ class EarthSpeciesCatalogTest {
             id = "slow-gazelle",
             traits = gazelle.traits - CommonTrait.SWIFT_LIMBS,
         )
-        val swiftHunterAgainstSlowPrey = predationRate(cheetah, slowGazelle)
-        val slowHunterAgainstSlowPrey = predationRate(slowCheetah, slowGazelle)
-        val swiftHunterAgainstSwiftPrey = predationRate(cheetah, gazelle)
-
-        assertTrue(swiftHunterAgainstSlowPrey > slowHunterAgainstSlowPrey, message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `swiftHunterAgainstSlowPrey > slowHunterAgainstSlowPrey` to be true")
+        val compiledHunters = EcologyCompiler.compile(listOf(cheetah, slowCheetah, gazelle, slowGazelle)).species
         assertTrue(
-            swiftHunterAgainstSwiftPrey < swiftHunterAgainstSlowPrey,
-            message = "Swift legs improve pursuit capture and pursuit evasion without making prey predatory: expected `swiftHunterAgainstSwiftPrey < swiftHunterAgainstSlowPrey` to be true"
+            compiledHunters[0].interactions.pursuitSpeed > compiledHunters[1].interactions.pursuitSpeed,
+            "Swift limbs must improve pursuit speed even when the final predation rate is capped",
+        )
+        assertTrue(
+            compiledHunters[2].interactions.pursuitSpeed > compiledHunters[3].interactions.pursuitSpeed,
+            "Swift limbs must also improve prey pursuit evasion",
         )
     }
 

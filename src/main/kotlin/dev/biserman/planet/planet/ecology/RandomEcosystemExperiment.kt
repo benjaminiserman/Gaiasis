@@ -242,7 +242,7 @@ object RandomEcosystemExperiment {
                         year = sampleIndex / 48.0,
                         resources = initialEnvironment.resources,
                     ),
-                    niche.habitat,
+                    niche,
                 )
             }
         }

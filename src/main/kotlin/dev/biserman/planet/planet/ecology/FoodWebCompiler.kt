@@ -218,7 +218,10 @@ internal object FoodWebCompiler {
     private fun filterFeedingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.FILTER_FEEDING)
         val sizeMatches = pair.target.sizeClass == SizeClass.MINUSCULE || (pair.consumer.sizeClass.ordinal >= SizeClass.HUGE.ordinal && pair.target.sizeClass == SizeClass.TINY)
-        if (!pair.target.motile || !pair.sharesHabitatFor(EcoStrategy.FILTER_FEEDING) || support <= 0.0 || !sizeMatches) {
+        val suspendedTarget =
+            pair.target.motile ||
+                pair.target.niche.producerCompetitionLayer == ProducerCompetitionLayer.SUSPENDED
+        if (!suspendedTarget || !pair.sharesHabitatFor(EcoStrategy.FILTER_FEEDING) || support <= 0.0 || !sizeMatches) {
             return null
         }
 
@@ -232,8 +235,7 @@ internal object FoodWebCompiler {
 
     private fun grazingInteraction(pair: SpeciesPair): CompiledInteraction? {
         val support = pair.consumer.supportFor(EcoStrategy.GRAZING)
-        val targetPhotosynthetic = pair.target.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
-        if (pair.target.motile || !targetPhotosynthetic || !pair.sharesHabitatFor(EcoStrategy.GRAZING) || support <= 0.0) {
+        if (pair.target.motile || !pair.sharesHabitatFor(EcoStrategy.GRAZING) || support <= 0.0) {
             return null
         }
 

@@ -85,8 +85,13 @@ object EcologyBiomass {
         environment: SeasonalCellEnvironment,
     ): Double {
         val habitat = environment.habitatAvailability(niche.habitat).coerceAtLeast(0.02)
-        val photosynthetic =
-            species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) > 0.0
+        val photosynthetic = niche.strategy == EcoStrategy.PHOTOSYNTHESIS
+        val strategyEfficiency =
+            if (photosynthetic) {
+                species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS).coerceIn(0.0, 1.0)
+            } else {
+                1.0
+            }
         val aquaticFilterFeeder =
             niche.strategy == EcoStrategy.FILTER_FEEDING &&
                 niche.habitat in EcologyFitness.aquaticHabitats
@@ -141,7 +146,7 @@ object EcologyBiomass {
             } else {
                 1.0
             }
-        return environment.areaKm2 * density * fertility * habitat * resource * waterProductivity
+        return environment.areaKm2 * density * fertility * habitat * resource * waterProductivity * strategyEfficiency
     }
 
     fun grazingAccessibility(species: CompiledSpecies): Double {

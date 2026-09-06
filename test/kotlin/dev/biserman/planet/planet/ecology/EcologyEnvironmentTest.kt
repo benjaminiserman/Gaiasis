@@ -307,7 +307,6 @@ class EcologyEnvironmentTest {
             id = id,
             displayName = id,
             sizeClass = SizeClass.SMALL,
-            motile = true,
             traits = listOfNotNull(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -317,6 +316,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.VASCULAR_SYSTEM,
                 CommonTrait.BONY_SKELETON,
                 CommonTrait.LIMBED_BODY,
+                CommonTrait.WALKING_LIMBS,
                 CommonTrait.DIGGING_LIMBS,
                 CommonTrait.FOSSORIAL_LIVING,
                 CommonTrait.MEAT_EATING_MOUTHPARTS,
@@ -355,7 +355,6 @@ class EcologyEnvironmentTest {
             id = id,
             displayName = id,
             sizeClass = SizeClass.MEDIUM,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -398,7 +397,6 @@ class EcologyEnvironmentTest {
             id = "coated",
             displayName = "Coated grazer",
             sizeClass = SizeClass.MEDIUM,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -474,7 +472,6 @@ class EcologyEnvironmentTest {
             id = id,
             displayName = id,
             sizeClass = SizeClass.MEDIUM,
-            motile = motile,
             traits = listOfNotNull(
                 if (motile) CommonTrait.TRACHEA else CommonTrait.PASSIVE_RESPIRATION,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -487,7 +484,7 @@ class EcologyEnvironmentTest {
                 locomotion,
                 CommonTrait.GRAZING_MOUTHPARTS.takeIf { motile },
                 CommonTrait.PHOTOSYNTHETIC_SURFACE.takeIf { !motile },
-                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS.takeIf { !motile },
+                ColorTrait.GREEN_COLORATION.takeIf { !motile },
                 altitudeTrait,
             ),
         )
@@ -578,7 +575,6 @@ class EcologyEnvironmentTest {
             id = "branch-mat",
             displayName = "Branch mat",
             sizeClass = SizeClass.SMALL,
-            motile = false,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -586,7 +582,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
                 CommonTrait.CANOPY_GROWTH,
-                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+                ColorTrait.GREEN_COLORATION,
             ),
         )
         val ecology = EcologyCompiler.compile(listOf(definition))
@@ -617,7 +613,6 @@ class EcologyEnvironmentTest {
             id = "branch-mat",
             displayName = "Branch mat",
             sizeClass = SizeClass.SMALL,
-            motile = false,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,
@@ -625,7 +620,7 @@ class EcologyEnvironmentTest {
                 CommonTrait.PHOTOSYNTHETIC_SURFACE,
                 CommonTrait.ROOTED_BODY,
                 CommonTrait.CANOPY_GROWTH,
-                ColorTrait.GREEN_PHOTOSYNTHETIC_PIGMENTS,
+                ColorTrait.GREEN_COLORATION,
             ),
         )
         val ecology = EcologyCompiler.compile(listOf(definition))
@@ -658,7 +653,6 @@ class EcologyEnvironmentTest {
             id = "obligate-scavenger",
             displayName = "Obligate scavenger",
             sizeClass = SizeClass.MEDIUM,
-            motile = true,
             traits = listOf(
                 CommonTrait.TRACHEA,
                 CommonTrait.TEMPERATE_BIOCHEMISTRY,

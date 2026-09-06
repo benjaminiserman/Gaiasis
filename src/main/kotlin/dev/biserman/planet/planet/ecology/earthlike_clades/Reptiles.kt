@@ -11,7 +11,8 @@ val reptile = tetrapoda.descend(
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.BEHAVIORAL_THERMOREGULATION,
     CommonTrait.DIURNAL,
-    ColorTrait.GREEN_COLORATION
+    ColorTrait.GREEN_COLORATION,
+    CommonTrait.CLAWS
 )
 val crocodile = reptile.descend(
     "crocodile",
@@ -52,7 +53,6 @@ val lizard = reptile.descend(
     CommonTrait.CLIMBING_LIMBS,
     CommonTrait.AMBUSH_MUSCULATURE,
     CommonTrait.SLENDER_PHYSIQUE,
-    CommonTrait.CLAWS
 )
 val gecko = lizard.descend(
     "gecko",
@@ -169,6 +169,7 @@ val seaTurtle = testudines.descend(
     SizeClass.MEDIUM,
     CommonTrait.AQUATIC_LIMBS,
     CommonTrait.PROLONGED_BREATH_HOLDING,
+    CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.LONG_MIGRATION,
     minus = listOf(CommonTrait.WALKING_LIMBS)
 )

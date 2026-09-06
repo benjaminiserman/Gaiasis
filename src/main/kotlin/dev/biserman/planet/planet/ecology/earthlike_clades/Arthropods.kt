@@ -221,7 +221,6 @@ val locust = insect.descend(
 val cicada = insect.descend(
     "cicada",
     SizeClass.TINY,
-    CommonTrait.BURROWING_EGGS,
     CommonTrait.SUCKING_PROBOSCIS,
     CommonTrait.SCREECHING_CALL,
     CommonTrait.PROLONGED_JUVENILE_DORMANCY,

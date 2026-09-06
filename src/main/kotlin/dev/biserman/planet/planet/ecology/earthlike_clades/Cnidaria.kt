@@ -17,6 +17,7 @@ val cnidarian = EarthSpeciesCatalog.animal(
     CommonTrait.PASSIVE_RESPIRATION,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.TENTACLES,
+    CommonTrait.PULSING_BELL,
     CommonTrait.BODY_REGENERATION,
     CommonTrait.VENOM_DELIVERY.atLevel(2),
     CommonTrait.SOLITARY,
@@ -39,8 +40,8 @@ val anthozoan = cnidarian.descend(
     minus = listOf(
         CommonTrait.ECTOTHERMY,
         CommonTrait.SOLITARY,
+        CommonTrait.PULSING_BELL,
     ),
-    motile = false,
 )
 val seaAnemone = anthozoan.descend(
     "sea anemone",
@@ -51,7 +52,7 @@ val seaAnemone = anthozoan.descend(
 val stonyCoral = anthozoan.descend(
     "stony coral",
     SizeClass.SMALL,
-    ColorTrait.BROWN_PHOTOSYNTHETIC_PIGMENTS,
+    ColorTrait.BROWN_COLORATION,
     CommonTrait.RIGID_COLONY_FRAMEWORK,
     CommonTrait.REEF_BUILDING,
     CommonTrait.INTERNAL_PHOTOSYMBIONTS,

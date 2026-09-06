@@ -27,7 +27,8 @@ val clam = mollusc.descend(
     SizeClass.TINY,
     CommonTrait.GILL_RAKERS,
     CommonTrait.PROTECTIVE_SHELL,
-    CommonTrait.SUBSTRATE_HOLDFAST
+    CommonTrait.SUBSTRATE_HOLDFAST,
+    minus = listOf(CommonTrait.ECTOTHERMY, CommonTrait.SOLITARY),
 )
 
 val gastropod = mollusc.descend(

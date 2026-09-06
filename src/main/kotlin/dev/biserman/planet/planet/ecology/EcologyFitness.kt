@@ -87,11 +87,22 @@ object EcologyFitness {
     ): Double = habitat(species, environment, habitat) * elevation(species, environment, habitat) * thermal(
         species,
         environment
-    ) * water(species, environment, habitat) * light(species, environment, habitat) * vegetationStructure(
+    ) * water(species, environment, habitat) * vegetationStructure(
         species,
         environment,
         habitat
     )
+
+    fun combined(
+        species: CompiledSpecies,
+        environment: SeasonalCellEnvironment,
+        niche: NicheDefinition,
+    ): Double = combined(species, environment, niche.habitat) *
+        if (niche.strategy == EcoStrategy.PHOTOSYNTHESIS) {
+            light(species, environment, niche.habitat)
+        } else {
+            1.0
+        }
 
     fun elevation(
         species: CompiledSpecies,

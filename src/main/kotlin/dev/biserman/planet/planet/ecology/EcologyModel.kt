@@ -42,11 +42,6 @@ enum class AquaticSalinityTolerance {
     BROAD,
 }
 
-enum class AquaticRespirationMode {
-    UNDERWATER,
-    BREATH_HOLDING,
-}
-
 enum class DormancyKind {
     NONE,
     PROPAGULE,
@@ -80,12 +75,16 @@ data class SpeciesDefinition(
     val id: String,
     val displayName: String,
     val sizeClass: SizeClass,
-    val motile: Boolean,
     val traits: List<SpeciesTrait>,
     val ancestorSpeciesId: String? = null,
     val kind: SpeciesKind = SpeciesKind.EVOLVING,
     val descendants: MutableList<SpeciesDefinition> = mutableListOf()
 ) {
+    val motile: Boolean
+        get() = traits.any {
+            TraitCapability.LOCOMOTION in it.baseTrait.capabilitiesAt(it.authoredLevel)
+        }
+
     init {
         require(id.isNotBlank())
         require(displayName.isNotBlank())
@@ -100,14 +99,6 @@ sealed interface DirectTraitEffect : TraitEffect {
 
 sealed interface TraitEffect {
 
-    data class HabitatAccess(val habitatSelection: HabitatSelection, val amount: Double = 0.0) : DirectTraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) {
-            habitatSelection.habitats.forEach { (habitat, factor) ->
-                context.accessHabitat(habitat)
-                context.adjustHabitatAffinity(habitat, amount * factor)
-            }
-        }
-    }
     data class HabitatAffinity(val habitatSelection: HabitatSelection, val amount: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) {
             habitatSelection.habitats.forEach { (habitat, factor) ->
@@ -342,20 +333,8 @@ sealed interface TraitEffect {
         }
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyMetabolicDemand(multiplier)
     }
-    data object FreshwaterOsmoregulation : DirectTraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.enableFreshwaterOsmoregulation()
-    }
-    data object BroadSalinityTolerance : DirectTraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.enableBroadSalinityTolerance()
-    }
-    data class AquaticRespiration(val mode: AquaticRespirationMode) : DirectTraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.enableAquaticRespiration(mode)
-    }
     data object PelagicAerialResidency : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.enablePelagicAerialResidency()
-    }
-    data object DarkWaterAdaptation : DirectTraitEffect {
-        override fun applyTo(context: SpeciesCompilationContext) = context.adaptToDarkWater()
     }
     data class ObligateResidentHabitat(val habitat: Habitat) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.requireResidentHabitat(habitat)
