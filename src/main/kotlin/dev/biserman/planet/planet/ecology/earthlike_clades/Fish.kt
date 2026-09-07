@@ -209,7 +209,7 @@ val seahorse = percomorpha.descend(
     "seahorse",
     SizeClass.TINY,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    CommonTrait.REDUCED_LIMBS,
+    CommonTrait.AQUATIC_LIMBS.atLevel(1),
     CommonTrait.PREHENSILE_TAIL,
     CommonTrait.VIVIPARITY,
     CommonTrait.REEF_CAMOUFLAGE,

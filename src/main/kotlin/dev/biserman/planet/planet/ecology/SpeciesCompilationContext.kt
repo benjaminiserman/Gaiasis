@@ -51,6 +51,7 @@ class SpeciesCompilationContext internal constructor(
     private var dispersalKind = DispersalKind.NONE
     private var radiationRange = 1
     private var reproductionMultiplier = 1.0
+    private var mutationRateMultiplier = 1.0
     private var metabolicDemandMultiplier = 1.0
     private var bodyMassMultiplier = 1.0
     private var maintenanceCost = 0.0
@@ -226,6 +227,7 @@ class SpeciesCompilationContext internal constructor(
             lifeHistory = LifeHistoryProfile(
                 seasonalReproduction =
                 definition.sizeClass.seasonalReproduction * reproductionMultiplier,
+                mutationRateMultiplier = mutationRateMultiplier,
                 reserveCapacity = reserveCapacity.coerceIn(0.0, 1.5),
                 nicheCompetitionSensitivity = nicheCompetitionSensitivity.coerceIn(0.0, 2.0),
                 selfCrowdingSensitivity = selfCrowdingSensitivity.coerceIn(1.0, 4.0),
@@ -486,6 +488,10 @@ class SpeciesCompilationContext internal constructor(
 
     fun multiplyReproduction(multiplier: Double) {
         reproductionMultiplier *= multiplier
+    }
+
+    fun multiplyMutationRate(multiplier: Double) {
+        mutationRateMultiplier *= multiplier
     }
 
     fun multiplyMetabolicDemand(multiplier: Double) {

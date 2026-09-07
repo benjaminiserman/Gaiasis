@@ -327,6 +327,13 @@ sealed interface TraitEffect {
     data class ReproductionMultiplier(val multiplier: Double) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) = context.multiplyReproduction(multiplier)
     }
+    data class MutationRateMultiplier(val multiplier: Double) : DirectTraitEffect {
+        init {
+            require(multiplier >= 0.0)
+        }
+
+        override fun applyTo(context: SpeciesCompilationContext) = context.multiplyMutationRate(multiplier)
+    }
     data class MetabolicDemandMultiplier(val multiplier: Double) : DirectTraitEffect {
         init {
             require(multiplier > 0.0)

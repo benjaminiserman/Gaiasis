@@ -445,6 +445,7 @@ class TreeOfLifeView(private val gui: Gui) {
         )
         addCompiledDetail(profile, "Salinity", respiration.salinityTolerance.name.toDisplayText())
         addCompiledDetail(profile, "Seasonal reproduction", formatNumber(lifeHistory.seasonalReproduction))
+        addCompiledDetail(profile, "Mutation rate", "×${formatNumber(lifeHistory.mutationRateMultiplier)}")
         addCompiledDetail(profile, "Energy reserves", formatPercent(lifeHistory.reserveCapacity))
         addCompiledDetail(profile, "Dormancy", lifeHistory.dormancyKind.name.toDisplayText())
         addCompiledDetail(profile, "Dispersal", lifeHistory.dispersalKind.name.toDisplayText())
@@ -531,6 +532,6 @@ class TreeOfLifeView(private val gui: Gui) {
     )
 
     companion object {
-        private val EXTINCT_NAME_COLOR = Color(0.62, 0.62, 0.62, 1.0)
+        private val EXTINCT_NAME_COLOR = Color(0.5, 0.5, 0.5, 1.0)
     }
 }

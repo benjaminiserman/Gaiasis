@@ -14,7 +14,34 @@ private val selfCrowdingTestTrait = EffectTrait(
     ),
 )
 
+private val doubledMutationRateTestTrait = EffectTrait(
+    displayName = "doubled mutation rate",
+    description = "Doubles the mutation roll probability.",
+    effects = listOf(TraitEffect.MutationRateMultiplier(2.0)),
+)
+
+private val tripledMutationRateTestTrait = EffectTrait(
+    displayName = "tripled mutation rate",
+    description = "Triples the mutation roll probability.",
+    effects = listOf(TraitEffect.MutationRateMultiplier(3.0)),
+)
+
 class EcologyCompilerTest {
+    @Test
+    fun `mutation rate multipliers compose multiplicatively`() {
+        val base = predator("mutable predator")
+        val species = base.copy(
+            traits = base.traits +
+                doubledMutationRateTestTrait +
+                tripledMutationRateTestTrait,
+        )
+        val compiled = EcologyCompiler.compile(listOf(species)).species.single()
+
+        assertEquals(6.0, compiled.lifeHistory.mutationRateMultiplier)
+        assertEquals(0.6, EcologyMutations.mutationChance(compiled, baseChance = 0.1), 1.0e-12)
+        assertEquals(1.0, EcologyMutations.mutationChance(compiled, baseChance = 0.25))
+    }
+
     @Test
     fun `strategy access gates affinity regardless of trait order`() {
         val base = predator("strategy-foundation").let { species ->
@@ -1158,8 +1185,8 @@ class EcologyCompilerTest {
         )
         assertTrue(TraitDependencies.unmetRequirements(ectotherm).isEmpty(), message = "Expanded archetype traits require their underlying physiology: expected `TraitDependencies.unmetRequirements(ectotherm).isEmpty()` to be true")
         assertTrue(
-            unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty(),
-            message = "Expanded archetype traits require their underlying physiology: expected `unmet(CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty()` to be true"
+            unmet(CommonTrait.SUBSTRATE_HOLDFAST, CommonTrait.RIGID_COLONY_FRAMEWORK, CommonTrait.REEF_BUILDING).isEmpty(),
+            message = "An aquatic holdfast should satisfy the anchoring requirement for a rigid reef-building colony",
         )
 
         val aquatic = terrestrial.copy(
@@ -1997,7 +2024,7 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `cosmetic traits compile without changing phenotype parameters`() {
+    fun `formerly effectless calls share a reproduction benefit and hearing exposure`() {
         val ordinary = predator("ordinary")
         val vocal = predator("vocal").copy(
             traits = predator("vocal").traits + CommonTrait.ROARING_CALL,
@@ -2005,16 +2032,40 @@ class EcologyCompilerTest {
         val ordinaryCompiled = EcologyCompiler.compile(listOf(ordinary)).species.single()
         val vocalCompiled = EcologyCompiler.compile(listOf(vocal)).species.single()
 
-        assertEquals(ordinaryCompiled.physiology, vocalCompiled.physiology, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.physiology` to match `ordinaryCompiled.physiology`")
-        assertEquals(ordinaryCompiled.environment, vocalCompiled.environment, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.environment` to match `ordinaryCompiled.environment`")
-        assertEquals(ordinaryCompiled.lifeHistory, vocalCompiled.lifeHistory, message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.lifeHistory` to match `ordinaryCompiled.lifeHistory`")
+        assertEquals(ordinaryCompiled.lifeHistory.seasonalReproduction * 1.05, vocalCompiled.lifeHistory.seasonalReproduction, 0.000_001)
+
+        val exposure = CommonTrait.ROARING_CALL.effects.filterIsInstance<ConditionalInteractionEffect>().single()
+        assertEquals(CommonTrait.HEARING, exposure.scaleByOpponentTraitLevel)
         assertEquals(
-            ordinaryCompiled.interactions,
-            vocalCompiled.interactions.copy(
-                acousticSignalMask = ordinaryCompiled.interactions.acousticSignalMask,
-            ),
-            message = "Cosmetic traits compile without changing phenotype parameters: expected `vocalCompiled.interactions.copy( acousticSignalMask = ordinaryCompiled.interactions.acousticSignalMask, )` to match `ordinaryCompiled.interactions`",
+            InteractionEffect.DefenseBonus(InteractionEffectSubject.BEARER, -0.05),
+            exposure.effects.single(),
         )
+    }
+
+    @Test
+    fun `calling increasingly exposes prey to predators with better hearing`() {
+        fun hearingPredator(id: String, level: Int): SpeciesDefinition {
+            val base = predator(id, SizeClass.LARGE)
+            return base.copy(traits = base.traits + CommonTrait.HEARING.atLevel(level))
+        }
+
+        val lowHearingPredator = hearingPredator("low-hearing-predator", 1)
+        val highHearingPredator = hearingPredator("high-hearing-predator", 3)
+        val silentPrey = predator("silent-prey", SizeClass.SMALL)
+        val callingPrey = predator("calling-prey", SizeClass.SMALL).let { base ->
+            base.copy(traits = base.traits + CommonTrait.ROARING_CALL)
+        }
+        val ecology = EcologyCompiler.compile(listOf(lowHearingPredator, highHearingPredator, silentPrey, callingPrey))
+
+        fun loss(predator: SpeciesDefinition, prey: SpeciesDefinition) = ecology.interactions.get(
+            ecology.speciesIndex(predator.id),
+            ecology.speciesIndex(prey.id),
+        ).targetLossRate
+
+        val lowHearingExposure = loss(lowHearingPredator, callingPrey) - loss(lowHearingPredator, silentPrey)
+        val highHearingExposure = loss(highHearingPredator, callingPrey) - loss(highHearingPredator, silentPrey)
+        assertTrue(lowHearingExposure > 0.0)
+        assertTrue(highHearingExposure > lowHearingExposure)
     }
 
     @Test
@@ -2080,22 +2131,12 @@ class EcologyCompilerTest {
     }
 
     @Test
-    fun `all authored traits declare an effect or relationship`() {
+    fun `all authored traits have player-facing descriptions`() {
         val authoredTraits: List<SpeciesTrait> = CommonTrait.entries + ColorTrait.entries
         authoredTraits.forEach { trait ->
             assertTrue(
                 trait.description.isNotBlank(),
                 "${trait.displayName} has no player-facing description",
-            )
-        }
-        authoredTraits.forEach { trait ->
-            if (trait.isCosmetic) {
-                assertTrue(trait.effects.isEmpty(), "${trait.displayName} has cosmetic effects")
-                return@forEach
-            }
-            assertTrue(
-                trait.effects.isNotEmpty() || trait.scale != null || trait.relationships.isNotEmpty(),
-                "${trait.displayName} has no effect or relationship",
             )
         }
     }

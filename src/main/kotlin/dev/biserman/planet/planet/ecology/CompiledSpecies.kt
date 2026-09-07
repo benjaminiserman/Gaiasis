@@ -69,6 +69,7 @@ data class EnvironmentalProfile(
 
 data class LifeHistoryProfile(
     val seasonalReproduction: Double,
+    val mutationRateMultiplier: Double,
     val reserveCapacity: Double,
     val nicheCompetitionSensitivity: Double,
     val selfCrowdingSensitivity: Double,

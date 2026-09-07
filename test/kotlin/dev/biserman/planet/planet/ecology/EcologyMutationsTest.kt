@@ -28,11 +28,15 @@ class EcologyMutationsTest {
     }
 
     @Test
-    fun `mutation changes at most two shared traits and identifies its lineage`() {
+    fun `mutation respects its divergence cap and identifies its lineage`() {
         val parent = EarthSpeciesCatalog.ALL.first()
-        val proposal = EcologyMutations.propose(parent, Random(7))
+        val proposal = EcologyMutations.propose(
+            parent,
+            Random(7),
+            maximumDivergences = 1,
+        )
 
-        assertTrue(proposal.record.changes.size in 1..2)
+        assertEquals(1, proposal.record.changes.size)
         assertEquals(parent.id, proposal.definition.ancestorSpeciesId)
         assertTrue(proposal.definition.displayName.endsWith("⟦M1⟧"))
         assertTrue(proposal.definition.id.startsWith("${parent.id}~m"))
@@ -40,6 +44,71 @@ class EcologyMutationsTest {
             proposal.record.changes.map { it.trait }.toSet().size,
             proposal.record.changes.size,
         )
+    }
+
+    @Test
+    fun `adding a grouped trait replaces the existing member of that group`() {
+        val parent = SpeciesDefinition(
+            id = "brown-ancestor",
+            displayName = "brown ancestor",
+            sizeClass = SizeClass.SMALL,
+            traits = listOf(ColorTrait.BROWN_COLORATION),
+        )
+        val changes = EcologyMutations.changesFor(parent, listOf(ColorTrait.GREEN_COLORATION))
+        val record = mutationRecord(parent, changes)
+        val descendant = EvolvingSpeciesCatalog.createDefinition(parent, record)
+
+        assertEquals(listOf(ColorTrait.GREEN_COLORATION), descendant.traits)
+    }
+
+    @Test
+    fun `scaled traits mutate by one adjacent level`() {
+        fun parentWithEyes(level: Int?) = SpeciesDefinition(
+            id = "eyes-${level ?: 0}",
+            displayName = "eyes ${level ?: 0}",
+            sizeClass = SizeClass.SMALL,
+            traits = level?.let { listOf(CommonTrait.EYES.atLevel(it)) } ?: emptyList(),
+        )
+
+        val levelThree = parentWithEyes(3)
+        val levelThreeChanges = EcologyMutations.changesFor(levelThree, listOf(CommonTrait.EYES))
+        val levelTwoDescendant = EvolvingSpeciesCatalog.createDefinition(
+            levelThree,
+            mutationRecord(levelThree, levelThreeChanges),
+        )
+        assertEquals(2, levelThreeChanges.single().level)
+        assertEquals(2, levelTwoDescendant.traitLevel(CommonTrait.EYES))
+
+        val eyeless = parentWithEyes(null)
+        val eyelessChanges = EcologyMutations.changesFor(eyeless, listOf(CommonTrait.EYES))
+        val levelOneDescendant = EvolvingSpeciesCatalog.createDefinition(
+            eyeless,
+            mutationRecord(eyeless, eyelessChanges),
+        )
+        assertEquals(1, eyelessChanges.single().level)
+        assertEquals(1, levelOneDescendant.traitLevel(CommonTrait.EYES))
+
+        val levelTwo = parentWithEyes(2)
+        val adjacentLevels = (0 until 100).mapTo(hashSetOf()) { seed ->
+            val changes = EcologyMutations.changesFor(
+                levelTwo,
+                listOf(CommonTrait.EYES),
+                Random(seed),
+            )
+            EvolvingSpeciesCatalog.createDefinition(
+                levelTwo,
+                mutationRecord(levelTwo, changes),
+            ).traitLevel(CommonTrait.EYES)
+        }
+        assertEquals(setOf(1, 3), adjacentLevels)
+    }
+
+    @Test
+    fun `reduced limbs are represented by level one primary limbs`() {
+        val seahorse = EarthSpeciesCatalog.ALL.single { it.id == "lined-seahorse" }
+
+        assertTrue(CommonTrait.entries.none { it.name == "REDUCED_LIMBS" })
+        assertEquals(1, seahorse.traitLevel(CommonTrait.AQUATIC_LIMBS))
     }
 
     @Test
@@ -94,6 +163,7 @@ class EcologyMutationsTest {
                 SpeciesMutationChange(
                     MutationTraitReference.from(CommonTrait.EYES)!!,
                     added = true,
+                    level = 2,
                 ),
             ),
         )
@@ -107,4 +177,15 @@ class EcologyMutationsTest {
             saveFile.deleteIfExists()
         }
     }
+
+    private fun mutationRecord(
+        parent: SpeciesDefinition,
+        changes: List<SpeciesMutationChange>,
+    ) = MutatedSpeciesRecord(
+        id = "${parent.id}~m1",
+        displayName = "${parent.displayName} ⟦M1⟧",
+        lineageCode = "M1",
+        ancestorSpeciesId = parent.id,
+        changes = changes,
+    )
 }

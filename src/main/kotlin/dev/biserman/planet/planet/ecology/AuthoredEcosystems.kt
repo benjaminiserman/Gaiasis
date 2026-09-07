@@ -147,7 +147,6 @@ object AuthoredEcosystems {
         "red-mangrove",
         "blue-crab",
         "green-sea-turtle",
-        expectedExtinctions = setOf("blue-crab"),
     )
 
     val OKAVANGO_DELTA = scenario(

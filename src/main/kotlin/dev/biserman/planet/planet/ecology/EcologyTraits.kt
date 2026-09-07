@@ -44,7 +44,8 @@ enum class TraitGroup : FulfillsTraitRequirement {
     BIOLOGICAL_COLOR,
     SKELETON,
     SCALE_TYPE,
-    OVOSPORE_TYPE
+    OVOSPORE_TYPE,
+    HAND_FEATURE
 }
 
 /** Anatomical or behavioral capability that can satisfy another trait's prerequisites. */
@@ -269,9 +270,6 @@ sealed interface SpeciesTrait : FulfillsTraitRequirement {
     val invariantOnly: Boolean
         get() = false
 
-    /** Cosmetic traits document recognizable biology without changing simulation outcomes. */
-    val isCosmetic: Boolean
-        get() = false
     val acousticSignal: AcousticSignal?
         get() = null
     val group: TraitGroup?
@@ -408,6 +406,20 @@ enum class ColorTrait(
     }
 }
 
+private fun sharedCallEffects(hearingTrait: SpeciesTrait): List<TraitEffect> = listOf(
+    TraitEffect.ReproductionMultiplier(1.05),
+    ConditionalInteractionEffect(
+        condition = InteractionCondition.Opponent(TraitCondition.TraitLevelAtLeast(hearingTrait, 1)),
+        effects = listOf(
+            InteractionEffect.DefenseBonus(
+                subject = InteractionEffectSubject.BEARER,
+                change = -0.05,
+            ),
+        ),
+        scaleByOpponentTraitLevel = hearingTrait,
+    ),
+)
+
 /**
  * A deliberately small starter library. Adding content means adding a readable
  * entry here (or another SpeciesTrait implementation), not changing the turn loop.
@@ -418,7 +430,6 @@ enum class CommonTrait(
     override val effects: List<TraitEffect>,
     override val scale: TraitScale? = null,
     override val invariantOnly: Boolean = false,
-    override val isCosmetic: Boolean = false,
     override val acousticSignal: AcousticSignal? = null,
     override val group: TraitGroup? = null,
     override val capabilities: Set<TraitCapability> = emptySet(),
@@ -955,8 +966,8 @@ enum class CommonTrait(
             )
         ),
     ),
-    MASSIVE_EARS(
-        "massive heat-radiating ears",
+    LARGE_EARS(
+        "large heat-radiating ears",
         "Large thin appendages with rich circulation that exchange heat rapidly with the air.",
         emptyList(),
         scale = TraitScale(
@@ -2230,6 +2241,7 @@ enum class CommonTrait(
             TraitEffect.CaptureAbility(-0.03),
             TraitEffect.MaintenanceCost(0.06)
         ),
+        group = TraitGroup.HAND_FEATURE,
     ),
     CLAWS(
         "claws",
@@ -2239,6 +2251,7 @@ enum class CommonTrait(
             TraitEffect.Defense(0.03),
             TraitEffect.MaintenanceCost(0.06),
         ),
+        group = TraitGroup.HAND_FEATURE,
         requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION)),
     ),
     PINCERS(
@@ -2249,6 +2262,7 @@ enum class CommonTrait(
             TraitEffect.Defense(0.02),
             TraitEffect.MaintenanceCost(0.09),
         ),
+        group = TraitGroup.HAND_FEATURE,
         requirements = listOf(TraitRequirement.allOf(TraitCapability.LOCOMOTION)),
     ),
     CRUSHING_PINCERS(
@@ -2318,15 +2332,6 @@ enum class CommonTrait(
             TraitEffect.MaintenanceCost(0.2),
         ),
         requirements = listOf(TraitRequirement.allOf(TAIL)),
-    ),
-    REDUCED_LIMBS(
-        "reduced limbs",
-        "One or more ancestral limb pairs are shortened or lost, lowering tissue costs while reducing limb-powered speed and dexterity.",
-        listOf(
-            TraitEffect.PursuitSpeed(-0.08),
-            TraitEffect.CaptureAbility(-0.02),
-            TraitEffect.MaintenanceCost(-0.12),
-        ),
     ),
     LIMB_REGROWTH(
         "limb regrowth",
@@ -2697,8 +2702,7 @@ enum class CommonTrait(
     SONG_CALL(
         "song call",
         "Long, patterned vocalizations carry identity, contact, and reproductive information through open water.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.SONG,
     ),
     RATTLING_WARNING(
@@ -2711,100 +2715,88 @@ enum class CommonTrait(
         ),
         acousticSignal = AcousticSignal.RATTLE,
     ),
-    ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.ROAR),
+    ROARING_CALL("roaring call", "A resonant roar advertises the caller across its home range.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.ROAR),
     TRUMPETING_CALL(
         "trumpeting call",
         "A loud trumpet communicates alarm, excitement, and identity between social group members.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.TRUMPET
     ),
-    BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BELLOW),
+    BELLOWING_CALL("bellowing call", "A deep bellow carries social, territorial, or reproductive information between large animals.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.BELLOW),
     BLEATING_CALL(
         "bleating call",
         "A nasal bleat maintains contact between companions, parents, and young.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.BLEAT
     ),
-    GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.GRUNT),
+    GRUNTING_CALL("grunting call", "Short grunts communicate contact, agitation, and feeding context at close range.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.GRUNT),
     HONKING_CALL(
         "honking call",
         "A loud honk maintains contact within a flock and during coordinated flight.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.HONK
     ),
-    BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUGLE),
+    BUGLING_CALL("bugling call", "A far-carrying bugle advertises a breeding individual and challenges rivals.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.BUGLE),
     CROAKING_CALL(
         "croaking call",
         "Repeated croaks advertise identity and reproductive readiness near breeding sites.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.CROAK
     ),
-    BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BRAY),
+    BRAYING_CALL("braying call", "A harsh, carrying bray maintains contact and expresses alarm or social arousal.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.BRAY),
     HOOTING_CALL(
         "hooting call",
         "Resonant hoots carry identity and location through forests or darkness.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.HOOT
     ),
-    BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BARK),
+    BARKING_CALL("barking call", "Short abrupt calls communicate alarm, contact, or territorial intent.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.BARK),
     GROWLING_CALL(
         "growling call",
         "A low rough vocal warning signals agitation and readiness for close-range defense.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.GROWL
     ),
-    SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.SCREECH),
+    SCREECHING_CALL("screeching call", "A loud harsh call carries alarm, contact, or territorial information over long distances.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.SCREECH),
     QUACKING_CALL(
         "quacking call",
         "Repeated nasal calls maintain contact among water-foraging companions and their young.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.QUACK
     ),
-    CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.CROW),
+    CROWING_CALL("crowing call", "A loud repeated crow advertises an individual's presence and breeding territory.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.CROW),
     TRILLING_CALL(
         "trilling call",
         "Rapidly modulated calls transmit identity and contact information as a sustained trill.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.TRILL
     ),
-    WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.WHISTLE),
+    WHISTLING_CALL("whistling call", "A clear tonal whistle communicates contact, alarm, or location across an open or cluttered habitat.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.WHISTLE),
     CLICKING_CALL(
         "clicking call",
         "Short percussive clicks communicate contact, alarm, or location, especially where tonal calls carry poorly.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.CLICK
     ),
-    BUZZING_CALL("buzzing call", "A sustained buzzing signal communicates presence, contact, or reproductive readiness at close range.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.BUZZ),
+    BUZZING_CALL("buzzing call", "A sustained buzzing signal communicates presence, contact, or reproductive readiness at close range.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.BUZZ),
     CHIRPING_CALL(
         "chirping call",
         "Short high-pitched calls maintain contact between companions, parents, and young.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.CHIRP,
     ),
-    MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.MEOW),
+    MEOWING_CALL("meowing call", "A modulated tonal call communicates contact, solicitation, agitation, or reproductive intent.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.MEOW),
     PURRING_CALL(
         "purring call",
         "A quiet rhythmic vibration communicates close-range social state and contentment.",
-        emptyList(),
-        isCosmetic = true,
+        sharedCallEffects(HEARING),
         acousticSignal = AcousticSignal.PURR
     ),
-    HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", emptyList(), isCosmetic = true, acousticSignal = AcousticSignal.HISS),
+    HISSING_WARNING("hissing warning", "Forcefully expelled air produces a conspicuous warning before close-range defense.", sharedCallEffects(HEARING), acousticSignal = AcousticSignal.HISS),
     IMITATIVE_VOCALIZATION(
         "imitative vocalization",
         "Flexible vocal control reproduces learned calls and unfamiliar environmental sounds.",
-        emptyList(),
-        isCosmetic = true
+        sharedCallEffects(HEARING),
     ),
     BOOMING_CALL(
         "booming call",

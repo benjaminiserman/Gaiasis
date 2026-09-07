@@ -85,7 +85,7 @@ val leporid = lagomorph.descend(
     SizeClass.SMALL,
     CommonTrait.LEAPING_LEGS,
     CommonTrait.SKITTISH,
-    CommonTrait.MASSIVE_EARS.atLevel(1),
+    CommonTrait.LARGE_EARS.atLevel(1),
     CommonTrait.HEARING.atLevel(3),
 )
 val rabbit = leporid.descend(
@@ -534,7 +534,7 @@ val elephant = mammal.descend(
     CommonTrait.LONG_TUSKS.atLevel(2),
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.PREHENSILE_TRUNK,
-    CommonTrait.MASSIVE_EARS.atLevel(2),
+    CommonTrait.LARGE_EARS.atLevel(2),
     CommonTrait.SCENT.atLevel(3),
     CommonTrait.FERMENTING_HINDGUT,
     CommonTrait.HERDING_BEHAVIOR,

@@ -29,6 +29,7 @@ data class MutationTraitReference(
 data class SpeciesMutationChange(
     val trait: MutationTraitReference,
     val added: Boolean,
+    val level: Int? = null,
 )
 
 /** Serializable description of a generated species, relative to its direct ancestor. */
@@ -91,9 +92,14 @@ object EvolvingSpeciesCatalog {
     ): SpeciesDefinition {
         val traits = ancestor.traits.toMutableList()
         record.changes.forEach { change ->
-            val trait = change.trait.resolve()
-            traits.removeAll { it.baseTrait == trait.baseTrait }
-            if (change.added) traits += trait
+            val baseTrait = change.trait.resolve().baseTrait
+            traits.removeAll { it.baseTrait == baseTrait }
+            if (change.added) {
+                baseTrait.group?.let { replacementGroup ->
+                    traits.removeAll { it.baseTrait.group == replacementGroup }
+                }
+                traits += change.level?.let(baseTrait::atLevel) ?: baseTrait
+            }
         }
         return ancestor.copy(
             id = record.id,
@@ -117,7 +123,6 @@ data class ProposedMutation(
 )
 
 object EcologyMutations {
-    const val MAXIMUM_TRAIT_CHANGES = 2
     const val FOUNDER_FRACTION = 0.10
 
     private val mutableTraits: List<SpeciesTrait> =
@@ -131,17 +136,29 @@ object EcologyMutations {
         historyTurn > 0L &&
             historyTurn % (intervalYears.toLong() * HistoryCalendar.TURNS_PER_YEAR) == 0L
 
-    fun propose(parent: SpeciesDefinition, random: Random): ProposedMutation {
+    fun mutationChance(
+        species: CompiledSpecies,
+        baseChance: Double = EcologyGlobals.mutationChancePerInterval,
+    ): Double {
+        require(baseChance in 0.0..1.0)
+        return (baseChance * species.lifeHistory.mutationRateMultiplier).coerceIn(0.0, 1.0)
+    }
+
+    fun propose(
+        parent: SpeciesDefinition,
+        random: Random,
+        maximumDivergences: Int = EcologyGlobals.maximumTraitDivergencesPerMutation,
+    ): ProposedMutation {
+        require(maximumDivergences > 0)
         val identity = EvolvingSpeciesCatalog.nextIdentity(parent)
-        val changeCount = random.nextInt(1, MAXIMUM_TRAIT_CHANGES + 1)
-        val selected = mutableTraits.shuffled(random).take(changeCount)
-        val presentTraits = parent.traits.mapTo(hashSetOf()) { it.baseTrait }
-        val changes = selected.map { trait ->
-            SpeciesMutationChange(
-                trait = requireNotNull(MutationTraitReference.from(trait)),
-                added = trait.baseTrait !in presentTraits,
-            )
-        }
+        val shuffledTraits = mutableTraits.shuffled(random)
+        val mutationUnits = shuffledTraits.distinctBy { it.group ?: it }
+        val changeCount = random.nextInt(1, minOf(maximumDivergences, mutationUnits.size) + 1)
+        val selectedGroups = hashSetOf<TraitGroup>()
+        val selected = shuffledTraits.filter { trait ->
+            trait.group?.let(selectedGroups::add) ?: true
+        }.take(changeCount)
+        val changes = changesFor(parent, selected, random)
         val record = MutatedSpeciesRecord(
             id = identity.id,
             displayName = identity.displayName,
@@ -150,6 +167,27 @@ object EcologyMutations {
             changes = changes,
         )
         return ProposedMutation(record, EvolvingSpeciesCatalog.createDefinition(parent, record))
+    }
+
+    internal fun changesFor(
+        parent: SpeciesDefinition,
+        selectedTraits: List<SpeciesTrait>,
+        random: Random = Random.Default,
+    ): List<SpeciesMutationChange> {
+        val profile = parent.traitProfile()
+        return selectedTraits.map { selectedTrait ->
+            val trait = selectedTrait.baseTrait
+            val currentLevel = profile.levelOf(trait)
+            val targetLevel = when {
+                trait.scale == null -> if (currentLevel == 0) 1 else 0
+                else -> trait.adjacentLevelsFrom(currentLevel).random(random)
+            }
+            SpeciesMutationChange(
+                trait = requireNotNull(MutationTraitReference.from(trait)),
+                added = targetLevel > 0,
+                level = targetLevel.takeIf { it > 0 && trait.scale != null },
+            )
+        }
     }
 
     fun compile(definition: SpeciesDefinition): CompiledSpecies? = try {

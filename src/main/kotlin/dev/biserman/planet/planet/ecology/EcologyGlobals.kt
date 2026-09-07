@@ -108,6 +108,9 @@ object EcologyGlobals {
     /** Number of simulated years between mutation rolls. */
     var mutationIntervalYears = 100
 
+    /** Maximum number of traits added or removed when one species diverges. */
+    var maximumTraitDivergencesPerMutation = 5
+
     /**
      * Lowest intrinsic niche fit a colonist may choose, expressed as a fraction
      * of its best available niche fit on the destination tile.
@@ -165,6 +168,7 @@ object EcologyGlobals {
         require(neighborRadiationChancePerSeason in 0.0..1.0)
         require(mutationChancePerInterval in 0.0..1.0)
         require(mutationIntervalYears > 0)
+        require(maximumTraitDivergencesPerMutation > 0)
         require(minimumRelativeRadiationNicheFit in 0.0..1.0)
         require(establishmentCapacityMultiplier >= 1.0)
         require(aposematicPredationMultiplier >= 0.0)

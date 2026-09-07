@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 class TileCommunity(val capacity: Int = 48) {
@@ -173,6 +174,25 @@ object EcologyDiversity {
     }
 }
 
+object EcologyCompetition {
+    /**
+     * Converts the old linear per-competitor strength into an exponential
+     * coefficient. The resulting total crowding factor is anchored at 1.0 for
+     * one species and 1 + 2 * strength for three equal species.
+     */
+    fun interspecificPressurePerCompetitor(
+        linearStrength: Double,
+        effectiveCompetitorCount: Double,
+    ): Double {
+        require(linearStrength >= 0.0)
+        require(effectiveCompetitorCount >= 0.0)
+        if (effectiveCompetitorCount == 0.0) return 0.0
+        val totalInterspecificPressure =
+            (1.0 + 2.0 * linearStrength).pow(effectiveCompetitorCount / 2.0) - 1.0
+        return totalInterspecificPressure / effectiveCompetitorCount
+    }
+}
+
 class CellTurnFluxes {
     var carrionBiomass: Double = 0.0
         internal set
@@ -254,6 +274,8 @@ class EcologyRuntime(
                 SizeClass.entries.size *
                 ProducerCompetitionLayer.entries.size,
         )
+    private val speciesCountByNicheSizeAndProducerLayer =
+        DoubleArray(normalizedBiomassByNicheSizeAndProducerLayer.size)
     private val populationCountByHabitat = IntArray(Habitat.entries.size)
     private val bestCompetitiveStandingByHabitat = DoubleArray(Habitat.entries.size)
 
@@ -283,6 +305,7 @@ class EcologyRuntime(
 
     private fun clearScratch(populationCount: Int) {
         java.util.Arrays.fill(normalizedBiomassByNicheSizeAndProducerLayer, 0.0)
+        java.util.Arrays.fill(speciesCountByNicheSizeAndProducerLayer, 0.0)
         java.util.Arrays.fill(interactionGains, 0, populationCount, 0.0)
         java.util.Arrays.fill(interactionLosses, 0, populationCount, 0.0)
         java.util.Arrays.fill(relationshipBenefits, 0, populationCount, 0.0)
@@ -488,6 +511,9 @@ class EcologyRuntime(
                 effectiveActive[populationIndex] /
                 species.sizeClass.densityScale *
                 species.lifeHistory.nicheCompetitionSensitivity
+            if (effectiveActive[populationIndex] > 0.0) {
+                speciesCountByNicheSizeAndProducerLayer[offset] += 1.0
+            }
         }
     }
 
@@ -820,6 +846,7 @@ class EcologyRuntime(
                     SizeClass.entries.size *
                     ProducerCompetitionLayer.entries.size
             var normalizedNicheBiomass = 0.0
+            var effectiveNicheSpeciesCount = 0.0
             for (otherSize in SizeClass.entries) {
                 val sizeDistance = abs(otherSize.ordinal - species.sizeClass.ordinal)
                 val overlap = when (sizeDistance) {
@@ -847,18 +874,35 @@ class EcologyRuntime(
                                 otherSize.ordinal * ProducerCompetitionLayer.entries.size +
                                 otherLayer.ordinal
                         ] * overlap * layerOverlap
+                    effectiveNicheSpeciesCount +=
+                        speciesCountByNicheSizeAndProducerLayer[
+                            nicheSizeOffset +
+                                otherSize.ordinal * ProducerCompetitionLayer.entries.size +
+                                otherLayer.ordinal
+                        ] * overlap * layerOverlap
                 }
             }
             val normalizedActive =
                 active /
                     species.sizeClass.densityScale *
                     species.lifeHistory.nicheCompetitionSensitivity
+            val effectiveCompetitorCount = max(0.0, effectiveNicheSpeciesCount - 1.0)
+            val pressurePerCompetitor = EcologyCompetition.interspecificPressurePerCompetitor(
+                config.interspecificNicheCompetition,
+                effectiveCompetitorCount,
+            )
+            val normalizedCompetitorBiomass = max(0.0, normalizedNicheBiomass - normalizedActive)
+            val interspecificCompetingBiomass =
+                if (normalizedCompetitorBiomass == 0.0) {
+                    0.0
+                } else {
+                    normalizedCompetitorBiomass *
+                        species.sizeClass.densityScale *
+                        pressurePerCompetitor *
+                        species.lifeHistory.nicheCompetitionSensitivity
+                }
             val competingBiomass =
-                active * species.lifeHistory.selfCrowdingSensitivity +
-                    max(0.0, normalizedNicheBiomass - normalizedActive) *
-                    species.sizeClass.densityScale *
-                    config.interspecificNicheCompetition *
-                    species.lifeHistory.nicheCompetitionSensitivity
+                active * species.lifeHistory.selfCrowdingSensitivity + interspecificCompetingBiomass
             val crowding = competingBiomass /
                 max(1.0, carryingBiomass)
             // The denominator offset controls saturation; it must not act as

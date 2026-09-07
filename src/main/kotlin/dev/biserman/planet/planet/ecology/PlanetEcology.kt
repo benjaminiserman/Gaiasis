@@ -73,7 +73,8 @@ object PlanetEcology {
                     MUTATION_PROCESS,
                 ),
             )
-            if (random.nextDouble() >= EcologyGlobals.mutationChancePerInterval) {
+            val compiledParent = compiled.species[compiled.speciesIndex(parent.id)]
+            if (random.nextDouble() >= EcologyMutations.mutationChance(compiledParent)) {
                 return@mapNotNull null
             }
             val proposal = EcologyMutations.propose(parent, random)

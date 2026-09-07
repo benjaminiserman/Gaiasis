@@ -54,7 +54,7 @@ class ShowSettingsButton : OptionButton() {
                 onClick(it)
             }).also {
                 it.text = toggle
-                it.setVisible(false)
+                it.setVisible(settingsCategory in categories)
                 settingsOptionsList.addChild(it)
             },
             categories,

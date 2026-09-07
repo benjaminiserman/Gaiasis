@@ -420,6 +420,7 @@ class EcologyRuntimeTest {
     fun `reef builders emit cover only from aquatic habitat`() {
         val species = aquaticProducer(
             extraTraits = listOf(
+                CommonTrait.SUBSTRATE_HOLDFAST,
                 CommonTrait.RIGID_COLONY_FRAMEWORK,
                 CommonTrait.REEF_BUILDING,
             ),

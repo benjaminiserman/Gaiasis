@@ -240,7 +240,7 @@ class InteractionEffectContext internal constructor() {
     }
 
     internal fun addDefenseBonus(subject: InteractionEffectSubject, change: Double) {
-        if (subject.affectsConsumer()) defenseBonus += change
+        if (subject.affectsTarget()) defenseBonus += change
     }
 
     internal fun multiplyDefenseBonus(subject: InteractionEffectSubject, multiplier: Double) {
@@ -335,6 +335,7 @@ sealed interface InteractionEffect {
 data class ConditionalInteractionEffect(
     val condition: InteractionCondition,
     val effects: List<InteractionEffect>,
+    val scaleByOpponentTraitLevel: SpeciesTrait? = null,
 ) : TraitEffect {
     init {
         require(effects.isNotEmpty())

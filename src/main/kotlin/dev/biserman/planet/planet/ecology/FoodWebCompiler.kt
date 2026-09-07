@@ -160,7 +160,12 @@ private data class SpeciesPair(
                             opponentDefinition,
                         )
                     ) {
-                        context.apply(conditionalEffect.effects, bearerIsConsumer)
+                        val repetitions = conditionalEffect.scaleByOpponentTraitLevel
+                            ?.let(opponent.traits::levelOf)
+                            ?: 1
+                        repeat(repetitions) {
+                            context.apply(conditionalEffect.effects, bearerIsConsumer)
+                        }
                     }
                 }
             }
