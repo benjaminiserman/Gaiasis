@@ -9,6 +9,7 @@
   "dormantExitFraction": 0.55,
   "dormantLeafColdProtectionC": 20.0,
   "establishmentCapacityMultiplier": 1.2,
+  "feedingInterferenceCompetition": 0.15,
   "habitatDiversityAvailabilitySlots": 7.0,
   "habitatDiversityBaseSlots": 3.0,
   "interspecificNicheCompetition": 0.5,

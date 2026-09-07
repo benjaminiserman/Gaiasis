@@ -39,6 +39,9 @@ object EcologyGlobals {
     /** Strength of competition from other species occupying the same authored niche. */
     var interspecificNicheCompetition = 0.15
 
+    /** Niche competition strength for interference with prey capture; zero disables it. */
+    var feedingInterferenceCompetition = 0.15
+
     /** Maximum fraction of a prey population that all consumers may remove in one season. */
     var maximumConsumedBiomassFraction = 0.75
 
@@ -145,6 +148,7 @@ object EcologyGlobals {
         require(lethalElevationLimitM > normalElevationLimitM)
         require(maximumStarvationMortality in 0.0..1.0)
         require(interspecificNicheCompetition >= 0.0)
+        require(feedingInterferenceCompetition.isFinite() && feedingInterferenceCompetition >= 0.0)
         require(maximumConsumedBiomassFraction in 0.0..1.0)
         require(nectarAssimilationEfficiency in 0.0..1.0)
         require(maximumPollinationBenefitFraction in 0.0..1.0)

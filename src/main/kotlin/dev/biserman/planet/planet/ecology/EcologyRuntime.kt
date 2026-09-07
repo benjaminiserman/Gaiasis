@@ -83,6 +83,8 @@ data class EcologyRuntimeConfig(
      */
     val interspecificNicheCompetition: Double =
         EcologyGlobals.interspecificNicheCompetition,
+    /** Independent niche competition strength applied to prey requests before allocation. */
+    val feedingInterferenceCompetition: Double = EcologyGlobals.feedingInterferenceCompetition,
     /**
      * Seasonal food throughput may exceed consumer standing biomass even
      * though only a fraction of eaten tissue is assimilated.
@@ -134,6 +136,7 @@ data class EcologyRuntimeConfig(
         require(lethalTemperatureMortality in 0.0..1.0)
         require(maximumStarvationMortality in 0.0..1.0)
         require(interspecificNicheCompetition >= 0.0)
+        require(feedingInterferenceCompetition.isFinite() && feedingInterferenceCompetition >= 0.0)
         require(maximumConsumedBiomassFraction in 0.0..1.0)
         require(nectarAssimilationEfficiency in 0.0..1.0)
         require(maximumPollinationBenefitFraction in 0.0..1.0)
@@ -255,6 +258,11 @@ class EcologyRuntime(
     private val fitness = DoubleArray(maximumPopulationsPerCell)
     private val interactionGains = DoubleArray(maximumPopulationsPerCell)
     private val interactionLosses = DoubleArray(maximumPopulationsPerCell)
+    private val consumptionClaims = DoubleArray(maximumPopulationsPerCell * maximumPopulationsPerCell)
+    private val backgroundAssimilationByPopulation = DoubleArray(maximumPopulationsPerCell)
+    private val feedingInterferenceMultiplier = DoubleArray(maximumPopulationsPerCell)
+    private val carryingBiomassByPopulation = DoubleArray(maximumPopulationsPerCell)
+    private val organicPoolDemand = DoubleArray(OrganicResourcePool.entries.size)
     private val relationshipBenefits = DoubleArray(maximumPopulationsPerCell)
     private val nectarSupply = DoubleArray(maximumPopulationsPerCell)
     private val nectarDemand = DoubleArray(maximumPopulationsPerCell)
@@ -295,6 +303,7 @@ class EcologyRuntime(
         prepareAposematicDeterrence(community)
         accumulateHabitatDiversity(community, environment)
         accumulateNicheBiomass(community)
+        prepareCompetitionAndBackgroundAssimilation(community, environment)
         accumulateInteractions(community, environment)
         accumulateNectarInteractions(community, fluxes)
         updatePopulations(community, environment, fluxes)
@@ -309,6 +318,8 @@ class EcologyRuntime(
         java.util.Arrays.fill(interactionGains, 0, populationCount, 0.0)
         java.util.Arrays.fill(interactionLosses, 0, populationCount, 0.0)
         java.util.Arrays.fill(relationshipBenefits, 0, populationCount, 0.0)
+        java.util.Arrays.fill(consumptionClaims, 0, populationCount * populationCount, 0.0)
+        java.util.Arrays.fill(organicPoolDemand, 0.0)
         java.util.Arrays.fill(nectarSupply, 0, populationCount, 0.0)
         java.util.Arrays.fill(nectarDemand, 0, populationCount, 0.0)
         java.util.Arrays.fill(nectarAccessibleSupply, 0, populationCount, 0.0)
@@ -667,17 +678,30 @@ class EcologyRuntime(
                         consumptionScale
                     }
                 val targetLoss =
-                    targetBiomass * lossRate * lowDensityAccessibility * edgeConsumptionScale
+                    targetBiomass * lossRate * lowDensityAccessibility * edgeConsumptionScale *
+                        feedingInterferenceMultiplier[consumerPopulation]
                 if (targetLoss <= 0.0) continue
 
                 interactionLosses[targetPopulation] += targetLoss
-                val compiledLoss = ecology.interactions.targetLossAt(offset)
-                if (compiledLoss > 0.0) {
-                    val efficiency = ecology.interactions.consumerGainAt(offset) / compiledLoss
-                    interactionGains[consumerPopulation] += targetLoss * efficiency
-                }
-                relationshipBenefits[targetPopulation] +=
-                    targetLoss * ecology.interactions.targetBenefitAt(offset)
+                consumptionClaims[consumerPopulation * community.size + targetPopulation] = targetLoss
+            }
+        }
+
+        // Consumers first request food independently, then share each target's
+        // available tissue proportionally. Gains and benefits use actual intake.
+        for (targetPopulation in 0 until community.size) {
+            val claims = interactionLosses[targetPopulation]
+            if (claims <= 0.0) continue
+            val allocationScale = min(1.0, effectiveActive[targetPopulation] / claims)
+            interactionLosses[targetPopulation] = min(claims, effectiveActive[targetPopulation])
+            val targetIndex = community.speciesIndices[targetPopulation]
+            for (consumerPopulation in 0 until community.size) {
+                val consumed = consumptionClaims[consumerPopulation * community.size + targetPopulation] * allocationScale
+                if (consumed <= 0.0) continue
+                val offset = community.speciesIndices[consumerPopulation] * speciesCount + targetIndex
+                val efficiency = ecology.interactions.consumerGainAt(offset) / ecology.interactions.targetLossAt(offset)
+                interactionGains[consumerPopulation] += consumed * efficiency
+                relationshipBenefits[targetPopulation] += consumed * ecology.interactions.targetBenefitAt(offset)
             }
         }
     }
@@ -803,10 +827,9 @@ class EcologyRuntime(
                 ) ||
             (visitor == Habitat.CANOPY && producer == Habitat.LAND_SURFACE)
 
-    private fun updatePopulations(
+    private fun prepareCompetitionAndBackgroundAssimilation(
         community: TileCommunity,
         environment: SeasonalCellEnvironment,
-        fluxes: CellTurnFluxes?,
     ) {
         for (populationIndex in 0 until community.size) {
             val species = ecology.species[community.speciesIndices[populationIndex]]
@@ -818,7 +841,6 @@ class EcologyRuntime(
                 continue
             }
 
-            val habitat = environment.habitatAvailability(niche.habitat)
             val baseResource = environment.resourceSupport(niche, species.sizeClass)
             val canUseWasteAsFertilizer =
                 niche.strategy == EcoStrategy.PHOTOSYNTHESIS
@@ -901,6 +923,20 @@ class EcologyRuntime(
                         pressurePerCompetitor *
                         species.lifeHistory.nicheCompetitionSensitivity
                 }
+            // Reuse niche/size/layer overlap and trait sensitivity, but keep
+            // capture interference independently tunable from background crowding.
+            val feedingPressurePerCompetitor = EcologyCompetition.interspecificPressurePerCompetitor(
+                config.feedingInterferenceCompetition,
+                effectiveCompetitorCount,
+            )
+            val feedingCompetitionBiomass = if (normalizedCompetitorBiomass == 0.0) {
+                0.0
+            } else {
+                normalizedCompetitorBiomass * species.sizeClass.densityScale *
+                    feedingPressurePerCompetitor * species.lifeHistory.nicheCompetitionSensitivity
+            }
+            feedingInterferenceMultiplier[populationIndex] =
+                1.0 / (1.0 + feedingCompetitionBiomass / max(1.0, carryingBiomass))
             val competingBiomass =
                 active * species.lifeHistory.selfCrowdingSensitivity + interspecificCompetingBiomass
             val crowding = competingBiomass /
@@ -915,12 +951,42 @@ class EcologyRuntime(
                 } else {
                     1.0
                 }
-            val backgroundAssimilation =
+            val assimilation =
                 active *
                     (0.30 + species.lifeHistory.seasonalReproduction) *
                     environmentalFitness *
                     resourceFactor *
                     primaryStrategyEfficiency
+            backgroundAssimilationByPopulation[populationIndex] = assimilation
+            carryingBiomassByPopulation[populationIndex] = carryingBiomass
+            val pool = OrganicResourcePool.forStrategy(niche.strategy)
+            if (pool != null) {
+                organicPoolDemand[pool.ordinal] += assimilation / pool.assimilationEfficiency
+            }
+        }
+    }
+
+    private fun updatePopulations(
+        community: TileCommunity,
+        environment: SeasonalCellEnvironment,
+        fluxes: CellTurnFluxes?,
+    ) {
+        // Budget only retained, accessible food from the start of the season.
+        // New deaths and production become available through the next pool update.
+        for (populationIndex in 0 until community.size) {
+            val active = effectiveActive[populationIndex]
+            if (active <= 0.0) continue
+            val species = ecology.species[community.speciesIndices[populationIndex]]
+            val niche = ecology.niches[community.nicheIndices[populationIndex]]
+            val environmentalFitness = fitness[populationIndex]
+            val carryingBiomass = carryingBiomassByPopulation[populationIndex]
+            val pool = OrganicResourcePool.forStrategy(niche.strategy)
+            val allocationScale = if (pool == null || organicPoolDemand[pool.ordinal] <= 0.0) {
+                1.0
+            } else {
+                min(1.0, pool.accessibleBiomassKg(environment.resources, environment.areaKm2) / organicPoolDemand[pool.ordinal])
+            }
+            val backgroundAssimilation = backgroundAssimilationByPopulation[populationIndex] * allocationScale
             // Below the viable-activity threshold an organism may endure for a
             // while, but cannot turn captured food into growth. This prevents
             // abundant prey from making a profoundly climate-mismatched animal
@@ -1055,19 +1121,19 @@ class EcologyRuntime(
             fluxes?.let {
                 when (niche.strategy) {
                     EcoStrategy.SCAVENGING ->
-                        it.carrionConsumedBiomass += backgroundAssimilation / 0.35
+                        it.carrionConsumedBiomass += backgroundAssimilation / OrganicResourcePool.CARRION.assimilationEfficiency
 
                     EcoStrategy.DECOMPOSITION ->
-                        it.detritusConsumedBiomass += backgroundAssimilation / 0.42
+                        it.detritusConsumedBiomass += backgroundAssimilation / OrganicResourcePool.DETRITUS.assimilationEfficiency
 
                     EcoStrategy.COPROPHAGY ->
-                        it.wasteConsumedBiomass += backgroundAssimilation / 0.48
+                        it.wasteConsumedBiomass += backgroundAssimilation / OrganicResourcePool.WASTE.assimilationEfficiency
 
                     EcoStrategy.DEPOSIT_FEEDING ->
-                        it.marineSnowConsumedBiomass += backgroundAssimilation / 0.40
+                        it.marineSnowConsumedBiomass += backgroundAssimilation / OrganicResourcePool.MARINE_SNOW.assimilationEfficiency
 
                     EcoStrategy.FRUGIVORY ->
-                        it.fruitConsumedBiomass += backgroundAssimilation / 0.55
+                        it.fruitConsumedBiomass += backgroundAssimilation / OrganicResourcePool.FRUIT.assimilationEfficiency
 
                     else -> Unit
                 }

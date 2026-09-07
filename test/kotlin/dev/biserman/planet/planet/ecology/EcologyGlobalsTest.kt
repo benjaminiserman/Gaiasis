@@ -33,17 +33,21 @@ class EcologyGlobalsTest {
     @Test
     fun `reloaded globals are captured by newly constructed runtime configs`() {
         val original = EcologyGlobals.backgroundMortality
+        val originalFeeding = EcologyGlobals.feedingInterferenceCompetition
         val existingSnapshot = EcologyRuntimeConfig()
         try {
             Serialization.configMapper.readValue<EcologyGlobals>(
-                """{"backgroundMortality":0.123}""",
+                """{"backgroundMortality":0.123,"feedingInterferenceCompetition":0.4}""",
             )
             EcologyGlobals.validate()
 
+            assertEquals(originalFeeding, existingSnapshot.feedingInterferenceCompetition)
+            assertEquals(0.4, EcologyRuntimeConfig().feedingInterferenceCompetition)
             assertEquals(original, existingSnapshot.backgroundMortality, message = "Reloaded globals are captured by newly constructed runtime configs: expected `existingSnapshot.backgroundMortality` to match `original`")
             assertEquals(0.123, EcologyRuntimeConfig().backgroundMortality, message = "Reloaded globals are captured by newly constructed runtime configs: expected `EcologyRuntimeConfig().backgroundMortality` to match `0.123`")
         } finally {
             EcologyGlobals.backgroundMortality = original
+            EcologyGlobals.feedingInterferenceCompetition = originalFeeding
         }
     }
 

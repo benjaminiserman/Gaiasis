@@ -188,34 +188,7 @@ object EcologyMovement {
             }
         }
 
-        // Remove every founder group before adding any of them. Planning above
-        // therefore observes one immutable seasonal snapshot, independent of
-        // tile traversal order, and a population cannot radiate through several
-        // tiles during one season.
-        for (transferIndex in 0 until scratch.size) {
-            val origin = communities[scratch.originTiles[transferIndex]]
-            val populationIndex = origin.find(scratch.speciesIndices[transferIndex])
-            check(populationIndex >= 0)
-            origin.activeBiomass[populationIndex] -= scratch.activeBiomass[transferIndex]
-            origin.reserves[populationIndex] -= scratch.reserves[transferIndex]
-        }
-
-        for (transferIndex in 0 until scratch.size) {
-            val destination = communities[scratch.destinationTiles[transferIndex]]
-            val speciesIndex = scratch.speciesIndices[transferIndex]
-            val existing = destination.find(speciesIndex)
-            if (existing >= 0) {
-                destination.activeBiomass[existing] += scratch.activeBiomass[transferIndex]
-                destination.reserves[existing] += scratch.reserves[transferIndex]
-            } else {
-                destination.add(
-                    speciesIndex = speciesIndex,
-                    nicheIndex = scratch.nicheIndices[transferIndex],
-                    activeBiomass = scratch.activeBiomass[transferIndex],
-                    reserves = scratch.reserves[transferIndex],
-                )
-            }
-        }
+        applyTransfers(communities, scratch)
     }
 
     fun applySeason(
@@ -280,8 +253,6 @@ object EcologyMovement {
                 val transfer = origin.activeBiomass[populationIndex] * transferFraction
                 if (transfer <= 0.0) continue
                 val reserveTransfer = origin.reserves[populationIndex] * transferFraction
-                origin.activeBiomass[populationIndex] -= transfer
-                origin.reserves[populationIndex] -= reserveTransfer
 
                 val transferIndex = scratch.size++
                 scratch.originTiles[transferIndex] = originTile
@@ -293,10 +264,26 @@ object EcologyMovement {
             }
         }
 
+        applyTransfers(communities, scratch)
+
+        communities.forEach(runtime::finalizeLocalExtinctions)
+    }
+
+    private fun applyTransfers(communities: Array<TileCommunity>, scratch: MovementScratch) {
+        // Amounts were fixed from the pre-transfer world, so arrivals cannot
+        // travel again. Reject excess founders before debiting their origin;
+        // earlier arrivals may have occupied the destination's last slot.
         for (transferIndex in 0 until scratch.size) {
             val destination = communities[scratch.destinationTiles[transferIndex]]
             val speciesIndex = scratch.speciesIndices[transferIndex]
             val existing = destination.find(speciesIndex)
+            if (existing < 0 && destination.size >= destination.capacity) continue
+
+            val origin = communities[scratch.originTiles[transferIndex]]
+            val populationIndex = origin.find(speciesIndex)
+            check(populationIndex >= 0)
+            origin.activeBiomass[populationIndex] -= scratch.activeBiomass[transferIndex]
+            origin.reserves[populationIndex] -= scratch.reserves[transferIndex]
             if (existing >= 0) {
                 destination.activeBiomass[existing] += scratch.activeBiomass[transferIndex]
                 destination.reserves[existing] += scratch.reserves[transferIndex]
@@ -309,8 +296,6 @@ object EcologyMovement {
                 )
             }
         }
-
-        communities.forEach(runtime::finalizeLocalExtinctions)
     }
 
     private fun radiationHash(

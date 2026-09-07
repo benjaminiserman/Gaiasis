@@ -200,6 +200,58 @@ class EcologyMovementTest {
         assertTrue((2 until communities.size).any { communities[it].find(0) >= 0 }, message = "Aerial ovospores radiate beyond neighboring tiles: expected `(2 until communities.size).any { communities[it].find(0) >= 0 }` to be true")
     }
 
+    @Test
+    fun `simultaneous founders respect capacity and leave rejected biomass at origin`() {
+        for (radiation in listOf(false, true)) {
+            for (sameSpecies in listOf(false, true)) {
+                val definitions = listOf(landDisperser(), landDisperser().copy(id = "second"))
+                val ecology = EcologyCompiler.compile(definitions)
+                val environments = Array(3) { land() }
+                val communities = Array(3) { TileCommunity(capacity = 1) }
+                for (tile in 0..1) {
+                    val speciesIndex = if (sameSpecies) 0 else tile
+                    val niche = NicheSelection.choose(ecology.species[speciesIndex], ecology, environments[tile])
+                    communities[tile].add(speciesIndex, niche, 10_000.0, reserves = 1_000.0)
+                }
+                val neighbors = arrayOf(intArrayOf(2), intArrayOf(2), intArrayOf())
+                val scratch = MovementScratch(3, ecology.niches.size)
+                if (radiation) {
+                    EcologyMovement.applyRadiation(
+                        ecology,
+                        communities,
+                        environments,
+                        neighbors,
+                        0L,
+                        42,
+                        scratch,
+                        EcologyRuntimeConfig(neighborRadiationChancePerSeason = 1.0),
+                    )
+                } else {
+                    EcologyMovement.applySeason(
+                        ecology,
+                        EcologyRuntime(ecology),
+                        communities,
+                        environments,
+                        neighbors,
+                        0,
+                        CompiledMovementPlan.compile(ecology, 3, routes = emptyList()),
+                        scratch,
+                    )
+                }
+                assertEquals(1, communities[2].size)
+                assertEquals(20_000.0, communities.sumOf { it.totalBiomass() }, 1e-8)
+                assertEquals(2_000.0, communities.sumOf { tile -> (0 until tile.size).sumOf { tile.reserves[it] } }, 1e-8)
+                assertTrue(communities[0].activeBiomass[0] < 10_000.0)
+                if (sameSpecies) {
+                    assertTrue(communities[1].activeBiomass[0] < 10_000.0, "Arrivals of the same species share one slot")
+                } else {
+                    assertEquals(10_000.0, communities[1].activeBiomass[0], "Rejected founders stay at their origin")
+                    assertEquals(1_000.0, communities[1].reserves[0])
+                }
+            }
+        }
+    }
+
     private fun emptyCommunities(count: Int) = Array(count) { TileCommunity() }
 
     private fun land(majorRiver: Boolean = false) = SeasonalCellEnvironment.create(

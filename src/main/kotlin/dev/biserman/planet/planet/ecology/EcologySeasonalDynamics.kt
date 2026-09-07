@@ -77,6 +77,59 @@ object OrganicPoolDynamics {
     }
 }
 
+/** Shared conversion and availability rules for feeding and end-of-season depletion. */
+internal enum class OrganicResourcePool(
+    val strategy: EcoStrategy,
+    val assimilationEfficiency: Double,
+    private val seasonalRetention: Double,
+    private val maximumAccessibleFraction: Double,
+) {
+    CARRION(EcoStrategy.SCAVENGING, 0.35, 0.55, 0.90),
+    DETRITUS(EcoStrategy.DECOMPOSITION, 0.42, 0.68, 0.75),
+    WASTE(EcoStrategy.COPROPHAGY, 0.48, 0.60, 0.80),
+    MARINE_SNOW(EcoStrategy.DEPOSIT_FEEDING, 0.40, 0.72, 0.90),
+    FRUIT(EcoStrategy.FRUGIVORY, 0.55, 0.20, 0.85),
+    ;
+
+    private val fullLevelBiomassKgKm2: Double
+        get() = when (this) {
+            CARRION -> EcologyGlobals.carrionFullLevelBiomassKgKm2
+            DETRITUS -> EcologyGlobals.detritusFullLevelBiomassKgKm2
+            WASTE -> EcologyGlobals.wasteFullLevelBiomassKgKm2
+            MARINE_SNOW -> EcologyGlobals.marineSnowFullLevelBiomassKgKm2
+            FRUIT -> 2_500.0
+        }
+
+    private fun level(resources: FunctionalResources): Double = when (this) {
+        CARRION -> resources.carrion
+        DETRITUS -> resources.detritus
+        WASTE -> resources.waste
+        MARINE_SNOW -> resources.marineSnow
+        FRUIT -> resources.fruit
+    }
+
+    fun accessibleBiomassKg(resources: FunctionalResources, areaKm2: Double): Double =
+        level(resources) * seasonalRetention * maximumAccessibleFraction * areaKm2 * fullLevelBiomassKgKm2
+
+    fun update(
+        previous: FunctionalResources,
+        producedBiomassKg: Double,
+        consumedBiomassKg: Double,
+        areaKm2: Double,
+    ): Double = OrganicPoolDynamics.update(
+        level(previous),
+        producedBiomassKg,
+        consumedBiomassKg,
+        areaKm2 * fullLevelBiomassKgKm2,
+        seasonalRetention,
+        maximumAccessibleFraction,
+    )
+
+    companion object {
+        fun forStrategy(strategy: EcoStrategy): OrganicResourcePool? = entries.firstOrNull { it.strategy == strategy }
+    }
+}
+
 /** Advances all climate-independent resource pools with production runtime semantics. */
 object FunctionalResourceDynamics {
     fun update(
@@ -85,49 +138,39 @@ object FunctionalResourceDynamics {
         areaKm2: Double,
         hasMarineCompartment: Boolean,
     ): FunctionalResources = FunctionalResources(
-        carrion = OrganicPoolDynamics.update(
-            previous.carrion,
+        carrion = OrganicResourcePool.CARRION.update(
+            previous,
             fluxes.carrionBiomass,
             fluxes.carrionConsumedBiomass,
-            areaKm2 * EcologyGlobals.carrionFullLevelBiomassKgKm2,
-            0.55,
-            maximumAccessibleFraction = 0.90,
+            areaKm2,
         ),
-        detritus = OrganicPoolDynamics.update(
-            previous.detritus,
+        detritus = OrganicResourcePool.DETRITUS.update(
+            previous,
             fluxes.detritusBiomass,
             fluxes.detritusConsumedBiomass,
-            areaKm2 * EcologyGlobals.detritusFullLevelBiomassKgKm2,
-            0.68,
-            maximumAccessibleFraction = 0.75,
+            areaKm2,
         ),
-        waste = OrganicPoolDynamics.update(
-            previous.waste,
+        waste = OrganicResourcePool.WASTE.update(
+            previous,
             fluxes.wasteBiomass,
             fluxes.wasteConsumedBiomass,
-            areaKm2 * EcologyGlobals.wasteFullLevelBiomassKgKm2,
-            0.60,
-            maximumAccessibleFraction = 0.80,
+            areaKm2,
         ),
         marineSnow = if (hasMarineCompartment) {
-            OrganicPoolDynamics.update(
-                previous.marineSnow,
+            OrganicResourcePool.MARINE_SNOW.update(
+                previous,
                 fluxes.marineSnowBiomass,
                 fluxes.marineSnowConsumedBiomass,
-                areaKm2 * EcologyGlobals.marineSnowFullLevelBiomassKgKm2,
-                0.72,
-                maximumAccessibleFraction = 0.90,
+                areaKm2,
             )
         } else {
             0.0
         },
-        fruit = OrganicPoolDynamics.update(
-            previous.fruit,
+        fruit = OrganicResourcePool.FRUIT.update(
+            previous,
             fluxes.fruitBiomass,
             fluxes.fruitConsumedBiomass,
-            areaKm2 * 2_500.0,
-            0.20,
-            maximumAccessibleFraction = 0.85,
+            areaKm2,
         ),
     )
 }
