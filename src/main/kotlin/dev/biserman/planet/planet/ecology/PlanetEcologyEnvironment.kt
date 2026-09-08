@@ -128,7 +128,7 @@ object PlanetEcologyEnvironment {
             )
         }
 
-    private fun estimatedCanopyCover(climate: ClimateDatum, isLand: Boolean): Double {
+    internal fun estimatedCanopyCover(climate: ClimateDatum, isLand: Boolean): Double {
         if (!isLand) return 0.0
         val moisture = ((climate.annualPrecipitation - 350.0) / 1_900.0).coerceIn(0.0, 1.0)
         val warmth = (1.0 - ((climate.averageTemperature - 18.0) / 42.0).pow(2)).coerceIn(0.0, 1.0)

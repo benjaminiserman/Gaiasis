@@ -49,8 +49,17 @@ data class TileEcosystem(
         val community = TileCommunity(capacity = MAXIMUM_POPULATIONS)
         populations.forEach { population ->
             val speciesIndex = ecology.species.indexOfFirst { it.id == population.speciesId }
+            val habitat =
+                if (
+                    population.strategy == EcoStrategy.PHOTOSYNTHESIS &&
+                    population.habitat == Habitat.CANOPY
+                ) {
+                    Habitat.LAND_SURFACE
+                } else {
+                    population.habitat
+                }
             val nicheIndex = ecology.niches.indexOfFirst {
-                it.habitat == population.habitat &&
+                it.habitat == habitat &&
                     it.strategy == population.strategy
             }
             if (

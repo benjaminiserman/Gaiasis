@@ -22,6 +22,7 @@ val earthworm = annelida.descend(
     CommonTrait.TERRESTRIAL_OVOSPORE,
     CommonTrait.HERMAPHRODITISM,
     CommonTrait.DECOMPOSING_ENZYMES,
+    CommonTrait.BODY_REGENERATION,
     minus = listOf(CommonTrait.SALTWATER_OSMOREGULATION)
 )
 

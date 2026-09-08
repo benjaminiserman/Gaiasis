@@ -392,6 +392,7 @@ object PlanetEcology {
         val environments = Array(tiles.size) { index ->
             val tile = tiles[index]
             SeasonalCellEnvironment.from(tile)
+                .withPhotosyntheticStructure(compiled, communities[index])
         }
         val neighbors = cache.neighbors
         val fluxes = CellTurnFluxes()

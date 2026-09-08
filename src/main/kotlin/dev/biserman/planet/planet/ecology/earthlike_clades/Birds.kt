@@ -29,7 +29,7 @@ val ratite = bird.descend(
     CommonTrait.HERDING_BEHAVIOR,
     CommonTrait.COLLECTIVE_LIVING,
     CommonTrait.NEIGHBOR_DISPERSAL,
-    minus = listOf(CommonTrait.WINGS.atLevel(2)),
+    CommonTrait.FLIGHTLESS_WINGS,
 )
 val fowl = bird.descend(
     "fowl",
@@ -114,7 +114,7 @@ val penguin = bird.descend(
     CommonTrait.FAT_RESERVES,
     CommonTrait.TRUMPETING_CALL,
     CommonTrait.STREAMLINED_PHYSIQUE,
-    CommonTrait.BLUBBER,
+    CommonTrait.BLUBBER.atLevel(2),
     CommonTrait.INSULATING_PLUMAGE.atLevel(3),
     ColorTrait.COUNTERSHADE_COLORATION,
 )

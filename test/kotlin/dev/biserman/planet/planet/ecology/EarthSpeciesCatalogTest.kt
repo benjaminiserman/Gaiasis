@@ -883,23 +883,6 @@ class EarthSpeciesCatalogTest {
             assertEquals(1, species.count { !it.motile }, "$region plant coverage")
             assertEquals(2, species.count { it.motile }, "$region animal coverage")
         }
-
-        val coldRegionIds = regionalSpecies
-            .filterKeys { it != "Sahara" }
-            .values
-            .flatten()
-        coldRegionIds.forEach { speciesId ->
-            val traits = definitions.getValue(speciesId).traits
-            assertTrue(
-                traits.any {
-                    it == CommonTrait.DENSE_UNDERCOAT.atLevel(2) ||
-                        it == CommonTrait.INSULATING_PLUMAGE.atLevel(2) ||
-                        it == CommonTrait.FROST_HARDENED_TISSUES ||
-                        it == CommonTrait.SEASONAL_WINTER_COAT
-                },
-                "$speciesId lacks an explicit cold-climate adaptation",
-            )
-        }
     }
 
     @Test

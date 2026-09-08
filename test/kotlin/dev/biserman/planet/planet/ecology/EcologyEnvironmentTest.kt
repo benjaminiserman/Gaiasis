@@ -570,7 +570,7 @@ class EcologyEnvironmentTest {
     }
 
     @Test
-    fun `competition can make a locally secondary niche the best establishment choice`() {
+    fun `competition does not move a terrestrial producer into canopy habitat`() {
         val definition = SpeciesDefinition(
             id = "branch-mat",
             displayName = "Branch mat",
@@ -601,10 +601,8 @@ class EcologyEnvironmentTest {
             diverted >= 0,
             "The branch mat should retain a viable niche after its preferred niche is occupied, but selection returned $diverted",
         )
-        assertTrue(
-            diverted != unopposed,
-            "Strong competition in niche $unopposed should divert establishment to another niche, but both choices were $diverted",
-        )
+        assertEquals(Habitat.LAND_SURFACE, ecology.niches[unopposed].habitat)
+        assertEquals(Habitat.LAND_SURFACE, ecology.niches[diverted].habitat)
     }
 
     @Test

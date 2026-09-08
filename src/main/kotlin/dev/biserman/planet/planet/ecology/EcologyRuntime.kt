@@ -294,19 +294,20 @@ class EcologyRuntime(
         finalizeExtinctions: Boolean = true,
     ) {
         require(community.size <= effectiveActive.size)
+        val structuredEnvironment = environment.withPhotosyntheticStructure(ecology, community)
         fluxes?.clear()
         if (fluxes != null) {
-            fluxes.reefCoverDelta = -environment.reefCover * 0.015
+            fluxes.reefCoverDelta = -structuredEnvironment.reefCover * 0.015
         }
         clearScratch(community.size)
-        prepareDormancyAndFitness(community, environment)
+        prepareDormancyAndFitness(community, structuredEnvironment)
         prepareAposematicDeterrence(community)
-        accumulateHabitatDiversity(community, environment)
+        accumulateHabitatDiversity(community, structuredEnvironment)
         accumulateNicheBiomass(community)
-        prepareCompetitionAndBackgroundAssimilation(community, environment)
-        accumulateInteractions(community, environment)
+        prepareCompetitionAndBackgroundAssimilation(community, structuredEnvironment)
+        accumulateInteractions(community, structuredEnvironment)
         accumulateNectarInteractions(community, fluxes)
-        updatePopulations(community, environment, fluxes)
+        updatePopulations(community, structuredEnvironment, fluxes)
         if (finalizeExtinctions) {
             finalizeLocalExtinctions(community)
         }
@@ -873,10 +874,8 @@ class EcologyRuntime(
                 val sizeDistance = abs(otherSize.ordinal - species.sizeClass.ordinal)
                 val overlap = when (sizeDistance) {
                     0 -> 1.0
-                    1 -> 0.35
-                    2 -> 0.10
-                    3 -> 0.03
-                    else -> 0.01
+                    1 -> 0.10
+                    else -> 0.0
                 }
                 for (otherLayer in ProducerCompetitionLayer.entries) {
                     val layerOverlap = when {

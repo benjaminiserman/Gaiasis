@@ -67,10 +67,7 @@ object EcologyFitness {
 
     fun light(species: CompiledSpecies, environment: SeasonalCellEnvironment, habitat: Habitat): Double {
         if (species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS) <= 0.0) return 1.0
-        var available = environment.lightAt(habitat)
-        if (habitat == Habitat.LAND_SURFACE && environment.canopyCover > 0.0) {
-            available += environment.canopyCover * species.environment.canopyLightEfficiency
-        }
+        val available = environment.producerLightAt(habitat, species.sizeClass)
         val distance = abs(available - species.environment.insolationOptimum)
         val quantityFit = (1.0 - distance / 0.65).coerceIn(0.0, 1.0)
         val spectrumFit = LightColorModel.photosyntheticMatch(

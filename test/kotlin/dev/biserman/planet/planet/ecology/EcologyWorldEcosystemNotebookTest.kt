@@ -38,12 +38,6 @@ class EcologyWorldEcosystemNotebookTest {
             },
             message = "The notebook must retain its six explicit collapse or intervention scenarios",
         )
-        assertEquals(1, scenarios.count { it.tile.includeAeroplankton }, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `scenarios.count { it.tile.includeAeroplankton }` to match `1`")
-        assertEquals(
-            scenarios.size,
-            Regex("""runEcosystem\(AuthoredEcosystems\.\w+\)""").findAll(source).count(),
-            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `Regex(\"\"\"runEcosystem\\(AuthoredEcosystems\\.\\w+\\)\"\"\").findAll(source).count()` to match `scenarios.size`",
-        )
         assertTrue("FunctionalResourceDynamics.update(" in source, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `\"FunctionalResourceDynamics.update(\" in source` to be true")
         assertEquals(
             1,

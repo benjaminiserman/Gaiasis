@@ -16,8 +16,10 @@ object NicheSelection {
         val bestIntrinsicFit = ecology.niches.indices
             .asSequence()
             .filter { nicheIndex ->
-                val habitat = ecology.niches[nicheIndex].habitat
+                val niche = ecology.niches[nicheIndex]
+                val habitat = niche.habitat
                 environment.habitatAvailability(habitat) > 0.0 &&
+                    !(niche.strategy == EcoStrategy.PHOTOSYNTHESIS && habitat == Habitat.CANOPY) &&
                     EcologyFitness.habitat(species, environment, habitat) > 0.0 &&
                     !(
                         !environment.isLand &&
@@ -37,6 +39,9 @@ object NicheSelection {
         var bestScore = 0.0
         ecology.niches.indices.forEach { nicheIndex ->
             val niche = ecology.niches[nicheIndex]
+            if (niche.strategy == EcoStrategy.PHOTOSYNTHESIS && niche.habitat == Habitat.CANOPY) {
+                return@forEach
+            }
             if (
                 species.niche.fitFor(nicheIndex) <
                 bestIntrinsicFit * minimumRelativeIntrinsicFit

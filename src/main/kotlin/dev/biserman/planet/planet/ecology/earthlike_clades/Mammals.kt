@@ -345,7 +345,7 @@ val cetacean = ungulate.descend(
     CommonTrait.PROLONGED_BREATH_HOLDING,
     CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.STREAMLINED_PHYSIQUE,
-    CommonTrait.BLUBBER,
+    CommonTrait.BLUBBER.atLevel(1),
     CommonTrait.LONG_MIGRATION,
     CommonTrait.HEARING.atLevel(3),
     CommonTrait.ECHOLOCATION,
@@ -426,7 +426,7 @@ val seal = carnivore.descend(
     CommonTrait.SALTWATER_OSMOREGULATION,
     CommonTrait.STREAMLINED_PHYSIQUE,
     CommonTrait.AMBUSH_MUSCULATURE,
-    CommonTrait.BLUBBER,
+    CommonTrait.BLUBBER.atLevel(2),
     CommonTrait.BARKING_CALL,
     ColorTrait.COUNTERSHADE_COLORATION,
 )

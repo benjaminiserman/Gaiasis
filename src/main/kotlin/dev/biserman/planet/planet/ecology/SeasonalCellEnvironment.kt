@@ -1,6 +1,7 @@
 package dev.biserman.planet.planet.ecology
 
 import dev.biserman.planet.planet.PlanetTile
+import kotlin.math.exp
 import kotlin.math.max
 
 data class FunctionalResources(
@@ -23,6 +24,7 @@ class SeasonalCellEnvironment private constructor(
     val waterAvailability: Double,
     val fertility: Double,
     val acidity: Double,
+    val canopyPotential: Double,
     val canopyCover: Double,
     val reefCover: Double,
     val snowOrIce: Boolean,
@@ -35,6 +37,7 @@ class SeasonalCellEnvironment private constructor(
     val waterDepthM: Double,
     val resources: FunctionalResources,
     private val habitatAvailability: DoubleArray,
+    private val photosyntheticOpticalDepthBySize: DoubleArray? = null,
 ) {
     init {
         require(areaKm2 > 0.0)
@@ -50,6 +53,56 @@ class SeasonalCellEnvironment private constructor(
 
     fun lightAt(habitat: Habitat): Double = habitat.availableLight(insolation, canopyCover)
 
+    fun producerLightAt(habitat: Habitat, sizeClass: SizeClass): Double {
+        val opticalDepth = photosyntheticOpticalDepthBySize
+            ?: return if (habitat == Habitat.LAND_SURFACE || habitat == Habitat.CANOPY) {
+                insolation
+            } else {
+                lightAt(habitat)
+            }
+        if (habitat != Habitat.LAND_SURFACE && habitat != Habitat.CANOPY) {
+            return lightAt(habitat)
+        }
+        var depthAbove = 0.0
+        for (largerSize in sizeClass.ordinal + 1 until opticalDepth.size) {
+            depthAbove += opticalDepth[largerSize]
+        }
+        return (insolation * exp(-0.72 * depthAbove)).coerceIn(0.0, 1.0)
+    }
+
+    fun withPhotosyntheticStructure(
+        ecology: CompiledEcology,
+        community: TileCommunity,
+    ): SeasonalCellEnvironment {
+        val opticalDepth = PhotosyntheticStructure.opticalDepthBySize(ecology, community, this)
+        val realizedCanopyCover = PhotosyntheticStructure.overheadCover(opticalDepth)
+        val habitats = habitatAvailability.copyOf()
+        habitats[Habitat.CANOPY.ordinal] = realizedCanopyCover
+        return SeasonalCellEnvironment(
+            areaKm2 = areaKm2,
+            temperatureC = temperatureC,
+            annualAverageTemperatureC = annualAverageTemperatureC,
+            insolation = insolation,
+            waterAvailability = waterAvailability,
+            fertility = fertility,
+            acidity = acidity,
+            canopyPotential = canopyPotential,
+            canopyCover = realizedCanopyCover,
+            reefCover = reefCover,
+            snowOrIce = snowOrIce,
+            starLight = starLight,
+            isLand = isLand,
+            adjacentToOcean = adjacentToOcean,
+            adjacentToLand = adjacentToLand,
+            adjacentToMajorRiver = adjacentToMajorRiver,
+            elevationM = elevationM,
+            waterDepthM = waterDepthM,
+            resources = resources,
+            habitatAvailability = habitats,
+            photosyntheticOpticalDepthBySize = opticalDepth,
+        )
+    }
+
     fun withResources(resources: FunctionalResources): SeasonalCellEnvironment = SeasonalCellEnvironment(
         areaKm2 = areaKm2,
         temperatureC = temperatureC,
@@ -58,6 +111,7 @@ class SeasonalCellEnvironment private constructor(
         waterAvailability = waterAvailability,
         fertility = fertility,
         acidity = acidity,
+        canopyPotential = canopyPotential,
         canopyCover = canopyCover,
         reefCover = reefCover,
         snowOrIce = snowOrIce,
@@ -70,6 +124,7 @@ class SeasonalCellEnvironment private constructor(
         waterDepthM = waterDepthM,
         resources = resources,
         habitatAvailability = habitatAvailability.copyOf(),
+        photosyntheticOpticalDepthBySize = photosyntheticOpticalDepthBySize?.copyOf(),
     )
 
     companion object {
@@ -177,6 +232,7 @@ class SeasonalCellEnvironment private constructor(
                 waterAvailability = water,
                 fertility = (0.55 + surfaceFertilityModifier * 0.30).coerceIn(0.05, 1.0),
                 acidity = surfaceAcidityModifier.coerceIn(-1.0, 1.0),
+                canopyPotential = canopyCover,
                 canopyCover = canopyCover,
                 reefCover = reefCover,
                 snowOrIce = snowOrIce,

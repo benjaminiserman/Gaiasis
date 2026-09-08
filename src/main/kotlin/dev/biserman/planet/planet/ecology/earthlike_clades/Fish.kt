@@ -29,6 +29,7 @@ val cartilaginousFish = fish.descend(
     "cartilaginous fish",
     SizeClass.MEDIUM,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
+    CommonTrait.ELECTRORECEPTION,
     CommonTrait.CARTILAGINOUS_SKELETON,
     CommonTrait.PLACOID_SCALES,
     CommonTrait.GROUP_LIVING
@@ -187,6 +188,7 @@ val salmon = protacanthopterygii.descend(
     "salmon",
     SizeClass.SMALL,
     CommonTrait.LONG_MIGRATION,
+    CommonTrait.NATAL_HOMING,
     CommonTrait.EURYHALINE_OSMOREGULATION
 )
 

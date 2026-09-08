@@ -84,8 +84,8 @@ object EcologyBiomass {
         niche: NicheDefinition,
         environment: SeasonalCellEnvironment,
     ): Double {
-        val habitat = environment.habitatAvailability(niche.habitat).coerceAtLeast(0.02)
         val photosynthetic = niche.strategy == EcoStrategy.PHOTOSYNTHESIS
+        val habitat = environment.habitatAvailability(niche.habitat).coerceAtLeast(0.02)
         val strategyEfficiency =
             if (photosynthetic) {
                 species.niche.supportFor(EcoStrategy.PHOTOSYNTHESIS).coerceIn(0.0, 1.0)

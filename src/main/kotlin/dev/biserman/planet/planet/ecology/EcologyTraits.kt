@@ -945,6 +945,7 @@ enum class CommonTrait(
         "Anatomy and behavior suited to persist in sandy, freely draining terrain with scarce surface water.",
         listOf(
             TraitEffect.WaterRequirement(-0.07),
+            TraitEffect.TemperatureShift(-2.0),
             TraitEffect.MaintenanceCost(0.03)
         ),
     ),
@@ -1074,13 +1075,29 @@ enum class CommonTrait(
     ),
     BLUBBER(
         "blubber",
-        "A thick subcutaneous fat layer that insulates the body in water and doubles as an energy reserve.",
-        listOf(
-            TraitEffect.TemperatureShift(-10.0),
-            TraitEffect.TemperatureTolerance(colderC = 6.0),
-            TraitEffect.ReserveCapacity(0.28),
-            TraitEffect.CaptureAbility(-0.03),
-            TraitEffect.MaintenanceCost(0.24),
+        "A subcutaneous fat layer that insulates the body in water and doubles as an energy reserve; thicker layers favor colder conditions.",
+        emptyList(),
+        scale = TraitScale(
+            listOf(
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(-5.0),
+                        TraitEffect.TemperatureTolerance(colderC = 3.0),
+                        TraitEffect.ReserveCapacity(0.14),
+                        TraitEffect.CaptureAbility(-0.015),
+                        TraitEffect.MaintenanceCost(0.12),
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.TemperatureShift(-10.0),
+                        TraitEffect.TemperatureTolerance(colderC = 6.0),
+                        TraitEffect.ReserveCapacity(0.28),
+                        TraitEffect.CaptureAbility(-0.03),
+                        TraitEffect.MaintenanceCost(0.24),
+                    )
+                ),
+            )
         ),
     ),
     FAT_RESERVES(
@@ -1105,7 +1122,7 @@ enum class CommonTrait(
         "underground storage organs",
         "Enlarged buried roots, stems, leaves, or analogous structures store concentrated reserves below the surface for survival and renewed growth.",
         listOf(
-            TraitEffect.ReserveCapacity(0.18),
+            TraitEffect.ReserveCapacity(0.33),
             TraitEffect.Defense(0.04),
             TraitEffect.ReproductionMultiplier(0.95),
             TraitEffect.MaintenanceCost(0.15),
@@ -1349,6 +1366,7 @@ enum class CommonTrait(
         listOf(
             TraitEffect.ReproductionMultiplier(1.15),
             TraitEffect.MaintenanceCost(0.21),
+            TraitEffect.HabitatAffinity(Habitat.SEA_ICE, -0.5)
         ),
         capabilities = setOf(TraitCapability.OVOSPORE_BROOD_SITE),
         requirements = listOf(
@@ -1398,7 +1416,7 @@ enum class CommonTrait(
         "sea-ice rookery",
         "Breeding colonies occupy persistent sea ice close enough to land for repeated access to stable resting and nesting grounds.",
         listOf(
-            TraitEffect.HabitatAffinity(Habitat.SEA_ICE, 0.5),
+            TraitEffect.HabitatAffinity(Habitat.SEA_ICE, 0.75),
             TraitEffect.ObligateResidentHabitat(Habitat.SEA_ICE),
             TraitEffect.RequiresAdjacentLand,
             TraitEffect.ReproductionMultiplier(0.94),
@@ -1422,6 +1440,7 @@ enum class CommonTrait(
         "A self-excavated burrow provides shelter, a buffered microclimate, and a dry chamber for nesting or resting.",
         listOf(
             TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = 5.0),
+            TraitEffect.HabitatAffinity(Habitat.SEA_ICE, -0.4),
             TraitEffect.WaterRequirement(-0.06),
             TraitEffect.MaximumWaterTolerance(
                 optimalMaximumChange = -0.25,
@@ -1706,11 +1725,18 @@ enum class CommonTrait(
         emptyList(),
         scale = TraitScale(
             listOf(
-                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.25), TraitEffect.MaintenanceCost(0.06))),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.25),
+                        TraitEffect.MaintenanceCost(0.06),
+                        TraitEffect.TemperatureTolerance(colderC = 2.0, hotterC = 2.0),
+                    )
+                ),
                 TraitLevelDefinition(
                     effects = listOf(
                         TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.5),
                         TraitEffect.MaintenanceCost(0.12),
+                        TraitEffect.TemperatureTolerance(colderC = 4.0, hotterC = 4.0),
                     )
                 ),
             )
@@ -1730,11 +1756,15 @@ enum class CommonTrait(
         emptyList(),
         scale = TraitScale(
             listOf(
-                TraitLevelDefinition(effects = listOf(TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.15), TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.1), TraitEffect.MaintenanceCost(0.09))),
                 TraitLevelDefinition(
                     effects = listOf(
-                        TraitEffect.HabitatAffinity(HabitatGroup.LAND, 0.3),
-                        TraitEffect.HabitatAffinity(HabitatGroup.AQUATIC, 0.2),
+                        TraitEffect.HabitatAffinity(HabitatGroup.COASTAL, 0.3),
+                        TraitEffect.MaintenanceCost(0.09)
+                    )
+                ),
+                TraitLevelDefinition(
+                    effects = listOf(
+                        TraitEffect.HabitatAffinity(HabitatGroup.COASTAL, 0.5),
                         TraitEffect.MaintenanceCost(0.18),
                     )
                 ),
@@ -1757,6 +1787,7 @@ enum class CommonTrait(
             TraitEffect.HabitatAffinity(HabitatGroup.WALKING, 0.3),
             TraitEffect.HabitatAffinity(Habitat.FRESHWATER, 0.25),
             TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.25),
+            TraitEffect.WaterRequirement(0.1),
             TraitEffect.CaptureAbility(0.10),
             TraitEffect.MaintenanceCost(0.12),
         ),
@@ -2356,7 +2387,7 @@ enum class CommonTrait(
         "deep root system",
         "A long or extensively branching anchoring network that reaches water retained below the surface.",
         listOf(
-            TraitEffect.WaterRequirement(-0.18),
+            TraitEffect.WaterRequirement(-0.1),
             TraitEffect.MaintenanceCost(0.18),
         ),
         requirements = listOf(
@@ -2433,7 +2464,7 @@ enum class CommonTrait(
                     displayName = "dense undercoat",
                     description = "A thick layer of fine hair beneath outer fur traps still air close to the body.",
                     effects = listOf(
-                        TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -3.0),
+                        TraitEffect.TemperatureTolerance(colderC = 8.0, hotterC = -4.0),
                         TraitEffect.MetabolicDemandMultiplier(0.90),
                         TraitEffect.MaintenanceCost(0.12),
                         TraitEffect.BodyMassMultiplier(1.03),
@@ -2444,7 +2475,7 @@ enum class CommonTrait(
                     displayName = "woolly undercoat",
                     description = "Multiple layers of extremely dense, fine hair trap exceptional amounts of insulating air.",
                     effects = listOf(
-                        TraitEffect.TemperatureTolerance(colderC = 13.0, hotterC = -5.0),
+                        TraitEffect.TemperatureTolerance(colderC = 13.0, hotterC = -8.0),
                         TraitEffect.MetabolicDemandMultiplier(0.84),
                         TraitEffect.MaintenanceCost(0.26),
                         TraitEffect.BodyMassMultiplier(1.06),

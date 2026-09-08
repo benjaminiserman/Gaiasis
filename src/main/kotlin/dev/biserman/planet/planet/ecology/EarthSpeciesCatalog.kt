@@ -113,6 +113,7 @@ object EarthSpeciesCatalog {
             "chimpanzee",
             SizeClass.MEDIUM,
             ColorTrait.BLACK_COLORATION,
+            CommonTrait.BARE_HEAT_DISSIPATING_SKIN
         ),
         ape.descend(
             "bornean orangutan",
@@ -139,7 +140,7 @@ object EarthSpeciesCatalog {
             CommonTrait.AGGRESSIVE,
             CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
             CommonTrait.AMBUSH_MUSCULATURE,
-            CommonTrait.BLUBBER,
+            CommonTrait.BLUBBER.atLevel(2),
             CommonTrait.DENSE_UNDERCOAT.atLevel(3),
             CommonTrait.INFREQUENT_REPRODUCTION,
             ColorTrait.WHITE_COLORATION,
@@ -152,6 +153,8 @@ object EarthSpeciesCatalog {
             CommonTrait.AMBUSH_MUSCULATURE,
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
             CommonTrait.DENSE_UNDERCOAT.atLevel(2),
+            CommonTrait.DIGGING_LIMBS.atLevel(1),
+            CommonTrait.BURROW_BUILDER,
             CommonTrait.STRONG_JAWS,
             CommonTrait.INFREQUENT_REPRODUCTION,
         ),
@@ -560,7 +563,11 @@ object EarthSpeciesCatalog {
         mustelid.descend(
             "sable",
             SizeClass.SMALL,
+            CommonTrait.DENSE_UNDERCOAT.atLevel(3),
             CommonTrait.CACHED_FOOD,
+            CommonTrait.DIGGING_LIMBS,
+            CommonTrait.COLD_ACTIVE_ENZYMES,
+            CommonTrait.BURROW_BUILDER
         ),
         // Himalayan and Tibetan alpine plateau
         bison.descend(
@@ -806,6 +813,7 @@ object EarthSpeciesCatalog {
             SizeClass.SMALL,
             CommonTrait.AGGRESSIVE,
             CommonTrait.SOLITARY,
+            CommonTrait.INSULATING_PLUMAGE.atLevel(3),
         ),
         hawk.descend(
             "peregrine falcon",
@@ -844,13 +852,13 @@ object EarthSpeciesCatalog {
             CommonTrait.BODY_CARRIED_OVOSPORES,
             CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(2),
             CommonTrait.GROUP_HUDDLING,
-            CommonTrait.FLIGHTLESS_WINGS
+            CommonTrait.FLIGHTLESS_WINGS,
+            minus = listOf(CommonTrait.OVOSPORE_NEST)
         ),
         ratite.descend(
             "common ostrich",
             SizeClass.LARGE,
             CommonTrait.SKITTISH,
-            CommonTrait.LEAPING_LEGS,
             CommonTrait.BARE_HEAT_DISSIPATING_SKIN,
             CommonTrait.OPEN_COUNTRY_PREFERENCE,
             CommonTrait.BOOMING_CALL,
@@ -967,8 +975,7 @@ object EarthSpeciesCatalog {
             "andean condor",
             SizeClass.MEDIUM,
             CommonTrait.CALM,
-            CommonTrait.INSULATING_PLUMAGE.atLevel(2),
-            CommonTrait.INFREQUENT_REPRODUCTION,
+            CommonTrait.INSULATING_PLUMAGE.atLevel(1),
             CommonTrait.HYPOXIA_RESPONSIVE_METABOLISM,
             ColorTrait.BLACK_COLORATION,
             CommonTrait.SOLITARY,
@@ -1286,14 +1293,21 @@ object EarthSpeciesCatalog {
 
     val FISH: List<SpeciesDefinition> = listOf(
         shark.descend(
+            "blue shark",
+            SizeClass.MEDIUM,
+            CommonTrait.SLOW_GROWTH.atLevel(1),
+            CommonTrait.SOLITARY,
+            CommonTrait.LONG_MIGRATION
+        ),
+        shark.descend(
             "great white shark",
             SizeClass.LARGE,
             CommonTrait.DEEP_DIVING_PHYSIOLOGY,
-            CommonTrait.ELECTRORECEPTION,
             CommonTrait.FAT_RESERVES,
             CommonTrait.SLOW_GROWTH.atLevel(2),
             CommonTrait.INFREQUENT_REPRODUCTION,
             CommonTrait.SOLITARY,
+            CommonTrait.LONG_MIGRATION
         ),
         shark.descend(
             "whale shark",
@@ -1459,10 +1473,6 @@ object EarthSpeciesCatalog {
             CommonTrait.SCAVENGING_SENSES,
             CommonTrait.RESILIENT_DIGESTION,
         ),
-        herring.descend(
-            "peruvian anchoveta",
-            SizeClass.TINY,
-        ),
         perch.descend(
             "coral grouper",
             SizeClass.MEDIUM,
@@ -1536,7 +1546,8 @@ object EarthSpeciesCatalog {
         ),
         herring.descend(
             "pacific herring",
-            SizeClass.SMALL,
+            SizeClass.TINY,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1),
         ),
         gar.descend(
             "alligator gar",
@@ -1618,7 +1629,7 @@ object EarthSpeciesCatalog {
         ),
         crab.descend(
             "blue crab",
-            SizeClass.SMALL,
+            SizeClass.TINY,
             CommonTrait.AGGRESSIVE,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.LIMB_REGROWTH,
@@ -1633,7 +1644,6 @@ object EarthSpeciesCatalog {
             CommonTrait.DIGGING_LIMBS.atLevel(1),
             CommonTrait.BURROW_BUILDER,
             CommonTrait.FRUIT_EATING_MOUTHPARTS,
-            CommonTrait.SCAVENGING_SENSES,
             CommonTrait.FOOD_DERIVED_WATER,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.LIMB_REGROWTH,
@@ -1643,7 +1653,7 @@ object EarthSpeciesCatalog {
         ),
         crab.descend(
             "european freshwater crab",
-            SizeClass.SMALL,
+            SizeClass.TINY,
             CommonTrait.FRESHWATER_OSMOREGULATION,
             CommonTrait.DIGGING_LIMBS.atLevel(1),
             CommonTrait.BURROW_BUILDER,
@@ -1663,7 +1673,7 @@ object EarthSpeciesCatalog {
         ),
         crayfish.descend(
             "red swamp crayfish",
-            SizeClass.SMALL,
+            SizeClass.TINY,
             CommonTrait.AGGRESSIVE,
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.DIGGING_LIMBS.atLevel(1),
@@ -1719,6 +1729,7 @@ object EarthSpeciesCatalog {
         landSlug.descend(
             "banana slug",
             SizeClass.TINY,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1)
         ),
         seaSlug.descend(
             "blue dragon sea slug",
@@ -1730,7 +1741,6 @@ object EarthSpeciesCatalog {
         earthworm.descend(
             "common earthworm",
             SizeClass.TINY,
-            ColorTrait.BROWN_COLORATION,
         ),
         bristleWorm.descend(
             "fireworm",
@@ -1823,6 +1833,7 @@ object EarthSpeciesCatalog {
             CommonTrait.SEASONAL_TORPOR,
             CommonTrait.FREQUENT_REPRODUCTION,
             CommonTrait.TERRESTRIAL_CAMOUFLAGE,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(2)
         ),
         dragonfly.descend(
             "common green darner dragonfly",
@@ -1835,7 +1846,7 @@ object EarthSpeciesCatalog {
         fly.descend(
             "common mosquito",
             SizeClass.TINY,
-            CommonTrait.SUCKING_PROBOSCIS,
+            CommonTrait.PARASITIC_PROBOSCIS,
             CommonTrait.BURROWING_EGGS,
         ),
         centipede.descend(
@@ -1953,6 +1964,7 @@ object EarthSpeciesCatalog {
             CommonTrait.NECTARIES,
             CommonTrait.SUCCULENT_STEM,
             CommonTrait.DROUGHT_DECIDUOUS_LEAVES,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
             CommonTrait.WATER_STORAGE_TISSUE
         ),
         broadLeafTree.descend(
@@ -1961,6 +1973,7 @@ object EarthSpeciesCatalog {
             CommonTrait.FRUIT_BEARING,
             CommonTrait.NECTARIES,
             CommonTrait.WAXY_CUTICLE,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
             CommonTrait.DROUGHT_DECIDUOUS_LEAVES
         ),
         broadLeafTree.descend(
@@ -2015,7 +2028,17 @@ object EarthSpeciesCatalog {
             "strangler fig",
             SizeClass.LARGE,
             CommonTrait.LARGE_EVERGREEN_LEAVES.atLevel(1),
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
+            CommonTrait.EPIPHYTIC_ROOTS,
             CommonTrait.SHADE_FRONDS,
+        ),
+        fruitTree.descend(
+            "salmonberry",
+            SizeClass.MEDIUM,
+            CommonTrait.SEASONAL_LEAF_DORMANCY,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1),
+            CommonTrait.SHADE_FRONDS,
+            minus = listOf(CommonTrait.CANOPY_GROWTH)
         ),
         fern.descend(
             "bracken fern",
@@ -2030,6 +2053,7 @@ object EarthSpeciesCatalog {
         aquaticAngiosperm.descend(
             "white water lily",
             SizeClass.SMALL,
+            CommonTrait.WARM_WATER_ENZYMES
         ),
         aquaticAngiosperm.descend(
             "eelgrass",
@@ -2086,6 +2110,7 @@ object EarthSpeciesCatalog {
             "himalayan juniper",
             SizeClass.MEDIUM,
             CommonTrait.WAXY_CUTICLE,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(1)
         ),
         conifer.descend(
             "lodgepole pine",
@@ -2176,6 +2201,101 @@ object EarthSpeciesCatalog {
             "shelf fungus",
             SizeClass.SMALL,
             CommonTrait.ROOTED_BODY,
+        ),
+        // Regionally distinctive producers filling major biogeographic gaps.
+        fruitTree.descend(
+            "brazil nut tree",
+            SizeClass.LARGE,
+            CommonTrait.NECTARIES,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
+            CommonTrait.SHADE_FRONDS,
+        ),
+        forb.descend(
+            "king protea",
+            SizeClass.MEDIUM,
+            CommonTrait.WOODY_SUPPORT_TISSUE,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
+        ),
+        conifer.descend(
+            "kauri",
+            SizeClass.LARGE,
+            CommonTrait.LARGE_EVERGREEN_LEAVES.atLevel(1),
+            CommonTrait.SHADE_FRONDS,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            minus = listOf(CommonTrait.NEEDLE_LEAVES, CommonTrait.SEASONAL_LEAF_DORMANCY),
+        ),
+        broadLeafTree.descend(
+            "traveler's palm",
+            SizeClass.LARGE,
+            CommonTrait.WATER_STORAGE_TISSUE,
+            CommonTrait.NECTARIES,
+        ),
+        fruitTree.descend(
+            "cacao tree",
+            SizeClass.MEDIUM,
+            CommonTrait.SHADE_FRONDS,
+            CommonTrait.NECTARIES,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
+        ),
+        broadLeafTree.descend(
+            "sal tree",
+            SizeClass.LARGE,
+            CommonTrait.DROUGHT_DECIDUOUS_LEAVES,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(2)
+        ),
+        fruitTree.descend(
+            "breadfruit",
+            SizeClass.LARGE,
+            CommonTrait.CLONAL_PROPAGATION,
+        ),
+        grass.descend(
+            "antarctic hair grass",
+            SizeClass.TINY,
+            CommonTrait.CUSHION_GROWTH,
+            CommonTrait.FROST_HARDENED_TISSUES,
+            CommonTrait.SEASONAL_LEAF_DORMANCY,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+        ),
+        broadLeafTree.descend(
+            "saxaul",
+            SizeClass.MEDIUM,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.DEEP_ROOT_SYSTEM,
+            CommonTrait.DROUGHT_DECIDUOUS_LEAVES,
+            CommonTrait.HEAT_STABLE_ENZYMES.atLevel(1),
+            minus = listOf(CommonTrait.LARGE_EVERGREEN_LEAVES),
+        ),
+        conifer.descend(
+            "monkey puzzle tree",
+            SizeClass.LARGE,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+            CommonTrait.COLD_ACTIVE_ENZYMES.atLevel(2),
+            CommonTrait.SHADE_FRONDS,
+            minus = listOf(CommonTrait.SEASONAL_LEAF_DORMANCY),
+        ),
+        aquaticAngiosperm.descend(
+            "giant water lily",
+            SizeClass.SMALL,
+            CommonTrait.RAPID_GROWTH.atLevel(1),
+        ),
+        forb.descend(
+            "giant rosette lobelia",
+            SizeClass.MEDIUM,
+            CommonTrait.CUSHION_GROWTH,
+            CommonTrait.WAXY_CUTICLE,
+            CommonTrait.FROST_HARDENED_TISSUES,
+            CommonTrait.PERENNIAL_STORAGE_TISSUE,
+        ),
+        succulent.descend(
+            "agave",
+            SizeClass.MEDIUM,
+            CommonTrait.NECTARIES,
+            CommonTrait.WATER_STORAGE_TISSUE,
+            CommonTrait.DESICCATION_RESISTANT_PROPAGULES,
+            CommonTrait.SLOW_GROWTH.atLevel(1),
         ),
     )
 

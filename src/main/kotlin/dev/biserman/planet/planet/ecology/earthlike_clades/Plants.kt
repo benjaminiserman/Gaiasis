@@ -56,7 +56,6 @@ val conifer = vascularPlant.descend(
     "conifer",
     SizeClass.LARGE,
     CommonTrait.NEEDLE_LEAVES,
-    CommonTrait.CANOPY_GROWTH,
     CommonTrait.FROST_HARDENED_TISSUES,
     CommonTrait.SEASONAL_LEAF_DORMANCY,
     CommonTrait.DEEP_ROOT_SYSTEM,

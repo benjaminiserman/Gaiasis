@@ -193,6 +193,7 @@ internal object FoodWebCompiler {
         require(definitions.size == species.size)
         val builder = InteractionMatrixBuilder(species.size)
         val obligateFoodConsumers = obligateFoodConsumers(definitions)
+        val exclusiveParasiteConsumers = exclusiveParasiteConsumers(definitions)
         val predationGraph = buildPredationGraph(
             definitions,
             species,
@@ -209,7 +210,16 @@ internal object FoodWebCompiler {
                     definitions[consumer.index],
                     definitions[target.index],
                 )
-                val interaction = filterFeedingInteraction(pair) ?: grazingInteraction(pair) ?: colonyRaidingInteraction(pair) ?: predationInteraction(pair, predationGraph)
+                val interaction =
+                    filterFeedingInteraction(pair)
+                        ?: grazingInteraction(pair)
+                        ?: colonyRaidingInteraction(pair)
+                        ?: if (exclusiveParasiteConsumers[consumer.index]) {
+                            null
+                        } else {
+                            parasitismInteraction(pair)
+                        }
+                        ?: predationInteraction(pair, predationGraph)
                 if (interaction != null) {
                     builder.set(consumer.index, target.index, interaction)
                 }
@@ -235,6 +245,41 @@ internal object FoodWebCompiler {
             kind = InteractionKind.FILTER_FEEDING,
             consumerGainRate = attack * EcologyBiomass.filterFeedingEfficiency(pair.consumer.sizeClass),
             targetLossRate = attack,
+        )
+    }
+
+    private fun parasitismInteraction(pair: SpeciesPair): CompiledInteraction? {
+        val support = pair.consumer.supportFor(EcoStrategy.PARASITISM)
+        val largerHost =
+            pair.target.physiology.massKg > pair.consumer.physiology.massKg
+        val validAnimalHost =
+            pair.consumer.traits.has(CommonTrait.PARASITIC_PROBOSCIS) &&
+                pair.target.motile &&
+                pair.target.traits.has(CommonTrait.LIMBED_BODY)
+        val validPlantHost =
+            pair.consumer.traits.has(CommonTrait.SUCKING_PROBOSCIS) &&
+                !pair.target.motile &&
+                pair.target.traits.has(CommonTrait.VASCULAR_SYSTEM)
+        if (
+            support <= 0.0 ||
+            !largerHost ||
+            (!validAnimalHost && !validPlantHost) ||
+            !pair.sharesHabitatFor(EcoStrategy.PARASITISM)
+        ) {
+            return null
+        }
+
+        val drain =
+            (
+                0.012 *
+                    support *
+                    pair.consumer.interactions.captureAbility /
+                    max(0.25, pair.target.interactions.defense)
+                ).coerceIn(0.0, 0.04)
+        return CompiledInteraction(
+            kind = InteractionKind.PARASITISM,
+            targetLossRate = drain,
+            consumerGainRate = drain * 0.65,
         )
     }
 
@@ -416,6 +461,15 @@ internal object FoodWebCompiler {
         definitions[consumerIndex].traits.flatMap { it.relationships }.any { it is RelationshipEffect.ObligateFood }
     }
 
+    private fun exclusiveParasiteConsumers(
+        definitions: List<SpeciesDefinition>,
+    ): BooleanArray = BooleanArray(definitions.size) { consumerIndex ->
+        definitions[consumerIndex].traits
+            .flatMap { it.relationships }
+            .filterIsInstance<RelationshipEffect.ParasiteOf>()
+            .any { it.exclusive }
+    }
+
     private fun resolveTargets(
         selector: SpeciesSelector,
         definitions: List<SpeciesDefinition>,
@@ -444,6 +498,10 @@ internal object FoodWebCompiler {
 
         is SpeciesSelector.HasTrait -> definitions.indices.filter { index ->
             index != consumerIndex && definitions[index].hasTrait(selector.trait)
+        }
+
+        is SpeciesSelector.Matches -> definitions.indices.filter { index ->
+            index != consumerIndex && selector.condition.matches(definitions[index])
         }
     }
 

@@ -107,11 +107,10 @@ val isopod = crustacean.descend(
 val shrimp = crustacean.descend(
     "shrimp",
     SizeClass.TINY,
-    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
+    CommonTrait.AQUATIC_LIMBS.atLevel(1),
     CommonTrait.ANTENNAE.atLevel(2),
     CommonTrait.EURYHALINE_OSMOREGULATION,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
-    minus = listOf(CommonTrait.CRAWLING_APPENDAGES.atLevel(2))
 )
 
 val reptantia = crustacean.descend(
@@ -130,7 +129,6 @@ val astacidea = reptantia.descend(
     "astacidea",
     SizeClass.SMALL,
     CommonTrait.ANTENNAE.atLevel(2),
-    CommonTrait.AMPHIBIOUS_LIMBS.atLevel(2),
     CommonTrait.TAIL
 )
 val lobster = astacidea.descend(

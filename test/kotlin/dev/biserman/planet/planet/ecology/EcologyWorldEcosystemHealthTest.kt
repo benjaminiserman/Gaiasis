@@ -1,5 +1,6 @@
 package dev.biserman.planet.planet.ecology
 
+import dev.biserman.planet.planet.climate.ClimateDatum
 import dev.biserman.planet.planet.climate.ClimateDatumSample
 import kotlin.math.sqrt
 import kotlin.test.Test
@@ -142,7 +143,7 @@ class EcologyWorldEcosystemHealthTest {
             if (!scenario.tile.isLand || scenario.tile.adjacentToOcean > 0.0) 0.12 else 0.0
         val seedEnvironment = environmentAt(
             scenario.climate.sampleAt(0.5),
-            scenario.climate.averageTemperature,
+            scenario.climate,
             scenario.tile,
             scenario.climate.tileId,
             0.5,
@@ -174,24 +175,26 @@ class EcologyWorldEcosystemHealthTest {
         var resources = FunctionalResources(marineSnow = initialMarineSnow)
         var activeClimate = scenario.climate
         var activeTile = scenario.tile
+        var canopyCoverOverride: Double? = null
         val extinctionSeasons = linkedMapOf<String, Int>()
         repeat(SIMULATION_SEASONS) { season ->
             scenario.climateShifts.filter { it.year * 4 == season }.forEach { shift ->
                 activeClimate = shift.climate
             }
             scenario.habitatShifts.filter { it.year * 4 == season }.forEach { shift ->
+                canopyCoverOverride = shift.canopyCover ?: canopyCoverOverride
                 activeTile = activeTile.copy(
-                    canopyCover = shift.canopyCover ?: activeTile.canopyCover,
                     reefCover = shift.reefCover ?: activeTile.reefCover,
                 )
             }
             val environment = environmentAt(
                 activeClimate.sampleAt(season / 4.0),
-                activeClimate.averageTemperature,
+                activeClimate,
                 activeTile,
                 activeClimate.tileId,
                 season / 4.0,
                 resources = resources,
+                canopyCoverOverride = canopyCoverOverride,
             )
             val presentBefore = (0 until community.size)
                 .map { ecology.species[community.speciesIndices[it]].id }
@@ -290,7 +293,7 @@ class EcologyWorldEcosystemHealthTest {
                     val year = sampleIndex / 48.0
                     val environment = environmentAt(
                         scenario.climate.sampleAt(year),
-                        scenario.climate.averageTemperature,
+                        scenario.climate,
                         scenario.tile,
                         scenario.climate.tileId,
                         year,
@@ -410,17 +413,18 @@ class EcologyWorldEcosystemHealthTest {
 
     private fun environmentAt(
         sample: ClimateDatumSample,
-        annualAverageTemperature: Double,
+        climate: ClimateDatum,
         tile: AuthoredEcosystemTile,
         climateTileId: Int,
         year: Double,
         resources: FunctionalResources = FunctionalResources(),
+        canopyCoverOverride: Double? = null,
     ): SeasonalCellEnvironment {
         val anomaly = EcologyClimateVariability.anomaly(climateTileId, year)
         val base = SeasonalCellEnvironment.create(
             areaKm2 = 40_000.0,
             temperatureC = sample.averageTemperature + anomaly.temperatureC,
-            annualAverageTemperatureC = annualAverageTemperature,
+            annualAverageTemperatureC = climate.averageTemperature,
             insolation = (sample.insolation / 340.0).coerceIn(0.0, 1.0),
             precipitationMm = sample.precipitation * anomaly.precipitationMultiplier,
             surfaceFertilityModifier = tile.fertilityModifier,
@@ -431,7 +435,8 @@ class EcologyWorldEcosystemHealthTest {
             elevationM = if (tile.isLand) tile.elevationM else -tile.waterDepthM,
             waterDepthM = tile.waterDepthM,
             usefulSunlightReachesWater = tile.usefulSunlightReachesWater,
-            canopyCover = tile.canopyCover,
+            canopyCover = canopyCoverOverride
+                ?: PlanetEcologyEnvironment.estimatedCanopyCover(climate, tile.isLand),
             reefCover = tile.reefCover,
         )
         return base.withResources(resources)

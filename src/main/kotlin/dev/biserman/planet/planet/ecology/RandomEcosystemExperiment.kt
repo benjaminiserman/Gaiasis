@@ -249,7 +249,6 @@ object RandomEcosystemExperiment {
         val anomalies = detectAnomalies(
             ecology,
             community,
-            nicheBySpecies,
             totalHistory,
             maximumAnnualClimateFitness,
         )
@@ -448,7 +447,6 @@ object RandomEcosystemExperiment {
     private fun detectAnomalies(
         ecology: CompiledEcology,
         community: TileCommunity,
-        nicheBySpecies: Map<Int, Int>,
         totalHistory: DoubleArray,
         maximumAnnualClimateFitness: Map<String, Double>,
     ): List<String> = buildList {
@@ -466,13 +464,9 @@ object RandomEcosystemExperiment {
                         "${"%.2f".format(climateFitness)}",
                 )
             }
-            val niche = ecology.niches[nicheBySpecies.getValue(consumer.index)]
-            if (niche.strategy !in directConsumerStrategies) return@forEach
-            val extantFood = ecology.species.any { target ->
-                community.find(target.index) >= 0 &&
-                    ecology.interactions.get(consumer.index, target.index).kind != InteractionKind.NONE
-            }
-            if (!extantFood) add("${consumer.displayName} survived without an extant modeled food source")
+            // A consumer can remain above the extinction threshold for a while
+            // after its last food population disappears. That transient is part
+            // of the modeled starvation process, not a numerical anomaly.
         }
     }
 

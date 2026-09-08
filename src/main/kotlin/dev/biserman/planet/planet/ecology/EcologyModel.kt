@@ -125,8 +125,8 @@ sealed interface TraitEffect {
     data class TemperatureTolerance(
         val colderC: Double = 0.0,
         val hotterC: Double = 0.0,
-        val optimalColderC: Double = 0.0,
-        val optimalHotterC: Double = 0.0,
+        val optimalColderC: Double = colderC / 2,
+        val optimalHotterC: Double = hotterC / 2,
     ) : DirectTraitEffect {
         override fun applyTo(context: SpeciesCompilationContext) =
             context.widenTemperatureTolerance(
@@ -358,6 +358,7 @@ sealed interface SpeciesSelector {
     data class ExactSpecies(val speciesId: String) : SpeciesSelector
     data class DescendantsOf(val ancestorSpeciesId: String) : SpeciesSelector
     data class HasTrait(val trait: CommonTrait) : SpeciesSelector
+    data class Matches(val condition: TraitCondition) : SpeciesSelector
 }
 
 sealed interface RelationshipEffect {
@@ -407,14 +408,25 @@ sealed interface RelationshipEffect {
     data class ParasiteOf(
         val target: SpeciesSelector,
         val drainRate: Double,
+        val assimilationEfficiency: Double = 0.65,
+        /** Suppresses trait-derived parasitism edges while retaining other feeding strategies. */
+        val exclusive: Boolean = false,
+        /** Makes at least one selected host necessary for the parasite to remain active. */
+        val required: Boolean = false,
     ) : RelationshipEffect {
+        init {
+            require(drainRate in 0.0..1.0)
+            require(assimilationEfficiency in 0.0..1.0)
+        }
+
         override fun compile(context: RelationshipCompilationContext) {
             context.forEachTarget(target) { targetIndex ->
                 context.setInteraction(
                     targetIndex,
                     InteractionKind.PARASITISM,
                     drainRate,
-                    drainRate * 0.35,
+                    drainRate * assimilationEfficiency,
+                    required = required,
                 )
             }
         }

@@ -393,21 +393,27 @@ class EcologyCompilerTest {
 
     @Test
     fun `traits compile into climate and niche parameters`() {
-        val producer = producer(
-            traits = listOf(
-                CommonTrait.TRACHEA,
-                CommonTrait.TEMPERATE_BIOCHEMISTRY,
-                CommonTrait.PHOTOSYNTHETIC_SURFACE,
-                CommonTrait.ROOTED_BODY,
-                CommonTrait.FUR,
-                CommonTrait.DENSE_UNDERCOAT.atLevel(2),
-            ),
+        val foundationalTraits = listOf(
+            CommonTrait.TRACHEA,
+            CommonTrait.TEMPERATE_BIOCHEMISTRY,
+            CommonTrait.PHOTOSYNTHETIC_SURFACE,
+            CommonTrait.ROOTED_BODY,
+            CommonTrait.FUR,
         )
+        val baseline = EcologyCompiler.compile(
+            listOf(producer(id = "baseline", traits = foundationalTraits)),
+        ).species.single()
+        val compiled = EcologyCompiler.compile(
+            listOf(
+                producer(
+                    traits = foundationalTraits +
+                        CommonTrait.DENSE_UNDERCOAT.atLevel(2),
+                ),
+            ),
+        ).species.single()
 
-        val compiled = EcologyCompiler.compile(listOf(producer)).species.single()
-
-        assertEquals(-4.0, compiled.physiology.thermal.outerLowC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerLowC` to match `-4.0`")
-        assertEquals(26.0, compiled.physiology.thermal.outerHighC, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.thermal.outerHighC` to match `26.0`")
+        assertTrue(compiled.physiology.thermal.outerLowC < baseline.physiology.thermal.outerLowC)
+        assertTrue(compiled.physiology.thermal.outerHighC < baseline.physiology.thermal.outerHighC)
         assertTrue(compiled.niche.hasViableNiche(), message = "Traits compile into climate and niche parameters: expected `compiled.niche.hasViableNiche()` to be true")
         assertTrue(compiled.physiology.maintenanceDemand > 0.0, message = "Traits compile into climate and niche parameters: expected `compiled.physiology.maintenanceDemand > 0.0` to be true")
     }
@@ -564,10 +570,10 @@ class EcologyCompilerTest {
 
         assertTrue(threeLevelSenses.all { it.maxLevel == 3 })
         assertTrue(threeLevelTraits.all { it.maxLevel == 3 })
-        assertEquals(1, CommonTrait.BLUBBER.maxLevel)
+        assertEquals(2, CommonTrait.BLUBBER.maxLevel)
         assertEquals(1, CommonTrait.WOODY_SUPPORT_TISSUE.maxLevel)
 
-        (threeLevelSenses + threeLevelTraits).forEach { trait ->
+        (threeLevelSenses + threeLevelTraits + CommonTrait.BLUBBER).forEach { trait ->
             val costs = (1..trait.maxLevel).map { level ->
                 trait.effectsAt(level).filterIsInstance<TraitEffect.MaintenanceCost>().sumOf(TraitEffect.MaintenanceCost::fraction)
             }
@@ -1635,6 +1641,114 @@ class EcologyCompilerTest {
 
         assertEquals(InteractionKind.SUPPLEMENTAL_FEEDING, cucumberEdge.kind, message = "Specific food creates only the requested directed edge: expected `cucumberEdge.kind` to match `InteractionKind.SUPPLEMENTAL_FEEDING`")
         assertEquals(InteractionKind.NONE, otherEdge.kind, message = "Specific food creates only the requested directed edge: expected `otherEdge.kind` to match `InteractionKind.NONE`")
+    }
+
+    @Test
+    fun `mosquitoes and ticks derive larger limbed hosts from traits`() {
+        val definitions = EarthSpeciesCatalog.ALL.filter {
+            it.id in setOf(
+                "common-mosquito",
+                "deer-tick",
+                "white-tailed-deer",
+                "field-horsetail",
+            )
+        }
+        val ecology = EcologyCompiler.compile(definitions)
+        val deer = ecology.speciesIndex("white-tailed-deer")
+        val vascularPlant = ecology.speciesIndex("field-horsetail")
+
+        listOf("common-mosquito", "deer-tick").forEach { parasiteId ->
+            val parasite = ecology.speciesIndex(parasiteId)
+            assertEquals(
+                InteractionKind.PARASITISM,
+                ecology.interactions.get(parasite, deer).kind,
+                parasiteId,
+            )
+            assertEquals(
+                InteractionKind.NONE,
+                ecology.interactions.get(parasite, vascularPlant).kind,
+                parasiteId,
+            )
+        }
+    }
+
+    @Test
+    fun `plant fluid feeders derive larger vascular plant hosts`() {
+        val definitions = EarthSpeciesCatalog.ALL.filter {
+            it.id in setOf(
+                "pea-aphid",
+                "white-tailed-deer",
+                "field-horsetail",
+            )
+        }
+        val ecology = EcologyCompiler.compile(definitions)
+        val aphid = ecology.speciesIndex("pea-aphid")
+
+        assertEquals(
+            InteractionKind.PARASITISM,
+            ecology.interactions.get(
+                aphid,
+                ecology.speciesIndex("field-horsetail"),
+            ).kind,
+        )
+        assertEquals(
+            InteractionKind.NONE,
+            ecology.interactions.get(
+                aphid,
+                ecology.speciesIndex("white-tailed-deer"),
+            ).kind,
+        )
+    }
+
+    @Test
+    fun `exclusive targeted parasite suppresses derived hosts and can require its match`() {
+        val catalogById = EarthSpeciesCatalog.ALL.associateBy { it.id }
+        val ordinaryTick = catalogById.getValue("deer-tick")
+        val specialistTick = ordinaryTick.copy(
+            id = "large-mammal-tick",
+            displayName = "large mammal tick",
+            traits = ordinaryTick.traits + TargetedRelationshipTrait(
+                displayName = "large mammal parasitism",
+                description = "Feeding anatomy specialized for large limbed hosts.",
+                maintenanceCost = 0.03,
+                relationships = listOf(
+                    RelationshipEffect.ParasiteOf(
+                        target = SpeciesSelector.Matches(
+                            TraitCondition.AllOf(
+                                listOf(
+                                    TraitCondition.HasTrait(CommonTrait.LIMBED_BODY),
+                                    TraitCondition.HasTrait(CommonTrait.FUR),
+                                    TraitCondition.SizeClassAtLeast(SizeClass.LARGE),
+                                ),
+                            ),
+                        ),
+                        drainRate = 0.01,
+                        exclusive = true,
+                        required = true,
+                    ),
+                ),
+            ),
+        )
+        val ecology = EcologyCompiler.compile(
+            listOf(
+                catalogById.getValue("house-mouse"),
+                catalogById.getValue("brown-bear"),
+                specialistTick,
+            ),
+        )
+        val parasite = ecology.speciesIndex(specialistTick.id)
+        val mouseEdge = ecology.interactions.get(
+            parasite,
+            ecology.speciesIndex("house-mouse"),
+        )
+        val bearEdge = ecology.interactions.get(
+            parasite,
+            ecology.speciesIndex("brown-bear"),
+        )
+
+        assertEquals(InteractionKind.NONE, mouseEdge.kind)
+        assertEquals(InteractionKind.PARASITISM, bearEdge.kind)
+        assertTrue(bearEdge.targetRequired)
     }
 
     @Test

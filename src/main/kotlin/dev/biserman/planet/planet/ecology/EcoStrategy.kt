@@ -150,6 +150,6 @@ enum class EcoStrategy(
         DECOMPOSITION -> environment.resources.detritus
         COPROPHAGY -> environment.resources.waste
         DEPOSIT_FEEDING -> environment.resources.marineSnow
-        PARASITISM -> 0.15
+        PARASITISM -> 0.0
     }.coerceIn(0.0, 1.0)
 }
