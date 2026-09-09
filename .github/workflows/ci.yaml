@@ -41,5 +41,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gradle-reports
-          path: planet/build/reports
+          path: build/reports
           retention-days: 7

@@ -51,11 +51,15 @@ class EcologySeasonalDynamicsTest {
         val repeated = EcologyClimateVariability.anomaly(tileId = 42, year = 17.25)
 
         assertEquals(first, repeated, message = "Climate anomalies are deterministic and remain within authored bounds: expected `repeated` to match `first`")
-        repeat(1_000) { quarter ->
+        val temporalSamples = List(1_000) { quarter ->
             val anomaly = EcologyClimateVariability.anomaly(tileId = 42, year = quarter / 4.0)
             assertTrue(anomaly.temperatureC in -2.0..2.0, message = "Climate anomalies are deterministic and remain within authored bounds: expected `anomaly.temperatureC in -2.0..2.0` to be true")
             assertTrue(anomaly.precipitationMultiplier in 0.75..1.25, message = "Climate anomalies are deterministic and remain within authored bounds: expected `anomaly.precipitationMultiplier in 0.75..1.25` to be true")
+            anomaly
         }
+        assertTrue(temporalSamples.map { it.temperatureC }.distinct().size > 100)
+        assertTrue(temporalSamples.map { it.precipitationMultiplier }.distinct().size > 100)
+        assertTrue((0 until 32).map { EcologyClimateVariability.anomaly(it, 17.25) }.distinct().size > 16)
     }
 
     @Test

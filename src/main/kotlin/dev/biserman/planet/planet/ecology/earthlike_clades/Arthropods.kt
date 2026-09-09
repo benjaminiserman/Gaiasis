@@ -202,7 +202,7 @@ val roach = insect.descend(
     CommonTrait.WINGS.atLevel(1)
 )
 val termite = insect.descend(
-    "termite",
+    "isopteran",
     SizeClass.TINY,
     CommonTrait.DECOMPOSING_ENZYMES,
     CommonTrait.EUSOCIAL_COLONY,

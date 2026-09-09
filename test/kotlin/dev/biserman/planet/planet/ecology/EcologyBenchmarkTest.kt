@@ -1,5 +1,6 @@
 package dev.biserman.planet.planet.ecology
 
+import org.junit.jupiter.api.Tag
 import kotlin.system.measureNanoTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -7,6 +8,7 @@ import kotlin.test.assertTrue
 
 class EcologyBenchmarkTest {
     @Test
+    @Tag("benchmark")
     fun `benchmark 20000 cell seasonal turn`() {
         val scenario = BenchmarkScenario.create(tileCount = 20_000, populationsPerTile = 24)
         val runtime = EcologyRuntime(

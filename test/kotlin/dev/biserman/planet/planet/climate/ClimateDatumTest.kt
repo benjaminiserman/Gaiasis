@@ -34,5 +34,12 @@ class ClimateDatumTest {
             climate.sampleAt(23.0 / 24.0),
             "SampleAt interpolates every climate field and wraps the year: expected `climate.sampleAt(23.0 / 24.0)` to match `ClimateDatumSample(5.5, 55.0, 550.0)`",
         )
+        assertEquals(ClimateDatumSample(0.25, 2.5, 25.0), climate.sampleAt(1.0 / 48.0))
+        assertEquals(ClimateDatumSample(2.75, 27.5, 275.0), climate.sampleAt(-1.0 / 48.0))
+        val firstYear = climate.sampleAt(1.0 / 48.0)
+        val laterYear = climate.sampleAt(2.0 + 1.0 / 48.0)
+        assertEquals(firstYear.averageTemperature, laterYear.averageTemperature, 1e-12)
+        assertEquals(firstYear.insolation, laterYear.insolation, 1e-12)
+        assertEquals(firstYear.precipitation, laterYear.precipitation, 1e-12)
     }
 }

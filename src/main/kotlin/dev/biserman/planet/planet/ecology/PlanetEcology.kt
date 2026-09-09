@@ -48,6 +48,8 @@ object PlanetEcology {
         cachedPlanet = null
     }
 
+    internal fun currentRuntimeConfig(): EcologyRuntimeConfig = runtimeConfig
+
     /** Runs after a completed history turn and branches living species on century boundaries. */
     fun mutateAtInterval(planet: Planet) {
         if (
@@ -392,27 +394,24 @@ object PlanetEcology {
         val environments = Array(tiles.size) { index ->
             val tile = tiles[index]
             SeasonalCellEnvironment.from(tile)
-                .withPhotosyntheticStructure(compiled, communities[index])
         }
         val neighbors = cache.neighbors
         val fluxes = CellTurnFluxes()
         tiles.indices.forEach { index ->
-            runtime.advanceSeason(
-                community = communities[index],
-                environment = environments[index],
-                fluxes = fluxes,
-                finalizeExtinctions = false,
-            )
             val tile = tiles[index]
-            tile.ecosystem.resources = FunctionalResourceDynamics.update(
-                previous = tile.ecosystem.resources,
+            val result = LocalEcologySeasonalStep.advance(
+                ecology = compiled,
+                runtime = runtime,
+                community = communities[index],
+                baseEnvironment = environments[index],
                 fluxes = fluxes,
-                areaKm2 = environments[index].areaKm2,
                 hasMarineCompartment =
                 !tile.isAboveWater || tile.neighbors.any { !it.isAboveWater },
+                finalizeExtinctions = false,
             )
-            tile.ecosystem.reefCover =
-                (tile.ecosystem.reefCover + fluxes.reefCoverDelta).coerceIn(0.0, 1.0)
+            environments[index] = result.environment
+            tile.ecosystem.resources = result.resources
+            tile.ecosystem.reefCover = result.reefCover
         }
 
         val transferCapacity =

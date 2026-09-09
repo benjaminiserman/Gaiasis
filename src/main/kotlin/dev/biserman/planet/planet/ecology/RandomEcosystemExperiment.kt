@@ -182,17 +182,19 @@ object RandomEcosystemExperiment {
             precipitationHistory += climate.first.sampleAt(year).precipitation *
                 EcologyClimateVariability.anomaly(climate.first.tileId, year).precipitationMultiplier
             val presentBefore = presentSpeciesIds(community, ecology)
-            runtime.advanceSeason(community, environment, fluxes)
+            val step = LocalEcologySeasonalStep.advance(
+                ecology = ecology,
+                runtime = runtime,
+                community = community,
+                baseEnvironment = environment,
+                fluxes = fluxes,
+                hasMarineCompartment = !tile.isLand || tile.adjacentToOcean > 0.0,
+            )
             val presentAfter = presentSpeciesIds(community, ecology)
             (presentBefore - presentAfter).forEach { id ->
                 extinctionSeasons.putIfAbsent(id, season)
             }
-            resources = FunctionalResourceDynamics.update(
-                previous = resources,
-                fluxes = fluxes,
-                areaKm2 = AREA_KM2,
-                hasMarineCompartment = !tile.isLand || tile.adjacentToOcean > 0.0,
-            )
+            resources = step.resources
 
             ecology.species.forEach { species ->
                 val population = community.find(species.index)

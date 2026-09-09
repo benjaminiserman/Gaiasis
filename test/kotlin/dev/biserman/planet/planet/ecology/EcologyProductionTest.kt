@@ -209,6 +209,14 @@ class EcologyProductionTest {
                     reservesKg = 800.0,
                     dormantBiomassKg = 20.0,
                 ),
+                EcosystemPopulation(
+                    speciesId = "saguaro-cactus",
+                    habitat = Habitat.LAND_SURFACE,
+                    strategy = EcoStrategy.PHOTOSYNTHESIS,
+                    activeBiomassKg = 75_000.0,
+                    reservesKg = 125.0,
+                    dormantBiomassKg = 40.0,
+                ),
             ),
             resources = FunctionalResources(
                 carrion = 15.0,
@@ -222,10 +230,34 @@ class EcologyProductionTest {
         try {
             Serialization.save(saveFile.toString(), original)
             val restored = Serialization.load(saveFile.toString(), TileEcosystem::class.java)
+            val reordered = EcologyCompiler.compile(
+                (EarthSpeciesCatalog.ALL + EarthSpeciesCatalog.EXTINCT_SPECIES + InvariantSpecies.ALL).reversed(),
+            )
+            val community = restored.community(reordered)
 
             assertEquals(original, restored, message = "Tile ecosystem survives a compressed save round trip: expected `restored` to match `original`")
-            assertEquals(1, restored.community(ecology).size, message = "Tile ecosystem survives a compressed save round trip: expected `restored.community(ecology).size` to match `1`")
-            assertEquals("dromedary-camel", restored.populations.single().speciesId, message = "Tile ecosystem survives a compressed save round trip: expected `restored.populations.single().speciesId` to match `\"dromedary-camel\"`")
+            assertEquals(2, community.size)
+            restored.populations.forEach { saved ->
+                val speciesIndex = reordered.speciesIndex(saved.speciesId)
+                val populationIndex = community.find(speciesIndex)
+                assertTrue(populationIndex >= 0, "${saved.speciesId} was lost while reindexing")
+                assertEquals(saved.activeBiomassKg, community.activeBiomass[populationIndex])
+                assertEquals(saved.reservesKg, community.reserves[populationIndex])
+                assertEquals(saved.dormantBiomassKg, community.dormantBiomass[populationIndex])
+                val niche = reordered.niches[community.nicheIndices[populationIndex]]
+                assertEquals(saved.habitat, niche.habitat)
+                assertEquals(saved.strategy, niche.strategy)
+            }
+
+            val camelIndex = community.find(reordered.speciesIndex("dromedary-camel"))
+            community.activeBiomass[camelIndex] = 10_000.0
+            community.reserves[camelIndex] = 600.0
+            community.dormantBiomass[camelIndex] = 10.0
+            restored.replaceWith(community, reordered)
+            val persistedCamel = restored.populations.single { it.speciesId == "dromedary-camel" }
+            assertEquals(10_000.0, persistedCamel.activeBiomassKg)
+            assertEquals(600.0, persistedCamel.reservesKg)
+            assertEquals(10.0, persistedCamel.dormantBiomassKg)
         } finally {
             saveFile.deleteIfExists()
         }

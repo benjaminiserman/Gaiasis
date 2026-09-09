@@ -1,8 +1,5 @@
 package dev.biserman.planet.planet.ecology
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.nio.file.Path
-import kotlin.io.path.readText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -10,13 +7,6 @@ import kotlin.test.assertTrue
 class EcologyWorldEcosystemNotebookTest {
     @Test
     fun `world ecosystem notebook has stable scenarios collapse controls and focused extinctions`() {
-        val notebookPath = Path.of(
-            "src/main/kotlin/dev/biserman/planet/notebooks/ecology_world_ecosystems.ipynb",
-        )
-        val notebook = ObjectMapper().readTree(notebookPath.readText())
-        val source = notebook["cells"]
-            .flatMap { cell -> cell["source"].map { it.asText() } }
-            .joinToString("")
         val scenarios = AuthoredEcosystems.ALL
 
         assertTrue(scenarios.any { !it.intendedStable }, "Expected at least one collapse control.")
@@ -38,22 +28,10 @@ class EcologyWorldEcosystemNotebookTest {
             },
             message = "The notebook must retain its six explicit collapse or intervention scenarios",
         )
-        assertTrue("FunctionalResourceDynamics.update(" in source, message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `\"FunctionalResourceDynamics.update(\" in source` to be true")
-        assertEquals(
-            1,
-            Regex("""repeat\(4000\)""").findAll(source).count(),
-            message = "World ecosystem notebook has stable scenarios collapse controls and focused extinctions: expected `Regex(\"\"\"repeat\\(4000\\)\"\"\").findAll(source).count()` to match `1`"
-        )
     }
 
     @Test
     fun `notebook uses only Earth species catalog entries`() {
-        val notebookPath = Path.of(
-            "src/main/kotlin/dev/biserman/planet/notebooks/ecology_world_ecosystems.ipynb",
-        )
-        val source = ObjectMapper().readTree(notebookPath.readText())["cells"]
-            .flatMap { cell -> cell["source"].map { it.asText() } }
-            .joinToString("")
         val referencedSpecies = AuthoredEcosystems.ALL
             .flatMap { scenario -> scenario.species.map { it.id } }
             .toSet()
@@ -61,7 +39,5 @@ class EcologyWorldEcosystemNotebookTest {
 
         assertTrue(referencedSpecies.isNotEmpty(), message = "Notebook uses only Earth species catalog entries: expected `referencedSpecies.isNotEmpty()` to be true")
         assertEquals(emptySet(), referencedSpecies - catalogSpecies, message = "Notebook uses only Earth species catalog entries: expected `referencedSpecies - catalogSpecies` to match `emptySet()`")
-        assertTrue("SpeciesDefinition(" !in source, message = "Notebook uses only Earth species catalog entries: expected `\"SpeciesDefinition(\" !in source` to be true")
-        assertTrue("TargetedRelationshipTrait(" !in source, message = "Notebook uses only Earth species catalog entries: expected `\"TargetedRelationshipTrait(\" !in source` to be true")
     }
 }

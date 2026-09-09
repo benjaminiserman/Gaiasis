@@ -30,7 +30,7 @@ val crocodile = reptile.descend(
     CommonTrait.NOCTURNAL
 )
 val tuatara = reptile.descend(
-    "tuatara",
+    "rhynchocephalian",
     SizeClass.SMALL,
     CommonTrait.MEAT_EATING_MOUTHPARTS,
     CommonTrait.SLOW_GROWTH.atLevel(2),

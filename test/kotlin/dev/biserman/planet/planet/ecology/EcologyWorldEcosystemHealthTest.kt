@@ -222,17 +222,20 @@ class EcologyWorldEcosystemHealthTest {
                     community.reserves[population] *= retained
                 }
             }
-            runtime.advanceSeason(community, environment, fluxes)
+            val step = LocalEcologySeasonalStep.advance(
+                ecology = ecology,
+                runtime = runtime,
+                community = community,
+                baseEnvironment = environment,
+                fluxes = fluxes,
+                hasMarineCompartment = !activeTile.isLand || activeTile.adjacentToOcean > 0.0,
+            )
             val presentAfter = (0 until community.size)
                 .map { ecology.species[community.speciesIndices[it]].id }
                 .toSet()
             (presentBefore - presentAfter).forEach { extinctionSeasons[it] = season }
-            resources = FunctionalResourceDynamics.update(
-                previous = resources,
-                fluxes = fluxes,
-                areaKm2 = 40_000.0,
-                hasMarineCompartment = !activeTile.isLand || activeTile.adjacentToOcean > 0.0,
-            )
+            resources = step.resources
+            activeTile = activeTile.copy(reefCover = step.reefCover)
             totals[season] = community.totalBiomass()
         }
 

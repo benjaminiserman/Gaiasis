@@ -27,7 +27,7 @@ val mushroom = fruitingFungus.descend(
     SizeClass.SMALL,
 )
 val shelfFungus = fruitingFungus.descend(
-    "shelf fungus",
+    "polypore",
     SizeClass.SMALL,
     CommonTrait.SLOW_GROWTH.atLevel(1),
 )

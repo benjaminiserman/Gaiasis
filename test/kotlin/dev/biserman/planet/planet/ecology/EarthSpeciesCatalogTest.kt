@@ -3,6 +3,7 @@ package dev.biserman.planet.planet.ecology
 import org.junit.jupiter.api.BeforeAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 private fun List<SpeciesTrait>.hasTrait(trait: CommonTrait): Boolean =
@@ -1249,7 +1250,7 @@ class EarthSpeciesCatalogTest {
     }
 
     @Test
-    fun `emperor penguin cannot persist on tropical reef prey`() {
+    fun `emperor penguin cannot establish on a tropical reef`() {
         val ecology = EcologyCompiler.compile(
             listOf(
                 EarthSpeciesCatalog.BIRDS.single { it.id == "emperor-penguin" },
@@ -1268,24 +1269,12 @@ class EarthSpeciesCatalogTest {
             waterDepthM = 50.0,
             reefCover = 0.75,
         )
-        val community = TileCommunity()
-        ecology.species.forEach { species ->
-            val nicheIndex = NicheSelection.choose(species, ecology, tropicalReef)
-            if (nicheIndex < 0) return@forEach
-            val capacity = EcologyBiomass.carryingCapacityKg(
-                species,
-                ecology.niches[nicheIndex],
-                tropicalReef,
-            )
-            community.add(species.index, nicheIndex, capacity * 0.50)
-        }
+        val penguin = ecology.species.single { it.id == "emperor-penguin" }
+        val prey = ecology.species.filter { it.id != penguin.id }
 
-        val runtime = EcologyRuntime(ecology)
-        repeat(4_000) {
-            runtime.advanceSeason(community, tropicalReef)
-        }
-
-        assertEquals(-1, community.find(ecology.speciesIndex("emperor-penguin")), message = "Emperor penguin cannot persist on tropical reef prey: expected `community.find(ecology.speciesIndex(\"emperor-penguin\"))` to match `-1`")
+        assertTrue(prey.all { NicheSelection.choose(it, ecology, tropicalReef) >= 0 })
+        assertEquals(-1, NicheSelection.choose(penguin, ecology, tropicalReef))
+        assertFalse(EcologySuitability.evaluate(penguin, ecology, listOf(tropicalReef)).suitable)
     }
 
     @Test

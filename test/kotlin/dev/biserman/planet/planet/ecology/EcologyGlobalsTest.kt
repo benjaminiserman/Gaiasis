@@ -66,11 +66,19 @@ class EcologyGlobalsTest {
     }
 
     @Test
-    fun `refreshing runtime configuration advances the cache revision`() {
+    fun `refreshing runtime configuration replaces the live snapshot and invalidates caches`() {
         val originalRevision = PlanetEcology.runtimeConfigRevision
+        val originalMortality = EcologyGlobals.backgroundMortality
+        try {
+            EcologyGlobals.backgroundMortality = 0.123
 
-        PlanetEcology.refreshRuntimeConfig()
+            PlanetEcology.refreshRuntimeConfig()
 
-        assertEquals(originalRevision + 1, PlanetEcology.runtimeConfigRevision, message = "Refreshing runtime configuration advances the cache revision: expected `PlanetEcology.runtimeConfigRevision` to match `originalRevision + 1`")
+            assertEquals(0.123, PlanetEcology.currentRuntimeConfig().backgroundMortality)
+            assertEquals(originalRevision + 1, PlanetEcology.runtimeConfigRevision)
+        } finally {
+            EcologyGlobals.backgroundMortality = originalMortality
+            PlanetEcology.refreshRuntimeConfig()
+        }
     }
 }

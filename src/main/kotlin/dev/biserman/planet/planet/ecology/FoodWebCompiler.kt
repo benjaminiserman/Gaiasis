@@ -130,6 +130,10 @@ private data class SpeciesPair(
 
     val sharedAquaticHabitat: Boolean = directlySharesAny(EcologyFitness.aquaticHabitats) || sharesSeaIceMarineInterface()
 
+    val sharedTerrestrialHabitat: Boolean = directlySharesAny(
+        listOf(Habitat.LAND_SURFACE, Habitat.CANOPY, Habitat.UNDERGROUND),
+    )
+
     fun sharesHabitatFor(strategy: EcoStrategy): Boolean = directlySharesAny(strategy.supportedHabitats)
 
     private fun directlySharesAnyHabitat(): Boolean = directlySharesAny(Habitat.entries)
@@ -362,10 +366,15 @@ internal object FoodWebCompiler {
             pair.target.interactions.sensing
         } + modifiers.defenseBonus
         val attack = (
-            0.07 * intraguildAttackMultiplier * activityOverlapMultiplier(
-                pair.consumer.interactions.activityPattern,
-                pair.target.interactions.activityPattern,
-            ) * predatorSupport * effectiveCapture / max(0.25, effectiveDefense)
+            0.07 * intraguildAttackMultiplier *
+                if (pair.sharedTerrestrialHabitat) {
+                    activityOverlapMultiplier(
+                        pair.consumer.interactions.activityPattern,
+                        pair.target.interactions.activityPattern,
+                    )
+                } else {
+                    1.0
+                } * predatorSupport * effectiveCapture / max(0.25, effectiveDefense)
             ).coerceIn(0.0, 0.25)
         return CompiledInteraction(
             kind = InteractionKind.PREDATION,

@@ -174,3 +174,44 @@ object FunctionalResourceDynamics {
         ),
     )
 }
+
+data class LocalEcologyStepResult(
+    val environment: SeasonalCellEnvironment,
+    val resources: FunctionalResources,
+    val reefCover: Double,
+)
+
+/**
+ * The local part of a production seasonal turn. Keeping canopy feedback,
+ * organic pools, and reef construction together prevents experiments from
+ * drifting away from the live world loop.
+ */
+object LocalEcologySeasonalStep {
+    fun advance(
+        ecology: CompiledEcology,
+        runtime: EcologyRuntime,
+        community: TileCommunity,
+        baseEnvironment: SeasonalCellEnvironment,
+        fluxes: CellTurnFluxes = CellTurnFluxes(),
+        hasMarineCompartment: Boolean,
+        finalizeExtinctions: Boolean = true,
+    ): LocalEcologyStepResult {
+        val environment = baseEnvironment.withPhotosyntheticStructure(ecology, community)
+        runtime.advanceSeason(
+            community = community,
+            environment = environment,
+            fluxes = fluxes,
+            finalizeExtinctions = finalizeExtinctions,
+        )
+        return LocalEcologyStepResult(
+            environment = environment,
+            resources = FunctionalResourceDynamics.update(
+                previous = baseEnvironment.resources,
+                fluxes = fluxes,
+                areaKm2 = environment.areaKm2,
+                hasMarineCompartment = hasMarineCompartment,
+            ),
+            reefCover = (baseEnvironment.reefCover + fluxes.reefCoverDelta).coerceIn(0.0, 1.0),
+        )
+    }
+}

@@ -158,13 +158,35 @@ class EcologyRuntimeTest {
         val dangerousRedModel = prey("dangerous-red-model", BiologicalColor.RED, dangerous = true)
         val redMimic = prey("red-mimic", BiologicalColor.RED)
         val blueMimic = prey("blue-mimic", BiologicalColor.BLUE)
+        val aquaticRedModel = SpeciesDefinition(
+            id = "aquatic-dangerous-red-model",
+            displayName = "aquatic dangerous red model",
+            sizeClass = SizeClass.TINY,
+            traits = listOf(
+                CommonTrait.GILLS,
+                CommonTrait.TEMPERATE_BIOCHEMISTRY,
+                CommonTrait.ECTOTHERMY,
+                CommonTrait.SOLITARY,
+                CommonTrait.AQUATIC_OVOSPORE,
+                CommonTrait.VASCULAR_SYSTEM,
+                CommonTrait.BONY_SKELETON,
+                CommonTrait.LIMBED_BODY,
+                CommonTrait.AQUATIC_LIMBS,
+                CommonTrait.FRESHWATER_OSMOREGULATION,
+                CommonTrait.GRAZING_MOUTHPARTS,
+                CommonTrait.APOSEMATIC_COLORATION,
+                CommonTrait.TOXIC_SKIN,
+                ColorTrait.RED_COLORATION,
+            ),
+        )
         val ecology = EcologyCompiler.compile(
-            listOf(predator, dangerousRedModel, redMimic, blueMimic),
+            listOf(predator, dangerousRedModel, redMimic, blueMimic, aquaticRedModel),
         )
         val predatorNiche = nicheFor(ecology, 0, Habitat.LAND_SURFACE, EcoStrategy.AMBUSH_PREDATION)
         val redModelNiche = nicheFor(ecology, 1, Habitat.LAND_SURFACE, EcoStrategy.GRAZING)
         val redMimicNiche = nicheFor(ecology, 2, Habitat.LAND_SURFACE, EcoStrategy.GRAZING)
         val blueMimicNiche = nicheFor(ecology, 3, Habitat.LAND_SURFACE, EcoStrategy.GRAZING)
+        val aquaticModelNiche = nicheFor(ecology, 4, Habitat.FRESHWATER, EcoStrategy.GRAZING)
         val withModel = TileCommunity().also {
             it.add(0, predatorNiche, activeBiomass = 1_000.0)
             it.add(1, redModelNiche, activeBiomass = 1.0)
@@ -176,10 +198,25 @@ class EcologyRuntimeTest {
             it.add(2, redMimicNiche, activeBiomass = 100.0)
             it.add(3, blueMimicNiche, activeBiomass = 100.0)
         }
+        val modelInOtherHabitat = TileCommunity().also {
+            it.add(0, predatorNiche, activeBiomass = 1_000.0)
+            it.add(4, aquaticModelNiche, activeBiomass = 1.0)
+            it.add(2, redMimicNiche, activeBiomass = 100.0)
+            it.add(3, blueMimicNiche, activeBiomass = 100.0)
+        }
         val runtime = EcologyRuntime(ecology)
 
-        runtime.advanceSeason(withModel, landEnvironment(), finalizeExtinctions = false)
-        runtime.advanceSeason(withoutModel, landEnvironment(), finalizeExtinctions = false)
+        val riverEnvironment = SeasonalCellEnvironment.create(
+            areaKm2 = 40_000.0,
+            temperatureC = 21.0,
+            insolation = 0.8,
+            precipitationMm = 85.0,
+            isLand = true,
+            adjacentToMajorRiver = 1.0,
+        )
+        runtime.advanceSeason(withModel, riverEnvironment, finalizeExtinctions = false)
+        runtime.advanceSeason(withoutModel, riverEnvironment, finalizeExtinctions = false)
+        runtime.advanceSeason(modelInOtherHabitat, riverEnvironment, finalizeExtinctions = false)
 
         assertTrue(withModel.activeBiomass[2] > withModel.activeBiomass[3], message = "Aposematic prey require a same-color dangerous model in the same habitat: expected `withModel.activeBiomass[2] > withModel.activeBiomass[3]` to be true")
         assertEquals(
@@ -187,6 +224,12 @@ class EcologyRuntimeTest {
             withoutModel.activeBiomass[2],
             1.0e-9,
             message = "Aposematic prey require a same-color dangerous model in the same habitat: expected `withoutModel.activeBiomass[2]` to match `withoutModel.activeBiomass[1]`"
+        )
+        assertEquals(
+            modelInOtherHabitat.activeBiomass[2],
+            modelInOtherHabitat.activeBiomass[3],
+            1.0e-9,
+            "A dangerous model in another habitat must not protect the red mimic",
         )
     }
 
@@ -469,17 +512,32 @@ class EcologyRuntimeTest {
         val consumer = ecology.speciesIndex("grazer")
         val producerNiche = nicheFor(ecology, producer, Habitat.LAND_SURFACE, EcoStrategy.PHOTOSYNTHESIS)
         val consumerNiche = nicheFor(ecology, consumer, Habitat.LAND_SURFACE, EcoStrategy.GRAZING)
-        val community = TileCommunity().also {
+        fun community() = TileCommunity().also {
             it.add(producer, producerNiche, activeBiomass = 1_000_000.0)
             it.add(consumer, consumerNiche, activeBiomass = 250_000.0)
         }
+        val ordinaryCommunity = community()
+        val noMortalityCommunity = community()
         val fluxes = CellTurnFluxes()
+        val noMortalityFluxes = CellTurnFluxes()
 
-        EcologyRuntime(ecology).advanceSeason(community, landEnvironment(), fluxes)
+        EcologyRuntime(ecology).advanceSeason(ordinaryCommunity, landEnvironment(), fluxes)
+        EcologyRuntime(
+            ecology,
+            EcologyRuntimeConfig(
+                backgroundMortality = 0.0,
+                stressMortality = 0.0,
+                lethalTemperatureMortality = 0.0,
+                maximumStarvationMortality = 0.0,
+                maximumHabitatDiversityMortality = 0.0,
+            ),
+        ).advanceSeason(noMortalityCommunity, landEnvironment(), noMortalityFluxes)
 
         assertTrue(fluxes.wasteBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.wasteBiomass > 0.0` to be true")
         assertTrue(fluxes.carrionBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.carrionBiomass > 0.0` to be true")
         assertTrue(fluxes.detritusBiomass > 0.0, message = "Living motile creatures produce waste and only their deaths produce carrion: expected `fluxes.detritusBiomass > 0.0` to be true")
+        assertTrue(noMortalityFluxes.wasteBiomass > 0.0)
+        assertEquals(0.0, noMortalityFluxes.carrionBiomass)
     }
 
     @Test
@@ -624,14 +682,19 @@ class EcologyRuntimeTest {
         val runtime = EcologyRuntime(ecology)
         val environment = landEnvironment()
 
-        repeat(400) {
+        repeat(400) { season ->
             runtime.advanceSeason(community, environment)
+            assertTrue(community.size > 0, "The viable fixture collapsed in season $season")
+            assertTrue(community.find(ecology.speciesIndex("land-producer")) >= 0)
             for (index in 0 until community.size) {
                 assertTrue(community.activeBiomass[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.activeBiomass[index].isFinite()` to be true")
                 assertTrue(community.activeBiomass[index] >= 0.0, message = "Long unchanged run stays finite non-negative and bounded: expected `community.activeBiomass[index] >= 0.0` to be true")
                 assertTrue(community.reserves[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.reserves[index].isFinite()` to be true")
+                assertTrue(community.reserves[index] >= 0.0)
                 assertTrue(community.dormantBiomass[index].isFinite(), message = "Long unchanged run stays finite non-negative and bounded: expected `community.dormantBiomass[index].isFinite()` to be true")
+                assertTrue(community.dormantBiomass[index] >= 0.0)
             }
+            assertTrue(community.totalBiomass() > 1.0)
         }
 
         assertTrue(community.totalBiomass() < 1e12, message = "Long unchanged run stays finite non-negative and bounded: expected `community.totalBiomass() < 1e12` to be true")

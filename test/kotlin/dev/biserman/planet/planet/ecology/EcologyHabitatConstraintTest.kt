@@ -11,11 +11,13 @@ class EcologyHabitatConstraintTest {
     )
 
     @Test
-    fun `light-dependent coral loses habitat fit with depth`() {
+    fun `photosynthetic coral responds to available light while a heterotroph does not`() {
         val coral = catalogEcology.species.single { it.id == "staghorn-coral" }
+        val heterotroph = catalogEcology.species.single { it.id == "ocellaris-clownfish" }
         val shallow = ocean(depthM = 20.0)
         val marginal = ocean(depthM = 55.0)
         val deep = ocean(depthM = 100.0)
+        val dim = ocean(depthM = 20.0, insolation = 0.1)
 
         assertEquals(
             1.0,
@@ -31,7 +33,16 @@ class EcologyHabitatConstraintTest {
         val photosyntheticNiche = catalogEcology.niches.single {
             it.habitat == Habitat.SHALLOW_OCEAN && it.strategy == EcoStrategy.PHOTOSYNTHESIS
         }
-        assertTrue(EcologyFitness.combined(coral, deep, photosyntheticNiche) < 1.0)
+        assertTrue(
+            EcologyFitness.light(coral, shallow, Habitat.SHALLOW_OCEAN) >
+                EcologyFitness.light(coral, dim, Habitat.SHALLOW_OCEAN),
+        )
+        assertEquals(1.0, EcologyFitness.light(heterotroph, shallow, Habitat.SHALLOW_OCEAN))
+        assertEquals(1.0, EcologyFitness.light(heterotroph, dim, Habitat.SHALLOW_OCEAN))
+        assertTrue(
+            EcologyFitness.combined(coral, shallow, photosyntheticNiche) >
+                EcologyFitness.combined(coral, dim, photosyntheticNiche),
+        )
         assertTrue(
             NicheSelection.choose(coral, catalogEcology, deep) >= 0,
             "A mixotrophic coral may retain its heterotrophic niche after photosynthesis becomes impossible",
@@ -180,11 +191,12 @@ class EcologyHabitatConstraintTest {
         depthM: Double,
         permanentSeaIce: Boolean = false,
         adjacentToLand: Double = 0.0,
+        insolation: Double = 0.8,
     ) = SeasonalCellEnvironment.create(
         areaKm2 = 40_000.0,
         temperatureC = if (permanentSeaIce) -4.0 else 24.0,
         annualAverageTemperatureC = if (permanentSeaIce) -5.0 else 24.0,
-        insolation = 0.8,
+        insolation = insolation,
         precipitationMm = 800.0,
         isLand = false,
         adjacentToLand = adjacentToLand,

@@ -48,17 +48,18 @@ class EarthlikeCladesTest {
         EarthSpeciesCatalog.ALL.forEach { species ->
             var ancestorId = species.ancestorSpeciesId
             val visited = mutableSetOf(species.id)
-            while (ancestorId != null && visited.add(ancestorId)) {
+            while (ancestorId != null) {
+                assertTrue(visited.add(ancestorId), "Ancestry cycle for ${species.id}: $visited -> $ancestorId")
                 val ancestor = EarthTreeOfLife.nodesById[ancestorId]
                 assertTrue(ancestor != null, "Missing ancestor $ancestorId for ${species.id}")
                 ancestorId = ancestor.ancestorSpeciesId
             }
         }
-        assertTrue(
-            EarthTreeOfLife.nodesById.values.none { node ->
-                EarthTreeOfLife.visibleChildren(node).any { it === node }
-            },
-        )
+        EarthTreeOfLife.nodesById.values.forEach { node ->
+            val children = EarthTreeOfLife.visibleChildren(node)
+            assertEquals(children.map { it.id }.distinct().size, children.size)
+            assertTrue(children.all { it.ancestorSpeciesId == node.id })
+        }
     }
 
     @Test

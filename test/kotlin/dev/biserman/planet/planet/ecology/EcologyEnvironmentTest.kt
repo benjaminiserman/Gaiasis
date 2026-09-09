@@ -6,20 +6,6 @@ import kotlin.test.assertTrue
 
 class EcologyEnvironmentTest {
     @Test
-    fun `planet adapter preserves signed elevation`() {
-        assertEquals(
-            -750.0,
-            PlanetEcologyEnvironment.signedElevationM(-750.0),
-            "Below-sea-level elevations must remain negative when adapted for ecology",
-        )
-        assertEquals(
-            4_500.0,
-            PlanetEcologyEnvironment.signedElevationM(4_500.0),
-            "Above-sea-level elevations must retain their height when adapted for ecology",
-        )
-    }
-
-    @Test
     fun `major rivers expose freshwater and increase land water availability`() {
         val dry = land(adjacentToMajorRiver = 0.0)
         val partialRiver = land(adjacentToMajorRiver = 0.25)

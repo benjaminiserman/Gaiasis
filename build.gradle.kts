@@ -52,7 +52,9 @@ tasks.withType<GenerateEmbeddedJreTask> {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("benchmark")
+    }
 
     testLogging {
         events("failed")
@@ -60,6 +62,16 @@ tasks.test {
         showCauses = true
         showExceptions = true
     }
+}
+
+val ecologyBenchmark by tasks.registering(Test::class) {
+    description = "Runs the large ecology performance benchmark."
+    group = "verification"
+    useJUnitPlatform {
+        includeTags("benchmark")
+    }
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
 }
 
 sourceSets {

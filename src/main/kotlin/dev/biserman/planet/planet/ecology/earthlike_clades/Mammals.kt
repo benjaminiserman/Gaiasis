@@ -329,7 +329,7 @@ val antelope = ruminant.descend(
     CommonTrait.BLEATING_CALL,
 )
 val giraffe = ruminant.descend(
-    "giraffe",
+    "giraffid",
     SizeClass.LARGE,
     CommonTrait.BROWSING_MOUTHPARTS,
     CommonTrait.LONG_NECK,

@@ -815,29 +815,22 @@ class EcologyCompilerTest {
 
     @Test
     fun `motile species require exactly one thermal strategy`() {
-        val locomotion = EffectTrait(
-            displayName = "test locomotion",
-            description = "Provides locomotion without selecting a thermal strategy.",
-            effects = listOf(TraitEffect.MaintenanceCost(0.0)),
-            capabilities = setOf(TraitCapability.LOCOMOTION),
-        )
-        val invalid = SpeciesDefinition(
-            id = "invalid",
-            displayName = "Invalid swimmer",
-            sizeClass = SizeClass.SMALL,
-            traits = listOf(
-                CommonTrait.TRACHEA,
-                CommonTrait.TEMPERATE_BIOCHEMISTRY,
-                CommonTrait.AQUATIC_OVOSPORE,
-                CommonTrait.BUOYANCY_BLADDER,
-                CommonTrait.SUSPENSION_FEEDING_TENTACLES,
-                locomotion,
-            ),
-        )
+        val valid = predator("thermal-validation")
+        EcologyCompiler.compile(listOf(valid))
 
-        assertFailsWith<IllegalArgumentException> {
-            EcologyCompiler.compile(listOf(invalid))
+        val missing = valid.copy(traits = valid.traits.filterNot { it == CommonTrait.ENDOTHERMY })
+        val missingFailure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(missing))
         }
+        assertTrue(missingFailure.message.orEmpty().contains("exactly one thermal strategy"))
+
+        val conflicting = valid.copy(traits = valid.traits + CommonTrait.ECTOTHERMY)
+        val conflictingFailure = assertFailsWith<IllegalArgumentException> {
+            EcologyCompiler.compile(listOf(conflicting))
+        }
+        assertTrue(conflictingFailure.message.orEmpty().contains("THERMOREGULATION"))
+        assertTrue(conflictingFailure.message.orEmpty().contains(CommonTrait.ENDOTHERMY.displayName))
+        assertTrue(conflictingFailure.message.orEmpty().contains(CommonTrait.ECTOTHERMY.displayName))
     }
 
     @Test
@@ -1316,6 +1309,24 @@ class EcologyCompilerTest {
             ActivityPattern.DIURNAL,
             ecology.species[ecology.speciesIndex(matched.id)].interactions.activityPattern,
             message = "Activity overlap modifies only terrestrial predation matchups: expected `ecology.species[ecology.speciesIndex(matched.id)].interactions.activityPattern` to match `ActivityPattern.DIURNAL`",
+        )
+
+        val aquaticMatched = aquaticPredator("aquatic-matched", SizeClass.SMALL).copy(
+            traits = aquaticPredator("aquatic-matched", SizeClass.SMALL).traits + CommonTrait.DIURNAL,
+        )
+        val aquaticMismatched = aquaticPredator("aquatic-mismatched", SizeClass.SMALL).copy(
+            traits = aquaticPredator("aquatic-mismatched", SizeClass.SMALL).traits + CommonTrait.NOCTURNAL,
+        )
+        val aquaticPrey = aquaticPredator("aquatic-day-prey", SizeClass.SMALL).copy(
+            traits = aquaticPredator("aquatic-day-prey", SizeClass.SMALL).traits
+                .filterNot { it == CommonTrait.AMBUSH_MUSCULATURE || it == CommonTrait.MEAT_EATING_MOUTHPARTS } +
+                CommonTrait.GRAZING_MOUTHPARTS + CommonTrait.DIURNAL,
+        )
+        val aquatic = EcologyCompiler.compile(listOf(aquaticMatched, aquaticMismatched, aquaticPrey))
+        assertEquals(
+            aquatic.interactions.get(0, 2).targetLossRate,
+            aquatic.interactions.get(1, 2).targetLossRate,
+            1.0e-12,
         )
     }
 
@@ -2073,6 +2084,7 @@ class EcologyCompilerTest {
 
     @Test
     fun `high pouncing increases predation only against fossorial prey`() {
+        val ordinary = predator("ordinary-predator", SizeClass.SMALL)
         val pouncer = predator("pouncer", SizeClass.SMALL).copy(
             traits = predator("pouncer", SizeClass.SMALL).traits + CommonTrait.HIGH_POUNCING,
         )
@@ -2084,12 +2096,17 @@ class EcologyCompilerTest {
             displayName = "burrowing-prey",
             traits = surfacePrey.traits + CommonTrait.DIGGING_LIMBS + CommonTrait.FOSSORIAL_LIVING,
         )
-        val ecology = EcologyCompiler.compile(listOf(pouncer, surfacePrey, burrowingPrey))
+        val ecology = EcologyCompiler.compile(listOf(ordinary, pouncer, surfacePrey, burrowingPrey))
+        val ordinaryIndex = ecology.speciesIndex(ordinary.id)
         val pouncerIndex = ecology.speciesIndex(pouncer.id)
         val surfaceAttack = ecology.interactions.get(pouncerIndex, ecology.speciesIndex(surfacePrey.id)).targetLossRate
         val burrowAttack = ecology.interactions.get(pouncerIndex, ecology.speciesIndex(burrowingPrey.id)).targetLossRate
 
-        assertTrue(burrowAttack > surfaceAttack, message = "High pouncing increases predation only against fossorial prey: expected `burrowAttack > surfaceAttack` to be true")
+        val ordinarySurfaceAttack = ecology.interactions.get(ordinaryIndex, ecology.speciesIndex(surfacePrey.id)).targetLossRate
+        val ordinaryBurrowAttack = ecology.interactions.get(ordinaryIndex, ecology.speciesIndex(burrowingPrey.id)).targetLossRate
+
+        assertEquals(ordinarySurfaceAttack, surfaceAttack, 1.0e-12)
+        assertTrue(burrowAttack > ordinaryBurrowAttack)
     }
 
     @Test
@@ -2113,6 +2130,9 @@ class EcologyCompilerTest {
 
     @Test
     fun `sound lures increase capture only against prey sharing a call`() {
+        val ordinaryPredator = predator("ordinary-lurer-control", SizeClass.SMALL).copy(
+            traits = predator("ordinary-lurer-control", SizeClass.SMALL).traits + CommonTrait.CHIRPING_CALL,
+        )
         val luringPredator = predator("sound-lurer", SizeClass.SMALL).copy(
             traits = predator("sound-lurer", SizeClass.SMALL).traits + listOf(CommonTrait.CHIRPING_CALL, CommonTrait.SOUND_LURES),
         )
@@ -2129,12 +2149,17 @@ class EcologyCompilerTest {
             displayName = "barking prey",
             traits = preyBase.traits + CommonTrait.BARKING_CALL,
         )
-        val ecology = EcologyCompiler.compile(listOf(luringPredator, chirpingPrey, barkingPrey))
+        val ecology = EcologyCompiler.compile(listOf(ordinaryPredator, luringPredator, chirpingPrey, barkingPrey))
+        val ordinaryIndex = ecology.speciesIndex(ordinaryPredator.id)
         val predatorIndex = ecology.speciesIndex(luringPredator.id)
         val sharedCallAttack = ecology.interactions.get(predatorIndex, ecology.speciesIndex(chirpingPrey.id)).targetLossRate
         val differentCallAttack = ecology.interactions.get(predatorIndex, ecology.speciesIndex(barkingPrey.id)).targetLossRate
 
-        assertTrue(sharedCallAttack > differentCallAttack, message = "Sound lures increase capture only against prey sharing a call: expected `sharedCallAttack > differentCallAttack` to be true")
+        val ordinarySharedAttack = ecology.interactions.get(ordinaryIndex, ecology.speciesIndex(chirpingPrey.id)).targetLossRate
+        val ordinaryDifferentAttack = ecology.interactions.get(ordinaryIndex, ecology.speciesIndex(barkingPrey.id)).targetLossRate
+
+        assertTrue(sharedCallAttack > ordinarySharedAttack)
+        assertEquals(ordinaryDifferentAttack, differentCallAttack, 1.0e-12)
     }
 
     @Test

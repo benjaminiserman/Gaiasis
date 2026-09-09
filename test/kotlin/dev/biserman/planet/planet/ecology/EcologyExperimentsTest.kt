@@ -74,10 +74,15 @@ class EcologyExperimentsTest {
         repeat(300) { runtime.advanceSeason(community, environment) }
         val residentBefore = biomassOf(community, 1)
         assertTrue(residentBefore > 0.0, message = "Invasion perturbs residents and then remains bounded: expected `residentBefore > 0.0` to be true")
+        val control = copyCommunity(community)
         addEstablished(community, ecology, environment, speciesIndex = 2, biomass = 180_000.0)
-        repeat(240) { runtime.advanceSeason(community, environment) }
+        repeat(240) {
+            runtime.advanceSeason(community, environment)
+            runtime.advanceSeason(control, environment)
+        }
         val residentAfter = biomassOf(community, 1)
         val invaderAfter = biomassOf(community, 2)
+        val controlResidentAfter = biomassOf(control, 1)
 
         println(
             "ECOLOGY_INVASION resident_before=${"%.3f".format(residentBefore)} " +
@@ -87,7 +92,12 @@ class EcologyExperimentsTest {
         )
         assertTrue(community.totalBiomass().isFinite(), message = "Invasion perturbs residents and then remains bounded: expected `community.totalBiomass().isFinite()` to be true")
         assertTrue(community.totalBiomass() < terrestrialBiomassGuardrail(environment), message = "Invasion perturbs residents and then remains bounded: expected `community.totalBiomass() < terrestrialBiomassGuardrail(environment)` to be true")
-        assertTrue(residentAfter != residentBefore || invaderAfter > 0.0, message = "Invasion perturbs residents and then remains bounded: expected `residentAfter != residentBefore || invaderAfter > 0.0` to be true")
+        assertTrue(invaderAfter > 0.0, "The introduced population should establish and persist")
+        assertTrue(
+            kotlin.math.abs(residentAfter - controlResidentAfter) > controlResidentAfter * 1.0e-4,
+            "The resident should follow a different trajectory after invasion: " +
+                "treatment=$residentAfter control=$controlResidentAfter",
+        )
     }
 
     @Test
@@ -175,6 +185,19 @@ class EcologyExperimentsTest {
 
     private fun standardDeviation(values: DoubleArray, mean: Double): Double =
         sqrt(values.sumOf { (it - mean).pow(2) } / values.size)
+
+    private fun copyCommunity(source: TileCommunity): TileCommunity =
+        TileCommunity(source.capacity).also { copy ->
+            repeat(source.size) { index ->
+                copy.add(
+                    source.speciesIndices[index],
+                    source.nicheIndices[index],
+                    source.activeBiomass[index],
+                    source.reserves[index],
+                    source.dormantBiomass[index],
+                )
+            }
+        }
 
     /**
      * Emergency runaway check scaled to tile area and the largest authored
