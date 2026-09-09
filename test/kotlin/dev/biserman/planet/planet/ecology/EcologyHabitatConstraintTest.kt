@@ -95,8 +95,9 @@ class EcologyHabitatConstraintTest {
         val greatWhiteShark = catalogEcology.species.single { it.id == "great-white-shark" }
         val manatee = catalogEcology.species.single { it.id == "west-indian-manatee" }
         val seaOtter = catalogEcology.species.single { it.id == "sea-otter" }
-        val offshoreOcean = ocean(depthM = 250.0)
+        val offshoreOcean = ocean(depthM = 250.0, elevationM = -500.0)
         val coastalOcean = ocean(depthM = 45.0, adjacentToLand = 1.0)
+        val coastalLand = land(adjacentToOcean = 1.0)
 
         assertTrue(blueWhale.physiology.respiration.prolongedBreathHolding, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.physiology.respiration.prolongedBreathHolding` to be true")
         assertFalse(blueWhale.physiology.respiration.underwaterBreathing, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `blueWhale.physiology.respiration.underwaterBreathing` to be false")
@@ -110,17 +111,19 @@ class EcologyHabitatConstraintTest {
             assertFalse(coastalDiver.physiology.respiration.underwaterBreathing, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.physiology.respiration.underwaterBreathing` to be false")
             assertFalse(coastalDiver.physiology.respiration.prolongedBreathHolding, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.physiology.respiration.prolongedBreathHolding` to be false")
             assertTrue(coastalDiver.niche.supportFor(Habitat.COASTAL) > 0.0, message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.COASTAL) > 0.0` to be true")
-            assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.SHALLOW_OCEAN)` to match `0.0`")
+            assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.SHALLOW_OCEAN), message = "Coastal divers remain land-side coastal specialists")
             assertEquals(0.0, coastalDiver.niche.supportFor(Habitat.DARK_WATER), message = "Open ocean requires underwater breathing or prolonged breath holding: expected `coastalDiver.niche.supportFor(Habitat.DARK_WATER)` to match `0.0`")
             assertEquals(
                 -1,
                 NicheSelection.choose(coastalDiver, catalogEcology, offshoreOcean),
                 message = "Open ocean requires underwater breathing or prolonged breath holding: expected `NicheSelection.choose(coastalDiver, catalogEcology, offshoreOcean)` to match `-1`"
             )
-            assertTrue(
-                NicheSelection.choose(coastalDiver, catalogEcology, coastalOcean) >= 0,
-                message = "Open ocean requires underwater breathing or prolonged breath holding: expected `NicheSelection.choose(coastalDiver, catalogEcology, coastalOcean) >= 0` to be true"
+            assertEquals(
+                Habitat.COASTAL,
+                catalogEcology.niches[NicheSelection.choose(coastalDiver, catalogEcology, coastalLand)].habitat,
+                message = "Coastal habitat is land-side only: expected coastal divers to establish on adjacent land",
             )
+            assertEquals(-1, NicheSelection.choose(coastalDiver, catalogEcology, coastalOcean), message = "Coastal habitat is land-side only: expected ocean-side nearshore divers not to establish")
         }
     }
 
@@ -191,6 +194,7 @@ class EcologyHabitatConstraintTest {
         depthM: Double,
         permanentSeaIce: Boolean = false,
         adjacentToLand: Double = 0.0,
+        elevationM: Double = 0.0,
         insolation: Double = 0.8,
     ) = SeasonalCellEnvironment.create(
         areaKm2 = 40_000.0,
@@ -200,8 +204,19 @@ class EcologyHabitatConstraintTest {
         precipitationMm = 800.0,
         isLand = false,
         adjacentToLand = adjacentToLand,
+        elevationM = elevationM,
         waterDepthM = depthM,
         usefulSunlightReachesWater = true,
         permanentSeaIce = permanentSeaIce,
+    )
+
+    private fun land(adjacentToOcean: Double) = SeasonalCellEnvironment.create(
+        areaKm2 = 40_000.0,
+        temperatureC = 24.0,
+        annualAverageTemperatureC = 24.0,
+        insolation = 0.8,
+        precipitationMm = 800.0,
+        isLand = true,
+        adjacentToOcean = adjacentToOcean,
     )
 }

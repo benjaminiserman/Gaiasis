@@ -41,7 +41,7 @@ class EcologyEnvironmentTest {
     }
 
     @Test
-    fun `shared coastline fraction scales coastal habitat`() {
+    fun `coastal habitat is available only on ocean-adjacent land`() {
         val land = SeasonalCellEnvironment.create(
             areaKm2 = 40_000.0,
             temperatureC = 20.0,
@@ -66,10 +66,10 @@ class EcologyEnvironmentTest {
             "Land coastal habitat should scale with the 25% ocean-edge fraction",
         )
         assertEquals(
-            0.25,
+            0.0,
             ocean.habitatAvailability(Habitat.COASTAL),
             1e-12,
-            "Ocean coastal habitat should scale with the 25% land-edge fraction",
+            "Ocean tiles should not expose coastal habitat even when adjacent to land",
         )
         assertEquals(0.25, land.adjacentToOcean, "Land should preserve its ocean-edge fraction")
         assertEquals(0.25, ocean.adjacentToLand, "Ocean should preserve its land-edge fraction")

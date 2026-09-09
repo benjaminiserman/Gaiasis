@@ -1904,10 +1904,15 @@ enum class CommonTrait(
         "Gripping limbs or attachment pads that resist waves and currents in shallow coastal habitats.",
         listOf(
             TraitEffect.HabitatAffinity(Habitat.COASTAL, 0.25),
+            TraitEffect.HabitatAffinity(Habitat.SHALLOW_OCEAN, 0.25),
             TraitEffect.CaptureAbility(-0.05),
             TraitEffect.MaintenanceCost(0.09),
         ),
-        capabilities = setOf(TraitCapability.LOCOMOTION, Habitat.COASTAL.accessCapability),
+        capabilities = setOf(
+            TraitCapability.LOCOMOTION,
+            Habitat.COASTAL.accessCapability,
+            Habitat.SHALLOW_OCEAN.accessCapability,
+        ),
         requirements = listOf(
             TraitRequirement.anyOf(LIMBED_BODY)
         )

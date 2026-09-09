@@ -201,7 +201,6 @@ class SeasonalCellEnvironment private constructor(
                 habitats[Habitat.COASTAL.ordinal] = adjacentToOcean * 0.48
             } else {
                 habitats[Habitat.AERIAL.ordinal] = 0.30
-                habitats[Habitat.COASTAL.ordinal] = adjacentToLand
                 if (permanentSeaIce) {
                     habitats[Habitat.SEA_ICE.ordinal] = 0.80
                 }

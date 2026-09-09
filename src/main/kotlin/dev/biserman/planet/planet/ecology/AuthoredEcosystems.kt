@@ -216,7 +216,6 @@ object AuthoredEcosystems {
         "giant-kelp",
         "eelgrass",
         "pacific-herring",
-        "sea-otter",
         "blue-shark"
     )
 

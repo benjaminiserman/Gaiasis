@@ -141,7 +141,11 @@ object EcologyFitness {
         habitat: Habitat,
     ): Double {
         val landAccess =
-            if (species.environment.requiresAdjacentLand) environment.adjacentToLand else 1.0
+            if (species.environment.requiresAdjacentLand && !environment.isLand) {
+                environment.adjacentToLand
+            } else {
+                1.0
+            }
         val depthFitness =
             if (!habitat.aquatic || species.environment.absoluteMaximumWaterDepthM.isInfinite()) {
                 1.0

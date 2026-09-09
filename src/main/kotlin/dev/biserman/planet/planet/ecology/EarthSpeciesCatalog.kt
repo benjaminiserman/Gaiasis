@@ -1527,6 +1527,7 @@ object EarthSpeciesCatalog {
             CommonTrait.BUOYANCY_BLADDER,
             CommonTrait.ANTIFREEZE_PROTEINS,
             CommonTrait.SLOW_GROWTH.atLevel(1),
+            CommonTrait.SALTWATER_OSMOREGULATION,
             CommonTrait.SOLITARY,
         ),
         eel.descend(
@@ -1619,6 +1620,7 @@ object EarthSpeciesCatalog {
             CommonTrait.WARM_WATER_ENZYMES,
             CommonTrait.PASSIVE_RESPIRATION,
             CommonTrait.COASTAL_CLINGING_FEET,
+            CommonTrait.SALTWATER_OSMOREGULATION,
             CommonTrait.GRAZING_MOUTHPARTS,
             CommonTrait.TOXIC_SKIN,
             CommonTrait.REEF_BORING,
@@ -2059,6 +2061,7 @@ object EarthSpeciesCatalog {
             "eelgrass",
             SizeClass.SMALL,
             CommonTrait.SALT_EXCLUDING_ROOTS,
+            CommonTrait.SALTWATER_OSMOREGULATION,
         ),
         algae.descend(
             "giant kelp",
@@ -2339,21 +2342,12 @@ object EarthSpeciesCatalog {
             } else {
                 emptyList()
             }
-        val reproduction =
-            if (adaptations.any {
-                    TraitCapability.REPRODUCTION in it.baseTrait.capabilitiesAt(it.authoredLevel)
-                }
-            ) {
-                emptyList()
-            } else {
-                listOf(defaultOvosporeTrait(adaptations))
-            }
         val salinity = defaultSalinityTrait(adaptations)
         return SpeciesDefinition(
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
-            traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + reproduction + salinity + anatomy + adaptations,
+            traits = listOf(biochemistry, thermalStrategy) + structuralFoundation + salinity + anatomy + adaptations,
         )
     }
 
@@ -2362,21 +2356,12 @@ object EarthSpeciesCatalog {
         sizeClass: SizeClass,
         vararg adaptations: SpeciesTrait,
     ): SpeciesDefinition {
-        val reproduction =
-            if (adaptations.any {
-                    TraitCapability.REPRODUCTION in it.baseTrait.capabilitiesAt(it.authoredLevel)
-                }
-            ) {
-                emptyList()
-            } else {
-                listOf(defaultOvosporeTrait(adaptations))
-            }
         val salinity = defaultSalinityTrait(adaptations)
         return SpeciesDefinition(
             id = idFromName(name),
             displayName = name,
             sizeClass = sizeClass,
-            traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + reproduction + salinity + adaptations,
+            traits = listOf(CommonTrait.TEMPERATE_BIOCHEMISTRY) + salinity + adaptations,
         )
     }
 
@@ -2389,31 +2374,6 @@ object EarthSpeciesCatalog {
             TraitCapability.UNDERWATER_RESPIRATION in capabilities ||
                 TraitCapability.AQUATIC_LOCOMOTION in capabilities
         return if (aquatic) listOf(CommonTrait.SALTWATER_OSMOREGULATION) else emptyList()
-    }
-
-    private fun defaultOvosporeTrait(adaptations: Array<out SpeciesTrait>): CommonTrait {
-        val supportedHabitats = supportedHabitats(adaptations)
-        val aquatic = supportedHabitats.any {
-            it == Habitat.COASTAL ||
-                it == Habitat.FRESHWATER ||
-                it == Habitat.SHALLOW_OCEAN ||
-                it == Habitat.OPEN_OCEAN ||
-                it == Habitat.DARK_WATER
-        }
-        val terrestrial = supportedHabitats.any {
-            it == Habitat.LAND_SURFACE || it == Habitat.CANOPY || it == Habitat.SEA_ICE
-        }
-        return if (aquatic && !terrestrial) {
-            CommonTrait.AQUATIC_OVOSPORE
-        } else {
-            CommonTrait.TERRESTRIAL_OVOSPORE
-        }
-    }
-
-    private fun supportedHabitats(adaptations: Array<out SpeciesTrait>): Set<Habitat> {
-        val capabilities = adaptations
-            .flatMapTo(mutableSetOf()) { it.baseTrait.capabilitiesAt(it.authoredLevel) }
-        return Habitat.entries.filterTo(mutableSetOf()) { it.accessCapability in capabilities }
     }
 
     fun idFromName(name: String): String =
