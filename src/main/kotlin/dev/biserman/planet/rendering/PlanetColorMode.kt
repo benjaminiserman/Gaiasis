@@ -26,5 +26,5 @@ abstract class PlanetColorMode(val planetRenderer: PlanetRenderer) {
         if (::toggleEntry.isInitialized) Gui.instance.showSettingsButton.setAvailable(toggleEntry, available)
     }
 
-    abstract fun colorsFor(planetTile: PlanetTile): Sequence<Color?>
+    abstract fun colorFor(planetTile: PlanetTile): Color?
 }

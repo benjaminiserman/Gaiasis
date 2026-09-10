@@ -84,6 +84,10 @@ class TreeOfLifeView(private val gui: Gui) {
         }
         tree.itemEdited.connect {
             if (updatingTree || !Main.instance.hasPlanet || tree.getEditedColumn() != 0) return@connect
+            if (Main.instance.isSimulationRunning) {
+                updateInclusionChecks()
+                return@connect
+            }
             val item = tree.getEdited() ?: return@connect
             val definition = definitionsByItem[item] ?: return@connect
             EarthTreeOfLife.setIncluded(

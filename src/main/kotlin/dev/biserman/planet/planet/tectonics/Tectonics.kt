@@ -1,8 +1,6 @@
 package dev.biserman.planet.planet.tectonics
 
-import dev.biserman.planet.Main
 import dev.biserman.planet.geometry.*
-import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.*
 import dev.biserman.planet.planet.tectonics.Meteor.impactMeteor
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.boundarySmoothingMinSamePlateNeighbors
@@ -26,7 +24,6 @@ import dev.biserman.planet.planet.tectonics.TectonicGlobals.plateTorqueScalar
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.searchMaxResults
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.springPlateContributionStrength
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.tectonicElevationShepardDegree
-import dev.biserman.planet.planet.tectonics.TectonicGlobals.tectonicSimulationStop
 import dev.biserman.planet.planet.tectonics.TectonicGlobals.tryHotspotEruption
 import dev.biserman.planet.topology.Border
 import dev.biserman.planet.topology.Tile
@@ -688,20 +685,12 @@ object Tectonics {
         planet.tectonicAge++
         planet.terrainChangeCount++
 
-        Gui.instance.updateInfobox()
-        Gui.instance.statsGraph.update(planet)
-
         val percentContinental =
             planet.planetTiles.values.filter { it.isAboveWater }.size / planet.planetTiles.size.toFloat()
         GD.print("completed step ${planet.tectonicAge} in ${timeTaken}ms")
         steps.forEach { (name, time) -> GD.print(" - $name: ${time.inWholeMilliseconds}ms") }
         GD.print("continental crust: ${(percentContinental * 100).toInt()}%, ${planet.tectonicPlates.size} plates")
         GD.print("average movement: ${planet.planetTiles.values.sumOf { it.movement.length() } / planet.planetTiles.size}")
-
-        // hacky way to stop simulation from running forever
-        if (tectonicSimulationStop > 0 && planet.tectonicAge % tectonicSimulationStop == 0) {
-            Main.instance.timerActive = false
-        }
     }
 
     fun runGuardrails(planet: Planet) {

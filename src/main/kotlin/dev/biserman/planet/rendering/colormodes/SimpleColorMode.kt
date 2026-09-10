@@ -11,14 +11,5 @@ class SimpleColorMode(
     override val categories: List<String>,
     val getFn: (PlanetTile) -> Color?,
 ) : PlanetColorMode(planetRenderer) {
-    override fun colorsFor(planetTile: PlanetTile): Sequence<Color?> = sequence {
-        val tileColor = getFn(planetTile)
-        yield(tileColor)
-
-        yieldAll(
-            (0..<planetTile.tile.corners.size).map {
-                tileColor
-            }
-        )
-    }
+    override fun colorFor(planetTile: PlanetTile): Color? = getFn(planetTile)
 }

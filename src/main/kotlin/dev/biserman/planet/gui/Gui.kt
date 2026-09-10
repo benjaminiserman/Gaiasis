@@ -9,6 +9,7 @@ import dev.biserman.planet.history.Hemisphere
 import dev.biserman.planet.history.HistoryCalendar
 import dev.biserman.planet.planet.MapProjections
 import dev.biserman.planet.planet.MapProjections.applyValueTo
+import dev.biserman.planet.planet.MapProjections.projectTileIds
 import dev.biserman.planet.planet.MapProjections.projectTiles
 import dev.biserman.planet.planet.PlanetTile
 import dev.biserman.planet.planet.climate.ClimateClassifier
@@ -21,6 +22,7 @@ import dev.biserman.planet.planet.tectonics.TectonicGlobals
 import dev.biserman.planet.rendering.MeshData
 import dev.biserman.planet.rendering.SimpleDebugRenderer
 import dev.biserman.planet.topology.Tile
+import dev.biserman.planet.topology.Topology
 import dev.biserman.planet.utils.Serialization
 import godot.annotation.RegisterClass
 import godot.annotation.RegisterFunction
@@ -31,7 +33,6 @@ import godot.core.connect
 import godot.global.GD
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import java.awt.image.BufferedImage
 import java.io.File
 import java.util.Locale.getDefault
 import kotlin.random.Random
@@ -114,6 +115,7 @@ class Gui() : Node() {
     }
 
     fun updateInfobox() {
+        if (Main.instance.isSimulationRunning) return
         infoboxContainer.getChildren().forEach { tab ->
             val label = tab.findChild("Label") as? Label
             if (tab is ScrollContainer && label is Label) {
@@ -214,6 +216,7 @@ class Gui() : Node() {
     }
 
     fun updateHistoryDisplay() {
+        if (Main.instance.isSimulationRunning) return
         val turn = if (Main.instance.hasPlanet) Main.instance.planet.historyTurn else 0L
         val hemisphere = if ((selectedTile?.position?.y ?: 1.0) >= 0.0) {
             Hemisphere.NORTHERN
@@ -229,6 +232,36 @@ class Gui() : Node() {
         mutationsButton.buttonPressed =
             Main.instance.hasPlanet &&
             Main.instance.planet.mutationsEnabled
+    }
+
+    fun setSimulationRunning(running: Boolean) {
+        listOf<BaseButton>(
+            simulationOptionButton,
+            modeToggleButton,
+            nextTurnButton,
+            mutationsButton,
+            randomizeEcosystemsButton,
+            clearEcosystemsButton,
+            loadButton,
+            importButton,
+            refreshConfigButton,
+            calculateClimateButton,
+            showClimateConfigButton,
+            showTectonicConfigButton,
+            treeOfLifeButton,
+            saveButton,
+            projectButton,
+            clearMapButton,
+            recenterMapPreviewButton,
+            copyTileInfoButton,
+        ).forEach { it.disabled = running }
+        brushTool.setSimulationRunning(running)
+        if (running) {
+            showClimateConfigButton.buttonPressed = false
+            showTectonicConfigButton.buttonPressed = false
+            climateConfigPanel.visible = false
+            tectonicConfigPanel.visible = false
+        }
     }
 
     fun showSeedSelection() {
@@ -250,45 +283,76 @@ class Gui() : Node() {
 
     private var mapPreviewDateLine: Double? = null
     private var mapPreviewTexture: ImageTexture? = null
+    private var mapPreviewImage: Image? = null
+    private var mapPreviewTopology: Topology? = null
+    private var mapPreviewProjectionDateLine: Double? = null
+    private var mapPreviewTileIds = IntArray(0)
+    private var mapPreviewTileColors = IntArray(0)
+    private val mapPreviewPixels = IntArray(MAP_PREVIEW_WIDTH * MAP_PREVIEW_HEIGHT)
+    private val mapPreviewRgba = ByteArray(MAP_PREVIEW_WIDTH * MAP_PREVIEW_HEIGHT * 4)
 
     fun resetMapPreviewCenter() {
         mapPreviewDateLine = null
+        mapPreviewTopology = null
     }
 
-    private fun BufferedImage.toGodotImage(): Image? {
-        val pixels = getRGB(0, 0, width, height, null, 0, width)
-        val rgba = ByteArray(pixels.size * 4)
-        pixels.forEachIndexed { index, argb ->
+    private fun mapPreviewToGodotImage(): Image? {
+        mapPreviewPixels.forEachIndexed { index, argb ->
             val outputIndex = index * 4
-            rgba[outputIndex] = (argb shr 16).toByte()
-            rgba[outputIndex + 1] = (argb shr 8).toByte()
-            rgba[outputIndex + 2] = argb.toByte()
-            rgba[outputIndex + 3] = (argb shr 24).toByte()
+            mapPreviewRgba[outputIndex] = (argb shr 16).toByte()
+            mapPreviewRgba[outputIndex + 1] = (argb shr 8).toByte()
+            mapPreviewRgba[outputIndex + 2] = argb.toByte()
+            mapPreviewRgba[outputIndex + 3] = (argb shr 24).toByte()
+        }
+        val packedData = PackedByteArray(mapPreviewRgba)
+        mapPreviewImage?.let { image ->
+            image.setData(MAP_PREVIEW_WIDTH, MAP_PREVIEW_HEIGHT, false, Image.Format.RGBA8, packedData)
+            return image
         }
         return Image.createFromData(
             MAP_PREVIEW_WIDTH,
             MAP_PREVIEW_HEIGHT,
             false,
             Image.Format.RGBA8,
-            PackedByteArray(rgba)
-        )
+            packedData
+        )?.also { mapPreviewImage = it }
     }
 
     fun updateMapPreview() {
-        if (!mapPreviewContainer.visible || !Main.instance.hasPlanet) return
+        if (
+            !mapPreviewContainer.visible ||
+            !Main.instance.hasPlanet ||
+            Main.instance.isSimulationRunning
+        ) {
+            return
+        }
 
         val planet = Main.instance.planet
         val dateLine = mapPreviewDateLine ?: planet.internationalDateLine.also { mapPreviewDateLine = it }
-        val projectedMap = MapProjections.EQUIRECTANGULAR.projectTiles(
-            planet,
-            null,
-            MAP_PREVIEW_WIDTH,
-            MAP_PREVIEW_HEIGHT,
-            useKriging = false,
-            sampleRadius = planet.topology.averageRadius * 1.5,
-            dateLine = dateLine
-        ) { tile -> Main.instance.planetRenderer.getColor(tile) }
-        val image = projectedMap.toGodotImage() ?: return
+        if (mapPreviewTopology !== planet.topology || mapPreviewProjectionDateLine != dateLine) {
+            mapPreviewTileIds = MapProjections.EQUIRECTANGULAR.projectTileIds(
+                planet,
+                MAP_PREVIEW_WIDTH,
+                MAP_PREVIEW_HEIGHT,
+                sampleRadius = planet.topology.averageRadius * 1.5,
+                dateLine = dateLine,
+            )
+            mapPreviewTopology = planet.topology
+            mapPreviewProjectionDateLine = dateLine
+        }
+        if (mapPreviewTileColors.size != planet.topology.tiles.size) {
+            mapPreviewTileColors = IntArray(planet.topology.tiles.size)
+        }
+        planet.topology.tiles.forEach { tile ->
+            mapPreviewTileColors[tile.id] = Main.instance.planetRenderer
+                .getColor(planet.getTile(tile))
+                .clamp(Color.black, Color.white)
+                .toARGB32()
+        }
+        mapPreviewTileIds.forEachIndexed { index, tileId ->
+            mapPreviewPixels[index] = mapPreviewTileColors[tileId]
+        }
+        val image = mapPreviewToGodotImage() ?: return
 
         val texture = mapPreviewTexture
         if (texture == null) {
@@ -392,10 +456,12 @@ class Gui() : Node() {
         playButton.pressed.connect { togglePlayButton() }
 
         saveDialog.fileSelected.connect { filename ->
+            if (Main.instance.isSimulationRunning) return@connect
             Serialization.save(filename.removePrefix("res:\\"), Main.instance.planet)
             GD.print("Saved!")
         }
         loadDialog.fileSelected.connect { filename ->
+            if (Main.instance.isSimulationRunning) return@connect
             val loadedPlanet = Serialization.load(filename.removePrefix("res:\\"))
             Main.instance.updatePlanet(loadedPlanet)
             GD.print("Loaded!")
@@ -455,6 +521,7 @@ class Gui() : Node() {
             importDialog.popup()
         }
         importDialog.fileSelected.connect { filename ->
+            if (Main.instance.isSimulationRunning) return@connect
             MapProjections.EQUIDISTANT.applyValueTo(
                 Main.instance.planet,
                 filename,

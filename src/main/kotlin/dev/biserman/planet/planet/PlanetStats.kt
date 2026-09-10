@@ -5,6 +5,21 @@ import dev.biserman.planet.things.StoneType
 import godot.core.Color
 import godot.core.Vector2
 
+private inline fun <T> Iterable<T>.averageOfMatching(
+    predicate: (T) -> Boolean = { true },
+    value: (T) -> Double,
+): Double {
+    var sum = 0.0
+    var count = 0
+    forEach { item ->
+        if (predicate(item)) {
+            sum += value(item)
+            count++
+        }
+    }
+    return if (count == 0) Double.NaN else sum / count
+}
+
 data class Stat<T>(
     val name: String,
     val color: Color = Color.red,
@@ -26,27 +41,28 @@ class PlanetStats {
             range = 0.0..100.0
         ) { planet -> (1 - planet.waterCoverage) * 100 },
         Stat("average tile crust age", yLabel = "Million years") { planet ->
-            planet.planetTiles.values.map { planet.tectonicAge - it.formationTime }
-                .average()
+            planet.planetTiles.values.averageOfMatching { planet.tectonicAge - it.formationTime.toDouble() }
         },
         Stat("oldest tile crust age", yLabel = "Million years") { planet ->
             (planet.tectonicAge - planet.planetTiles.values.minOf { it.formationTime })
         },
         Stat("average oceanic tile depth", yLabel = "Meters") { planet ->
-            planet.planetTiles.values.filter { !it.isAboveWater }.map { it.elevation }.average()
+            planet.planetTiles.values.averageOfMatching({ !it.isAboveWater }) { it.elevation }
         },
         Stat("average continental tile height", yLabel = "Meters") { planet ->
-            planet.planetTiles.values.filter { it.isAboveWater }.map { it.elevation }.average()
+            planet.planetTiles.values.averageOfMatching({ it.isAboveWater }) { it.elevation }
         },
         Stat("tectonic plate count") { planet -> planet.tectonicPlates.size },
         Stat("number of continents") { planet ->
             planet.landRegions.count { it.tiles.size > 150 }
         },
-        Stat("average tectonic plate torque") { planet -> planet.tectonicPlates.map { it.torque.length() }.average() },
+        Stat("average tectonic plate torque") { planet ->
+            planet.tectonicPlates.averageOfMatching { it.torque.length() }
+        },
         Stat("subduction zone count") { planet -> planet.convergenceZones.count { it.value.isSubduction } },
         Stat("convergent zone count") { planet -> planet.convergenceZones.count { !it.value.isSubduction } },
         Stat("divergent zone count") { planet -> planet.divergenceZones.size },
-        Stat("average slope") { planet -> planet.planetTiles.values.map { it.slope }.average() },
+        Stat("average slope") { planet -> planet.planetTiles.values.averageOfMatching { it.slope } },
         Stat("max elevation") { planet -> planet.planetTiles.values.maxOf { it.elevation } },
         Stat("min elevation") { planet -> planet.planetTiles.values.minOf { it.elevation } },
         Stat("hotspot activity") { planet -> planet.hotspotActivity },
@@ -78,15 +94,19 @@ class PlanetStats {
             planet.planetTiles.values.sumOf { it.ecosystem.speciesCount }
         },
         Stat("globally extant ecology species") { planet ->
-            planet.planetTiles.values.flatMap { tile -> tile.ecosystem.populations.map { it.speciesId } }
-                .distinct().size
+            buildSet {
+                planet.planetTiles.values.forEach { tile ->
+                    tile.ecosystem.populations.forEach { population -> add(population.speciesId) }
+                }
+            }.size
         },
         Stat("total ecosystem biomass") { planet ->
             planet.planetTiles.values.sumOf { it.ecosystem.totalBiomassKg }
         },
         Stat("average species per occupied ecosystem") { planet ->
-            planet.planetTiles.values.filter { it.ecosystem.speciesCount > 0 }
-                .map { it.ecosystem.speciesCount }.average().takeUnless { it.isNaN() } ?: 0.0
+            planet.planetTiles.values
+                .averageOfMatching({ it.ecosystem.speciesCount > 0 }) { it.ecosystem.speciesCount.toDouble() }
+                .takeUnless { it.isNaN() } ?: 0.0
         },
         Stat("max species in occupied ecosystem") { planet ->
             planet.planetTiles.values.filter { it.ecosystem.speciesCount > 0 }.maxOfOrNull { it.ecosystem.speciesCount }

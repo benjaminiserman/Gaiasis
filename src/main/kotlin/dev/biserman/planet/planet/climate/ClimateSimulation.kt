@@ -5,7 +5,6 @@ import dev.biserman.planet.geometry.scaleAndCoerce01
 import dev.biserman.planet.geometry.scaleAndCoerceIn
 import dev.biserman.planet.geometry.tangent
 import dev.biserman.planet.geometry.toGeoPoint
-import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.Planet
 import dev.biserman.planet.planet.PlanetRegion
 import dev.biserman.planet.planet.PlanetTile
@@ -175,9 +174,6 @@ object ClimateSimulation {
 
     fun stepClimateSimulation(planet: Planet) {
         planet.daysPassed += 45
-        Gui.instance.daysPassedLabel.setText("${planet.daysPassed} — ${estimateMonth(planet, planet.daysPassed)}")
-        Gui.instance.updateInfobox()
-
         updatePlanetClimate(planet)
     }
 

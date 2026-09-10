@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import dev.biserman.planet.geometry.*
-import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.climate.ClimateDatum
 import dev.biserman.planet.planet.climate.OceanCurrent
 import dev.biserman.planet.planet.ecology.MutatedSpeciesRecord
@@ -200,10 +199,6 @@ class Planet(val seed: Int, val size: Int) {
     var biotaDistributions: List<BiotaDistribution> = listOf()
 
     var tectonicAge = 0
-        set(value) {
-            field = value
-            Gui.instance.tectonicAgeLabel.setText("$tectonicAge My")
-        }
 
     var daysPassed = 0
     var historyTurn = 0L

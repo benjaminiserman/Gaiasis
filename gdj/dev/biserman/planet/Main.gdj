@@ -22,5 +22,6 @@ properties = [
 functions = [
     _ready,
 	_unhandled_input,
-	_process
+	_process,
+	_exit_tree
 ]

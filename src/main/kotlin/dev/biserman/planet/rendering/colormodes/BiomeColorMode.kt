@@ -84,10 +84,7 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val name: String, 
         return matchingTiles.sumOf { getFn(it) } / matchingTiles.size
     }
 
-    override fun colorsFor(planetTile: PlanetTile) = sequence {
-        val tile = planetTile.tile
-        val hue = hue(planetTile)
-
+    override fun colorFor(planetTile: PlanetTile): Color {
 //        val color = Color.fromHsv(hue, saturation(planetTile), value(planetTile), 1.0)
         val biomeColor = if (useKoppen) {
             planetTile.koppen.getOrNull()?.terrainColor
@@ -95,7 +92,7 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val name: String, 
         } else {
             null
         } ?: Color.fromHsv(0.25, 0.9, 0.15, 1.0)
-        val color = when (getMode(planetTile)) {
+        return when (getMode(planetTile)) {
             RenderMode.BIOME -> biomeColor.lerp(
                 Color.fromHsv(0.06, min(biomeColor.s, 0.33), 0.5, 1.0),
                 min(0.75, slopeScale(planetTile))
@@ -109,21 +106,5 @@ class BiomeColorMode(planetRenderer: PlanetRenderer, override val name: String, 
                 1.0
             )
         }
-
-        yield(color)
-
-        yieldAll(
-            (0..<tile.corners.size).map {
-//            val corner = tile.corners[it]
-//            val color = Color.fromHsv(
-//                averageAroundPoint(corner, planetTile) { tile -> hue(tile) },
-//                averageAroundPoint(corner, planetTile) { tile -> saturation(tile) },
-//                averageAroundPoint(corner, planetTile) { tile -> value(tile) },
-//                1.0
-//            )
-
-                color
-            }
-        )
     }
 }

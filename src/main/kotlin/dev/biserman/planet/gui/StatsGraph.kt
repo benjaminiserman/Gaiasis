@@ -35,7 +35,8 @@ class StatsGraph(val rootNode: CanvasItem) {
             }
         }
 
-    val statValues get() = planet!!.planetStats.allStatValues
+    private val statValues
+        get() = if (historyMode) planet!!.planetStats.historyStatValues else planet!!.planetStats.tectonicStatValues
 
     var visible = true
         set(value) {

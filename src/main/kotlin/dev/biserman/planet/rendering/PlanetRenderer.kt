@@ -1,5 +1,6 @@
 package dev.biserman.planet.rendering
 
+import dev.biserman.planet.Main
 import dev.biserman.planet.geometry.*
 import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.planet.Planet
@@ -19,15 +20,18 @@ import dev.biserman.planet.rendering.renderers.ImpassableEdgeRenderer
 import dev.biserman.planet.rendering.renderers.TectonicPlateBoundaryRenderer
 import dev.biserman.planet.rendering.renderers.TileMovementRenderer
 import dev.biserman.planet.rendering.renderers.TileVectorRenderer
+import dev.biserman.planet.topology.Topology
 import dev.biserman.planet.utils.UtilityExtensions.degToRad
-import dev.biserman.planet.utils.alphaAverage
 import dev.biserman.planet.utils.randomHsv
 import dev.biserman.planet.utils.sum
 import dev.biserman.planet.utils.transparent
+import godot.api.ArrayMesh
+import godot.api.Material
 import godot.api.MeshInstance3D
 import godot.api.Node
 import godot.api.StandardMaterial3D
 import godot.core.Color
+import godot.core.PackedByteArray
 import godot.core.Vector3
 import godot.global.GD
 import kotlin.jvm.optionals.getOrNull
@@ -676,6 +680,11 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
     ).toMutableList().apply { addAll(ecologyColorModes) }
 
     val meshInstance = MeshInstance3D().also { it.setName("Planet") }
+    private var renderedTopology: Topology? = null
+    private var planetMesh: ArrayMesh? = null
+    private var planetMaterial: Material? = null
+    private var colorBuffer = ByteArray(0)
+    private var visibleColorModes: List<PlanetColorMode> = emptyList()
 
     init {
         parent.addChild(meshInstance, forceReadableName = true)
@@ -701,13 +710,14 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
 
     private fun updateEcologyModeAvailability() {
         updateSpeciesRangeModes()
-        val extantSpecies = planet.planetTiles.values
-            .flatMap { tile ->
-                tile.ecosystem.populations
-                    .filter { it.activeBiomassKg + it.dormantBiomassKg > 0.0 }
-                    .map { it.speciesId }
+        val extantSpecies = mutableSetOf<String>()
+        planet.planetTiles.values.forEach { tile ->
+            tile.ecosystem.populations.forEach { population ->
+                if (population.activeBiomassKg + population.dormantBiomassKg > 0.0) {
+                    extantSpecies.add(population.speciesId)
+                }
             }
-            .toSet()
+        }
         animalRangeModes.forEach { (speciesId, mode) -> mode.setAvailable(speciesId in extantSpecies) }
         sessileRangeModes.forEach { (speciesId, mode) -> mode.setAvailable(speciesId in extantSpecies) }
     }
@@ -749,36 +759,58 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
     }
 
     fun getColor(planetTile: PlanetTile): Color {
-        val colors = planetColorModes.filter { it.visible }
-            .mapNotNull { mode -> mode.colorsFor(planetTile).first() }
-        return colors.alphaAverage()
+        var red = 0.0
+        var green = 0.0
+        var blue = 0.0
+        visibleColorModes.forEach { mode ->
+            mode.colorFor(planetTile)?.let { color ->
+                red += color.r * color.a
+                green += color.g * color.a
+                blue += color.b * color.a
+            }
+        }
+        return Color(red, green, blue, 1.0)
     }
 
     fun updateMesh() {
-        val colorModeResults = planetColorModes.filter { it.visible }.map { mode ->
-            planet.topology.tiles.flatMap { tile -> mode.colorsFor(planet.getTile(tile)) }
-        }
+        if (Main.instance.isSimulationRunning) return
+        ensureMesh()
+        visibleColorModes = planetColorModes.filter { it.visible }
 
-        val colors = if (colorModeResults.isNotEmpty()) {
-            val resultsSize = colorModeResults.first().size
-            if (colorModeResults.any { it.size != resultsSize }) {
-                throw IllegalStateException("Color mode results don't match")
+        var byteIndex = 0
+        planet.topology.tiles.forEach { tile ->
+            val color = getColor(planet.getTile(tile))
+            repeat(tile.corners.size + 1) {
+                colorBuffer[byteIndex++] = color.r8.toByte()
+                colorBuffer[byteIndex++] = color.g8.toByte()
+                colorBuffer[byteIndex++] = color.b8.toByte()
+                colorBuffer[byteIndex++] = color.a8.toByte()
             }
-
-            (0..<resultsSize).map { i ->
-                colorModeResults.mapNotNull { it[i] }.alphaAverage()
-            }
-        } else {
-            listOf()
         }
-
-        meshInstance.setMesh(
-            planet.topology.makeMesh().apply {
-                this.recalculateNormals()
-                this.colors.addAll(colors)
-            }.toArrayMesh()
-        )
-        meshInstance.setSurfaceOverrideMaterial(0, GD.load<StandardMaterial3D>("res://resources/planet_mat.tres"))
+        check(byteIndex == colorBuffer.size) { "Planet color buffer doesn't match the topology mesh" }
+        planetMesh!!.surfaceUpdateAttributeRegion(0, 0, PackedByteArray(colorBuffer))
         Gui.instance.updateMapPreview()
+    }
+
+    private fun ensureMesh() {
+        if (renderedTopology === planet.topology && planetMesh != null) return
+
+        val meshData = planet.topology.makeMesh().apply {
+            recalculateNormals()
+            repeat(verts.size) { colors.add(Color.white) }
+        }
+        colorBuffer = ByteArray(meshData.verts.size * RGBA_BYTES)
+        planetMesh = meshData.toArrayMesh().also { mesh ->
+            meshInstance.setMesh(mesh)
+        }
+        renderedTopology = planet.topology
+
+        val material = planetMaterial
+            ?: GD.load<Material>("res://resources/planet_mat.tres").also { planetMaterial = it }
+        meshInstance.setSurfaceOverrideMaterial(0, material)
+    }
+
+    companion object {
+        private const val RGBA_BYTES = 4
     }
 }

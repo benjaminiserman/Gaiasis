@@ -36,7 +36,7 @@ class BrushTool(private val gui: Gui) {
     private var lastPaintedTileId: Int? = null
     private var suppressPaintingUntilRelease = false
 
-    val isActive get() = mode != Mode.SELECT
+    val isActive get() = !Main.instance.isSimulationRunning && mode != Mode.SELECT
     val isPainting get() = mode == Mode.PAINT && !suppressPaintingUntilRelease
 
     fun initialize() {
@@ -62,6 +62,7 @@ class BrushTool(private val gui: Gui) {
             setMode(if (pickButton.buttonPressed) Mode.PICK else Mode.SELECT)
         }
         newPlateButton.pressed.connect {
+            if (Main.instance.isSimulationRunning) return@connect
             val plate = TectonicPlate(Main.instance.planet)
             Main.instance.planet.tectonicPlates.add(plate)
             refreshOptions()
@@ -74,6 +75,15 @@ class BrushTool(private val gui: Gui) {
     fun setEditModeEnabled(enabled: Boolean) {
         showToolbarButton.visible = enabled
         if (!enabled) {
+            showToolbarButton.buttonPressed = false
+            toolbar.visible = false
+            setMode(Mode.SELECT)
+        }
+    }
+
+    fun setSimulationRunning(running: Boolean) {
+        showToolbarButton.disabled = running
+        if (running) {
             showToolbarButton.buttonPressed = false
             toolbar.visible = false
             setMode(Mode.SELECT)
@@ -124,6 +134,7 @@ class BrushTool(private val gui: Gui) {
     }
 
     fun apply(tile: Tile) {
+        if (Main.instance.isSimulationRunning) return
         if (lastPaintedTileId == tile.id) return
         lastPaintedTileId = tile.id
 

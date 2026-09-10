@@ -12,19 +12,7 @@ class SimpleDoubleColorMode(
     override val categories: List<String>,
     val getFn: (PlanetTile) -> Double?,
 ) : PlanetColorMode(planetRenderer) {
-    override fun colorsFor(planetTile: PlanetTile): Sequence<Color> = sequence {
-        val color = colorFn(getFn(planetTile))
-        yield(color)
-
-        yieldAll(
-            (0..<planetTile.tile.corners.size).map {
-//            val validTilesValues =
-//                planetTile.tile.corners[it].tiles.mapNotNull { tile -> getFn(planetTile.planet.getTile(tile)) }
-//            colorFn(validTilesValues.average())
-                color
-            }
-        )
-    }
+    override fun colorFor(planetTile: PlanetTile): Color = colorFn(getFn(planetTile))
 
     companion object {
         val defaultColorFn = redWhenNull { Color(it, it, it, 1.0) }

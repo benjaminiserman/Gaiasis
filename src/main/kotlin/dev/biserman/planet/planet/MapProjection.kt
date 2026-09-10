@@ -80,6 +80,14 @@ object MapProjections {
             imageY,
             dateLine
         ) { point ->
+            if (!useKriging) {
+                val nearestTile = this.topology.rTree
+                    .nearest(point.toPoint(), sampleRadius, 1)
+                    .first()
+                    .value()
+                return@projectPoints colorFn(planet.getTile(nearestTile))
+            }
+
             val nearest = this.topology.rTree.nearest(point.toPoint(), sampleRadius, 10)
                 .map { it.value().position to colorFn(planet.getTile(it.value())) }
             val nearestR = nearest.map { (position, color) -> position to color.r }
@@ -87,22 +95,39 @@ object MapProjections {
             val nearestB = nearest.map { (position, color) -> position to color.b }
             val nearestA = nearest.map { (position, color) -> position to color.a }
 
-            if (useKriging) {
-                Color(
-                    Kriging.interpolate(nearestR, point, variogram),
-                    Kriging.interpolate(nearestG, point, variogram),
-                    Kriging.interpolate(nearestB, point, variogram),
-                    Kriging.interpolate(nearestA, point, variogram),
-                )
-            } else {
-                Color(
-                    nearestR.first().second,
-                    nearestG.first().second,
-                    nearestB.first().second,
-                    nearestA.first().second,
-                )
+            Color(
+                Kriging.interpolate(nearestR, point, variogram),
+                Kriging.interpolate(nearestG, point, variogram),
+                Kriging.interpolate(nearestB, point, variogram),
+                Kriging.interpolate(nearestA, point, variogram),
+            )
+        }
+
+    fun (MapProjection).projectTileIds(
+        planet: Planet,
+        imageX: Int,
+        imageY: Int,
+        sampleRadius: Double = planet.topology.averageRadius,
+        dateLine: Double = planet.internationalDateLine,
+    ): IntArray {
+        val result = IntArray(imageX * imageY)
+        val edgeX = forward(GeoPoint(0.0, dateLine)).x
+
+        for (x in 0..<imageX) {
+            for (y in 0..<imageY) {
+                val startX = 1 - (x.toDouble() / imageX - 0.5)
+                val offset = edgeX + 0.5
+                val newX = if (startX + offset > 1) startX + offset - 1 else startX + offset
+                val point = backward(Vector2(newX, -(y.toDouble() / imageY - 0.5))).toVector3()
+                result[y * imageX + x] = planet.topology.rTree
+                    .nearest(point.toPoint(), sampleRadius, 1)
+                    .first()
+                    .value()
+                    .id
             }
         }
+        return result
+    }
 
     fun (MapProjection).applyValueTo(planet: Planet, imageName: String, modifyFn: (PlanetTile).(Color) -> Unit) {
         val image = ImageIO.read(File(imageName))

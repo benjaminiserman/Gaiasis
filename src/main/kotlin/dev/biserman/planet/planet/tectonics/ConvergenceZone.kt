@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.github.davidmoten.rtreemulti.RTree
 import com.github.davidmoten.rtreemulti.geometry.Point
-import dev.biserman.planet.Main
 import dev.biserman.planet.geometry.average
 import dev.biserman.planet.geometry.scaleAndCoerceIn
 import dev.biserman.planet.geometry.tangent
@@ -130,14 +129,12 @@ class ConvergenceZone(
     }
 
     companion object {
-        val subductionZoneSearchRadius
-            get() = Main.instance.planet.topology.averageRadius *
-                max(1.25, oceanOceanArcDistance + oceanOceanArcWidth)
-
         fun adjustElevation(
             planetTile: PlanetTile,
             zoneRTree: RTree<ConvergenceZone, Point>
         ): ConvergenceElevationAdjustment {
+            val subductionZoneSearchRadius = planetTile.planet.topology.averageRadius *
+                max(1.25, oceanOceanArcDistance + oceanOceanArcWidth)
             val nearbyZones =
                 zoneRTree.nearest(planetTile.tile.position.toPoint(), subductionZoneSearchRadius, 25)
                     .map { it.value() }

@@ -3,9 +3,11 @@ package dev.biserman.planet
 import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.gui.Gui.Mode
 import dev.biserman.planet.planet.Planet
+import dev.biserman.planet.planet.PlanetSimulationRunner
 import dev.biserman.planet.planet.climate.ClimateSimulation
 import dev.biserman.planet.planet.ecology.PlanetEcology
 import dev.biserman.planet.planet.tectonics.Erosion
+import dev.biserman.planet.planet.tectonics.TectonicGlobals
 import dev.biserman.planet.planet.tectonics.Tectonics
 import dev.biserman.planet.rendering.PlanetRenderer
 import godot.annotation.RegisterClass
@@ -19,8 +21,23 @@ import kotlin.random.Random
 
 @RegisterClass
 class Main : Node() {
+    private enum class SimulationKind { EDIT, HISTORY }
+
+    private data class PendingSimulation(
+        val kind: SimulationKind,
+        val name: String,
+        val sourceRevision: Long,
+    )
+
     lateinit var planet: Planet private set
     lateinit var planetRenderer: PlanetRenderer
+    private val simulationRunner = PlanetSimulationRunner()
+    private var pendingSimulation: PendingSimulation? = null
+    private var simulationControlsLocked = false
+    private var planetRevision = 0L
+
+    val isSimulationRunning: Boolean
+        get() = pendingSimulation != null
 
     fun setStarsEnabled(enabled: Boolean) {
         val worldEnvironment = findChild("WorldEnvironment") as? godot.api.WorldEnvironment ?: return
@@ -54,7 +71,7 @@ class Main : Node() {
             return
         }
 
-        if (Input.isActionJustPressed("next")) {
+        if (Input.isActionJustPressed("next") && !isSimulationRunning) {
             if (Gui.instance.mode == Mode.PLAY) {
                 advanceHistoryTurn()
             } else {
@@ -62,7 +79,7 @@ class Main : Node() {
             }
         }
 
-        if (Gui.instance.mode != Mode.EDIT) return
+        if (Gui.instance.mode != Mode.EDIT || isSimulationRunning) return
 
         val selectedTile = planet.planetTiles[Gui.instance.selectedTile?.id] ?: return
         if (Input.isActionJustPressed("place_land")) {
@@ -95,6 +112,7 @@ class Main : Node() {
         set(value) {
             field = value
             timerTime = editSimulationTimerStep
+            unlockSimulationControlsIfIdle()
         }
     private var timerTime = editSimulationTimerStep
 
@@ -103,11 +121,14 @@ class Main : Node() {
         set(value) {
             field = value
             historyTimerTime = historyTurnTimerStep
+            unlockSimulationControlsIfIdle()
         }
     private var historyTimerTime = historyTurnTimerStep
 
     @RegisterFunction
     override fun _process(delta: Double) {
+        finishSimulationIfReady()
+
         if (timerActive && Gui.instance.mode == Mode.EDIT && ::planet.isInitialized && ::planetRenderer.isInitialized) {
             timerTime += delta
             if (timerTime >= editSimulationTimerStep) {
@@ -126,20 +147,106 @@ class Main : Node() {
     }
 
     private fun runSelectedEditSimulation() {
-        simulations[Gui.instance.selectedSimulation]!!.invoke(planet)
-        planetRenderer.update(planet)
-        Gui.instance.brushTool.refreshOptions()
+        val simulationName = requireNotNull(Gui.instance.selectedSimulation)
+        submitSimulation(SimulationKind.EDIT, simulationName, simulations.getValue(simulationName))
     }
 
     fun advanceHistoryTurn() {
-        PlanetEcology.advanceAllOneSeason(planet)
-        planet.historyTurn++
-        PlanetEcology.mutateAtInterval(planet)
+        submitSimulation(SimulationKind.HISTORY, "ecology") { nextPlanet ->
+            PlanetEcology.advanceAllOneSeason(nextPlanet)
+            nextPlanet.historyTurn++
+        }
+    }
+
+    private fun submitSimulation(
+        kind: SimulationKind,
+        name: String,
+        simulation: (Planet) -> Unit,
+    ) {
+        if (isSimulationRunning || !::planet.isInitialized) return
+        pendingSimulation = PendingSimulation(
+            kind = kind,
+            name = name,
+            sourceRevision = planetRevision,
+        )
+        simulationRunner.submit(planet, simulation)
+        setSimulationControlsLocked(true)
+    }
+
+    private fun finishSimulationIfReady() {
+        val pending = pendingSimulation ?: return
+        val completion = simulationRunner.poll() ?: return
+
+        pendingSimulation = null
+        val completedPlanet = when (completion) {
+            is PlanetSimulationRunner.Completion.Success -> completion.planet
+            is PlanetSimulationRunner.Completion.Failure -> {
+                simulationFailed(pending, completion.cause)
+                unlockSimulationControlsIfIdle()
+                return
+            }
+        }
+        if (pending.sourceRevision != planetRevision) {
+            unlockSimulationControlsIfIdle()
+            return
+        }
+
+        check(completedPlanet === planet) { "Simulation completed with an unexpected planet instance" }
+        planetRevision++
+        if (pending.kind == SimulationKind.HISTORY) {
+            // Mutation changes the shared species catalog, so keep this rare
+            // commit-time operation on the Godot thread.
+            PlanetEcology.mutateAtInterval(planet)
+        }
+        refreshAfterSimulation(pending)
+        if (!isAutoplayActiveFor(pending.kind)) {
+            setSimulationControlsLocked(false)
+        }
+    }
+
+    private fun isAutoplayActiveFor(kind: SimulationKind) = when (kind) {
+        SimulationKind.EDIT -> timerActive && Gui.instance.mode == Mode.EDIT
+        SimulationKind.HISTORY -> historyTimerActive && Gui.instance.mode == Mode.PLAY
+    }
+
+    private fun unlockSimulationControlsIfIdle() {
+        if (!timerActive && !historyTimerActive && !isSimulationRunning) {
+            setSimulationControlsLocked(false)
+        }
+    }
+
+    private fun setSimulationControlsLocked(locked: Boolean) {
+        if (simulationControlsLocked == locked) return
+        simulationControlsLocked = locked
+        Gui.instance.setSimulationRunning(locked)
+    }
+
+    private fun simulationFailed(pending: PendingSimulation, cause: Throwable) {
+        timerActive = false
+        historyTimerActive = false
+        Gui.instance.togglePlayButton(false)
+        GD.pushError("${pending.name} simulation failed: ${cause.message ?: cause::class.simpleName}")
+    }
+
+    private fun refreshAfterSimulation(pending: PendingSimulation) {
+        Gui.instance.tectonicAgeLabel.text = "${planet.tectonicAge} My"
+        Gui.instance.daysPassedLabel.text =
+            "${planet.daysPassed} — ${ClimateSimulation.estimateMonth(planet, planet.daysPassed)}"
         planetRenderer.update(planet)
         Gui.instance.statsGraph.update(planet)
         Gui.instance.updateHistoryDisplay()
         Gui.instance.updateInfobox()
-        Gui.instance.treeOfLifeView.refresh()
+        Gui.instance.brushTool.refreshOptions()
+        if (pending.kind == SimulationKind.HISTORY) {
+            Gui.instance.treeOfLifeView.refresh()
+        }
+        if (
+            pending.name == "tectonics" &&
+            TectonicGlobals.tectonicSimulationStop > 0 &&
+            planet.tectonicAge % TectonicGlobals.tectonicSimulationStop == 0
+        ) {
+            Gui.instance.togglePlayButton(false)
+        }
     }
 
     val hasPlanet get() = ::planet.isInitialized
@@ -147,6 +254,7 @@ class Main : Node() {
     fun updatePlanet(newPlanet: Planet) {
         GD.print("updating planet: $newPlanet")
         planet = newPlanet
+        planetRevision++
         PlanetEcology.activatePlanet(newPlanet)
         Gui.instance.updateMutationToggle()
         Gui.instance.resetMapPreviewCenter()
@@ -155,6 +263,11 @@ class Main : Node() {
         Gui.instance.brushTool.refreshOptions()
         Gui.instance.updateHistoryDisplay()
         Gui.instance.treeOfLifeView.refresh()
+    }
+
+    @RegisterFunction
+    override fun _exitTree() {
+        simulationRunner.close()
     }
 
     companion object {
