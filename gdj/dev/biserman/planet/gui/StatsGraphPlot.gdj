@@ -23,5 +23,6 @@ properties = [
 ]
 functions = [
     _ready,
+	_gui_input,
 	_draw
 ]

@@ -666,7 +666,115 @@ offset_left = -400.0
 offset_top = -200.0
 grow_horizontal = 0
 grow_vertical = 0
+tooltip_text = "Click to open the interactive graph"
+mouse_default_cursor_shape = 2
 script = ExtResource("4_trn2v")
+
+[node name="ExpandedStatsGraph" type="ColorRect" parent="GUI"]
+visible = false
+z_index = 200
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.012, 0.018, 0.94)
+
+[node name="Panel" type="PanelContainer" parent="GUI/ExpandedStatsGraph"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.035
+anchor_top = 0.045
+anchor_right = 0.965
+anchor_bottom = 0.955
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="GUI/ExpandedStatsGraph/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="Content" type="VBoxContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Toolbar" type="HBoxContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Statistics Explorer"
+
+[node name="ResetViewButton" type="Button" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Toolbar"]
+layout_mode = 2
+text = "Reset View"
+
+[node name="CloseButton" type="Button" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Toolbar"]
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+text = "×"
+
+[node name="Body" type="HSplitContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 250
+
+[node name="SeriesPanel" type="PanelContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/SeriesPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/SeriesPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/SeriesPanel/Margin/Content"]
+layout_mode = 2
+text = "Overlay statistics"
+
+[node name="SeriesScroll" type="ScrollContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/SeriesPanel/Margin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SeriesList" type="VBoxContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/SeriesPanel/Margin/Content/SeriesScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GraphColumn" type="VBoxContainer" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ExpandedGraph2d" type="Control" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/GraphColumn"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("4_trn2v")
+
+[node name="InspectionLabel" type="Label" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/GraphColumn"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+text = "Move over the graph to inspect values."
+autowrap_mode = 2
+
+[node name="Help" type="Label" parent="GUI/ExpandedStatsGraph/Panel/Margin/Content/Body/GraphColumn"]
+modulate = Color(1, 1, 1, 0.68)
+layout_mode = 2
+text = "Wheel: zoom · Drag: pan · Click: pin values · Right-click: clear pin"
 
 [node name="ExportDialog" type="FileDialog" parent="GUI"]
 title = "Export World"
