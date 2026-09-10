@@ -779,7 +779,7 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
 
         var byteIndex = 0
         planet.topology.tiles.forEach { tile ->
-            val color = getColor(planet.getTile(tile))
+            val color = getColor(planet.getTile(tile)).clamp(Color.black, Color.white)
             repeat(tile.corners.size + 1) {
                 colorBuffer[byteIndex++] = color.r8.toByte()
                 colorBuffer[byteIndex++] = color.g8.toByte()

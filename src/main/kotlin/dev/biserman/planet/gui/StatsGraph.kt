@@ -58,7 +58,12 @@ class StatsGraph(val rootNode: CanvasItem) {
             field = value
         }
 
+    private var insertGapBeforeNextSample = false
     var trackStats = true
+        set(value) {
+            if (!field && value) insertGapBeforeNextSample = true
+            field = value
+        }
 
     init {
         menuButton.getPopup()!!.idPressed.connect { shownStat = activeStats[it.toInt()] }
@@ -114,9 +119,17 @@ class StatsGraph(val rootNode: CanvasItem) {
                 val time = if (historyMode) planet.historyTurn / 4.0 else planet.tectonicAge.toDouble()
                 val values = statValues[stat.name] ?: return@forEach
                 val point = Vector2(time, value.toDouble())
-                if (values.lastOrNull()?.x == time) values[values.lastIndex] = point else values.add(point)
+                if (insertGapBeforeNextSample && values.isNotEmpty()) {
+                    values.add(Vector2(time, Double.NaN))
+                    values.add(point)
+                } else if (values.lastOrNull()?.x == time) {
+                    values[values.lastIndex] = point
+                } else {
+                    values.add(point)
+                }
                 if (stat == shownStat) currentShownValue = value
             }
+            insertGapBeforeNextSample = false
         }
         currentShownValue?.let(::setCurrentValue)
 
@@ -230,6 +243,7 @@ class StatsGraph(val rootNode: CanvasItem) {
             var statMin = Double.POSITIVE_INFINITY
             var statMax = Double.NEGATIVE_INFINITY
             values.forEach { point ->
+                if (!point.y.isFinite()) return@forEach
                 if (point.y < statMin) statMin = point.y
                 if (point.y > statMax) statMax = point.y
             }

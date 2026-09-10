@@ -228,6 +228,7 @@ class StatsGraphPlot : Control() {
             val fromIndex = graphSeries.points.lowerBound(xMin)
             val toIndex = graphSeries.points.upperBound(xMax)
             for (index in fromIndex..<toIndex) {
+                if (!graphSeries.points[index].y.isFinite()) continue
                 visibleMin = min(visibleMin, graphSeries.points[index].y)
                 visibleMax = max(visibleMax, graphSeries.points[index].y)
             }
@@ -351,13 +352,15 @@ class StatsGraphPlot : Control() {
 
         val maxRenderedPoints = (plot.size.x * MAX_POINTS_PER_HORIZONTAL_PIXEL).toInt().coerceAtLeast(4)
         series.forEach { graphSeries ->
-            val renderedPoints = downsampleMinMax(graphSeries.points, xMin, xMax, maxRenderedPoints).map { point ->
-                pointToPlot(point, plot)
-            }
-            if (renderedPoints.size >= 2) {
-                drawPolyline(PackedVector2Array(renderedPoints), graphSeries.color, 2.0f, true)
-            } else if (renderedPoints.size == 1) {
-                drawCircle(renderedPoints.single(), INSPECTION_POINT_RADIUS, graphSeries.color)
+            graphSeries.points.continuousSegments().forEach { segment ->
+                val renderedPoints = downsampleMinMax(segment, xMin, xMax, maxRenderedPoints).map { point ->
+                    pointToPlot(point, plot)
+                }
+                if (renderedPoints.size >= 2) {
+                    drawPolyline(PackedVector2Array(renderedPoints), graphSeries.color, 2.0f, true)
+                } else if (renderedPoints.size == 1) {
+                    drawCircle(renderedPoints.single(), INSPECTION_POINT_RADIUS, graphSeries.color)
+                }
             }
         }
 
@@ -463,11 +466,32 @@ private fun List<Vector2>.upperBound(x: Double): Int {
 private fun List<Vector2>.nearestTo(x: Double): Vector2? {
     if (isEmpty()) return null
     val upperIndex = lowerBound(x)
-    if (upperIndex == 0) return first()
-    if (upperIndex == size) return last()
-    val lower = this[upperIndex - 1]
-    val upper = this[upperIndex]
-    return if (x - lower.x <= upper.x - x) lower else upper
+    var lowerIndex = upperIndex - 1
+    while (lowerIndex >= 0 && !this[lowerIndex].y.isFinite()) lowerIndex--
+    var finiteUpperIndex = upperIndex
+    while (finiteUpperIndex < size && !this[finiteUpperIndex].y.isFinite()) finiteUpperIndex++
+    val lower = getOrNull(lowerIndex)
+    val upper = getOrNull(finiteUpperIndex)
+    return when {
+        lower == null -> upper
+        upper == null -> lower
+        x - lower.x <= upper.x - x -> lower
+        else -> upper
+    }
+}
+
+internal fun List<Vector2>.continuousSegments(): List<List<Vector2>> {
+    if (isEmpty()) return emptyList()
+    val segments = mutableListOf<List<Vector2>>()
+    var start = 0
+    forEachIndexed { index, point ->
+        if (!point.y.isFinite()) {
+            if (start < index) segments.add(subList(start, index))
+            start = index + 1
+        }
+    }
+    if (start < size) segments.add(subList(start, size))
+    return segments
 }
 
 private const val POINTS_PER_BUCKET = 4

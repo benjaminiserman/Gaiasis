@@ -37,4 +37,20 @@ class StatsGraphPlotTest {
         assertEquals(25.0, sampled.first().x)
         assertEquals(75.0, sampled.last().x)
     }
+
+    @Test
+    fun `gap markers split a stat series without becoming plotted points`() {
+        val points = listOf(
+            Vector2(0.0, 1.0),
+            Vector2(1.0, 2.0),
+            Vector2(10.0, Double.NaN),
+            Vector2(10.0, 8.0),
+            Vector2(11.0, 9.0),
+        )
+
+        assertEquals(
+            listOf(points.subList(0, 2), points.subList(3, 5)),
+            points.continuousSegments(),
+        )
+    }
 }
