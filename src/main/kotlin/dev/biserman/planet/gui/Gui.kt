@@ -7,6 +7,7 @@ import dev.biserman.planet.geometry.Path.Companion.toPaths
 import dev.biserman.planet.geometry.adjustRange
 import dev.biserman.planet.history.Hemisphere
 import dev.biserman.planet.history.HistoryCalendar
+import dev.biserman.planet.planet.BackgroundTaskProgress
 import dev.biserman.planet.planet.MapProjections
 import dev.biserman.planet.planet.MapProjections.applyValueTo
 import dev.biserman.planet.planet.MapProjections.projectTileIds
@@ -73,6 +74,9 @@ class Gui() : Node() {
     val mapPreview by lazy { findChild("MapPreview") as TextureRect }
     val recenterMapPreviewButton by lazy { findChild("RecenterMapPreviewButton") as Button }
     val copyTileInfoButton by lazy { findChild("CopyTileInfoButton") as Button }
+    private val backgroundTaskProgress by lazy { findChild("BackgroundTaskProgress") as Control }
+    private val backgroundTaskLabel by lazy { findChild("BackgroundTaskLabel") as Label }
+    private val backgroundTaskBar by lazy { findChild("BackgroundTaskBar") as ProgressBar }
 
     val simulationOptionButton by lazy { findChild("SimulationOptionButton") as OptionButton }
     val selectedSimulation get() = simulationOptions[simulationOptionButton.selected]
@@ -187,9 +191,9 @@ class Gui() : Node() {
             calculateClimateButton,
             refreshConfigButton,
             importButton,
-            tectonicAgeLabel,
-            daysPassedLabel,
         ).forEach { it.visible = isEditMode }
+
+        updateSimulationTimeDisplay()
 
         listOf<Control>(
             nextTurnButton,
@@ -213,6 +217,22 @@ class Gui() : Node() {
             climateConfigPanel.visible = false
         }
         updateHistoryDisplay()
+    }
+
+    fun updateSimulationTimeDisplay() {
+        daysPassedLabel.visible = false
+        tectonicAgeLabel.visible = mode == Mode.EDIT
+        if (!Main.instance.hasPlanet) {
+            tectonicAgeLabel.text = ""
+            return
+        }
+
+        val planet = Main.instance.planet
+        tectonicAgeLabel.text = if (selectedSimulation == "climate") {
+            "${planet.daysPassed} — ${ClimateSimulation.estimateMonth(planet, planet.daysPassed)}"
+        } else {
+            "${planet.tectonicAge} My"
+        }
     }
 
     fun updateHistoryDisplay() {
@@ -262,6 +282,21 @@ class Gui() : Node() {
             climateConfigPanel.visible = false
             tectonicConfigPanel.visible = false
         }
+    }
+
+    fun showBackgroundTaskProgress(name: String) {
+        backgroundTaskLabel.text = name
+        backgroundTaskBar.value = 0.0
+        backgroundTaskProgress.visible = true
+    }
+
+    fun updateBackgroundTaskProgress(name: String, progress: BackgroundTaskProgress.Snapshot) {
+        backgroundTaskLabel.text = "$name — ${progress.status}"
+        backgroundTaskBar.value = progress.fraction * 100.0
+    }
+
+    fun hideBackgroundTaskProgress() {
+        backgroundTaskProgress.visible = false
     }
 
     fun showSeedSelection() {
@@ -451,6 +486,7 @@ class Gui() : Node() {
 
         simulationOptionButton.itemSelected.connect {
             togglePlayButton(false)
+            updateSimulationTimeDisplay()
         }
 
         playButton.pressed.connect { togglePlayButton() }
@@ -500,10 +536,19 @@ class Gui() : Node() {
         }
         refreshConfigButton.pressed.connect { reloadConfigFiles() }
         calculateClimateButton.pressed.connect {
-            Main.instance.planet.climateMap =
-                ClimateSimulation.calculateClimate(Main.instance.planet).mapKeys { it.key.tileId }
-            ClimateClassifier.printCachedStats(Main.instance.planet)
-            Main.instance.planetRenderer.update(Main.instance.planet)
+            Main.instance.submitBackgroundPlanetTask(
+                name = "Calculating Climate",
+                task = { planet, progress ->
+                    planet.climateMap = ClimateSimulation.calculateClimate(planet) { fraction, status ->
+                        progress.update(fraction, status)
+                    }.mapKeys { it.key.tileId }
+                },
+                commit = { planet ->
+                    ClimateClassifier.printCachedStats(planet)
+                    Main.instance.planetRenderer.update(planet)
+                    updateInfobox()
+                },
+            )
         }
 
         projectButton.pressed.connect {
@@ -522,22 +567,34 @@ class Gui() : Node() {
         }
         importDialog.fileSelected.connect { filename ->
             if (Main.instance.isSimulationRunning) return@connect
-            MapProjections.EQUIDISTANT.applyValueTo(
-                Main.instance.planet,
-                filename,
-            ) { value ->
-                val threshold = 61.0
-                this.elevation = if (value.r8 <= threshold) {
-                    value.r8.toDouble().adjustRange(0.0..threshold, -8000.0..-1.0)
-                } else {
-                    value.r8.toDouble().adjustRange(threshold..255.0, 1.0..6400.0)
-                }
-            }
-            Main.instance.planet.tectonicAge = 0
-            Main.instance.planet.terrainChangeCount++
-            OceanCurrents.viaEarthlikeHeuristic(Main.instance.planet, 7)
-            Main.instance.planetRenderer.update(Main.instance.planet)
-            GD.print("Elevation map imported.")
+            Main.instance.submitBackgroundPlanetTask(
+                name = "Importing Elevation",
+                task = { planet, progress ->
+                    MapProjections.EQUIDISTANT.applyValueTo(
+                        planet,
+                        filename,
+                        progress = progress::update,
+                    ) { value ->
+                        val threshold = 61.0
+                        elevation = if (value.r8 <= threshold) {
+                            value.r8.toDouble().adjustRange(0.0..threshold, -8000.0..-1.0)
+                        } else {
+                            value.r8.toDouble().adjustRange(threshold..255.0, 1.0..6400.0)
+                        }
+                    }
+                    planet.tectonicAge = 0
+                    planet.terrainChangeCount++
+                    progress.update(0.92, "Calculating ocean currents")
+                    OceanCurrents.viaEarthlikeHeuristic(planet, 7)
+                    progress.update(1.0, "Complete")
+                },
+                commit = { planet ->
+                    updateSimulationTimeDisplay()
+                    Main.instance.planetRenderer.update(planet)
+                    updateInfobox()
+                    GD.print("Elevation map imported.")
+                },
+            )
         }
     }
 

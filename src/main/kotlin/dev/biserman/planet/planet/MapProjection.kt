@@ -4,7 +4,6 @@ import dev.biserman.planet.geometry.GeoPoint
 import dev.biserman.planet.geometry.Kriging
 import dev.biserman.planet.geometry.toGeoPoint
 import dev.biserman.planet.geometry.toPoint
-import dev.biserman.planet.geometry.toRTree
 import dev.biserman.planet.geometry.toVector2
 import dev.biserman.planet.geometry.toVector3
 import godot.core.Color
@@ -13,8 +12,7 @@ import godot.core.Vector3
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.roundToInt
 
 class MapProjection(val forward: (GeoPoint) -> Vector2, val backward: (Vector2) -> GeoPoint)
 
@@ -129,36 +127,29 @@ object MapProjections {
         return result
     }
 
-    fun (MapProjection).applyValueTo(planet: Planet, imageName: String, modifyFn: (PlanetTile).(Color) -> Unit) {
+    fun (MapProjection).applyValueTo(
+        planet: Planet,
+        imageName: String,
+        progress: ((fraction: Double, status: String) -> Unit)? = null,
+        modifyFn: (PlanetTile).(Color) -> Unit,
+    ) {
+        progress?.invoke(0.02, "Reading elevation image")
         val image = ImageIO.read(File(imageName))
-        val imageRTree = (0..<image.width).flatMap { x ->
-            (0..<image.height).map { y ->
-                Pair(
-                    Vector2(
-                        -(x.toDouble() / image.width - 0.5),
-                        (image.height - y.toDouble() - 1) / image.height - 0.5
-                    ),
-                    image.getRGB(x, y).toRGB()
+        progress?.invoke(0.08, "Applying elevation to tiles")
+        val tiles = planet.planetTiles.values
+        tiles.forEachIndexed { index, tile ->
+            val projected = forward(tile.tile.position.toGeoPoint())
+            val pixelX = ((0.5 - projected.x) * image.width).roundToInt().coerceIn(0, image.width - 1)
+            val pixelY = ((0.5 - projected.y) * image.height - 1).roundToInt().coerceIn(0, image.height - 1)
+            modifyFn(tile, image.getRGB(pixelX, pixelY).toRGB())
+            if (index % IMPORT_PROGRESS_INTERVAL == 0 || index == tiles.size - 1) {
+                progress?.invoke(
+                    0.08 + 0.82 * (index + 1).toDouble() / tiles.size,
+                    "Applying elevation to tiles",
                 )
             }
-        }.toRTree(dimensions = 2) { it.first.toPoint() to it.second }
-
-        val testPoints =
-            planet.topology.rTree.nearest(Vector3.RIGHT.toPoint(), planet.topology.averageRadius * 10, 2)
-        val distanceGuess = min(
-            this.forward(testPoints.first().value().position.toGeoPoint())
-                .distanceTo(this.forward(testPoints.last().value().position.toGeoPoint())),
-            max(1.0 / image.width, 1.0 / image.height)
-        ) * 1.5
-
-        planet.planetTiles.values.forEach { tile ->
-            val samples =
-                imageRTree.nearest(this.forward(tile.tile.position.toGeoPoint()).toPoint(), distanceGuess, 1)
-            val nearest = samples.firstOrNull()?.value()
-            if (nearest != null) {
-                modifyFn(tile, nearest)
-            }
         }
+        progress?.invoke(0.9, "Elevation applied")
     }
 
     // turn java RGB int to Godot color
@@ -168,4 +159,6 @@ object MapProjections {
         val b = this and 0xFF
         return Color(r / 255.0, g / 255.0, b / 255.0)
     }
+
+    private const val IMPORT_PROGRESS_INTERVAL = 64
 }

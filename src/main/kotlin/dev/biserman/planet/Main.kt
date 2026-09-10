@@ -2,6 +2,7 @@ package dev.biserman.planet
 
 import dev.biserman.planet.gui.Gui
 import dev.biserman.planet.gui.Gui.Mode
+import dev.biserman.planet.planet.BackgroundTaskProgress
 import dev.biserman.planet.planet.Planet
 import dev.biserman.planet.planet.PlanetSimulationRunner
 import dev.biserman.planet.planet.climate.ClimateSimulation
@@ -23,21 +24,23 @@ import kotlin.random.Random
 class Main : Node() {
     private enum class SimulationKind { EDIT, HISTORY }
 
-    private data class PendingSimulation(
-        val kind: SimulationKind,
+    private data class PendingPlanetTask(
+        val kind: SimulationKind?,
         val name: String,
         val sourceRevision: Long,
+        val progress: BackgroundTaskProgress?,
+        val commit: (Planet) -> Unit,
     )
 
     lateinit var planet: Planet private set
     lateinit var planetRenderer: PlanetRenderer
     private val simulationRunner = PlanetSimulationRunner()
-    private var pendingSimulation: PendingSimulation? = null
+    private var pendingPlanetTask: PendingPlanetTask? = null
     private var simulationControlsLocked = false
     private var planetRevision = 0L
 
     val isSimulationRunning: Boolean
-        get() = pendingSimulation != null
+        get() = pendingPlanetTask != null
 
     fun setStarsEnabled(enabled: Boolean) {
         val worldEnvironment = findChild("WorldEnvironment") as? godot.api.WorldEnvironment ?: return
@@ -127,7 +130,8 @@ class Main : Node() {
 
     @RegisterFunction
     override fun _process(delta: Double) {
-        finishSimulationIfReady()
+        updateBackgroundTaskProgress()
+        finishPlanetTaskIfReady()
 
         if (timerActive && Gui.instance.mode == Mode.EDIT && ::planet.isInitialized && ::planetRenderer.isInitialized) {
             timerTime += delta
@@ -163,30 +167,73 @@ class Main : Node() {
         name: String,
         simulation: (Planet) -> Unit,
     ) {
+        submitPlanetTask(
+            kind = kind,
+            name = name,
+            progress = null,
+            task = simulation,
+            commit = { refreshAfterSimulation(kind, name) },
+        )
+    }
+
+    fun submitBackgroundPlanetTask(
+        name: String,
+        task: (Planet, BackgroundTaskProgress) -> Unit,
+        commit: (Planet) -> Unit,
+    ) {
+        if (timerActive || historyTimerActive) return
+        val progress = BackgroundTaskProgress()
+        submitPlanetTask(
+            kind = null,
+            name = name,
+            progress = progress,
+            task = { workingPlanet -> task(workingPlanet, progress) },
+            commit = commit,
+        )
+    }
+
+    private fun submitPlanetTask(
+        kind: SimulationKind?,
+        name: String,
+        progress: BackgroundTaskProgress?,
+        task: (Planet) -> Unit,
+        commit: (Planet) -> Unit,
+    ) {
         if (isSimulationRunning || !::planet.isInitialized) return
-        pendingSimulation = PendingSimulation(
+        pendingPlanetTask = PendingPlanetTask(
             kind = kind,
             name = name,
             sourceRevision = planetRevision,
+            progress = progress,
+            commit = commit,
         )
-        simulationRunner.submit(planet, simulation)
+        simulationRunner.submit(planet, task)
         setSimulationControlsLocked(true)
+        if (progress != null) Gui.instance.showBackgroundTaskProgress(name)
     }
 
-    private fun finishSimulationIfReady() {
-        val pending = pendingSimulation ?: return
+    private fun updateBackgroundTaskProgress() {
+        val pending = pendingPlanetTask ?: return
+        val progress = pending.progress ?: return
+        Gui.instance.updateBackgroundTaskProgress(pending.name, progress.snapshot())
+    }
+
+    private fun finishPlanetTaskIfReady() {
+        val pending = pendingPlanetTask ?: return
         val completion = simulationRunner.poll() ?: return
 
-        pendingSimulation = null
+        pendingPlanetTask = null
         val completedPlanet = when (completion) {
             is PlanetSimulationRunner.Completion.Success -> completion.planet
             is PlanetSimulationRunner.Completion.Failure -> {
-                simulationFailed(pending, completion.cause)
+                if (pending.progress != null) Gui.instance.hideBackgroundTaskProgress()
+                planetTaskFailed(pending, completion.cause)
                 unlockSimulationControlsIfIdle()
                 return
             }
         }
         if (pending.sourceRevision != planetRevision) {
+            if (pending.progress != null) Gui.instance.hideBackgroundTaskProgress()
             unlockSimulationControlsIfIdle()
             return
         }
@@ -198,8 +245,16 @@ class Main : Node() {
             // commit-time operation on the Godot thread.
             PlanetEcology.mutateAtInterval(planet)
         }
-        refreshAfterSimulation(pending)
-        if (!isAutoplayActiveFor(pending.kind)) {
+        try {
+            pending.commit(planet)
+        } catch (cause: Throwable) {
+            if (pending.progress != null) Gui.instance.hideBackgroundTaskProgress()
+            planetTaskFailed(pending, cause)
+            unlockSimulationControlsIfIdle()
+            return
+        }
+        if (pending.progress != null) Gui.instance.hideBackgroundTaskProgress()
+        if (pending.kind == null || !isAutoplayActiveFor(pending.kind)) {
             setSimulationControlsLocked(false)
         }
     }
@@ -221,27 +276,25 @@ class Main : Node() {
         Gui.instance.setSimulationRunning(locked)
     }
 
-    private fun simulationFailed(pending: PendingSimulation, cause: Throwable) {
+    private fun planetTaskFailed(pending: PendingPlanetTask, cause: Throwable) {
         timerActive = false
         historyTimerActive = false
         Gui.instance.togglePlayButton(false)
-        GD.pushError("${pending.name} simulation failed: ${cause.message ?: cause::class.simpleName}")
+        GD.pushError("${pending.name} failed: ${cause.message ?: cause::class.simpleName}")
     }
 
-    private fun refreshAfterSimulation(pending: PendingSimulation) {
-        Gui.instance.tectonicAgeLabel.text = "${planet.tectonicAge} My"
-        Gui.instance.daysPassedLabel.text =
-            "${planet.daysPassed} — ${ClimateSimulation.estimateMonth(planet, planet.daysPassed)}"
+    private fun refreshAfterSimulation(kind: SimulationKind, name: String) {
+        Gui.instance.updateSimulationTimeDisplay()
         planetRenderer.update(planet)
         Gui.instance.statsGraph.update(planet)
         Gui.instance.updateHistoryDisplay()
         Gui.instance.updateInfobox()
         Gui.instance.brushTool.refreshOptions()
-        if (pending.kind == SimulationKind.HISTORY) {
+        if (kind == SimulationKind.HISTORY) {
             Gui.instance.treeOfLifeView.refresh()
         }
         if (
-            pending.name == "tectonics" &&
+            name == "tectonics" &&
             TectonicGlobals.tectonicSimulationStop > 0 &&
             planet.tectonicAge % TectonicGlobals.tectonicSimulationStop == 0
         ) {
@@ -257,6 +310,7 @@ class Main : Node() {
         planetRevision++
         PlanetEcology.activatePlanet(newPlanet)
         Gui.instance.updateMutationToggle()
+        Gui.instance.updateSimulationTimeDisplay()
         Gui.instance.resetMapPreviewCenter()
         planetRenderer.update(newPlanet)
         Gui.instance.statsGraph.planet = newPlanet

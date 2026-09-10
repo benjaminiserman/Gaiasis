@@ -564,6 +564,7 @@ offset_bottom = 66.0
 grow_horizontal = 0
 
 [node name="DaysPassed" type="Label" parent="GUI"]
+visible = false
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -775,6 +776,43 @@ autowrap_mode = 2
 modulate = Color(1, 1, 1, 0.68)
 layout_mode = 2
 text = "Wheel: zoom · Drag: pan · Click: pin values · Right-click: clear pin"
+
+[node name="BackgroundTaskProgress" type="PanelContainer" parent="GUI"]
+visible = false
+z_index = 150
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_top = -88.0
+offset_right = 230.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="GUI/BackgroundTaskProgress"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 9
+
+[node name="Content" type="VBoxContainer" parent="GUI/BackgroundTaskProgress/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="BackgroundTaskLabel" type="Label" parent="GUI/BackgroundTaskProgress/Margin/Content"]
+layout_mode = 2
+text = "Working…"
+
+[node name="BackgroundTaskBar" type="ProgressBar" parent="GUI/BackgroundTaskProgress/Margin/Content"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
 
 [node name="ExportDialog" type="FileDialog" parent="GUI"]
 title = "Export World"

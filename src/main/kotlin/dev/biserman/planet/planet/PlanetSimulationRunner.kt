@@ -8,6 +8,19 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
+
+class BackgroundTaskProgress {
+    data class Snapshot(val fraction: Double, val status: String)
+
+    private val current = AtomicReference(Snapshot(0.0, "Starting…"))
+
+    fun update(fraction: Double, status: String) {
+        current.set(Snapshot(fraction.coerceIn(0.0, 1.0), status))
+    }
+
+    fun snapshot(): Snapshot = current.get()
+}
 
 /**
  * Gives a background coroutine exclusive ownership of a planet for one

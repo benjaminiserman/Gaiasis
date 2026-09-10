@@ -595,24 +595,37 @@ object ClimateSimulation {
         moisture * moistureToMm
     )
 
-    fun calculateClimate(planet: Planet): Map<PlanetTile, ClimateDatum> {
+    fun calculateClimate(
+        planet: Planet,
+        progress: ((fraction: Double, status: String) -> Unit)? = null,
+    ): Map<PlanetTile, ClimateDatum> {
         val startDate = planet.daysPassed
         val months = 12
         val totalSamples = months * climateSimulationSamplesPerMonth
+        progress?.invoke(0.02, "Preparing climate model")
         val monthToTileClimate = (0..<totalSamples).map { i ->
             if (i % climateSimulationSamplesPerMonth == 0) {
                 GD.print("${MonthIndex.entries[i / climateSimulationSamplesPerMonth].name}...")
             }
             planet.daysPassed = (i * (yearLength / totalSamples)).roundToInt()
             updatePlanetClimate(planet)
-            planet.planetTiles.values.associateWith { it.calculateClimateDatumSample() }
+            planet.planetTiles.values.associateWith { it.calculateClimateDatumSample() }.also {
+                val month = MonthIndex.entries[i / climateSimulationSamplesPerMonth].name
+                    .lowercase()
+                    .replaceFirstChar { character ->
+                        character.titlecase()
+                    }
+                progress?.invoke(0.05 + 0.8 * (i + 1).toDouble() / totalSamples, "Simulating $month")
+            }
         }.chunked(climateSimulationSamplesPerMonth).map { samples ->
             planet.planetTiles.values.associateWith { tile -> samples.map { it[tile]!! }.average() }
         }
 
+        progress?.invoke(0.9, "Aggregating monthly results")
         val climateData = planet.planetTiles.values.associateWith { tile ->
             ClimateDatum(tile.tileId, monthToTileClimate.map { it[tile]!! })
         }
+        progress?.invoke(0.96, "Calculating climate summary")
 
 //        planet.daysPassed = startDate
 //        updatePlanetClimate(planet)
@@ -709,6 +722,7 @@ object ClimateSimulation {
             "Percent rain on ocean: ${percentRainOnOcean.formatDigits(1)}"
         )
 
+        progress?.invoke(1.0, "Complete")
         return climateData
     }
 
