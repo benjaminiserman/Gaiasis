@@ -759,17 +759,32 @@ class PlanetRenderer(parent: Node, var planet: Planet) {
     }
 
     fun getColor(planetTile: PlanetTile): Color {
-        var red = 0.0
-        var green = 0.0
-        var blue = 0.0
+        var baseRed = 0.0
+        var baseGreen = 0.0
+        var baseBlue = 0.0
+        var overlayRed = 0.0
+        var overlayGreen = 0.0
+        var overlayBlue = 0.0
         visibleColorModes.forEach { mode ->
             mode.colorFor(planetTile)?.let { color ->
-                red += color.r * color.a
-                green += color.g * color.a
-                blue += color.b * color.a
+                if ("base_layer" in mode.categories) {
+                    baseRed += color.r * color.a
+                    baseGreen += color.g * color.a
+                    baseBlue += color.b * color.a
+                } else {
+                    overlayRed += color.r * color.a
+                    overlayGreen += color.g * color.a
+                    overlayBlue += color.b * color.a
+                }
             }
         }
-        return Color(red, green, blue, 1.0)
+        val baseLayerCount = max(1, visibleColorModes.count { "base_layer" in it.categories })
+        return Color(
+            baseRed / baseLayerCount + overlayRed,
+            baseGreen / baseLayerCount + overlayGreen,
+            baseBlue / baseLayerCount + overlayBlue,
+            1.0
+        )
     }
 
     fun updateMesh() {

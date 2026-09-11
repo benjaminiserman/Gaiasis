@@ -80,7 +80,7 @@ object AuthoredEcosystems {
         "Amazon rainforest",
         climate(3, q(27, 27, 26, 27.5), q(220, 235, 210, 230), q(260, 240, 150, 210)),
         AuthoredEcosystemTile(isLand = true, fertilityModifier = 0.15),
-        "giant-bamboo", "brazil-nut-tree", "strangler-fig", "bracken-fern", "three-toed-sloth",
+        "giant-bamboo", "brazil-nut-tree", "bracken-fern", "three-toed-sloth",
         "scarlet-macaw", "margay", "field-mushroom", "termite",
     )
 
