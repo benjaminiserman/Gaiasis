@@ -37,7 +37,7 @@ object EcologyGlobals {
     var maximumStarvationMortality = 0.72
 
     /** Strength of competition from other species occupying the same authored niche. */
-    var interspecificNicheCompetition = 0.15
+    var interspecificNicheCompetition = 0.5
 
     /** Niche competition strength for interference with prey capture; zero disables it. */
     var feedingInterferenceCompetition = 0.15

@@ -1,6 +1,6 @@
 {
-  "accruedDepositThreshold": 800.0,
-  "accruedErosionThreshold": -800.0,
+  "accruedDepositThreshold": 950.0,
+  "accruedErosionThreshold": -1200.0,
   "biotaDistributionClearChance": 0.015,
   "biotaDistributionCount": 10,
   "biotaDistributionTerrestrialMaxSlope": 750.0,

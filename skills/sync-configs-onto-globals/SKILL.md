@@ -12,7 +12,18 @@ Synchronize defaults in source code from configuration files; do not change the 
 3. Report JSON properties without a matching global before editing. Do not invent a new property unless the user asks.
 4. Update only declarations whose runtime values differ, using `apply_patch`. Preserve comments and unrelated user changes.
 5. Do not add config reloads, startup synchronization, serialization changes, or runtime overrides: this skill updates declared defaults manually.
-6. Run the project’s appropriate compilation or test command and report the result.
+6. Repeat the full comparison after editing. Do not report synchronization as complete until the second comparison finds no mismatches or missing globals. Merely reading this file, spot-checking known values, or running tests does not constitute running the sync workflow.
+7. Run the project’s appropriate compilation or test command and report the result. Completion requires both a clean post-edit comparison and a successful test command.
+8. If Gradle fails because stale Java or Gradle processes have locked files under `build`, report that as a separate verification failure. You may stop Gradle daemons with the project wrapper’s `--stop` option and retry the tests, but do not claim success unless the retry passes.
+
+## Completion checklist
+
+Before reporting success, verify all of the following:
+
+- The complete set of mapped JSON properties was compared with the corresponding globals.
+- No JSON properties are missing from the globals.
+- No runtime-value mismatches remain after editing.
+- The project compilation or test command exited successfully.
 
 For Planet, use this mapping:
 

@@ -60,9 +60,9 @@ object TectonicGlobals {
     var continentSpringDamping = 0.1
     var continentSpringSearchRadius = 2.0 // multiple of average tile radius
 
-    var overridingElevationStrengthScale = 1600.0
-    var subductingElevationStrengthScale = -7500.0
-    var convergingElevationStrengthScale = 1800.0
+    var overridingElevationStrengthScale = 1300.0
+    var subductingElevationStrengthScale = -6500.0
+    var convergingElevationStrengthScale = 1500.0
     var subductionDensityThreshold = 0.5
     var oceanOceanArcElevationStrength = 30000.0
     var oceanOceanArcDistance = 1.5
@@ -75,7 +75,7 @@ object TectonicGlobals {
 
     var depositStrength = 0.6
     var depositLoss = 0.01
-    var depositMultiplier = 1.2
+    var depositMultiplier = 1.25
     var desiredLandPercent = 0.3
     var desiredLandScalePow = 2.0
     var prominenceErosion = 0.15
@@ -92,8 +92,8 @@ object TectonicGlobals {
     var oceanSubsidenceCeilingCurve = 0.005
     var oceanSubsidenceCeilingScale = 100.0
 
-    var accruedDepositThreshold = 800.0
-    var accruedErosionThreshold = -400.0
+    var accruedDepositThreshold = 950.0
+    var accruedErosionThreshold = -1200.0
     var orogenicMetamorphosisThreshold = 0.05
     var tectonicVolcanismThreshold = 0.9
     var hotspotEruptionAccretionThreshold = 200.0
@@ -109,7 +109,7 @@ object TectonicGlobals {
     var maxMeteorElevationChange = 2000.0
 
     var biotaDistributionCount = 10
-    var biotaDistributionClearChance = 0.025
+    var biotaDistributionClearChance = 0.015
     var biotaDistributionTerrestrialMaxSlope = 750.0
 
     var estimatedAverageRadius = 0.020775855876950022
